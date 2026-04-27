@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
 import { APP_NAME, META } from "@/lib/constants";
-import { env } from "@/lib/utils/env";
+import { publicEnv } from "@/lib/utils/public-env";
 import "@/app/globals.css";
 
 const inter = Inter({
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   applicationName: APP_NAME,
   description: META.DESCRIPTION,
   keywords: META.KEYWORDS.split(", "),
-  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
+  metadataBase: new URL(publicEnv.NEXT_PUBLIC_APP_URL),
   title: META.TITLE,
 };
 

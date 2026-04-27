@@ -1,10 +1,10 @@
-import { env } from "@/lib/utils/env";
+import { publicEnv } from "@/lib/utils/public-env";
 
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE = "50 hyper-researched B2B leads. Every Monday.";
 export const APP_DOMAIN = "frithly.com";
 export const APP_LOCATION = "London";
-export const CALCOM_URL = env.NEXT_PUBLIC_CALCOM_URL;
+export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
 export const SUPPORT_EMAIL = "hi@frithly.com";
 
 export const PLANS = {
@@ -24,7 +24,7 @@ export const PLANS = {
     name: "Design Partner",
     price: 199,
     spotsTotal: 3,
-    stripeLink: env.NEXT_PUBLIC_STRIPE_LINK_DESIGN_PARTNER,
+    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_DESIGN_PARTNER,
   },
   GROWTH: {
     badge: "⭐ Most Popular",
@@ -42,7 +42,7 @@ export const PLANS = {
     isHighlighted: true,
     name: "Growth",
     price: 999,
-    stripeLink: env.NEXT_PUBLIC_STRIPE_LINK_GROWTH,
+    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_GROWTH,
   },
   SCALE: {
     currency: "GBP",
@@ -59,7 +59,7 @@ export const PLANS = {
     interval: "month",
     name: "Scale",
     price: 1999,
-    stripeLink: env.NEXT_PUBLIC_STRIPE_LINK_SCALE,
+    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_SCALE,
   },
   STARTER: {
     currency: "GBP",
@@ -74,7 +74,7 @@ export const PLANS = {
     interval: "month",
     name: "Starter",
     price: 499,
-    stripeLink: env.NEXT_PUBLIC_STRIPE_LINK_STARTER,
+    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_STARTER,
   },
 } as const;
 

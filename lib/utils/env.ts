@@ -1,18 +1,11 @@
-import { z } from "zod";
+import "server-only";
 
-const envSchema = z.object({
+import { z } from "zod";
+import { publicEnv } from "@/lib/utils/public-env";
+
+const serverEnvSchema = z.object({
   ADMIN_EMAIL_ALLOWLIST: z.string().min(1),
   ANTHROPIC_API_KEY: z.string().min(1),
-  NEXT_PUBLIC_APP_URL: z.string().url(),
-  NEXT_PUBLIC_CALCOM_URL: z.string().url(),
-  NEXT_PUBLIC_SITE_NAME: z.string().min(1),
-  NEXT_PUBLIC_STRIPE_LINK_DESIGN_PARTNER: z.string().url(),
-  NEXT_PUBLIC_STRIPE_LINK_GROWTH: z.string().url(),
-  NEXT_PUBLIC_STRIPE_LINK_SCALE: z.string().url(),
-  NEXT_PUBLIC_STRIPE_LINK_STARTER: z.string().url(),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "production", "test"]).optional(),
   RESEND_API_KEY: z.string().min(1),
   RESEND_FROM_EMAIL: z.string().email(),
@@ -22,16 +15,29 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 });
 
-const parsedEnv = envSchema.safeParse(process.env);
+const parsedServerEnv = serverEnvSchema.safeParse({
+  ADMIN_EMAIL_ALLOWLIST: process.env.ADMIN_EMAIL_ALLOWLIST,
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+  NODE_ENV: process.env.NODE_ENV,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+  RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+});
 
-if (!parsedEnv.success) {
-  const invalidKeys = parsedEnv.error.issues
+if (!parsedServerEnv.success) {
+  const invalidKeys = parsedServerEnv.error.issues
     .map((issue) => issue.path.join("."))
     .join(", ");
 
   throw new Error(
-    `Missing or invalid environment variables: ${invalidKeys}. Copy .env.example to .env.local and provide valid values before booting Frithly.`,
+    `Missing or invalid server environment variables: ${invalidKeys}. Copy .env.example to .env.local and provide valid values before booting Frithly.`,
   );
 }
 
-export const env = parsedEnv.data;
+export const env = {
+  ...publicEnv,
+  ...parsedServerEnv.data,
+};
