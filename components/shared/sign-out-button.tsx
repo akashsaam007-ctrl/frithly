@@ -1,9 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { isDemoMode } from "@/lib/utils/mode";
 
 type SignOutButtonProps = Omit<ButtonProps, "children" | "onClick">;
 
@@ -11,8 +12,11 @@ export function SignOutButton(props: SignOutButtonProps) {
   const router = useRouter();
 
   async function handleSignOut() {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
+    if (!isDemoMode) {
+      const supabase = createSupabaseBrowserClient();
+      await supabase.auth.signOut();
+    }
+
     router.push("/");
     router.refresh();
   }

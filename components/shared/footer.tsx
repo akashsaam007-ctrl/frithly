@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import {
-  APP_LOCATION,
-  APP_NAME,
-  ROUTES,
-  SUPPORT_EMAIL,
-} from "@/lib/constants";
+import { APP_LOCATION, APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 
 export function Footer() {
   return (
@@ -26,6 +21,9 @@ export function Footer() {
               <div className="space-y-3 text-sm text-white/70">
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRICING}>
                   Pricing
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.LOGIN}>
+                  Login
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.SAMPLE}>
                   Sample
@@ -71,12 +69,8 @@ export function Footer() {
         </div>
 
         <div className="border-t border-white/10 pt-6 text-sm text-white/60">
-          <p>
-            © 2026 {APP_NAME}. All rights reserved.
-          </p>
-          <p>
-            {SUPPORT_EMAIL} · Based in {APP_LOCATION} · Working globally
-          </p>
+          <p>Copyright 2026 {APP_NAME}. All rights reserved.</p>
+          <p>{SUPPORT_EMAIL} | Based in {APP_LOCATION} | Working globally</p>
         </div>
       </Container>
     </footer>

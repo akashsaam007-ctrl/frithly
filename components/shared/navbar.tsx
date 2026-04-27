@@ -52,9 +52,15 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-4 md:flex">
+          <Link
+            href={ROUTES.LOGIN}
+            className="text-sm font-medium text-muted transition-colors hover:text-ink"
+          >
+            Login
+          </Link>
           <Button asChild size="md">
-            <Link href={ROUTES.SAMPLE}>Get Free Sample</Link>
+            <Link href={ROUTES.SIGNUP}>Get Free Sample</Link>
           </Button>
         </div>
 
@@ -92,8 +98,15 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href={ROUTES.LOGIN}
+              className="text-base font-medium text-muted transition-colors hover:text-ink"
+              onClick={closeMobileMenu}
+            >
+              Login
+            </Link>
             <Button asChild size="lg">
-              <Link href={ROUTES.SAMPLE} onClick={closeMobileMenu}>
+              <Link href={ROUTES.SIGNUP} onClick={closeMobileMenu}>
                 Get Free Sample
               </Link>
             </Button>

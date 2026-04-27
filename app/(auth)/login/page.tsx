@@ -4,15 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/utils/mode";
 
 export default async function LoginPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (!isDemoMode) {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (user) {
-    redirect(ROUTES.DASHBOARD);
+    if (user) {
+      redirect(ROUTES.DASHBOARD);
+    }
   }
 
   return (
@@ -23,7 +26,11 @@ export default async function LoginPage() {
             <Logo className="justify-center" />
             <div className="space-y-3">
               <h1 className="text-4xl md:text-5xl">Welcome to Frithly</h1>
-              <p className="text-muted">Enter your email to receive a login link</p>
+              <p className="text-muted">
+                {isDemoMode
+                  ? "Open the customer or admin preview locally."
+                  : "Enter your email to receive a login link"}
+              </p>
             </div>
           </div>
           <LoginForm />

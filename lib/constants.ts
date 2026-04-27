@@ -27,7 +27,7 @@ export const PLANS = {
     stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_DESIGN_PARTNER,
   },
   GROWTH: {
-    badge: "⭐ Most Popular",
+    badge: "Most Popular",
     currency: "GBP",
     features: [
       "100 leads per week",
@@ -107,6 +107,7 @@ export const ROUTES = {
   PRICING: "/#pricing",
   PRIVACY: "/privacy",
   SAMPLE: "/sample",
+  SIGNUP: "/signup",
   TERMS: "/terms",
 } as const;
 
@@ -115,5 +116,5 @@ export const META = {
     "Frithly delivers 50 deeply-researched B2B leads with personalized opening lines to your inbox every Monday morning. Apollo gives you data. We deliver intelligence.",
   KEYWORDS:
     "B2B lead generation, sales intelligence, personalized outreach, lead research, sales automation",
-  TITLE: "Frithly — 50 Hyper-Researched B2B Leads, Every Monday",
+  TITLE: "Frithly - 50 Hyper-Researched B2B Leads, Every Monday",
 } as const;

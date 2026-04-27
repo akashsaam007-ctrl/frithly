@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
+import { isDemoMode } from "@/lib/utils/mode";
 
 type FormState = "idle" | "loading" | "missing-account" | "success";
 
@@ -13,6 +14,26 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
+
+  if (isDemoMode) {
+    return (
+      <div className="space-y-5">
+        <div className="rounded-xl border border-border bg-cream p-4 text-sm text-muted">
+          Demo mode is enabled locally, so auth is bypassed for previewing the customer and admin
+          areas.
+        </div>
+
+        <div className="grid gap-3">
+          <Button asChild className="w-full" size="lg">
+            <Link href={ROUTES.DASHBOARD}>Open Customer Dashboard</Link>
+          </Button>
+          <Button asChild className="w-full" size="lg" variant="secondary">
+            <Link href={ROUTES.ADMIN_CUSTOMERS}>Open Admin Customers</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,21 +97,30 @@ export function LoginForm() {
       </div>
 
       {formState === "missing-account" ? (
-        <div aria-live="polite" className="rounded-xl border border-border bg-cream p-4 text-sm text-muted">
+        <div
+          aria-live="polite"
+          className="rounded-xl border border-border bg-cream p-4 text-sm text-muted"
+        >
           We don&apos;t have an account for this email.{" "}
-          <Link className="font-semibold text-terracotta underline underline-offset-4" href={ROUTES.SAMPLE}>
-            Get started here →
+          <Link
+            className="font-semibold text-terracotta underline underline-offset-4"
+            href={ROUTES.SAMPLE}
+          >
+            Get started here -&gt;
           </Link>
         </div>
       ) : null}
 
       {errorMessage ? (
-        <div aria-live="polite" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div
+          aria-live="polite"
+          className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+        >
           {errorMessage}
         </div>
       ) : null}
 
-      <Button className="w-full" size="lg" type="submit" disabled={formState === "loading"}>
+      <Button className="w-full" disabled={formState === "loading"} size="lg" type="submit">
         {formState === "loading" ? "Sending..." : "Send Magic Link"}
       </Button>
     </form>

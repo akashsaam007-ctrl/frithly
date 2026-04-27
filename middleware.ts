@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ROUTES } from "@/lib/constants";
 import { copyResponseCookies, updateSession } from "@/lib/supabase/middleware";
+import { isDemoMode } from "@/lib/utils/mode";
 
 const PROTECTED_CUSTOMER_ROUTES = [
   ROUTES.DASHBOARD,
@@ -16,6 +17,10 @@ const ADMIN_EMAIL_ALLOWLIST = (process.env.ADMIN_EMAIL_ALLOWLIST || "")
   .filter(Boolean);
 
 export async function middleware(request: NextRequest) {
+  if (isDemoMode) {
+    return NextResponse.next();
+  }
+
   const { response, user } = await updateSession(request);
   const path = request.nextUrl.pathname;
 

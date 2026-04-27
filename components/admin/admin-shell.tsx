@@ -8,6 +8,7 @@ import { SignOutButton } from "@/components/shared/sign-out-button";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { isDemoMode } from "@/lib/utils/mode";
 
 const navItems = [
   { href: ROUTES.ADMIN, icon: LayoutDashboard, label: "Overview" },
@@ -69,6 +70,12 @@ export function AdminShell({ children }: AdminShellProps) {
 
         <main className="min-w-0 flex-1 px-4 py-8 sm:px-6 md:px-8">{children}</main>
       </div>
+
+      {isDemoMode ? (
+        <div className="fixed bottom-4 right-4 rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-muted shadow-lg">
+          Demo mode active
+        </div>
+      ) : null}
 
       <div className={cn("fixed inset-0 z-50 bg-ink/40 transition-opacity md:hidden", mobileOpen ? "opacity-100" : "pointer-events-none opacity-0")}>
         <div className={cn("h-full w-72 bg-white p-6 transition-transform", mobileOpen ? "translate-x-0" : "-translate-x-full")}>
