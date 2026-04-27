@@ -1,7 +1,45 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { ROUTES } from "@/lib/constants";
+import { copyResponseCookies, updateSession } from "@/lib/supabase/middleware";
 
-export function middleware() {
-  return NextResponse.next();
+const PROTECTED_CUSTOMER_ROUTES = [
+  ROUTES.DASHBOARD,
+  ROUTES.BRIEFS,
+  ROUTES.ICP,
+  ROUTES.BILLING,
+  "/help",
+];
+const PROTECTED_ADMIN_ROUTES = [ROUTES.ADMIN];
+const ADMIN_EMAIL_ALLOWLIST = (process.env.ADMIN_EMAIL_ALLOWLIST || "")
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
+
+export async function middleware(request: NextRequest) {
+  const { response, user } = await updateSession(request);
+  const path = request.nextUrl.pathname;
+
+  if (PROTECTED_CUSTOMER_ROUTES.some((route) => path.startsWith(route))) {
+    if (!user) {
+      return copyResponseCookies(
+        NextResponse.redirect(new URL(ROUTES.LOGIN, request.url)),
+        response,
+      );
+    }
+  }
+
+  if (PROTECTED_ADMIN_ROUTES.some((route) => path.startsWith(route))) {
+    const email = user?.email?.toLowerCase();
+
+    if (!user || !email || !ADMIN_EMAIL_ALLOWLIST.includes(email)) {
+      return copyResponseCookies(
+        NextResponse.redirect(new URL(ROUTES.HOME, request.url)),
+        response,
+      );
+    }
+  }
+
+  return response;
 }
 
 export const config = {
@@ -10,6 +48,7 @@ export const config = {
     "/briefs/:path*",
     "/icp/:path*",
     "/billing/:path*",
+    "/help/:path*",
     "/admin/:path*",
   ],
 };
