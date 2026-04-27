@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
-import { CALCOM_URL, PLANS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
+import { cn, formatCurrency, isPlaceholderStripeLink } from "@/lib/utils";
 
 const pricingPlans = [
   {
@@ -45,6 +44,10 @@ export function PricingSection() {
           {pricingPlans.map(({ buttonLabel, description, href, plan }) => {
             const badge = "badge" in plan ? plan.badge : undefined;
             const isHighlighted = "isHighlighted" in plan && Boolean(plan.isHighlighted);
+            const isPlaceholderCheckout = href.includes("buy.stripe.com")
+              ? isPlaceholderStripeLink(href)
+              : false;
+            const resolvedHref = isPlaceholderCheckout ? ROUTES.SAMPLE : href;
 
             return (
               <Card
@@ -89,7 +92,11 @@ export function PricingSection() {
                       size="lg"
                       variant={isHighlighted ? "primary" : "secondary"}
                     >
-                      <Link href={href} rel="noreferrer" target="_blank">
+                      <Link
+                        href={resolvedHref}
+                        rel={isPlaceholderCheckout ? undefined : "noreferrer"}
+                        target={isPlaceholderCheckout ? undefined : "_blank"}
+                      >
                         {buttonLabel}
                       </Link>
                     </Button>
@@ -101,6 +108,9 @@ export function PricingSection() {
         </div>
 
         <div className="text-center text-base text-muted">
+          <p className="text-sm">
+            Local preview note: checkout links use placeholders until real Stripe Payment Links are added.
+          </p>
           <p>
             Not sure which tier?{" "}
             <Link
