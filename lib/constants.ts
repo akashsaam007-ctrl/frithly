@@ -3,6 +3,8 @@ import { env } from "@/lib/utils/env";
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE = "50 hyper-researched B2B leads. Every Monday.";
 export const APP_DOMAIN = "frithly.com";
+export const APP_LOCATION = "London";
+export const CALCOM_URL = env.NEXT_PUBLIC_CALCOM_URL;
 export const SUPPORT_EMAIL = "hi@frithly.com";
 
 export const PLANS = {
@@ -93,7 +95,9 @@ export const ROUTES = {
   BILLING: "/billing",
   BRIEFS: "/briefs",
   DASHBOARD: "/dashboard",
+  FAQ: "/#faq",
   HOME: "/",
+  HOW_IT_WORKS: "/#how-it-works",
   ICP: "/icp",
   LOGIN: "/login",
   PRICING: "/#pricing",

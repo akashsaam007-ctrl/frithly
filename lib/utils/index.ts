@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(value: number, currency = "GBP") {
   return new Intl.NumberFormat("en-GB", {
     currency,
+    maximumFractionDigits: 0,
     style: "currency",
   }).format(value);
 }
