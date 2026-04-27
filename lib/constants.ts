@@ -92,10 +92,14 @@ export const COLORS = {
 
 export const ROUTES = {
   ADMIN: "/admin",
+  ADMIN_BATCHES_NEW: "/admin/batches/new",
+  ADMIN_CUSTOMERS: "/admin/customers",
+  ADMIN_FEEDBACK: "/admin/feedback",
   BILLING: "/billing",
   BRIEFS: "/briefs",
   DASHBOARD: "/dashboard",
   FAQ: "/#faq",
+  HELP: "/help",
   HOME: "/",
   HOW_IT_WORKS: "/#how-it-works",
   ICP: "/icp",
