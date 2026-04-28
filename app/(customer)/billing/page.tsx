@@ -3,20 +3,34 @@ import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PLANS } from "@/lib/constants";
 import {
-  fetchLemonSqueezyCustomer,
-  fetchLemonSqueezySubscription,
-  fetchLemonSqueezySubscriptionInvoices,
-} from "@/lib/lemonsqueezy/client";
-import { hasLemonSqueezyConfiguration } from "@/lib/lemonsqueezy/env";
+  createPaddleCustomerPortalSession,
+  fetchPaddleSubscription,
+  fetchPaddleSubscriptionInvoices,
+  fetchPaddleUpdatePaymentMethodTransaction,
+} from "@/lib/paddle/client";
+import { hasPaddleApiConfiguration } from "@/lib/paddle/env";
 import { getCurrentCustomerContext } from "@/lib/supabase/customer-data";
 import { formatCurrency, formatLongDate } from "@/lib/utils";
 
-function formatInvoiceAmount(amount: number, currency: string) {
+function formatInvoiceAmount(amount: string | number | null | undefined, currency: string) {
+  const normalizedAmount = typeof amount === "string" ? Number(amount) : amount ?? 0;
+
   return new Intl.NumberFormat("en-GB", {
     currency,
     maximumFractionDigits: 2,
     style: "currency",
-  }).format(amount / 100);
+  }).format(normalizedAmount / 100);
+}
+
+function formatProviderStatus(status: string | null | undefined) {
+  if (!status) {
+    return "pending";
+  }
+
+  return status
+    .split("_")
+    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+    .join(" ");
 }
 
 export default async function BillingPage() {
@@ -24,29 +38,45 @@ export default async function BillingPage() {
   const currentPlan = customer.plan
     ? Object.values(PLANS).find((plan) => plan.id === customer.plan) ?? null
     : null;
-  const hasBillingConfiguration = hasLemonSqueezyConfiguration();
-  const billingCustomerId = customer.stripe_customer_id;
+  const hasBillingConfiguration = hasPaddleApiConfiguration();
   const subscriptionId = customer.stripe_subscription_id;
   const subscription =
     subscriptionId && hasBillingConfiguration
-      ? await fetchLemonSqueezySubscription(subscriptionId).catch(() => null)
+      ? await fetchPaddleSubscription(subscriptionId).then((response) => response.data).catch(() => null)
       : null;
-  const billingCustomer =
-    !subscription && billingCustomerId && hasBillingConfiguration
-      ? await fetchLemonSqueezyCustomer(billingCustomerId).catch(() => null)
-      : null;
+  const billingCustomerId = customer.stripe_customer_id ?? subscription?.customer_id ?? null;
   const invoices =
     subscriptionId && hasBillingConfiguration
-      ? await fetchLemonSqueezySubscriptionInvoices(subscriptionId).catch(() => [])
+      ? await fetchPaddleSubscriptionInvoices(subscriptionId).catch(() => [])
       : [];
-  const manageSubscriptionUrl =
-    subscription?.data.attributes.urls.customer_portal ??
-    billingCustomer?.data.attributes.urls.customer_portal ??
+  const portalSession =
+    billingCustomerId && hasBillingConfiguration
+      ? await createPaddleCustomerPortalSession(
+          billingCustomerId,
+          subscriptionId ? [subscriptionId] : [],
+        )
+          .then((response) => response.data)
+          .catch(() => null)
+      : null;
+  const subscriptionLinks =
+    portalSession?.urls.subscriptions?.find((entry) => entry.subscription_id === subscriptionId) ??
+    portalSession?.urls.subscriptions?.[0] ??
     null;
+  const updatePaymentMethodTransaction =
+    subscriptionId &&
+    hasBillingConfiguration &&
+    !subscriptionLinks?.update_subscription_payment_method
+      ? await fetchPaddleUpdatePaymentMethodTransaction(subscriptionId)
+          .then((response) => response.data)
+          .catch(() => null)
+      : null;
+  const manageSubscriptionUrl = portalSession?.urls.general.overview ?? null;
   const updatePaymentMethodUrl =
-    subscription?.data.attributes.urls.update_payment_method ?? null;
-  const nextBillingDate = subscription?.data.attributes.renews_at ?? null;
-  const statusLabel = subscription?.data.attributes.status_formatted ?? customer.status ?? "pending";
+    subscriptionLinks?.update_subscription_payment_method ??
+    updatePaymentMethodTransaction?.checkout?.url ??
+    null;
+  const nextBillingDate = subscription?.next_billed_at ?? null;
+  const statusLabel = formatProviderStatus(subscription?.status ?? customer.status ?? "pending");
 
   return (
     <Container className="space-y-8 px-0">
@@ -76,10 +106,10 @@ export default async function BillingPage() {
                 </p>
               ) : null}
               {subscriptionId ? (
-                <p className="text-sm text-muted">Lemon Squeezy subscription ID: {subscriptionId}</p>
+                <p className="text-sm text-muted">Paddle subscription ID: {subscriptionId}</p>
               ) : null}
               {billingCustomerId ? (
-                <p className="text-sm text-muted">Billing customer ID: {billingCustomerId}</p>
+                <p className="text-sm text-muted">Paddle customer ID: {billingCustomerId}</p>
               ) : null}
             </>
           ) : (
@@ -111,8 +141,8 @@ export default async function BillingPage() {
             </a>
           </div>
           <p className="text-sm text-muted">
-            Use the Lemon Squeezy customer portal to manage upgrades, billing details, cancellations,
-            and invoices. If anything looks off, email support and we&apos;ll help you quickly.
+            Use the Paddle customer portal to manage payment details, cancellations, and invoices.
+            If anything looks off, email support and we&apos;ll help you quickly.
           </p>
         </CardContent>
       </Card>
@@ -131,20 +161,23 @@ export default async function BillingPage() {
                 >
                   <div className="space-y-1">
                     <p className="font-semibold text-ink">
-                      {invoice.attributes.billing_reason || invoice.id}
+                      {invoice.invoice_number || invoice.id}
                     </p>
                     <p className="text-sm text-muted">
-                      {formatLongDate(invoice.attributes.created_at)} | {invoice.attributes.status}
+                      {formatLongDate(invoice.billed_at ?? invoice.created_at)} | {invoice.status}
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
                     <p className="font-semibold text-ink">
-                      {formatInvoiceAmount(invoice.attributes.total, invoice.attributes.currency)}
+                      {formatInvoiceAmount(
+                        invoice.details?.totals?.grand_total ?? invoice.details?.totals?.total,
+                        invoice.currency_code,
+                      )}
                     </p>
-                    {invoice.attributes.urls.invoice_url ? (
+                    {invoice.invoiceUrl ? (
                       <a
                         className="font-semibold text-terracotta underline underline-offset-4"
-                        href={invoice.attributes.urls.invoice_url}
+                        href={invoice.invoiceUrl}
                         rel="noreferrer"
                         target="_blank"
                       >
@@ -160,8 +193,8 @@ export default async function BillingPage() {
               className="border-0 shadow-none"
               description={
                 hasBillingConfiguration
-                  ? "Your Lemon Squeezy invoices will appear here once subscription charges begin to process."
-                  : "Connect Lemon Squeezy in this environment and invoice history will appear here automatically."
+                  ? "Your Paddle invoices will appear here once subscription charges begin to process."
+                  : "Connect Paddle in this environment and invoice history will appear here automatically."
               }
               title="No invoices available yet"
             />

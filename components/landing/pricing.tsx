@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
-import { hasLemonSqueezyConfiguration } from "@/lib/lemonsqueezy/env";
+import { hasPaddleCheckoutConfiguration } from "@/lib/paddle/env";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const pricingPlans = [
@@ -32,7 +32,7 @@ const pricingPlans = [
 ] as const;
 
 export function PricingSection() {
-  const hasCheckout = hasLemonSqueezyConfiguration();
+  const hasCheckout = hasPaddleCheckoutConfiguration();
 
   return (
     <section id="pricing" className="py-20">
@@ -46,7 +46,7 @@ export function PricingSection() {
           <h2>Pricing</h2>
           <p className="text-muted">Cancel anytime. No annual contracts. No setup fees.</p>
           <p className="text-sm font-semibold text-terracotta md:text-base">
-            First 3 design partners pay £199/month, locked in for life. DM founder for a spot.
+            {"First 3 design partners pay \u00A3199/month, locked in for life. DM founder for a spot."}
           </p>
         </div>
 
@@ -108,8 +108,12 @@ export function PricingSection() {
                           plan: plan.id,
                         }}
                         href={resolvedHref}
-                        rel={!isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "noreferrer" : undefined}
-                        target={!isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "_blank" : undefined}
+                        rel={
+                          !isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "noreferrer" : undefined
+                        }
+                        target={
+                          !isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "_blank" : undefined
+                        }
                       >
                         {buttonLabel}
                       </TrackedLink>
@@ -124,8 +128,8 @@ export function PricingSection() {
         <div className="text-center text-base text-muted">
           <p className="text-sm">
             {hasCheckout
-              ? "Starter and Growth open a Lemon Squeezy-hosted subscription checkout."
-              : "Lemon Squeezy checkout is not configured yet, so checkout buttons fall back to the sample flow in local preview."}
+              ? "Starter and Growth open a Paddle-hosted subscription checkout."
+              : "Paddle checkout is not configured yet, so checkout buttons fall back to the sample flow in local preview."}
           </p>
           <p>
             Not sure which tier?{" "}
@@ -135,7 +139,7 @@ export function PricingSection() {
               rel="noreferrer"
               className="font-semibold text-terracotta underline underline-offset-4"
             >
-              Book a 15-min call →
+              {"Book a 15-min call \u2192"}
             </Link>
           </p>
           <p>We&apos;ll recommend the right one for your team.</p>

@@ -140,7 +140,7 @@ export default function PrivacyPage() {
               <p>We use carefully selected providers to operate {APP_NAME}. These may include:</p>
               <ul className="list-disc space-y-2 pl-5 text-base md:text-lg">
                 <li>Supabase for authentication, storage, and database infrastructure.</li>
-                <li>Lemon Squeezy or other approved payment processors for billing and subscription events.</li>
+                <li>Paddle or other approved payment processors for billing and subscription events.</li>
                 <li>Resend for transactional email delivery.</li>
                 <li>Anthropic or other approved AI providers for research and personalization workflows.</li>
                 <li>Hosting, monitoring, analytics, and infrastructure providers required to run the app.</li>

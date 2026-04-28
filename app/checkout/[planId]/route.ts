@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy/client";
-import { hasLemonSqueezyConfiguration } from "@/lib/lemonsqueezy/env";
+import { createPaddleCheckout } from "@/lib/paddle/client";
+import { hasPaddleCheckoutConfiguration } from "@/lib/paddle/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { PlanId } from "@/types";
 
@@ -17,7 +17,7 @@ export async function GET(request: Request, context: CheckoutRouteContext) {
     return NextResponse.redirect(new URL("/pricing", request.url));
   }
 
-  if (!hasLemonSqueezyConfiguration()) {
+  if (!hasPaddleCheckoutConfiguration()) {
     return NextResponse.redirect(new URL("/pricing?checkout=unavailable", request.url));
   }
 
@@ -26,16 +26,16 @@ export async function GET(request: Request, context: CheckoutRouteContext) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const checkout = await createLemonSqueezyCheckout({
+    const checkout = await createPaddleCheckout({
       email: user?.email ?? null,
       frithlyPlanId: planId as PlanId,
       name:
         typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null,
     });
 
-    return NextResponse.redirect(checkout.attributes.url ?? new URL("/pricing", request.url));
+    return NextResponse.redirect(checkout.checkout?.url ?? new URL("/pricing", request.url));
   } catch (error) {
-    console.error("Failed to create Lemon Squeezy checkout", { error, planId });
+    console.error("Failed to create Paddle checkout", { error, planId });
 
     return NextResponse.redirect(new URL("/pricing?checkout=error", request.url));
   }

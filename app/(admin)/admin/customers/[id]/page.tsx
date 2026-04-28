@@ -48,8 +48,8 @@ export default async function AdminCustomerDetailPage({
         </div>
         {customer.stripe_customer_id || customer.stripe_subscription_id ? (
           <p className="text-sm text-muted">
-            Billing customer ID: {customer.stripe_customer_id ?? "Not linked"} | Subscription ID:{" "}
-            {customer.stripe_subscription_id ?? "Not linked"}
+            Paddle customer ID: {customer.stripe_customer_id ?? "Not linked"} | Paddle
+            subscription ID: {customer.stripe_subscription_id ?? "Not linked"}
           </p>
         ) : null}
       </div>
