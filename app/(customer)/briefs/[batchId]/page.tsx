@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { PageEvent } from "@/components/analytics/page-event";
 import { BatchFeedbackForm } from "@/components/customer/batch-feedback-form";
 import { LeadCard } from "@/components/customer/lead-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,6 +63,11 @@ export default async function BriefDetailPage({ params }: BriefDetailPageProps) 
 
   return (
     <Container className="space-y-8 px-0">
+      <PageEvent
+        name="brief_viewed"
+        oncePerSessionKey={`brief-viewed:${batch.id}`}
+        properties={{ batch_id: batch.id, location: batchId }}
+      />
       <div className="space-y-3">
         <h1 className="text-4xl md:text-5xl">Brief delivered {batch.deliveryDateLabel}</h1>
         <p className="text-muted">

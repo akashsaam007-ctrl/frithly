@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
@@ -60,7 +61,13 @@ export function Navbar() {
             Login
           </Link>
           <Button asChild size="md">
-            <Link href={ROUTES.SIGNUP}>Get Free Sample</Link>
+            <TrackedLink
+              eventName="cta_clicked"
+              eventProperties={{ destination: ROUTES.SIGNUP, location: "navbar_primary" }}
+              href={ROUTES.SIGNUP}
+            >
+              Get Free Sample
+            </TrackedLink>
           </Button>
         </div>
 
@@ -106,9 +113,17 @@ export function Navbar() {
               Login
             </Link>
             <Button asChild size="lg">
-              <Link href={ROUTES.SIGNUP} onClick={closeMobileMenu}>
+              <TrackedLink
+                eventName="cta_clicked"
+                eventProperties={{
+                  destination: ROUTES.SIGNUP,
+                  location: "navbar_mobile_primary",
+                }}
+                href={ROUTES.SIGNUP}
+                onClick={closeMobileMenu}
+              >
                 Get Free Sample
-              </Link>
+              </TrackedLink>
             </Button>
           </Container>
         </div>

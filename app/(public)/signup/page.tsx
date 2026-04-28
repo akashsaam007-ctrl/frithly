@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PageEvent } from "@/components/analytics/page-event";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -14,6 +15,11 @@ export default function SignupPage() {
   return (
     <main className="py-20 md:py-24">
       <Container width="narrow" className="space-y-8">
+        <PageEvent
+          name="signup_started"
+          oncePerSessionKey="signup-started"
+          properties={{ location: "signup_page" }}
+        />
         <div className="space-y-4 text-center">
           <span className="inline-flex items-center rounded-full border border-terracotta/20 bg-terracotta/10 px-4 py-2 text-sm font-semibold text-terracotta">
             Start here
@@ -33,7 +39,13 @@ export default function SignupPage() {
                 Best if you want to see lead quality and opener depth before paying.
               </p>
               <Button asChild className="w-full" size="lg">
-                <Link href={ROUTES.SAMPLE}>Request Sample</Link>
+                <TrackedLink
+                  eventName="cta_clicked"
+                  eventProperties={{ destination: ROUTES.SAMPLE, location: "signup_sample" }}
+                  href={ROUTES.SAMPLE}
+                >
+                  Request Sample
+                </TrackedLink>
               </Button>
             </CardContent>
           </Card>
@@ -45,7 +57,13 @@ export default function SignupPage() {
                 Best if you already know the lead volume and service level your team needs.
               </p>
               <Button asChild className="w-full" size="lg" variant="secondary">
-                <Link href={ROUTES.PRICING}>See Pricing</Link>
+                <TrackedLink
+                  eventName="cta_clicked"
+                  eventProperties={{ destination: ROUTES.PRICING, location: "signup_pricing" }}
+                  href={ROUTES.PRICING}
+                >
+                  See Pricing
+                </TrackedLink>
               </Button>
             </CardContent>
           </Card>

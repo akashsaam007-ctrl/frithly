@@ -8,14 +8,38 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 
 export function HelpForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [subject, setSubject] = useState("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubject("");
-    setMessage("");
-    toast.success("Support request queued. We'll reply from hi@frithly.com.");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/help", {
+        body: JSON.stringify({ message, subject }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
+      const payload = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "We couldn't send your support request.");
+      }
+
+      setSubject("");
+      setMessage("");
+      toast.success("Support request queued. We'll reply from hi@frithly.com.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "We couldn't send your support request.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -42,7 +66,9 @@ export function HelpForm() {
         />
       </div>
 
-      <Button type="submit">Send Message</Button>
+      <Button disabled={isSubmitting} type="submit">
+        {isSubmitting ? "Sending..." : "Send Message"}
+      </Button>
     </form>
   );
 }

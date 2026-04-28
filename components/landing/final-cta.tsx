@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { CALCOM_URL, ROUTES } from "@/lib/constants";
@@ -15,12 +15,24 @@ export function FinalCta() {
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button asChild size="lg">
-            <Link href={ROUTES.SAMPLE}>Get a Free 5-Lead Sample</Link>
+            <TrackedLink
+              eventName="cta_clicked"
+              eventProperties={{ destination: ROUTES.SAMPLE, location: "final_cta_primary" }}
+              href={ROUTES.SAMPLE}
+            >
+              Get a Free 5-Lead Sample
+            </TrackedLink>
           </Button>
           <Button asChild size="lg" variant="secondary">
-            <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+            <TrackedLink
+              eventName="cta_clicked"
+              eventProperties={{ destination: CALCOM_URL, location: "final_cta_secondary" }}
+              href={CALCOM_URL}
+              rel="noreferrer"
+              target="_blank"
+            >
               Book a 15-min Demo
-            </Link>
+            </TrackedLink>
           </Button>
         </div>
       </Container>

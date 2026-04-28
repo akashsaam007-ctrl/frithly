@@ -3,6 +3,7 @@
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { resetAnalyticsUser } from "@/lib/monitoring/posthog";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isDemoMode } from "@/lib/utils/mode";
 
@@ -12,6 +13,8 @@ export function SignOutButton(props: SignOutButtonProps) {
   const router = useRouter();
 
   async function handleSignOut() {
+    resetAnalyticsUser();
+
     if (!isDemoMode) {
       const supabase = createSupabaseBrowserClient();
       await supabase.auth.signOut();

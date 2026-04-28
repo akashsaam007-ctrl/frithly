@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageEvent } from "@/components/analytics/page-event";
 import { Comparison } from "@/components/landing/comparison";
 import { Faq } from "@/components/landing/faq";
 import { FinalCta } from "@/components/landing/final-cta";
@@ -46,6 +47,11 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main>
+      <PageEvent
+        name="landing_page_viewed"
+        oncePerSessionKey="landing-page-viewed"
+        properties={{ location: "home_page" }}
+      />
       <Hero />
       <Problem />
       <Comparison />

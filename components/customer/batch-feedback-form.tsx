@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
+import { captureEvent } from "@/lib/monitoring/posthog";
 
 type BatchFeedbackFormProps = {
   batchId: string;
@@ -39,6 +40,10 @@ export function BatchFeedbackForm({ batchId }: BatchFeedbackFormProps) {
       }
 
       setComment("");
+      captureEvent("feedback_submitted", {
+        batch_feedback: true,
+        batch_id: batchId,
+      });
       toast.success("Feedback submitted. We'll use it to sharpen next week's batch.");
     } catch (error) {
       toast.error(

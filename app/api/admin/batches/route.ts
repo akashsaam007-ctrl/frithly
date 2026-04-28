@@ -7,10 +7,9 @@ import {
 } from "@/lib/admin/batch-builder";
 import { isAdminEmail } from "@/lib/auth/admin-access";
 import { ROUTES } from "@/lib/constants";
-import { resend } from "@/lib/resend/client";
+import { sendBriefDeliveredEmail } from "@/lib/resend/send";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { formatLongDate } from "@/lib/utils";
 import { env } from "@/lib/utils/env";
 
 const createBatchSchema = z.object({
@@ -40,55 +39,15 @@ async function sendBatchNotificationEmail(params: {
   verifiedEmails: number;
 }) {
   const batchUrl = `${env.NEXT_PUBLIC_APP_URL}${ROUTES.BRIEFS}/${params.batchId}`;
-  const subject = `Your Frithly brief is ready, ${getFirstName(params.customerName)}`;
-  const text = [
-    `Hey ${getFirstName(params.customerName)},`,
-    "",
-    "Your Monday brief is ready.",
-    "",
-    `${params.leadCount} hyper-researched leads, fully briefed, with personalized openers ready to send.`,
-    "",
-    `View your brief: ${batchUrl}`,
-    "",
-    `Quick stats:`,
-    `- ${params.verifiedEmails} verified emails`,
-    `- Delivery date: ${formatLongDate(params.deliveryDate)}`,
-    "",
-    "Have a great week of meetings.",
-    "",
-    "Frithly",
-  ].join("\n");
-  const html = `
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1A1A1A;">
-      <h1 style="font-size: 28px; margin-bottom: 16px;">Your Frithly brief is ready</h1>
-      <p style="font-size: 16px; line-height: 1.7;">Hey ${getFirstName(params.customerName)},</p>
-      <p style="font-size: 16px; line-height: 1.7;">
-        ${params.leadCount} hyper-researched leads, fully briefed, with personalized openers ready to send.
-      </p>
-      <p style="font-size: 16px; line-height: 1.7;">
-        Delivery date: <strong>${formatLongDate(params.deliveryDate)}</strong><br />
-        Verified emails: <strong>${params.verifiedEmails}</strong>
-      </p>
-      <p style="margin: 32px 0;">
-        <a
-          href="${batchUrl}"
-          style="display: inline-block; background: #D4623A; color: white; text-decoration: none; padding: 14px 20px; border-radius: 12px; font-weight: 600;"
-        >
-          View your brief
-        </a>
-      </p>
-      <p style="font-size: 16px; line-height: 1.7;">Have a great week of meetings.</p>
-      <p style="font-size: 16px; line-height: 1.7;">Frithly</p>
-    </div>
-  `;
-
-  return resend.emails.send({
-    from: env.RESEND_FROM_EMAIL,
-    html,
-    replyTo: env.RESEND_REPLY_TO,
-    subject,
-    text,
-    to: params.customerEmail,
+  return sendBriefDeliveredEmail({
+    batchUrl,
+    firstName: getFirstName(params.customerName),
+    founderName: "Frithly",
+    highConfidenceLeadCount: Math.min(params.leadCount, 12),
+    leadCount: params.leadCount,
+    recentActivityLeadCount: Math.min(params.leadCount, 5),
+    recipientEmail: params.customerEmail,
+    verifiedEmails: params.verifiedEmails,
   });
 }
 

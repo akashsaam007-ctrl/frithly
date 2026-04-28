@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
+import { captureEvent } from "@/lib/monitoring/posthog";
 
 const initialFormState = {
   company: "",
@@ -21,10 +23,14 @@ const initialFormState = {
 export function SampleRequestForm() {
   const [formState, setFormState] = useState(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const pathname = usePathname();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
+    captureEvent("sample_form_submitted", {
+      location: pathname,
+    });
 
     try {
       const response = await fetch("/api/sample-request", {
@@ -40,6 +46,12 @@ export function SampleRequestForm() {
       }
 
       setFormState(initialFormState);
+      captureEvent("sample_form_completed", {
+        location: pathname,
+      });
+      captureEvent("signup_completed", {
+        location: pathname,
+      });
       toast.success("Sample request received. We'll be in touch within 48 hours.");
     } catch (error) {
       toast.error(

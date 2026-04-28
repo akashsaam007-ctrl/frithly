@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/toast";
+import { captureEvent } from "@/lib/monitoring/posthog";
 
 type LeadCardProps = {
   company: string;
@@ -64,6 +65,11 @@ export function LeadCard({
       }
 
       setFeedback(value);
+      captureEvent("feedback_submitted", {
+        batch_feedback: false,
+        lead_id: leadId,
+        rating: value,
+      });
       toast.success(`Lead marked ${value}.`);
     } catch (error) {
       toast.error(

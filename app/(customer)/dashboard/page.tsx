@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageEvent } from "@/components/analytics/page-event";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -24,6 +25,11 @@ export default async function DashboardPage() {
 
   return (
     <Container className="space-y-8 px-0">
+      <PageEvent
+        name="dashboard_viewed"
+        oncePerSessionKey="dashboard-viewed"
+        properties={{ location: ROUTES.DASHBOARD }}
+      />
       <section className="rounded-2xl border border-border bg-white p-8">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
           Dashboard

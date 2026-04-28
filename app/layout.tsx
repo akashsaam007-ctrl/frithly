@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { Toaster } from "@/components/ui/toast";
 import { APP_NAME, META } from "@/lib/constants";
 import { publicEnv } from "@/lib/utils/public-env";
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.variable}>
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
         <Toaster />
       </body>
     </html>

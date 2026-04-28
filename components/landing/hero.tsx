@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
@@ -27,10 +27,25 @@ export function Hero() {
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button asChild size="lg">
-            <Link href={ROUTES.SAMPLE}>Get Free 5-Lead Sample</Link>
+            <TrackedLink
+              eventName="cta_clicked"
+              eventProperties={{ destination: ROUTES.SAMPLE, location: "hero_primary" }}
+              href={ROUTES.SAMPLE}
+            >
+              Get Free 5-Lead Sample
+            </TrackedLink>
           </Button>
           <Button asChild size="lg" variant="secondary">
-            <Link href={ROUTES.HOW_IT_WORKS}>See How It Works</Link>
+            <TrackedLink
+              eventName="cta_clicked"
+              eventProperties={{
+                destination: ROUTES.HOW_IT_WORKS,
+                location: "hero_secondary",
+              }}
+              href={ROUTES.HOW_IT_WORKS}
+            >
+              See How It Works
+            </TrackedLink>
           </Button>
         </div>
 

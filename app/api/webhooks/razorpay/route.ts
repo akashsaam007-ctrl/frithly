@@ -1,11 +1,22 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
+import { captureServerEvent } from "@/lib/monitoring/posthog-server";
 import {
   fetchRazorpayCustomer,
   getRazorpayPlanIdForFrithlyPlan,
   verifyRazorpayWebhookSignature,
 } from "@/lib/razorpay/client";
+import {
+  getBillingUrl,
+  getDashboardUrl,
+  getFirstName,
+  planNameFromId,
+  sendPaymentFailedEmail,
+  sendSubscriptionCancelledEmail,
+  sendWelcomeEmail,
+} from "@/lib/resend/send";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import type { PlanId } from "@/types";
+import type { CustomerStatus, PlanId } from "@/types";
 
 type SubscriptionEventName =
   | "subscription.activated"
@@ -55,7 +66,11 @@ function mapCustomerStatus(event: SubscriptionEventName, providerStatus: string 
     return "paused" as const;
   }
 
-  if (event === "subscription.activated" || event === "subscription.charged" || event === "subscription.resumed") {
+  if (
+    event === "subscription.activated" ||
+    event === "subscription.charged" ||
+    event === "subscription.resumed"
+  ) {
     return "active" as const;
   }
 
@@ -74,6 +89,59 @@ function mapCustomerStatus(event: SubscriptionEventName, providerStatus: string 
   return "pending" as const;
 }
 
+async function sendLifecycleEmail(params: {
+  email: string;
+  event: SubscriptionEventName;
+  firstName: string;
+  plan: PlanId | null;
+  previousStatus: CustomerStatus | null;
+}) {
+  if (params.event === "subscription.activated" && params.previousStatus !== "active") {
+    await sendWelcomeEmail({
+      dashboardUrl: getDashboardUrl(),
+      firstName: params.firstName,
+      planName: planNameFromId(params.plan),
+      recipientEmail: params.email,
+    });
+
+    await captureServerEvent({
+      distinctId: params.email,
+      eventName: "signup_completed",
+      properties: {
+        plan: params.plan,
+        source: "razorpay_subscription_activated",
+      },
+    });
+
+    return;
+  }
+
+  if (
+    (params.event === "subscription.pending" || params.event === "subscription.halted") &&
+    params.previousStatus !== "pending"
+  ) {
+    await sendPaymentFailedEmail({
+      billingUrl: getBillingUrl(),
+      firstName: params.firstName,
+      planName: planNameFromId(params.plan),
+      recipientEmail: params.email,
+    });
+
+    return;
+  }
+
+  if (
+    (params.event === "subscription.cancelled" || params.event === "subscription.completed") &&
+    params.previousStatus !== "cancelled"
+  ) {
+    await sendSubscriptionCancelledEmail({
+      billingUrl: getBillingUrl(),
+      firstName: params.firstName,
+      recipientEmail: params.email,
+    });
+  }
+}
+
 export async function POST(request: Request) {
   const signature = request.headers.get("x-razorpay-signature");
 
@@ -88,6 +156,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid Razorpay signature." }, { status: 400 });
     }
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Razorpay signature verification failed", error);
     return NextResponse.json({ error: "Webhook verification failed." }, { status: 400 });
   }
@@ -108,11 +177,15 @@ export async function POST(request: Request) {
     }
 
     const adminClient = createSupabaseAdminClient();
-    const { data: existingCustomer } = await adminClient
+    const { data: existingCustomer, error: existingCustomerError } = await adminClient
       .from("customers")
-      .select("id, company_name, full_name")
+      .select("id, company_name, full_name, status")
       .eq("email", email)
       .maybeSingle();
+
+    if (existingCustomerError) {
+      throw new Error(existingCustomerError.message);
+    }
 
     const plan =
       mapPlanId(subscription.plan_id) ||
@@ -140,14 +213,36 @@ export async function POST(request: Request) {
       stripe_subscription_id: subscription.id,
     };
 
-    if (existingCustomer) {
-      await adminClient.from("customers").update(customerPayload).eq("id", existingCustomer.id);
-    } else {
-      await adminClient.from("customers").insert(customerPayload);
+    const writeResult = existingCustomer
+      ? await adminClient.from("customers").update(customerPayload).eq("id", existingCustomer.id)
+      : await adminClient.from("customers").insert(customerPayload);
+
+    if (writeResult.error) {
+      throw new Error(writeResult.error.message);
+    }
+
+    const firstName = getFirstName(customerPayload.full_name, email.split("@")[0] ?? "there");
+
+    try {
+      await sendLifecycleEmail({
+        email,
+        event: payload.event,
+        firstName,
+        plan,
+        previousStatus: existingCustomer?.status ?? null,
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error("Razorpay lifecycle email failed", {
+        email,
+        event: payload.event,
+        error,
+      });
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Razorpay webhook processing failed", error);
 
     return NextResponse.json({ error: "Webhook processing failed." }, { status: 500 });

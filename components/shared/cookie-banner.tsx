@@ -3,24 +3,28 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
+import {
+  COOKIE_CONSENT_CHANGED_EVENT,
+  COOKIE_CONSENT_STORAGE_KEY,
+  type CookieConsentChoice,
+} from "@/lib/monitoring/consent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
-const consentStorageKey = "frithly-cookie-consent";
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const existingChoice = window.localStorage.getItem(consentStorageKey);
+    const existingChoice = window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
 
     if (!existingChoice) {
       setVisible(true);
     }
   }, []);
 
-  function saveChoice(choice: "accepted" | "rejected") {
-    window.localStorage.setItem(consentStorageKey, choice);
+  function saveChoice(choice: CookieConsentChoice) {
+    window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, choice);
+    window.dispatchEvent(new Event(COOKIE_CONSENT_CHANGED_EVENT));
     setVisible(false);
   }
 

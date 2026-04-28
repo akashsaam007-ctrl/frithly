@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { SectionViewEvent } from "@/components/analytics/section-view-event";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -35,6 +37,11 @@ export function PricingSection() {
   return (
     <section id="pricing" className="py-20">
       <Container className="space-y-10">
+        <SectionViewEvent
+          name="pricing_section_viewed"
+          oncePerSessionKey="pricing-section-viewed"
+          properties={{ location: "landing_pricing" }}
+        />
         <div className="space-y-4 text-center">
           <h2>Pricing</h2>
           <p className="text-muted">Cancel anytime. No annual contracts. No setup fees.</p>
@@ -96,13 +103,19 @@ export function PricingSection() {
                       size="lg"
                       variant={isHighlighted ? "primary" : "secondary"}
                     >
-                      <Link
+                      <TrackedLink
+                        eventName="cta_clicked"
+                        eventProperties={{
+                          destination: resolvedHref,
+                          location: `pricing_${plan.id}`,
+                          plan: plan.id,
+                        }}
                         href={resolvedHref}
                         rel={!isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "noreferrer" : undefined}
                         target={!isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "_blank" : undefined}
                       >
                         {buttonLabel}
-                      </Link>
+                      </TrackedLink>
                     </Button>
                   </div>
                 </CardContent>
