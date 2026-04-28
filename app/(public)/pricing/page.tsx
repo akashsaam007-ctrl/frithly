@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FinalCta } from "@/components/landing/final-cta";
 import { Guarantees } from "@/components/landing/guarantees";
 import { PricingSection } from "@/components/landing/pricing";
+import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 
 export const metadata: Metadata = {
@@ -9,15 +10,37 @@ export const metadata: Metadata = {
   title: "Pricing | Frithly",
 };
 
-export default function PricingPage() {
+type PricingPageProps = {
+  searchParams?: Promise<{
+    checkout?: string | string[] | undefined;
+  }>;
+};
+
+function readParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+export default async function PricingPage({ searchParams }: PricingPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const checkoutState = readParam(resolvedSearchParams?.checkout);
+
   return (
     <main>
       <section className="py-20 md:py-24">
-        <Container width="narrow" className="text-center">
+        <Container width="narrow" className="space-y-6 text-center">
           <h1>Choose the right Frithly plan for your team.</h1>
           <p className="mt-6 text-muted">
             Weekly lead intelligence, personalized openers, and zero annual contracts.
           </p>
+          {checkoutState ? (
+            <Card className="mx-auto max-w-[680px] text-left">
+              <CardContent className="p-5 text-sm text-muted">
+                {checkoutState === "unavailable"
+                  ? "Razorpay checkout is not configured yet in this environment. Add the Razorpay keys and plan IDs, then try again."
+                  : "We couldn't open the hosted checkout right now. Please try again in a moment or book a quick call and we'll help you through it."}
+              </CardContent>
+            </Card>
+          ) : null}
         </Container>
       </section>
       <PricingSection />

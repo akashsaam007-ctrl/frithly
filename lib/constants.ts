@@ -24,7 +24,6 @@ export const PLANS = {
     name: "Design Partner",
     price: 199,
     spotsTotal: 3,
-    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_DESIGN_PARTNER,
   },
   GROWTH: {
     badge: "Most Popular",
@@ -42,7 +41,6 @@ export const PLANS = {
     isHighlighted: true,
     name: "Growth",
     price: 999,
-    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_GROWTH,
   },
   SCALE: {
     currency: "GBP",
@@ -59,7 +57,6 @@ export const PLANS = {
     interval: "month",
     name: "Scale",
     price: 1999,
-    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_SCALE,
   },
   STARTER: {
     currency: "GBP",
@@ -74,7 +71,6 @@ export const PLANS = {
     interval: "month",
     name: "Starter",
     price: 499,
-    stripeLink: publicEnv.NEXT_PUBLIC_STRIPE_LINK_STARTER,
   },
 } as const;
 

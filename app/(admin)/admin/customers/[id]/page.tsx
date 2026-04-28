@@ -40,12 +40,18 @@ export default async function AdminCustomerDetailPage({
             Send email
           </a>
           <button className="btn-secondary" type="button">
-            View Stripe
+            Billing details
           </button>
           <button className="btn-primary" type="button">
             Edit ICP
           </button>
         </div>
+        {customer.stripe_customer_id || customer.stripe_subscription_id ? (
+          <p className="text-sm text-muted">
+            Razorpay customer ID: {customer.stripe_customer_id ?? "Not linked"} | Subscription ID:{" "}
+            {customer.stripe_subscription_id ?? "Not linked"}
+          </p>
+        ) : null}
       </div>
 
       <Tabs defaultValue="overview">

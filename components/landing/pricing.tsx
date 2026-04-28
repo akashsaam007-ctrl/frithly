@@ -5,19 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
-import { cn, formatCurrency, isPlaceholderStripeLink } from "@/lib/utils";
+import { hasRazorpayConfiguration } from "@/lib/razorpay/env";
+import { cn, formatCurrency } from "@/lib/utils";
 
 const pricingPlans = [
   {
     buttonLabel: "Get Started",
     description: "For solo founders + small teams",
-    href: PLANS.STARTER.stripeLink,
+    href: `/checkout/${PLANS.STARTER.id}`,
     plan: PLANS.STARTER,
   },
   {
     buttonLabel: "Get Started",
     description: "For B2B SaaS sales teams of 3-10",
-    href: PLANS.GROWTH.stripeLink,
+    href: `/checkout/${PLANS.GROWTH.id}`,
     plan: PLANS.GROWTH,
   },
   {
@@ -29,6 +30,8 @@ const pricingPlans = [
 ] as const;
 
 export function PricingSection() {
+  const hasCheckout = hasRazorpayConfiguration();
+
   return (
     <section id="pricing" className="py-20">
       <Container className="space-y-10">
@@ -44,10 +47,11 @@ export function PricingSection() {
           {pricingPlans.map(({ buttonLabel, description, href, plan }) => {
             const badge = "badge" in plan ? plan.badge : undefined;
             const isHighlighted = "isHighlighted" in plan && Boolean(plan.isHighlighted);
-            const isPlaceholderCheckout = href.includes("buy.stripe.com")
-              ? isPlaceholderStripeLink(href)
-              : false;
-            const resolvedHref = isPlaceholderCheckout ? ROUTES.SAMPLE : href;
+            const isHostedCheckout = href.startsWith("/checkout/");
+            const resolvedHref =
+              isHostedCheckout && !hasCheckout
+                ? ROUTES.SAMPLE
+                : href;
 
             return (
               <Card
@@ -94,8 +98,8 @@ export function PricingSection() {
                     >
                       <Link
                         href={resolvedHref}
-                        rel={isPlaceholderCheckout ? undefined : "noreferrer"}
-                        target={isPlaceholderCheckout ? undefined : "_blank"}
+                        rel={!isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "noreferrer" : undefined}
+                        target={!isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "_blank" : undefined}
                       >
                         {buttonLabel}
                       </Link>
@@ -109,7 +113,9 @@ export function PricingSection() {
 
         <div className="text-center text-base text-muted">
           <p className="text-sm">
-            Local preview note: checkout links use placeholders until real Stripe Payment Links are added.
+            {hasCheckout
+              ? "Starter and Growth open a Razorpay-hosted subscription checkout."
+              : "Razorpay plan IDs are not configured yet, so checkout buttons fall back to the sample flow in local preview."}
           </p>
           <p>
             Not sure which tier?{" "}

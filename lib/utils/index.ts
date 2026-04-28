@@ -21,7 +21,3 @@ export function formatLongDate(value: Date | number | string) {
 export function getNextMondayLabel() {
   return format(nextMonday(new Date()), "EEEE d MMMM");
 }
-
-export function isPlaceholderStripeLink(value: string) {
-  return /\/test_(design_partner|starter|growth|scale)$/i.test(value);
-}
