@@ -1,10 +1,11 @@
 import { CustomerShell } from "@/components/customer/customer-shell";
-import { demoCustomer } from "@/lib/utils/demo-data";
+import { getCurrentCustomerContext } from "@/lib/supabase/customer-data";
 
-export default function CustomerLayout({
+export default async function CustomerLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <CustomerShell companyName={demoCustomer.companyName}>{children}</CustomerShell>;
+  const { companyName } = await getCurrentCustomerContext();
+  return <CustomerShell companyName={companyName}>{children}</CustomerShell>;
 }

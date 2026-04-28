@@ -1,12 +1,26 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { demoBatches, demoCustomer } from "@/lib/utils/demo-data";
+import { EmptyState } from "@/components/ui/empty-state";
 import { ROUTES } from "@/lib/constants";
+import {
+  getCurrentCustomerContext,
+  getCurrentCustomerIcpSummary,
+} from "@/lib/supabase/customer-data";
 import { getNextMondayLabel } from "@/lib/utils";
 
-export default function DashboardPage() {
-  const latestBatch = demoBatches[0];
+export default async function DashboardPage() {
+  const [customerContext, icpSummary] = await Promise.all([
+    getCurrentCustomerContext(),
+    getCurrentCustomerIcpSummary(),
+  ]);
+  const {
+    daysSubscribed,
+    firstName,
+    latestBatch,
+    lifetimeLeadsDelivered,
+    matchRateLast30Days,
+  } = customerContext;
 
   return (
     <Container className="space-y-8 px-0">
@@ -14,9 +28,9 @@ export default function DashboardPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
           Dashboard
         </p>
-        <h1 className="mt-3 text-4xl md:text-5xl">Welcome back, {demoCustomer.firstName}!</h1>
+        <h1 className="mt-3 text-4xl md:text-5xl">Welcome back, {firstName}!</h1>
         <p className="mt-3 max-w-3xl text-muted">
-          Your team&apos;s next batch is on track and last week&apos;s top leads are ready for follow-up.
+          Your team&apos;s next batch is on track and your latest delivery is ready for follow-up.
         </p>
       </section>
 
@@ -26,18 +40,25 @@ export default function DashboardPage() {
             <CardTitle>Latest brief</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm font-medium text-muted">{latestBatch.deliveryDate}</p>
-            <h2 className="text-3xl md:text-4xl">{latestBatch.leadCount} new leads this week</h2>
-            <p className="text-muted">
-              {latestBatch.positiveCount} leads marked positive, {latestBatch.negativeCount} marked
-              negative.
-            </p>
-            <Link
-              href={`${ROUTES.BRIEFS}/${latestBatch.id}`}
-              className="btn-primary inline-flex"
-            >
-              View Brief →
-            </Link>
+            {latestBatch ? (
+              <>
+                <p className="text-sm font-medium text-muted">{latestBatch.deliveryDateLabel}</p>
+                <h2 className="text-3xl md:text-4xl">{latestBatch.leadCount} new leads this week</h2>
+                <p className="text-muted">
+                  {latestBatch.positiveCount} leads marked positive, {latestBatch.negativeCount}{" "}
+                  marked negative.
+                </p>
+                <Link href={`${ROUTES.BRIEFS}/${latestBatch.id}`} className="btn-primary inline-flex">
+                  View Brief -&gt;
+                </Link>
+              </>
+            ) : (
+              <EmptyState
+                className="border-0 shadow-none"
+                description={`Your first brief lands Monday ${getNextMondayLabel()}. We'll show verified emails, fit signals, and feedback stats here as soon as it's delivered.`}
+                title="Your first brief is on the way"
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -46,7 +67,9 @@ export default function DashboardPage() {
             <CardTitle>Upcoming delivery</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-2xl font-semibold text-ink">Next delivery: Monday {getNextMondayLabel()} at 10 AM</p>
+            <p className="text-2xl font-semibold text-ink">
+              Next delivery: Monday {getNextMondayLabel()} at 10 AM
+            </p>
             <p className="text-muted">
               We&apos;re currently researching candidates matching your ICP and recent trigger
               signals.
@@ -59,19 +82,21 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="space-y-2 p-6">
             <p className="text-sm font-medium text-muted">Total leads delivered</p>
-            <p className="text-4xl font-bold text-ink">150</p>
+            <p className="text-4xl font-bold text-ink">{lifetimeLeadsDelivered}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-2 p-6">
             <p className="text-sm font-medium text-muted">Average ICP match rate</p>
-            <p className="text-4xl font-bold text-ink">84%</p>
+            <p className="text-4xl font-bold text-ink">
+              {matchRateLast30Days !== null ? `${matchRateLast30Days}%` : "--"}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-2 p-6">
             <p className="text-sm font-medium text-muted">Days subscribed</p>
-            <p className="text-4xl font-bold text-ink">82</p>
+            <p className="text-4xl font-bold text-ink">{daysSubscribed}</p>
           </CardContent>
         </Card>
       </section>
@@ -82,11 +107,11 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted">
-            Heads of Sales, VP Sales, and CROs at B2B SaaS companies with 11-500 employees across
-            the UK and US. Prioritise funding, hiring, and outbound-process pain signals.
+            {icpSummary ??
+              "Your ICP has not been configured yet. Add titles, industries, and trigger signals so Frithly can target the right buyers next Monday."}
           </p>
           <Link href={ROUTES.ICP} className="font-semibold text-terracotta underline underline-offset-4">
-            Edit ICP →
+            Edit ICP -&gt;
           </Link>
         </CardContent>
       </Card>

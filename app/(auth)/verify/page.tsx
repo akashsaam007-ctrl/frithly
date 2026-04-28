@@ -19,33 +19,71 @@ function VerifyPageContent() {
     async function verifyMagicLink() {
       const supabase = createSupabaseBrowserClient();
       const code = searchParams.get("code");
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      const errorDescription =
+        searchParams.get("error_description") ?? hashParams.get("error_description");
       const tokenHash = searchParams.get("token_hash");
       const type = searchParams.get("type") as EmailOtpType | null;
 
       try {
-        if (code) {
+        if (errorDescription) {
+          throw new Error(errorDescription);
+        }
+
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error) {
+            throw error;
+          }
+        } else if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
 
           if (error) {
             throw error;
           }
         } else if (tokenHash && type) {
-          const { error } = await supabase.auth.verifyOtp({
-            token_hash: tokenHash,
-            type,
-          });
+          let verified = false;
+          let lastError: Error | null = null;
 
-          if (error) {
-            throw error;
+          for (const candidateType of [type, "email", "magiclink"] as EmailOtpType[]) {
+            const { error } = await supabase.auth.verifyOtp({
+              token_hash: tokenHash,
+              type: candidateType,
+            });
+
+            if (!error) {
+              verified = true;
+              break;
+            }
+
+            lastError = error;
+          }
+
+          if (!verified) {
+            throw lastError ?? new Error("Unable to verify magic link");
           }
         } else {
-          throw new Error("Missing verification parameters");
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+
+          if (!session) {
+            throw new Error("Missing verification parameters");
+          }
         }
 
         if (!cancelled) {
           router.replace(ROUTES.DASHBOARD);
         }
-      } catch {
+      } catch (error) {
+        console.error("Magic link verification failed", error);
+
         if (!cancelled) {
           setHasError(true);
         }

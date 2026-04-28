@@ -1,8 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { demoInvoices } from "@/lib/utils/demo-data";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PLANS } from "@/lib/constants";
+import { getCurrentCustomerContext } from "@/lib/supabase/customer-data";
+import { formatCurrency, formatLongDate } from "@/lib/utils";
 
-export default function BillingPage() {
+export default async function BillingPage() {
+  const { customer } = await getCurrentCustomerContext();
+  const currentPlan = customer.plan
+    ? Object.values(PLANS).find((plan) => plan.id === customer.plan) ?? null
+    : null;
+
   return (
     <Container className="space-y-8 px-0">
       <div className="space-y-3">
@@ -15,8 +23,27 @@ export default function BillingPage() {
           <CardTitle>Current plan</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-3xl font-semibold text-ink">Growth · £999/month</p>
-          <p className="text-muted">Next billing date: 28 May 2026 · Lifetime value paid: £2,997</p>
+          {currentPlan ? (
+            <>
+              <p className="text-3xl font-semibold text-ink">
+                {currentPlan.name} | {formatCurrency(currentPlan.price, currentPlan.currency)}
+                /month
+              </p>
+              <p className="text-muted">
+                Status: {customer.status ?? "pending"} | Started:{" "}
+                {customer.signup_date ? formatLongDate(customer.signup_date) : "Not available"}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-3xl font-semibold text-ink">No plan assigned yet</p>
+              <p className="text-muted">
+                Your subscription details will appear here as soon as a plan is connected to your
+                customer record.
+              </p>
+            </>
+          )}
+
           <button className="btn-secondary" disabled type="button">
             Manage subscription
           </button>
@@ -30,26 +57,12 @@ export default function BillingPage() {
         <CardHeader>
           <CardTitle>Invoice history</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {demoInvoices.map((invoice) => (
-            <div
-              key={invoice.id}
-              className="flex flex-col justify-between gap-3 rounded-xl border border-border p-4 md:flex-row md:items-center"
-            >
-              <div>
-                <p className="font-semibold text-ink">{invoice.id}</p>
-                <p className="text-sm text-muted">
-                  {invoice.date} · {invoice.status}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <p className="font-semibold text-ink">{invoice.amount}</p>
-                <button className="text-sm font-semibold text-terracotta" type="button">
-                  Download
-                </button>
-              </div>
-            </div>
-          ))}
+        <CardContent>
+          <EmptyState
+            className="border-0 shadow-none"
+            description="Invoice sync is not connected yet, so payment receipts are not available in-app. Once Stripe Customer Portal is wired up, invoices will appear here automatically."
+            title="No invoices available yet"
+          />
         </CardContent>
       </Card>
     </Container>

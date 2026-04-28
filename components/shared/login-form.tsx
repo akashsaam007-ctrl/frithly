@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,23 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div aria-hidden="true" className="space-y-5">
+        <div className="space-y-2">
+          <div className="h-5 w-20 rounded bg-ink/5" />
+          <div className="h-12 w-full rounded-lg border border-border bg-white" />
+        </div>
+        <div className="h-12 w-full rounded-lg bg-terracotta/15" />
+      </div>
+    );
+  }
 
   if (isDemoMode) {
     return (

@@ -57,7 +57,7 @@ export function LeadCard({
                 <Badge variant="outline">{fitScore}</Badge>
               </div>
               <p className="text-sm text-muted md:text-base">
-                {role} · {company} · {email} ({emailStatus})
+                {role} | {company} | {email} ({emailStatus})
               </p>
               <p className="text-sm text-ink md:text-base">{triggerSummary}</p>
             </div>
@@ -104,16 +104,16 @@ export function LeadCard({
               </div>
 
               {openers.map((opener, index) => (
-                <div key={opener} className="rounded-xl border border-border p-4">
+                <div key={`${name}-${index}`} className="rounded-xl border border-border p-4">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <p className="font-semibold text-ink">Option {String.fromCharCode(65 + index)}</p>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => void copyText(opener, `Opener ${String.fromCharCode(65 + index)}`)}
-                      >
-                        Copy opener
-                      </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => void copyText(opener, `Opener ${String.fromCharCode(65 + index)}`)}
+                    >
+                      Copy opener
+                    </Button>
                   </div>
                   <p className="text-muted">{opener}</p>
                 </div>

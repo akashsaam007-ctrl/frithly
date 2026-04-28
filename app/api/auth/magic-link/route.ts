@@ -33,6 +33,11 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   if (customerError) {
+    console.error("Magic link customer lookup failed", {
+      email,
+      message: customerError.message,
+    });
+
     return NextResponse.json(
       {
         error: "We couldn't verify your account right now. Please try again in a minute.",
@@ -42,6 +47,8 @@ export async function POST(request: Request) {
   }
 
   if (!customer) {
+    console.warn("Magic link rejected because customer record was not found", { email });
+
     return NextResponse.json(
       {
         code: "account_not_found",
@@ -65,13 +72,24 @@ export async function POST(request: Request) {
   });
 
   if (error) {
+    console.error("Supabase failed to send magic link", {
+      email,
+      message: error.message,
+      status: error.status ?? null,
+    });
+
     return NextResponse.json(
       {
-        error: "We couldn't send your magic link. Please try again.",
+        error:
+          process.env.NODE_ENV === "development"
+            ? `Supabase could not send the magic link: ${error.message}`
+            : "We couldn't send your magic link. Please try again.",
       },
       { status: 500 },
     );
   }
+
+  console.log("Magic link requested successfully", { email });
 
   return NextResponse.json({
     success: true,
