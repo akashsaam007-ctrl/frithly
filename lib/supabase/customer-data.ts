@@ -39,6 +39,7 @@ export type CustomerContext = {
 
 export type CustomerBatchDetail = {
   batch: CustomerBatchSummary;
+  leadFeedbackById: Record<string, "negative" | "positive" | null>;
   leads: LeadRow[];
 };
 
@@ -270,10 +271,33 @@ export async function getCustomerBatchDetail(batchId: string): Promise<CustomerB
     throw new Error(`Unable to load leads for batch ${batch.id}: ${leadsError.message}`);
   }
 
-  const { batchSummaries } = summarizeBatches([batch], leads ?? [], []);
+  const leadIds = (leads ?? []).map((lead) => lead.id);
+  const { data: feedback, error: feedbackError } =
+    leadIds.length > 0
+      ? await supabase
+          .from("feedback")
+          .select("lead_id, rating, created_at")
+          .eq("customer_id", customer.id)
+          .in("lead_id", leadIds)
+          .order("created_at", { ascending: false })
+      : { data: [], error: null };
+
+  if (feedbackError) {
+    throw new Error(`Unable to load feedback for batch ${batch.id}: ${feedbackError.message}`);
+  }
+
+  const { batchSummaries } = summarizeBatches([batch], leads ?? [], feedback ?? []);
+  const leadFeedbackById: Record<string, "negative" | "positive" | null> = {};
+
+  (feedback ?? []).forEach((item) => {
+    if (item.lead_id && item.rating && !(item.lead_id in leadFeedbackById)) {
+      leadFeedbackById[item.lead_id] = item.rating;
+    }
+  });
 
   return {
     batch: batchSummaries[0],
+    leadFeedbackById,
     leads: leads ?? [],
   };
 }

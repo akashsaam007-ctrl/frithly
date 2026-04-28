@@ -12,6 +12,8 @@ type LeadCardProps = {
   email: string;
   emailStatus: string;
   fitScore: string;
+  initialFeedback?: "negative" | "positive" | null;
+  leadId: string;
   name: string;
   openers: readonly string[];
   recommendedAngle: string;
@@ -26,6 +28,8 @@ export function LeadCard({
   email,
   emailStatus,
   fitScore,
+  initialFeedback = null,
+  leadId,
   name,
   openers,
   recommendedAngle,
@@ -34,16 +38,40 @@ export function LeadCard({
   triggerSummary,
   whyNow,
 }: LeadCardProps) {
-  const [feedback, setFeedback] = useState<"negative" | "positive" | null>(null);
+  const [feedback, setFeedback] = useState<"negative" | "positive" | null>(initialFeedback);
+  const [isSavingFeedback, setIsSavingFeedback] = useState(false);
 
   async function copyText(value: string, label: string) {
     await navigator.clipboard.writeText(value);
     toast.success(`${label} copied.`);
   }
 
-  function setLeadFeedback(value: "negative" | "positive") {
-    setFeedback(value);
-    toast.success(`Lead marked ${value}.`);
+  async function setLeadFeedback(value: "negative" | "positive") {
+    setIsSavingFeedback(true);
+
+    try {
+      const response = await fetch("/api/feedback", {
+        body: JSON.stringify({ leadId, rating: value }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
+      const payload = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "We couldn't save your lead feedback.");
+      }
+
+      setFeedback(value);
+      toast.success(`Lead marked ${value}.`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "We couldn't save your lead feedback.",
+      );
+    } finally {
+      setIsSavingFeedback(false);
+    }
   }
 
   return (
@@ -110,7 +138,9 @@ export function LeadCard({
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => void copyText(opener, `Opener ${String.fromCharCode(65 + index)}`)}
+                      onClick={() =>
+                        void copyText(opener, `Opener ${String.fromCharCode(65 + index)}`)
+                      }
                     >
                       Copy opener
                     </Button>
@@ -122,17 +152,19 @@ export function LeadCard({
 
             <div className="flex flex-wrap gap-3">
               <Button
+                disabled={isSavingFeedback}
                 size="sm"
                 variant={feedback === "positive" ? "primary" : "secondary"}
-                onClick={() => setLeadFeedback("positive")}
+                onClick={() => void setLeadFeedback("positive")}
               >
                 <ThumbsUp className="mr-2 h-4 w-4" aria-hidden="true" />
                 Helpful
               </Button>
               <Button
+                disabled={isSavingFeedback}
                 size="sm"
                 variant={feedback === "negative" ? "primary" : "secondary"}
-                onClick={() => setLeadFeedback("negative")}
+                onClick={() => void setLeadFeedback("negative")}
               >
                 <ThumbsDown className="mr-2 h-4 w-4" aria-hidden="true" />
                 Not a fit

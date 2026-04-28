@@ -1,37 +1,93 @@
 "use client";
 
 import { useState } from "react";
+import type { BrandVoice } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 
-const initialState = {
-  brandVoice: "professional",
-  companySizeMax: "500",
-  companySizeMin: "11",
-  exclusions: "Solopreneurs, agencies under 5 people",
-  geographies: "United Kingdom, United States",
-  industries: "B2B SaaS, agencies, professional services",
-  productDescription:
-    "We help outbound teams replace manual lead research with researched intelligence and personalized opening lines.",
-  signals: "Recently hired SDRs, raised funding, posted about outbound problems",
-  titles: "Head of Sales, VP Sales, CRO",
+export type IcpFormValues = {
+  brandVoice: BrandVoice;
+  companySizeMax: string;
+  companySizeMin: string;
+  exclusions: string;
+  geographies: string;
+  industries: string;
+  productDescription: string;
+  signals: string;
+  titles: string;
 };
 
-export function IcpForm() {
-  const [formState, setFormState] = useState(initialState);
-  const [lastUpdated, setLastUpdated] = useState("28 Apr 2026, 09:12");
+type IcpFormProps = {
+  initialValues: IcpFormValues;
+  initialUpdatedAtLabel: string | null;
+};
 
-  function updateField<Key extends keyof typeof initialState>(key: Key, value: (typeof initialState)[Key]) {
+export function IcpForm({ initialUpdatedAtLabel, initialValues }: IcpFormProps) {
+  const [formState, setFormState] = useState(initialValues);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(initialUpdatedAtLabel);
+
+  function updateField<Key extends keyof IcpFormValues>(key: Key, value: IcpFormValues[Key]) {
     setFormState((current) => ({ ...current, [key]: value }));
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLastUpdated(new Date().toLocaleString("en-GB"));
-    toast.success("ICP changes saved for next Monday's batch.");
+
+    const companySizeMin = formState.companySizeMin.trim()
+      ? Number.parseInt(formState.companySizeMin, 10)
+      : null;
+    const companySizeMax = formState.companySizeMax.trim()
+      ? Number.parseInt(formState.companySizeMax, 10)
+      : null;
+
+    if (
+      (companySizeMin !== null && Number.isNaN(companySizeMin)) ||
+      (companySizeMax !== null && Number.isNaN(companySizeMax))
+    ) {
+      toast.error("Company size values must be valid numbers.");
+      return;
+    }
+
+    if (companySizeMin !== null && companySizeMax !== null && companySizeMin > companySizeMax) {
+      toast.error("Minimum company size cannot be greater than maximum company size.");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const response = await fetch("/api/customer/icp", {
+        body: JSON.stringify({
+          ...formState,
+          companySizeMax,
+          companySizeMin,
+          productDescription: formState.productDescription.trim(),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
+
+      const payload = (await response.json()) as { error?: string; updatedAtLabel?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "We couldn't save your ICP changes.");
+      }
+
+      setLastUpdated(payload.updatedAtLabel ?? new Date().toLocaleString("en-GB"));
+      toast.success("ICP changes saved for next Monday's batch.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "We couldn't save your ICP changes.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -121,7 +177,7 @@ export function IcpForm() {
       <div className="space-y-3">
         <Label>Brand Voice</Label>
         <div className="flex flex-wrap gap-3">
-          {["casual", "professional", "direct"].map((voice) => (
+          {(["casual", "professional", "direct"] as BrandVoice[]).map((voice) => (
             <label
               key={voice}
               className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-white px-4 py-3 text-sm font-medium text-ink"
@@ -142,13 +198,15 @@ export function IcpForm() {
 
       <div className="space-y-3">
         <Button size="lg" type="submit">
-          Save Changes
+          {isSaving ? "Saving..." : "Save Changes"}
         </Button>
         <p className="text-sm text-muted">
           Changes apply to next Monday&apos;s batch. Email us if you need adjustments to this
           week&apos;s brief.
         </p>
-        <p className="text-sm text-muted">Last updated: {lastUpdated}</p>
+        <p className="text-sm text-muted">
+          Last updated: {lastUpdated ?? "Not saved yet"}
+        </p>
       </div>
     </form>
   );

@@ -58,7 +58,7 @@ export default async function BriefDetailPage({ params }: BriefDetailPageProps) 
     notFound();
   }
 
-  const { batch, leads } = detail;
+  const { batch, leadFeedbackById, leads } = detail;
 
   return (
     <Container className="space-y-8 px-0">
@@ -119,6 +119,8 @@ export default async function BriefDetailPage({ params }: BriefDetailPageProps) 
               email={lead.email ?? "No email provided"}
               emailStatus={getEmailStatusLabel(lead.email_status)}
               fitScore={getLeadFitLabel(lead.fit_score)}
+              initialFeedback={leadFeedbackById[lead.id] ?? null}
+              leadId={lead.id}
               name={lead.full_name}
               openers={[
                 lead.opener_a,
@@ -142,7 +144,7 @@ export default async function BriefDetailPage({ params }: BriefDetailPageProps) 
 
       <Card>
         <CardContent className="p-6">
-          <BatchFeedbackForm />
+          <BatchFeedbackForm batchId={batch.id} />
         </CardContent>
       </Card>
     </Container>
