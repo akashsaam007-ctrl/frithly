@@ -35,9 +35,11 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
           {checkoutState ? (
             <Card className="mx-auto max-w-[680px] text-left">
               <CardContent className="p-5 text-sm text-muted">
-                {checkoutState === "unavailable"
-                  ? "Razorpay checkout is not configured yet in this environment. Add the Razorpay keys and plan IDs, then try again."
-                  : "We couldn't open the hosted checkout right now. Please try again in a moment or book a quick call and we'll help you through it."}
+                {checkoutState === "success"
+                  ? "Checkout completed. Watch your inbox for the Lemon Squeezy receipt and your Frithly welcome email, then use the same email address to log in."
+                  : checkoutState === "unavailable"
+                    ? "Lemon Squeezy checkout is not configured yet in this environment. Add the Lemon Squeezy API key, store ID, variant IDs, and webhook secret, then try again."
+                    : "We couldn't open the hosted checkout right now. Please try again in a moment or book a quick call and we'll help you through it."}
               </CardContent>
             </Card>
           ) : null}

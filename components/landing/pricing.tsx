@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { SectionViewEvent } from "@/components/analytics/section-view-event";
 import { TrackedLink } from "@/components/analytics/tracked-link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { Badge } from "@/components/ui/badge";
 import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
-import { hasRazorpayConfiguration } from "@/lib/razorpay/env";
+import { hasLemonSqueezyConfiguration } from "@/lib/lemonsqueezy/env";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const pricingPlans = [
@@ -32,7 +32,7 @@ const pricingPlans = [
 ] as const;
 
 export function PricingSection() {
-  const hasCheckout = hasRazorpayConfiguration();
+  const hasCheckout = hasLemonSqueezyConfiguration();
 
   return (
     <section id="pricing" className="py-20">
@@ -46,7 +46,7 @@ export function PricingSection() {
           <h2>Pricing</h2>
           <p className="text-muted">Cancel anytime. No annual contracts. No setup fees.</p>
           <p className="text-sm font-semibold text-terracotta md:text-base">
-            🟢 First 3 design partners pay £199/month, locked in for life. DM founder for a spot.
+            First 3 design partners pay £199/month, locked in for life. DM founder for a spot.
           </p>
         </div>
 
@@ -55,10 +55,7 @@ export function PricingSection() {
             const badge = "badge" in plan ? plan.badge : undefined;
             const isHighlighted = "isHighlighted" in plan && Boolean(plan.isHighlighted);
             const isHostedCheckout = href.startsWith("/checkout/");
-            const resolvedHref =
-              isHostedCheckout && !hasCheckout
-                ? ROUTES.SAMPLE
-                : href;
+            const resolvedHref = isHostedCheckout && !hasCheckout ? ROUTES.SAMPLE : href;
 
             return (
               <Card
@@ -127,8 +124,8 @@ export function PricingSection() {
         <div className="text-center text-base text-muted">
           <p className="text-sm">
             {hasCheckout
-              ? "Starter and Growth open a Razorpay-hosted subscription checkout."
-              : "Razorpay plan IDs are not configured yet, so checkout buttons fall back to the sample flow in local preview."}
+              ? "Starter and Growth open a Lemon Squeezy-hosted subscription checkout."
+              : "Lemon Squeezy checkout is not configured yet, so checkout buttons fall back to the sample flow in local preview."}
           </p>
           <p>
             Not sure which tier?{" "}

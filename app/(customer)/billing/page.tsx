@@ -2,12 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PLANS } from "@/lib/constants";
-import { fetchRazorpaySubscriptionInvoices } from "@/lib/razorpay/client";
-import { hasRazorpayConfiguration } from "@/lib/razorpay/env";
+import {
+  fetchLemonSqueezyCustomer,
+  fetchLemonSqueezySubscription,
+  fetchLemonSqueezySubscriptionInvoices,
+} from "@/lib/lemonsqueezy/client";
+import { hasLemonSqueezyConfiguration } from "@/lib/lemonsqueezy/env";
 import { getCurrentCustomerContext } from "@/lib/supabase/customer-data";
 import { formatCurrency, formatLongDate } from "@/lib/utils";
 
-function formatRazorpayInvoiceAmount(amount: number, currency: string) {
+function formatInvoiceAmount(amount: number, currency: string) {
   return new Intl.NumberFormat("en-GB", {
     currency,
     maximumFractionDigits: 2,
@@ -20,11 +24,29 @@ export default async function BillingPage() {
   const currentPlan = customer.plan
     ? Object.values(PLANS).find((plan) => plan.id === customer.plan) ?? null
     : null;
+  const hasBillingConfiguration = hasLemonSqueezyConfiguration();
+  const billingCustomerId = customer.stripe_customer_id;
   const subscriptionId = customer.stripe_subscription_id;
+  const subscription =
+    subscriptionId && hasBillingConfiguration
+      ? await fetchLemonSqueezySubscription(subscriptionId).catch(() => null)
+      : null;
+  const billingCustomer =
+    !subscription && billingCustomerId && hasBillingConfiguration
+      ? await fetchLemonSqueezyCustomer(billingCustomerId).catch(() => null)
+      : null;
   const invoices =
-    subscriptionId && hasRazorpayConfiguration()
-      ? await fetchRazorpaySubscriptionInvoices(subscriptionId).catch(() => [])
+    subscriptionId && hasBillingConfiguration
+      ? await fetchLemonSqueezySubscriptionInvoices(subscriptionId).catch(() => [])
       : [];
+  const manageSubscriptionUrl =
+    subscription?.data.attributes.urls.customer_portal ??
+    billingCustomer?.data.attributes.urls.customer_portal ??
+    null;
+  const updatePaymentMethodUrl =
+    subscription?.data.attributes.urls.update_payment_method ?? null;
+  const nextBillingDate = subscription?.data.attributes.renews_at ?? null;
+  const statusLabel = subscription?.data.attributes.status_formatted ?? customer.status ?? "pending";
 
   return (
     <Container className="space-y-8 px-0">
@@ -45,11 +67,19 @@ export default async function BillingPage() {
                 /month
               </p>
               <p className="text-muted">
-                Status: {customer.status ?? "pending"} | Started:{" "}
+                Status: {statusLabel} | Started:{" "}
                 {customer.signup_date ? formatLongDate(customer.signup_date) : "Not available"}
               </p>
+              {nextBillingDate ? (
+                <p className="text-sm text-muted">
+                  Next renewal attempt: {formatLongDate(nextBillingDate)}
+                </p>
+              ) : null}
               {subscriptionId ? (
-                <p className="text-sm text-muted">Razorpay subscription ID: {subscriptionId}</p>
+                <p className="text-sm text-muted">Lemon Squeezy subscription ID: {subscriptionId}</p>
+              ) : null}
+              {billingCustomerId ? (
+                <p className="text-sm text-muted">Billing customer ID: {billingCustomerId}</p>
               ) : null}
             </>
           ) : (
@@ -62,11 +92,27 @@ export default async function BillingPage() {
             </>
           )}
 
-          <a className="btn-secondary inline-flex w-fit" href={`mailto:hi@frithly.com?subject=Frithly billing support`}>
-            Contact billing support
-          </a>
+          <div className="flex flex-wrap gap-3">
+            {manageSubscriptionUrl ? (
+              <a className="btn-primary inline-flex w-fit" href={manageSubscriptionUrl}>
+                Manage subscription
+              </a>
+            ) : null}
+            {updatePaymentMethodUrl ? (
+              <a className="btn-secondary inline-flex w-fit" href={updatePaymentMethodUrl}>
+                Update payment method
+              </a>
+            ) : null}
+            <a
+              className="btn-secondary inline-flex w-fit"
+              href={`mailto:hi@frithly.com?subject=Frithly billing support`}
+            >
+              Contact billing support
+            </a>
+          </div>
           <p className="text-sm text-muted">
-            Razorpay subscription changes are currently handled by our team. Email support for upgrades, downgrades, or cancellations while self-serve billing controls are being finished.
+            Use the Lemon Squeezy customer portal to manage upgrades, billing details, cancellations,
+            and invoices. If anything looks off, email support and we&apos;ll help you quickly.
           </p>
         </CardContent>
       </Card>
@@ -85,20 +131,20 @@ export default async function BillingPage() {
                 >
                   <div className="space-y-1">
                     <p className="font-semibold text-ink">
-                      {invoice.invoice_number ?? invoice.id}
+                      {invoice.attributes.billing_reason || invoice.id}
                     </p>
                     <p className="text-sm text-muted">
-                      {formatLongDate(new Date(invoice.date * 1000))} | {invoice.status}
+                      {formatLongDate(invoice.attributes.created_at)} | {invoice.attributes.status}
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
                     <p className="font-semibold text-ink">
-                      {formatRazorpayInvoiceAmount(invoice.amount, invoice.currency)}
+                      {formatInvoiceAmount(invoice.attributes.total, invoice.attributes.currency)}
                     </p>
-                    {invoice.short_url ? (
+                    {invoice.attributes.urls.invoice_url ? (
                       <a
                         className="font-semibold text-terracotta underline underline-offset-4"
-                        href={invoice.short_url}
+                        href={invoice.attributes.urls.invoice_url}
                         rel="noreferrer"
                         target="_blank"
                       >
@@ -112,7 +158,11 @@ export default async function BillingPage() {
           ) : (
             <EmptyState
               className="border-0 shadow-none"
-              description="Your Razorpay invoices will appear here once subscription charges begin to process."
+              description={
+                hasBillingConfiguration
+                  ? "Your Lemon Squeezy invoices will appear here once subscription charges begin to process."
+                  : "Connect Lemon Squeezy in this environment and invoice history will appear here automatically."
+              }
               title="No invoices available yet"
             />
           )}
