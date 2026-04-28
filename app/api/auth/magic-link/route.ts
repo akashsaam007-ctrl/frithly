@@ -9,7 +9,12 @@ import { env } from "@/lib/utils/env";
 
 const magicLinkSchema = z.object({
   email: z.string().email(),
+  nextPath: z.string().optional(),
 });
+
+function isSafeNextPath(value: string | undefined) {
+  return Boolean(value && value.startsWith("/") && !value.startsWith("//"));
+}
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -25,6 +30,7 @@ export async function POST(request: Request) {
   }
 
   const email = parsed.data.email.trim().toLowerCase();
+  const nextPath = parsed.data.nextPath?.trim();
   const allowlistedAdmin = isAdminEmail(email);
   const adminClient = createSupabaseAdminClient();
 
@@ -74,10 +80,16 @@ export async function POST(request: Request) {
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   );
 
+  const emailRedirectUrl = new URL("/verify", env.NEXT_PUBLIC_APP_URL);
+
+  if (isSafeNextPath(nextPath)) {
+    emailRedirectUrl.searchParams.set("next", nextPath!);
+  }
+
   const { error } = await authClient.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/verify`,
+      emailRedirectTo: emailRedirectUrl.toString(),
     },
   });
 

@@ -30,8 +30,8 @@ export function CashfreePayLoader({
   subscriptionSessionId,
 }: CashfreePayLoaderProps) {
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "loading" | "opening" | "ready">("idle");
-  const openedSessionRef = useRef<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "opening" | "ready">("loading");
+  const sdkReadyRef = useRef(false);
 
   const openCheckout = useCallback(async () => {
     if (!subscriptionSessionId) {
@@ -46,15 +46,9 @@ export function CashfreePayLoader({
 
     try {
       const cashfree = window.Cashfree({ mode: environment });
-
-      if (openedSessionRef.current === subscriptionSessionId) {
-        return;
-      }
-
-      openedSessionRef.current = subscriptionSessionId;
       setStatus("opening");
       const result = await cashfree.subscriptionsCheckout({
-        redirectTarget: "_self",
+        redirectTarget: "_blank",
         subsSessionId: subscriptionSessionId,
       });
 
@@ -80,13 +74,10 @@ export function CashfreePayLoader({
     setStatus("loading");
     const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null;
 
-    const onReady = () => {
-      setError(null);
-      void openCheckout();
-    };
-
     if (existingScript?.dataset.loaded === "true") {
-      onReady();
+      sdkReadyRef.current = true;
+      setError(null);
+      setStatus("ready");
       return;
     }
 
@@ -102,7 +93,9 @@ export function CashfreePayLoader({
 
     const handleLoad = () => {
       script?.setAttribute("data-loaded", "true");
-      onReady();
+      sdkReadyRef.current = true;
+      setError(null);
+      setStatus("ready");
     };
 
     const handleError = () => {
@@ -119,7 +112,7 @@ export function CashfreePayLoader({
       script?.removeEventListener("load", handleLoad);
       script?.removeEventListener("error", handleError);
     };
-  }, [openCheckout, subscriptionSessionId]);
+  }, [subscriptionSessionId]);
 
   if (!subscriptionSessionId) {
     return (
@@ -138,8 +131,9 @@ export function CashfreePayLoader({
       <div className="space-y-2">
         <p className="text-lg font-semibold text-ink">Secure authorisation is opening</p>
         <p className="text-muted">
-          We&apos;re handing you off to Cashfree&apos;s hosted subscription checkout to authorise
-          your recurring Frithly plan.
+          Cashfree recommends launching subscription authorisation from a direct button click. Use
+          the button below to open the hosted checkout in a new tab and complete your recurring
+          Frithly authorisation.
         </p>
       </div>
 
@@ -150,7 +144,7 @@ export function CashfreePayLoader({
             {status === "loading"
               ? "Loading Cashfree"
               : status === "opening"
-                ? "Opening checkout"
+                ? "Opening checkout in a new tab"
                 : "Ready"}
           </span>
         </p>
@@ -158,7 +152,8 @@ export function CashfreePayLoader({
           <p className="mt-2">Subscription reference: {subscriptionId}</p>
         ) : null}
         <p className="mt-2">
-          If the checkout doesn&apos;t appear, use the button below to open it again.
+          The authorisation window should open in a new tab. If nothing appears, click the button
+          again after allowing pop-ups for this site.
         </p>
       </div>
 

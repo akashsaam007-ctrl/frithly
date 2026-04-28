@@ -8,6 +8,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { ROUTES } from "@/lib/constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
+function isSafeNextPath(value: string | null) {
+  return Boolean(value && value.startsWith("/") && !value.startsWith("//"));
+}
+
 function VerifyPageContent() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
@@ -24,6 +28,7 @@ function VerifyPageContent() {
       const refreshToken = hashParams.get("refresh_token");
       const errorDescription =
         searchParams.get("error_description") ?? hashParams.get("error_description");
+      const nextPath = searchParams.get("next");
       const tokenHash = searchParams.get("token_hash");
       const type = searchParams.get("type") as EmailOtpType | null;
 
@@ -78,14 +83,19 @@ function VerifyPageContent() {
           }
         }
 
-        const destinationResponse = await fetch("/api/auth/session-destination", {
-          cache: "no-store",
-        });
-        const destinationPayload = (await destinationResponse.json()) as {
-          destination?: string;
-        };
-
         if (!cancelled) {
+          if (isSafeNextPath(nextPath)) {
+            router.replace(nextPath!);
+            return;
+          }
+
+          const destinationResponse = await fetch("/api/auth/session-destination", {
+            cache: "no-store",
+          });
+          const destinationPayload = (await destinationResponse.json()) as {
+            destination?: string;
+          };
+
           router.replace(destinationPayload.destination ?? ROUTES.DASHBOARD);
         }
       } catch (error) {

@@ -6,7 +6,22 @@ import { Logo } from "@/components/ui/logo";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/utils/mode";
 
-export default async function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    email?: string | string[] | undefined;
+    next?: string | string[] | undefined;
+  }>;
+};
+
+function readParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const initialEmail = readParam(resolvedSearchParams?.email);
+  const nextPath = readParam(resolvedSearchParams?.next);
+
   if (!isDemoMode) {
     const supabase = await createSupabaseServerClient();
     const {
@@ -29,11 +44,15 @@ export default async function LoginPage() {
               <p className="text-muted">
                 {isDemoMode
                   ? "Open the customer or admin preview locally."
-                  : "Enter your email to receive a login link"}
+                  : nextPath === "/billing"
+                    ? "Use the same email you used during checkout and we'll send a login link to open billing."
+                  : initialEmail
+                    ? "Use the same email you used during checkout and we'll send a login link."
+                    : "Enter your email to receive a login link"}
               </p>
             </div>
           </div>
-          <LoginForm />
+          <LoginForm initialEmail={initialEmail} nextPath={nextPath} />
         </CardContent>
       </Card>
     </main>

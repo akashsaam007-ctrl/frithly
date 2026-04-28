@@ -26,8 +26,11 @@ export async function middleware(request: NextRequest) {
 
   if (PROTECTED_CUSTOMER_ROUTES.some((route) => path.startsWith(route))) {
     if (!user) {
+      const loginUrl = new URL(ROUTES.LOGIN, request.url);
+      loginUrl.searchParams.set("next", `${path}${request.nextUrl.search}`);
+
       return copyResponseCookies(
-        NextResponse.redirect(new URL(ROUTES.LOGIN, request.url)),
+        NextResponse.redirect(loginUrl),
         response,
       );
     }

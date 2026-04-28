@@ -10,8 +10,13 @@ import { isDemoMode } from "@/lib/utils/mode";
 
 type FormState = "idle" | "loading" | "missing-account" | "success";
 
-export function LoginForm() {
-  const [email, setEmail] = useState("");
+type LoginFormProps = {
+  initialEmail?: string;
+  nextPath?: string;
+};
+
+export function LoginForm({ initialEmail = "", nextPath = "" }: LoginFormProps) {
+  const [email, setEmail] = useState(initialEmail);
   const [errorMessage, setErrorMessage] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
   const [isMounted, setIsMounted] = useState(false);
@@ -59,7 +64,10 @@ export function LoginForm() {
 
     try {
       const response = await fetch("/api/auth/magic-link", {
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          nextPath,
+        }),
         headers: {
           "Content-Type": "application/json",
         },

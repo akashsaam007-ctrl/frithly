@@ -319,7 +319,7 @@ export async function POST(request: Request) {
     const customerPayload = {
       cancelled_at:
         mappedStatus === "cancelled" ? payload.event_time ?? new Date().toISOString() : null,
-      company_name: existingCustomer?.company_name ?? null,
+      company_name: context.subscriptionTags?.company_name?.trim() || existingCustomer?.company_name || null,
       email,
       full_name:
         existingCustomer?.full_name ??

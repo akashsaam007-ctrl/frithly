@@ -304,6 +304,14 @@ export async function createCashfreeSubscription(params: {
     tags.company_name = params.companyName.trim();
   }
 
+  const returnUrl = new URL("/api/billing/cashfree/return", env.NEXT_PUBLIC_APP_URL);
+  returnUrl.searchParams.set("email", params.email);
+  returnUrl.searchParams.set("plan", params.frithlyPlanId);
+
+  if (params.companyName?.trim()) {
+    returnUrl.searchParams.set("company_name", params.companyName.trim());
+  }
+
   const response = await cashfreeRequest<CashfreeSubscription>("/subscriptions", {
     body: JSON.stringify({
       authorization_details: {
@@ -322,7 +330,7 @@ export async function createCashfreeSubscription(params: {
       subscription_id: subscriptionId,
       subscription_meta: {
         notification_channel: ["EMAIL"],
-        return_url: `${env.NEXT_PUBLIC_APP_URL}/api/billing/cashfree/return`,
+        return_url: returnUrl.toString(),
       },
       subscription_tags: tags,
     }),
