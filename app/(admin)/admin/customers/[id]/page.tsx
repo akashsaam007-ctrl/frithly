@@ -46,10 +46,10 @@ export default async function AdminCustomerDetailPage({
             Edit ICP
           </button>
         </div>
-        {customer.stripe_customer_id || customer.stripe_subscription_id ? (
+        {customer.billing_customer_id || customer.billing_subscription_id ? (
           <p className="text-sm text-muted">
-            Billing provider reference: {customer.stripe_customer_id ?? "Not linked"} | Billing
-            subscription ID: {customer.stripe_subscription_id ?? "Not linked"}
+            Billing provider reference: {customer.billing_customer_id ?? "Not linked"} | Billing
+            subscription ID: {customer.billing_subscription_id ?? "Not linked"}
           </p>
         ) : null}
       </div>

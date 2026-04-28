@@ -6,8 +6,8 @@ create table if not exists customers (
   email text unique not null,
   full_name text,
   company_name text,
-  stripe_customer_id text unique,
-  stripe_subscription_id text,
+  billing_customer_id text unique,
+  billing_subscription_id text,
   plan text check (plan in ('design_partner', 'starter', 'growth', 'scale')),
   status text default 'pending' check (status in ('pending', 'active', 'paused', 'cancelled', 'churned')),
   signup_date timestamptz default now(),
@@ -105,7 +105,7 @@ create table if not exists sample_requests (
 
 -- INDEXES
 create index if not exists idx_customers_email on customers(email);
-create index if not exists idx_customers_stripe_id on customers(stripe_customer_id);
+create index if not exists idx_customers_billing_customer_id on customers(billing_customer_id);
 create index if not exists idx_batches_customer_id on batches(customer_id);
 create index if not exists idx_batches_delivery_date on batches(delivery_date desc);
 create index if not exists idx_leads_batch_id on leads(batch_id);

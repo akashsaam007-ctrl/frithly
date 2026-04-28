@@ -78,8 +78,8 @@ export type Database = {
           plan?: "design_partner" | "growth" | "scale" | "starter" | null;
           signup_date?: string | null;
           status?: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
-          stripe_customer_id?: string | null;
-          stripe_subscription_id?: string | null;
+          billing_customer_id?: string | null;
+          billing_subscription_id?: string | null;
           updated_at?: string | null;
         };
         Relationships: [];
@@ -94,8 +94,8 @@ export type Database = {
           plan: "design_partner" | "growth" | "scale" | "starter" | null;
           signup_date: string | null;
           status: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
-          stripe_customer_id: string | null;
-          stripe_subscription_id: string | null;
+          billing_customer_id: string | null;
+          billing_subscription_id: string | null;
           updated_at: string | null;
         };
         Update: {
@@ -109,8 +109,8 @@ export type Database = {
           plan?: "design_partner" | "growth" | "scale" | "starter" | null;
           signup_date?: string | null;
           status?: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
-          stripe_customer_id?: string | null;
-          stripe_subscription_id?: string | null;
+          billing_customer_id?: string | null;
+          billing_subscription_id?: string | null;
           updated_at?: string | null;
         };
       };

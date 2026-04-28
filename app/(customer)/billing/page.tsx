@@ -66,7 +66,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
     ? Object.values(PLANS).find((plan) => plan.id === customer.plan) ?? null
     : null;
   const hasBillingConfiguration = hasCashfreeApiConfiguration();
-  const subscriptionId = customer.stripe_subscription_id;
+  const subscriptionId = customer.billing_subscription_id;
   const subscription =
     subscriptionId && hasBillingConfiguration
       ? await fetchCashfreeSubscription(subscriptionId).catch(() => null)
@@ -75,7 +75,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
     subscriptionId && hasBillingConfiguration
       ? await fetchCashfreeSubscriptionPayments(subscriptionId).catch(() => [])
       : [];
-  const providerReference = customer.stripe_customer_id ?? subscription?.cf_subscription_id ?? null;
+  const providerReference = customer.billing_customer_id ?? subscription?.cf_subscription_id ?? null;
   const subscriptionStatus = subscription?.subscription_status ?? customer.status ?? "pending";
   const statusLabel = formatProviderStatus(subscriptionStatus);
   const nextBillingDate =

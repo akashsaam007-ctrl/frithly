@@ -49,18 +49,18 @@ export async function POST(request: Request) {
   const normalizedEmail = user.email.trim().toLowerCase();
   const { data: customer, error: customerError } = await supabase
     .from("customers")
-    .select("id, stripe_subscription_id")
+    .select("id, billing_subscription_id")
     .eq("email", normalizedEmail)
     .maybeSingle();
 
-  if (customerError || !customer?.stripe_subscription_id) {
+  if (customerError || !customer?.billing_subscription_id) {
     return redirectToBilling("subscription-missing");
   }
 
   try {
     await manageCashfreeSubscription({
       action: action as "ACTIVATE" | "CANCEL" | "PAUSE",
-      subscriptionId: customer.stripe_subscription_id,
+      subscriptionId: customer.billing_subscription_id,
     });
 
     const adminClient = createSupabaseAdminClient();
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     console.error("Failed to manage Cashfree subscription", {
       action,
       error,
-      subscriptionId: customer.stripe_subscription_id,
+      subscriptionId: customer.billing_subscription_id,
     });
 
     return redirectToBilling("manage-failed");

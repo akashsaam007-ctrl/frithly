@@ -299,7 +299,7 @@ export async function POST(request: Request) {
     const adminClient = createSupabaseAdminClient();
     const { data: existingCustomer, error: existingCustomerError } = await adminClient
       .from("customers")
-      .select("id, company_name, full_name, plan, status, stripe_customer_id, stripe_subscription_id")
+      .select("id, company_name, full_name, plan, status, billing_customer_id, billing_subscription_id")
       .eq("email", email)
       .maybeSingle();
 
@@ -328,8 +328,8 @@ export async function POST(request: Request) {
         null,
       plan,
       status: mappedStatus,
-      stripe_customer_id: context.cfSubscriptionId ?? existingCustomer?.stripe_customer_id ?? null,
-      stripe_subscription_id: context.subscriptionId,
+      billing_customer_id: context.cfSubscriptionId ?? existingCustomer?.billing_customer_id ?? null,
+      billing_subscription_id: context.subscriptionId,
     };
 
     const writeResult = existingCustomer
