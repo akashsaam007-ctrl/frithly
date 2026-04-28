@@ -44,7 +44,9 @@ const getAdminBase = cache(async () => {
   };
 });
 
-function getCustomerDisplayName(customer: CustomerRow) {
+function getCustomerDisplayName(
+  customer: Pick<CustomerRow, "company_name" | "email" | "full_name">,
+) {
   return (
     customer.company_name?.trim() ||
     customer.full_name?.trim() ||
@@ -127,6 +129,14 @@ export type AdminOverviewData = {
   openFeedbackIssues: number;
   recentActivity: { id: string; timestamp: Date; text: string }[];
   totalMrrLabel: string;
+};
+
+export type AdminBatchBuilderCustomer = {
+  email: string;
+  id: string;
+  label: string;
+  planLabel: string;
+  status: string;
 };
 
 export async function getAdminOverviewData(): Promise<AdminOverviewData> {
@@ -270,6 +280,24 @@ export async function getAdminCustomersData(filters?: { search?: string; status?
         status: customer.status ?? "pending",
       } satisfies AdminCustomerListItem;
     });
+}
+
+export async function getAdminBatchBuilderData() {
+  const { adminClient } = await getAdminBase();
+  const { data: customers } = await adminClient
+    .from("customers")
+    .select("id, email, full_name, company_name, plan, status")
+    .order("company_name", { ascending: true });
+
+  return (customers ?? [])
+    .map((customer) => ({
+      email: customer.email,
+      id: customer.id,
+      label: `${getCustomerDisplayName(customer)} - ${customer.email}`,
+      planLabel: getPlanName(customer.plan),
+      status: customer.status ?? "pending",
+    }))
+    .sort((left, right) => left.label.localeCompare(right.label)) satisfies AdminBatchBuilderCustomer[];
 }
 
 export type AdminCustomerDetail = {

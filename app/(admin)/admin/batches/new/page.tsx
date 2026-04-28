@@ -1,8 +1,12 @@
 import { BatchBuilder } from "@/components/admin/batch-builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { getAdminBatchBuilderData } from "@/lib/supabase/admin-data";
+import { getDefaultBatchDeliveryDate } from "@/lib/admin/batch-builder";
 
-export default function AdminBatchNewPage() {
+export default async function AdminBatchNewPage() {
+  const customers = await getAdminBatchBuilderData();
+
   return (
     <Container className="space-y-8 px-0">
       <div className="space-y-3">
@@ -15,7 +19,10 @@ export default function AdminBatchNewPage() {
           <CardTitle>Batch builder</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <BatchBuilder />
+          <BatchBuilder
+            customers={customers}
+            defaultDeliveryDate={getDefaultBatchDeliveryDate()}
+          />
         </CardContent>
       </Card>
     </Container>
