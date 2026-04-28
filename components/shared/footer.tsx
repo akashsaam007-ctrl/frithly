@@ -54,6 +54,12 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRIVACY}>
                   Privacy Policy
                 </Link>
+                <Link
+                  className="block transition-colors hover:text-white"
+                  href={ROUTES.REFUND_POLICY}
+                >
+                  Refund Policy
+                </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.TERMS}>
                   Terms of Service
                 </Link>

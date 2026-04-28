@@ -102,6 +102,7 @@ export const ROUTES = {
   LOGIN: "/login",
   PRICING: "/#pricing",
   PRIVACY: "/privacy",
+  REFUND_POLICY: "/refund-policy",
   SAMPLE: "/sample",
   SIGNUP: "/signup",
   TERMS: "/terms",
