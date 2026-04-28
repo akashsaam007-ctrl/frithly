@@ -78,8 +78,15 @@ function VerifyPageContent() {
           }
         }
 
+        const destinationResponse = await fetch("/api/auth/session-destination", {
+          cache: "no-store",
+        });
+        const destinationPayload = (await destinationResponse.json()) as {
+          destination?: string;
+        };
+
         if (!cancelled) {
-          router.replace(ROUTES.DASHBOARD);
+          router.replace(destinationPayload.destination ?? ROUTES.DASHBOARD);
         }
       } catch (error) {
         console.error("Magic link verification failed", error);

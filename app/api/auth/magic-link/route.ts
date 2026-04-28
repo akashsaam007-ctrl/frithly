@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { isAdminEmail } from "@/lib/auth/admin-access";
 import { ROUTES } from "@/lib/constants";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database.types";
@@ -24,13 +25,22 @@ export async function POST(request: Request) {
   }
 
   const email = parsed.data.email.trim().toLowerCase();
+  const allowlistedAdmin = isAdminEmail(email);
   const adminClient = createSupabaseAdminClient();
 
-  const { data: customer, error: customerError } = await adminClient
-    .from("customers")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
+  let customer: { id: string } | null = null;
+  let customerError: { message: string } | null = null;
+
+  if (!allowlistedAdmin) {
+    const customerResponse = await adminClient
+      .from("customers")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+
+    customer = customerResponse.data;
+    customerError = customerResponse.error;
+  }
 
   if (customerError) {
     console.error("Magic link customer lookup failed", {
@@ -46,7 +56,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!customer) {
+  if (!allowlistedAdmin && !customer) {
     console.warn("Magic link rejected because customer record was not found", { email });
 
     return NextResponse.json(

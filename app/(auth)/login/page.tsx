@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
+import { getPostLoginRoute } from "@/lib/auth/admin-access";
 import { LoginForm } from "@/components/shared/login-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/ui/logo";
-import { ROUTES } from "@/lib/constants";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/utils/mode";
 
@@ -13,8 +13,8 @@ export default async function LoginPage() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (user) {
-      redirect(ROUTES.DASHBOARD);
+    if (user?.email) {
+      redirect(getPostLoginRoute(user.email));
     }
   }
 
