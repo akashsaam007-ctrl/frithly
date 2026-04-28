@@ -34,8 +34,8 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "sticky top-0 z-50 border-b border-border bg-white transition-shadow",
-        scrolled && "shadow-sm",
+        "sticky top-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-xl transition-all",
+        scrolled && "border-border bg-white/92 shadow-[0_10px_40px_rgba(26,26,26,0.08)]",
       )}
     >
       <Container className="flex h-14 items-center justify-between md:h-16">

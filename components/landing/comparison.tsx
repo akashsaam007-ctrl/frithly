@@ -1,68 +1,92 @@
-import { Check } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, Minus } from "lucide-react";
 import { Container } from "@/components/ui/container";
 
-const basicList = ["Name", "Title", "Email"];
-const frithlyList = [
-  "Name",
-  "Title",
-  "Email",
-  "Recent LinkedIn posts",
-  "Trigger signals (why this person, right now)",
-  "Company news this week",
-  "3 personalized openers (situational, content, company-signal)",
-  "Recommended angle for each lead",
-  "Verified email status",
+const rows = [
+  {
+    basic: "Name, title, company",
+    frithly: "Name, title, company, and who should actually be contacted first",
+    label: "Core contact data",
+  },
+  {
+    basic: "Raw email field",
+    frithly: "Verified contact plus confidence on deliverability",
+    label: "Email quality",
+  },
+  {
+    basic: "Generic filter output",
+    frithly: "Why-now trigger, current context, and account timing",
+    label: "Timing intelligence",
+  },
+  {
+    basic: "No guidance for messaging",
+    frithly: "One to three opener angles based on actual signals",
+    label: "Message readiness",
+  },
+  {
+    basic: "Rep still researches manually",
+    frithly: "Rep can open sequence drafts and start sending",
+    label: "Operational impact",
+  },
 ];
 
 export function Comparison() {
   return (
-    <section className="py-20">
-      <Container className="space-y-10">
-        <div className="text-center">
-          <h2>Lists vs. Intelligence</h2>
+    <section className="py-24">
+      <Container className="space-y-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="section-eyebrow">Lists versus intelligence</div>
+          <h2 className="section-title mt-5">Same market, completely different output.</h2>
+          <p className="section-copy mx-auto mt-5 max-w-2xl">
+            Most tools stop at access. Frithly keeps going until the lead is ready for a rep to use
+            in the real world.
+          </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="border-transparent bg-stone-100 text-muted">
-            <CardHeader>
-              <CardTitle className="text-xl text-ink">
-                What you get from Apollo/ZoomInfo
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {basicList.map((item) => (
-                  <li key={item} className="text-base font-medium">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="surface-card overflow-hidden border-transparent bg-stone-100/90">
+            <div className="border-b border-stone-200 px-6 py-5">
+              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
+                Traditional lead data tools
+              </div>
+              <h3 className="mt-2 text-2xl font-semibold text-ink">You still have work to do</h3>
+            </div>
 
-          <Card className="border-2 border-terracotta">
-            <CardHeader>
-              <CardTitle className="text-xl text-ink">What you get from Frithly</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {frithlyList.map((item, index) => (
-                  <li key={item} className="flex items-start gap-3 text-base text-ink">
-                    {index >= 3 ? (
-                      <Check className="mt-1 h-4 w-4 text-terracotta" aria-hidden="true" />
-                    ) : (
-                      <span className="w-4" aria-hidden="true" />
-                    )}
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+            <div className="divide-y divide-stone-200">
+              {rows.map((row) => (
+                <div key={row.label} className="space-y-2 px-6 py-5">
+                  <div className="text-sm font-semibold text-ink">{row.label}</div>
+                  <div className="flex items-start gap-3 text-sm text-muted md:text-base">
+                    <Minus className="mt-1 h-4 w-4 text-stone-400" aria-hidden="true" />
+                    <span>{row.basic}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="surface-card overflow-hidden border-terracotta/30">
+            <div className="border-b border-border/70 bg-[linear-gradient(135deg,rgba(212,98,58,0.1),rgba(255,255,255,0.95))] px-6 py-5">
+              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
+                Frithly weekly brief
+              </div>
+              <h3 className="mt-2 text-2xl font-semibold text-ink">
+                The rep opens the file and knows what to do next
+              </h3>
+            </div>
+
+            <div className="divide-y divide-border/70">
+              {rows.map((row) => (
+                <div key={row.label} className="space-y-2 px-6 py-5">
+                  <div className="text-sm font-semibold text-ink">{row.label}</div>
+                  <div className="flex items-start gap-3 text-sm text-ink md:text-base">
+                    <Check className="mt-1 h-4 w-4 text-terracotta" aria-hidden="true" />
+                    <span>{row.frithly}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        <h3 className="text-center">Same person. Different product.</h3>
       </Container>
     </section>
   );

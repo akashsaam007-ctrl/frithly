@@ -1,68 +1,78 @@
 import { Inbox, PhoneCall, Search } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 
 const steps = [
   {
     description:
-      "30-min onboarding call to define your ideal customer profile. We document exactly who you want, what signals matter, and which industries to avoid.",
+      "We map your ICP, buying signals, exclusions, and tone so the weekly brief matches the market you actually want to win.",
     icon: PhoneCall,
-    number: "1",
-    title: "Tell us your ICP",
+    title: "Align the targeting",
   },
   {
     description:
-      "Our AI agents and analysts dig through thousands of profiles to find the 50 that match — with verified emails and current trigger signals.",
+      "Frithly agents and analysts research all week, validate contact quality, and prioritize who is worth outreach now.",
     icon: Search,
-    number: "2",
-    title: "We research all week",
+    title: "Research the market",
   },
   {
     description:
-      "50 hand-picked leads land in your inbox. Each with verified contact info, why-now context, and 3 personalized opening lines ready to send.",
+      "Every Monday your team gets a finished lead brief with context, trigger signals, and opener angles ready to use.",
     icon: Inbox,
-    number: "3",
-    title: "You receive on Monday",
+    title: "Ship to the team",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-white py-20">
-      <Container className="space-y-10">
-        <div className="space-y-4 text-center">
-          <h2>How it works</h2>
-          <p className="text-muted">Three simple steps. We do everything else.</p>
+    <section id="how-it-works" className="bg-white py-24">
+      <Container className="space-y-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="section-eyebrow">Operating model</div>
+          <h2 className="section-title mt-5">A weekly research system, not another tool to manage.</h2>
+          <p className="section-copy mx-auto mt-5 max-w-2xl">
+            You do one alignment pass up front. Frithly handles the recurring research load and
+            turns it into a delivery rhythm your reps can count on.
+          </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {steps.map((step) => {
+        <div className="relative grid gap-6 lg:grid-cols-3">
+          <div className="pointer-events-none absolute left-0 right-0 top-14 hidden h-px bg-gradient-to-r from-transparent via-terracotta/30 to-transparent lg:block" />
+
+          {steps.map((step, index) => {
             const Icon = step.icon;
 
             return (
-              <Card key={step.number} className="h-full">
-                <CardHeader className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/10 text-base font-bold text-terracotta">
-                      {step.number}
-                    </span>
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cream text-terracotta">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </span>
+              <div key={step.title} className="surface-card relative h-full p-7">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
-                  <CardTitle className="text-xl">{step.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted">{step.description}</p>
-                </CardContent>
-              </Card>
+                  <div className="rounded-full border border-border/70 bg-stone-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                    Step {index + 1}
+                  </div>
+                </div>
+
+                <h3 className="mt-6 text-2xl font-semibold text-ink">{step.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-muted md:text-base">{step.description}</p>
+              </div>
             );
           })}
         </div>
 
-        <p className="text-center text-lg font-semibold text-ink">
-          First leads delivered within 7 days of signup.
-        </p>
+        <div className="surface-card overflow-hidden">
+          <div className="grid gap-6 px-7 py-7 md:grid-cols-[0.9fr_1.1fr] md:px-8">
+            <div>
+              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
+                Time to value
+              </div>
+              <h3 className="mt-3 text-3xl font-semibold text-ink">First leads land within 7 days of signup.</h3>
+            </div>
+            <p className="text-sm leading-7 text-muted md:text-base">
+              That means your first week is spent aligning the motion, not waiting on a tool rollout
+              or building another enrichment workflow from scratch.
+            </p>
+          </div>
+        </div>
       </Container>
     </section>
   );

@@ -1,117 +1,157 @@
 import Link from "next/link";
+import { ArrowRight, BadgeCheck, Building2, Mail, Radar, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
 
 const signals = [
-  'Posted about "juggling 6 different tools" (Oct 29, 47 reactions)',
-  "Featured on Agency Built podcast (Nov 12)",
-  "Hired 4 AMs in 60 days",
-  "Promoted from Senior PM in September",
+  "Posted about juggling six delivery tools, 47 reactions",
+  "Featured on Agency Built podcast within the last month",
+  "Hired four account managers in 60 days",
+  "Newly promoted operations lead with process ownership",
 ];
 
 const openers = [
   {
-    body: "\"Saw you hired 4 AMs in 60 days — that's the exact moment your tracking-tools-juggling problem usually breaks. Curious how you're handling it.\"",
-    label: "Option A — Situational",
+    body: "Saw you hired four account managers in 60 days. That is usually the moment fragmented delivery tooling starts slowing everything down. Curious how you are handling that transition.",
+    label: "Recommended angle",
+    note: "Situational opener",
     recommended: true,
   },
   {
-    body: '"Caught your Agency Built episode on scaling onboarding. You mentioned 6 tools for deliverables — we built something that collapses that into one. Worth 15 min?"',
-    label: "Option B — Their Content",
+    body: "Caught the Agency Built conversation on scaling onboarding. You mentioned six tools in the stack, which is exactly the kind of operational sprawl we help teams simplify.",
+    label: "Content angle",
+    note: "Podcast reference",
   },
   {
-    body: '"Your post about juggling 6 tools to track client deliverables is exactly the pain we built [product] for. Mind if I send a 60-second loom showing the difference?"',
-    label: "Option C — Company Signal",
+    body: "Your recent post about juggling six tools for deliverables felt familiar. We built Frithly for teams trying to replace generic outreach with better timing and tighter GTM context.",
+    label: "Signal angle",
+    note: "Public post reference",
   },
 ];
 
 export function SampleLead() {
   return (
-    <section className="py-20">
-      <Container className="space-y-8">
-        <div className="text-center">
-          <h2>Here&apos;s a real lead we delivered last week.</h2>
+    <section className="py-24">
+      <Container className="space-y-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="section-eyebrow">Inside the deliverable</div>
+          <h2 className="section-title mt-5">This is the difference your team feels on Monday morning.</h2>
+          <p className="section-copy mx-auto mt-5 max-w-2xl">
+            One lead, fully packaged with context, timing, and messaging direction. Multiply this
+            by 50 and you have the weekly operating rhythm Frithly is designed to create.
+          </p>
         </div>
 
-        <Card className="mx-auto max-w-[900px] rounded-2xl border border-border p-8 shadow-md md:p-12">
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <h3 className="text-3xl font-semibold text-ink md:text-4xl">
-                  Sarah Chen · Head of Operations
-                </h3>
-                <p className="text-lg text-muted">Volcano Digital · 54 employees · London, UK</p>
+        <div className="surface-card-dark overflow-hidden">
+          <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="border-b border-white/10 p-8 lg:border-b-0 lg:border-r lg:p-10">
+              <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                Lead intelligence snapshot
               </div>
 
-              <div className="flex flex-col gap-2 text-sm text-muted md:flex-row md:items-center md:gap-6">
-                <span>📧 sarah@volcano.io <span className="font-semibold text-emerald-600">✓ verified</span></span>
-                <Link
-                  href="https://www.linkedin.com/in/sarahchen"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline decoration-border underline-offset-4 transition-colors hover:text-ink"
-                >
-                  🔗 LinkedIn
-                </Link>
-              </div>
-            </div>
+              <div className="mt-6 space-y-6">
+                <div>
+                  <h3 className="text-3xl font-semibold text-white md:text-4xl">
+                    Sarah Chen, Head of Operations
+                  </h3>
+                  <p className="mt-3 text-white/65">
+                    Volcano Digital, 54 employees, London
+                  </p>
+                </div>
 
-            <div className="h-px bg-border" />
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🎯</span>
-                <h4 className="text-lg uppercase tracking-[0.12em] text-ink">WHY THIS LEAD, RIGHT NOW</h4>
-              </div>
-              <p>
-                Just hired 4 Account Managers in the last 60 days, signaling rapid client growth
-                — exactly when project management tools start breaking.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📡</span>
-                <h4 className="text-lg uppercase tracking-[0.12em] text-ink">TRIGGER SIGNALS</h4>
-              </div>
-              <ul className="space-y-2 text-base text-ink md:text-lg">
-                {signals.map((signal) => (
-                  <li key={signal}>- {signal}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">✍️</span>
-                <h4 className="text-lg uppercase tracking-[0.12em] text-ink">PERSONALIZED OPENERS</h4>
-              </div>
-
-              <div className="space-y-4">
-                {openers.map((opener) => (
-                  <div key={opener.label} className="rounded-xl border border-border p-5">
-                    <div className="mb-3 flex flex-wrap items-center gap-3">
-                      <h5 className="text-lg font-semibold text-ink">{opener.label}</h5>
-                      {opener.recommended ? <Badge>recommended</Badge> : null}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Mail className="h-4 w-4 text-terracotta" aria-hidden="true" />
+                      Contact quality
                     </div>
-                    <p className="text-base text-muted md:text-lg">{opener.body}</p>
+                    <div className="mt-3 text-lg font-medium text-white">sarah@volcano.io</div>
+                    <div className="mt-2 inline-flex items-center gap-2 text-sm text-emerald-300">
+                      <BadgeCheck className="h-4 w-4" aria-hidden="true" />
+                      Verified email
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Building2 className="h-4 w-4 text-terracotta" aria-hidden="true" />
+                      Why this account
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-white/70">
+                      Expansion hiring and process ownership make this a strong timing fit for a
+                      workflow-focused outbound message.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                  <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/65">
+                    <Radar className="h-4 w-4 text-terracotta" aria-hidden="true" />
+                    Trigger signals
+                  </div>
+                  <ul className="mt-4 space-y-3 text-sm leading-7 text-white/75">
+                    {signals.map((signal) => (
+                      <li key={signal} className="flex gap-3">
+                        <span className="mt-2 h-2 w-2 rounded-full bg-terracotta" aria-hidden="true" />
+                        <span>{signal}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-8 text-ink lg:p-10">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
+                    Personalized opener set
+                  </div>
+                  <h3 className="mt-3 text-3xl font-semibold text-ink">Three ways to start the same conversation.</h3>
+                </div>
+                <Badge>weekly brief</Badge>
+              </div>
+
+              <div className="mt-8 space-y-4">
+                {openers.map((opener) => (
+                  <div
+                    key={opener.label}
+                    className="rounded-[1.5rem] border border-border/70 bg-stone-50 p-5"
+                  >
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="text-base font-semibold text-ink">{opener.label}</div>
+                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                        {opener.note}
+                      </div>
+                      {opener.recommended ? (
+                        <span className="rounded-full bg-terracotta/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-terracotta">
+                          recommended
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-4 text-sm leading-7 text-muted md:text-base">{opener.body}</p>
                   </div>
                 ))}
               </div>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg">
+                  <Link href={ROUTES.SAMPLE}>
+                    <span className="inline-flex items-center gap-2">
+                      Get your free sample
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="secondary">
+                  <Link href={ROUTES.PRICING}>See pricing</Link>
+                </Button>
+              </div>
             </div>
           </div>
-        </Card>
-
-        <div className="space-y-6 text-center">
-          <p className="text-xl font-semibold text-ink">
-            This is what you get. 50 of them. Every Monday.
-          </p>
-          <Button asChild size="lg">
-            <Link href={ROUTES.SAMPLE}>Get Your Free 5-Lead Sample →</Link>
-          </Button>
         </div>
       </Container>
     </section>

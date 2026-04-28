@@ -5,13 +5,14 @@ import { APP_LOCATION, APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="bg-ink py-12 text-white">
-      <Container className="space-y-10">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_2fr]">
+    <footer className="border-t border-white/10 bg-ink py-14 text-white">
+      <Container className="space-y-12">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_2fr]">
           <div className="space-y-4">
             <Logo className="text-white hover:text-white" />
-            <p className="max-w-sm text-base text-white/70">
-              50 hyper-researched leads. Every Monday.
+            <p className="max-w-sm text-base leading-8 text-white/70">
+              Weekly B2B lead intelligence for outbound teams that need signal, timing, and
+              messaging context.
             </p>
           </div>
 
