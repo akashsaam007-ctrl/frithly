@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PaddlePayLoader } from "@/components/billing/paddle-pay-loader";
+import { CashfreePayLoader } from "@/components/billing/cashfree-pay-loader";
 import { Container } from "@/components/ui/container";
 
 export const metadata: Metadata = {
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 
 type PayPageProps = {
   searchParams?: Promise<{
-    _ptxn?: string | string[] | undefined;
+    subscription_id?: string | string[] | undefined;
+    subscription_session_id?: string | string[] | undefined;
   }>;
 };
 
@@ -19,10 +20,10 @@ function readParam(value: string | string[] | undefined) {
 
 export default async function PayPage({ searchParams }: PayPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const transactionId = readParam(resolvedSearchParams?._ptxn);
-  const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? null;
-  const environment = process.env.PADDLE_ENVIRONMENT === "sandbox" ? "sandbox" : "live";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const subscriptionId = readParam(resolvedSearchParams?.subscription_id);
+  const subscriptionSessionId = readParam(resolvedSearchParams?.subscription_session_id);
+  const environment =
+    process.env.CASHFREE_ENVIRONMENT === "production" ? "production" : "sandbox";
 
   return (
     <main className="py-16 md:py-24">
@@ -33,16 +34,15 @@ export default async function PayPage({ searchParams }: PayPageProps) {
           </p>
           <h1>Complete your Frithly subscription</h1>
           <p className="text-muted">
-            You&apos;ll finish payment in Paddle, then we&apos;ll send your receipt and welcome email
-            automatically.
+            You&apos;ll finish authorisation in Cashfree&apos;s hosted checkout, then we&apos;ll
+            confirm activation by email as soon as the subscription becomes active.
           </p>
         </div>
 
-        <PaddlePayLoader
-          appUrl={appUrl}
-          clientToken={clientToken}
+        <CashfreePayLoader
           environment={environment}
-          transactionId={transactionId}
+          subscriptionId={subscriptionId}
+          subscriptionSessionId={subscriptionSessionId}
         />
       </Container>
     </main>

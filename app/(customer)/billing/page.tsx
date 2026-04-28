@@ -3,23 +3,31 @@ import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PLANS } from "@/lib/constants";
 import {
-  createPaddleCustomerPortalSession,
-  fetchPaddleSubscription,
-  fetchPaddleSubscriptionInvoices,
-  fetchPaddleUpdatePaymentMethodTransaction,
-} from "@/lib/paddle/client";
-import { hasPaddleApiConfiguration } from "@/lib/paddle/env";
+  fetchCashfreeSubscription,
+  fetchCashfreeSubscriptionPayments,
+} from "@/lib/cashfree/client";
+import { hasCashfreeApiConfiguration } from "@/lib/cashfree/env";
 import { getCurrentCustomerContext } from "@/lib/supabase/customer-data";
 import { formatCurrency, formatLongDate } from "@/lib/utils";
 
-function formatInvoiceAmount(amount: string | number | null | undefined, currency: string) {
-  const normalizedAmount = typeof amount === "string" ? Number(amount) : amount ?? 0;
+type BillingPageProps = {
+  searchParams?: Promise<{
+    billing?: string | string[] | undefined;
+  }>;
+};
+
+function readParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+function formatPaymentAmount(amount: number | null | undefined, currency: string | null | undefined) {
+  const normalizedCurrency = currency || "GBP";
 
   return new Intl.NumberFormat("en-GB", {
-    currency,
+    currency: normalizedCurrency,
     maximumFractionDigits: 2,
     style: "currency",
-  }).format(normalizedAmount / 100);
+  }).format(amount ?? 0);
 }
 
 function formatProviderStatus(status: string | null | undefined) {
@@ -29,54 +37,60 @@ function formatProviderStatus(status: string | null | undefined) {
 
   return status
     .split("_")
-    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1).toLowerCase()}`)
     .join(" ");
 }
 
-export default async function BillingPage() {
+function getBannerMessage(value: string) {
+  switch (value) {
+    case "billing-unavailable":
+      return "Cashfree billing controls are not configured in this environment yet.";
+    case "invalid-action":
+      return "That billing action isn't supported for this subscription.";
+    case "manage-failed":
+      return "We couldn't update the subscription with Cashfree just now. Please try again or contact support.";
+    case "subscription-missing":
+      return "No active subscription reference is linked to this account yet.";
+    case "subscription-updated":
+      return "Subscription update request sent successfully. Cashfree and Frithly will reflect the new status shortly.";
+    default:
+      return "";
+  }
+}
+
+export default async function BillingPage({ searchParams }: BillingPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const bannerMessage = getBannerMessage(readParam(resolvedSearchParams?.billing));
   const { customer } = await getCurrentCustomerContext();
   const currentPlan = customer.plan
     ? Object.values(PLANS).find((plan) => plan.id === customer.plan) ?? null
     : null;
-  const hasBillingConfiguration = hasPaddleApiConfiguration();
+  const hasBillingConfiguration = hasCashfreeApiConfiguration();
   const subscriptionId = customer.stripe_subscription_id;
   const subscription =
     subscriptionId && hasBillingConfiguration
-      ? await fetchPaddleSubscription(subscriptionId).then((response) => response.data).catch(() => null)
+      ? await fetchCashfreeSubscription(subscriptionId).catch(() => null)
       : null;
-  const billingCustomerId = customer.stripe_customer_id ?? subscription?.customer_id ?? null;
-  const invoices =
+  const payments =
     subscriptionId && hasBillingConfiguration
-      ? await fetchPaddleSubscriptionInvoices(subscriptionId).catch(() => [])
+      ? await fetchCashfreeSubscriptionPayments(subscriptionId).catch(() => [])
       : [];
-  const portalSession =
-    billingCustomerId && hasBillingConfiguration
-      ? await createPaddleCustomerPortalSession(
-          billingCustomerId,
-          subscriptionId ? [subscriptionId] : [],
-        )
-          .then((response) => response.data)
-          .catch(() => null)
-      : null;
-  const subscriptionLinks =
-    portalSession?.urls.subscriptions?.find((entry) => entry.subscription_id === subscriptionId) ??
-    portalSession?.urls.subscriptions?.[0] ??
-    null;
-  const updatePaymentMethodTransaction =
-    subscriptionId &&
-    hasBillingConfiguration &&
-    !subscriptionLinks?.update_subscription_payment_method
-      ? await fetchPaddleUpdatePaymentMethodTransaction(subscriptionId)
-          .then((response) => response.data)
-          .catch(() => null)
-      : null;
-  const manageSubscriptionUrl = portalSession?.urls.general.overview ?? null;
-  const updatePaymentMethodUrl =
-    subscriptionLinks?.update_subscription_payment_method ??
-    updatePaymentMethodTransaction?.checkout?.url ??
-    null;
-  const nextBillingDate = subscription?.next_billed_at ?? null;
-  const statusLabel = formatProviderStatus(subscription?.status ?? customer.status ?? "pending");
+  const providerReference = customer.stripe_customer_id ?? subscription?.cf_subscription_id ?? null;
+  const subscriptionStatus = subscription?.subscription_status ?? customer.status ?? "pending";
+  const statusLabel = formatProviderStatus(subscriptionStatus);
+  const nextBillingDate =
+    subscription?.next_schedule_date ?? subscription?.subscription_first_charge_time ?? null;
+  const normalizedSubscriptionStatus = subscriptionStatus.trim().toUpperCase();
+  const canPause = normalizedSubscriptionStatus === "ACTIVE";
+  const canReactivate =
+    normalizedSubscriptionStatus === "PAUSED" ||
+    normalizedSubscriptionStatus === "ON_HOLD" ||
+    normalizedSubscriptionStatus === "CUSTOMER_CANCELLED" ||
+    normalizedSubscriptionStatus === "CANCELLED";
+  const canCancel =
+    normalizedSubscriptionStatus === "ACTIVE" ||
+    normalizedSubscriptionStatus === "PAUSED" ||
+    normalizedSubscriptionStatus === "ON_HOLD";
 
   return (
     <Container className="space-y-8 px-0">
@@ -84,6 +98,12 @@ export default async function BillingPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">Billing</p>
         <h1 className="text-4xl md:text-5xl">Plan and payment history</h1>
       </div>
+
+      {bannerMessage ? (
+        <div className="rounded-xl border border-border bg-white p-4 text-sm text-muted">
+          {bannerMessage}
+        </div>
+      ) : null}
 
       <Card>
         <CardHeader>
@@ -102,14 +122,16 @@ export default async function BillingPage() {
               </p>
               {nextBillingDate ? (
                 <p className="text-sm text-muted">
-                  Next renewal attempt: {formatLongDate(nextBillingDate)}
+                  Next scheduled charge: {formatLongDate(nextBillingDate)}
                 </p>
               ) : null}
               {subscriptionId ? (
-                <p className="text-sm text-muted">Paddle subscription ID: {subscriptionId}</p>
+                <p className="text-sm text-muted">Cashfree subscription ID: {subscriptionId}</p>
               ) : null}
-              {billingCustomerId ? (
-                <p className="text-sm text-muted">Paddle customer ID: {billingCustomerId}</p>
+              {providerReference ? (
+                <p className="text-sm text-muted">
+                  Cashfree reference ID: {providerReference}
+                </p>
               ) : null}
             </>
           ) : (
@@ -123,15 +145,29 @@ export default async function BillingPage() {
           )}
 
           <div className="flex flex-wrap gap-3">
-            {manageSubscriptionUrl ? (
-              <a className="btn-primary inline-flex w-fit" href={manageSubscriptionUrl}>
-                Manage subscription
-              </a>
+            {canPause ? (
+              <form action="/api/customer/subscription/manage" method="post">
+                <input name="action" type="hidden" value="PAUSE" />
+                <button className="btn-secondary" type="submit">
+                  Pause subscription
+                </button>
+              </form>
             ) : null}
-            {updatePaymentMethodUrl ? (
-              <a className="btn-secondary inline-flex w-fit" href={updatePaymentMethodUrl}>
-                Update payment method
-              </a>
+            {canReactivate ? (
+              <form action="/api/customer/subscription/manage" method="post">
+                <input name="action" type="hidden" value="ACTIVATE" />
+                <button className="btn-primary" type="submit">
+                  Reactivate subscription
+                </button>
+              </form>
+            ) : null}
+            {canCancel ? (
+              <form action="/api/customer/subscription/manage" method="post">
+                <input name="action" type="hidden" value="CANCEL" />
+                <button className="btn-secondary" type="submit">
+                  Cancel subscription
+                </button>
+              </form>
             ) : null}
             <a
               className="btn-secondary inline-flex w-fit"
@@ -141,49 +177,47 @@ export default async function BillingPage() {
             </a>
           </div>
           <p className="text-sm text-muted">
-            Use the Paddle customer portal to manage payment details, cancellations, and invoices.
-            If anything looks off, email support and we&apos;ll help you quickly.
+            Cashfree powers your recurring billing for Frithly. Use the controls above for pause,
+            reactivation, or cancellation requests, and email support if you need invoice help or
+            a manual review.
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Invoice history</CardTitle>
+          <CardTitle>Charge history</CardTitle>
         </CardHeader>
         <CardContent>
-          {invoices.length > 0 ? (
+          {payments.length > 0 ? (
             <div className="space-y-4">
-              {invoices.map((invoice) => (
+              {payments.map((payment) => (
                 <div
-                  key={invoice.id}
+                  key={payment.payment_id}
                   className="flex flex-col gap-3 rounded-xl border border-border p-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="space-y-1">
                     <p className="font-semibold text-ink">
-                      {invoice.invoice_number || invoice.id}
+                      {payment.payment_type === "AUTH" ? "Authorisation" : "Recurring charge"} |{" "}
+                      {payment.payment_id}
                     </p>
                     <p className="text-sm text-muted">
-                      {formatLongDate(invoice.billed_at ?? invoice.created_at)} | {invoice.status}
+                      {formatLongDate(payment.payment_initiated_date ?? new Date().toISOString())} |{" "}
+                      {formatProviderStatus(payment.payment_status)}
                     </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <p className="font-semibold text-ink">
-                      {formatInvoiceAmount(
-                        invoice.details?.totals?.grand_total ?? invoice.details?.totals?.total,
-                        invoice.currency_code,
-                      )}
-                    </p>
-                    {invoice.invoiceUrl ? (
-                      <a
-                        className="font-semibold text-terracotta underline underline-offset-4"
-                        href={invoice.invoiceUrl}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        View
-                      </a>
+                    {payment.failure_details?.failure_reason ? (
+                      <p className="text-sm text-red-600">
+                        {payment.failure_details.failure_reason}
+                      </p>
                     ) : null}
+                  </div>
+                  <div className="space-y-1 text-left md:text-right">
+                    <p className="font-semibold text-ink">
+                      {formatPaymentAmount(payment.payment_amount, payment.payment_currency)}
+                    </p>
+                    <p className="text-sm text-muted">
+                      Cashfree payment ref: {payment.cf_payment_id ?? "Pending"}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -193,10 +227,10 @@ export default async function BillingPage() {
               className="border-0 shadow-none"
               description={
                 hasBillingConfiguration
-                  ? "Your Paddle invoices will appear here once subscription charges begin to process."
-                  : "Connect Paddle in this environment and invoice history will appear here automatically."
+                  ? "Your Cashfree charge history will appear here once authorisation and recurring charges start processing."
+                  : "Connect Cashfree in this environment and charge history will appear here automatically."
               }
-              title="No invoices available yet"
+              title="No charge history yet"
             />
           )}
         </CardContent>

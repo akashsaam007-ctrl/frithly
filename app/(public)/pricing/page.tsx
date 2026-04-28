@@ -13,6 +13,8 @@ export const metadata: Metadata = {
 type PricingPageProps = {
   searchParams?: Promise<{
     checkout?: string | string[] | undefined;
+    message?: string | string[] | undefined;
+    subscription?: string | string[] | undefined;
   }>;
 };
 
@@ -23,6 +25,8 @@ function readParam(value: string | string[] | undefined) {
 export default async function PricingPage({ searchParams }: PricingPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const checkoutState = readParam(resolvedSearchParams?.checkout);
+  const checkoutMessage = readParam(resolvedSearchParams?.message);
+  const subscriptionReference = readParam(resolvedSearchParams?.subscription);
 
   return (
     <main>
@@ -36,10 +40,22 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
             <Card className="mx-auto max-w-[680px] text-left">
               <CardContent className="p-5 text-sm text-muted">
                 {checkoutState === "success"
-                  ? "Checkout completed. Watch your inbox for the Paddle receipt and your Frithly welcome email, then use the same email address to log in."
-                  : checkoutState === "unavailable"
-                    ? "Paddle checkout is not configured yet in this environment. Add the Paddle API key, environment, client-side token, price IDs, and webhook secret, then try again."
-                    : "We couldn't open the hosted checkout right now. Please try again in a moment or book a quick call and we'll help you through it."}
+                  ? "Checkout completed. Watch your inbox for your Frithly welcome email, then use the same email address to log in."
+                  : checkoutState === "authorized"
+                    ? "Authorisation completed. Cashfree will confirm the recurring mandate in the background, and we'll email you as soon as the subscription is active."
+                    : checkoutState === "pending"
+                      ? "Authorisation reached the bank-approval stage. Cashfree may need a little more time before the subscription becomes fully active."
+                      : checkoutState === "unavailable"
+                        ? "Cashfree checkout is not configured yet in this environment. Add the Cashfree client ID, secret, environment, plan IDs, and webhook setup, then try again."
+                        : checkoutState === "failed"
+                          ? "The Cashfree authorisation did not complete successfully. You can try the checkout again or contact us for help."
+                          : "We couldn't open the hosted checkout right now. Please try again in a moment or book a quick call and we'll help you through it."}
+                {subscriptionReference ? (
+                  <span className="mt-3 block">Subscription reference: {subscriptionReference}</span>
+                ) : null}
+                {checkoutMessage ? (
+                  <span className="mt-3 block">Provider message: {checkoutMessage}</span>
+                ) : null}
               </CardContent>
             </Card>
           ) : null}

@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { hasCashfreeCheckoutConfiguration } from "@/lib/cashfree/env";
 import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
-import { hasPaddleCheckoutConfiguration } from "@/lib/paddle/env";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const pricingPlans = [
@@ -32,7 +32,7 @@ const pricingPlans = [
 ] as const;
 
 export function PricingSection() {
-  const hasCheckout = hasPaddleCheckoutConfiguration();
+  const hasCheckout = hasCashfreeCheckoutConfiguration();
 
   return (
     <section id="pricing" className="py-20">
@@ -128,8 +128,8 @@ export function PricingSection() {
         <div className="text-center text-base text-muted">
           <p className="text-sm">
             {hasCheckout
-              ? "Starter and Growth open a Paddle-hosted subscription checkout."
-              : "Paddle checkout is not configured yet, so checkout buttons fall back to the sample flow in local preview."}
+              ? "Starter and Growth open a Cashfree-hosted recurring subscription checkout."
+              : "Cashfree checkout is not configured yet, so checkout buttons fall back to the sample flow in local preview."}
           </p>
           <p>
             Not sure which tier?{" "}
