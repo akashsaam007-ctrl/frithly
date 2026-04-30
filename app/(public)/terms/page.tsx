@@ -1,33 +1,57 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { StructuredData } from "@/components/seo/structured-data";
 import { LegalPage } from "@/components/shared/legal-page";
 import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import {
+  buildBreadcrumbSchema,
+  buildPublicMetadata,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  description:
-    "Terms of Service for Frithly covering subscriptions, guarantees, acceptable use, liability, and governing law.",
+const termsDescription =
+  "Terms of Service for Frithly covering subscriptions, guarantees, acceptable use, liability, and governing law.";
+
+export const metadata: Metadata = buildPublicMetadata({
+  description: termsDescription,
+  keywords: ["Frithly terms", "terms of service", "subscription terms", "billing terms"],
+  path: "/terms",
   title: `Terms of Service | ${APP_NAME}`,
-};
+});
 
 export default function TermsPage() {
   return (
-    <LegalPage
-      intro={
-        <>
-          <p>
-            These Terms of Service govern access to the {APP_NAME} website, dashboard, lead
-            research service, customer support, and related subscription offerings.
-          </p>
-          <p>
-            These terms are suitable as a launch draft but should still be reviewed with counsel
-            before enterprise contracting or large-scale production use.
-          </p>
-        </>
-      }
-      kicker="Terms"
-      lastUpdated="28 April 2026"
-      title="Terms of Service"
-      sections={[
+    <>
+      <StructuredData
+        data={buildBreadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Terms of Service", path: "/terms" },
+        ])}
+      />
+      <StructuredData
+        data={buildWebPageSchema({
+          description: termsDescription,
+          path: "/terms",
+          title: `Terms of Service | ${APP_NAME}`,
+        })}
+      />
+      <LegalPage
+        intro={
+          <>
+            <p>
+              These Terms of Service govern access to the {APP_NAME} website, dashboard, lead
+              research service, customer support, and related subscription offerings.
+            </p>
+            <p>
+              These terms are suitable as a launch draft but should still be reviewed with counsel
+              before enterprise contracting or large-scale production use.
+            </p>
+          </>
+        }
+        kicker="Terms"
+        lastUpdated="28 April 2026"
+        title="Terms of Service"
+        sections={[
         {
           title: "Acceptance of these terms",
           body: (
@@ -304,7 +328,8 @@ export default function TermsPage() {
             </>
           ),
         },
-      ]}
-    />
+        ]}
+      />
+    </>
   );
 }

@@ -33,12 +33,12 @@ export function CookieBanner() {
   }
 
   return (
-    <div className="no-print fixed inset-x-0 bottom-4 z-50 px-4">
-      <Card className="mx-auto max-w-4xl shadow-lg">
-        <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-end md:justify-between">
+    <div className="no-print fixed inset-x-0 bottom-4 z-50 px-4 sm:left-auto sm:right-4 sm:max-w-[28rem] sm:px-0">
+      <Card className="mx-auto max-w-4xl border-border/80 bg-white/95 shadow-[0_18px_50px_rgba(26,26,26,0.16)] backdrop-blur-xl sm:mx-0 sm:max-w-[28rem]">
+        <CardContent className="flex flex-col gap-4 p-4 sm:p-5">
           <div className="space-y-2">
-            <p className="text-lg font-semibold text-ink">Cookie preferences</p>
-            <p className="text-sm text-muted md:text-base">
+            <p className="text-base font-semibold text-ink sm:text-lg">Cookie preferences</p>
+            <p className="text-sm leading-6 text-muted">
               We use essential cookies and local storage to keep Frithly secure and working
               properly. Optional analytics or similar tracking will only be enabled after consent
               where required. See our{" "}
@@ -49,11 +49,13 @@ export function CookieBanner() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button variant="secondary" onClick={() => saveChoice("rejected")}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <Button className="w-full sm:w-auto" variant="secondary" onClick={() => saveChoice("rejected")}>
               Reject optional cookies
             </Button>
-            <Button onClick={() => saveChoice("accepted")}>Accept cookies</Button>
+            <Button className="w-full sm:w-auto" onClick={() => saveChoice("accepted")}>
+              Accept cookies
+            </Button>
           </div>
         </CardContent>
       </Card>

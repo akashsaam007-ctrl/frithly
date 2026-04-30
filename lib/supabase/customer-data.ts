@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { differenceInCalendarDays, isAfter, subDays } from "date-fns";
 import { redirect } from "next/navigation";
+import { ensureCustomerRecordForUser } from "@/lib/auth/customer-provisioning";
 import { ROUTES } from "@/lib/constants";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatLongDate } from "@/lib/utils";
@@ -54,13 +55,19 @@ const getCurrentCustomerBase = cache(async () => {
   }
 
   const normalizedEmail = user.email.trim().toLowerCase();
-  const { data: customer, error: customerError } = await supabase
+  const { data: initialCustomer, error: customerError } = await supabase
     .from("customers")
     .select("*")
     .eq("email", normalizedEmail)
     .maybeSingle();
 
-  if (customerError || !customer) {
+  if (customerError) {
+    redirect(ROUTES.LOGIN);
+  }
+
+  const customer = initialCustomer ?? (await ensureCustomerRecordForUser(user));
+
+  if (!customer) {
     redirect(ROUTES.LOGIN);
   }
 

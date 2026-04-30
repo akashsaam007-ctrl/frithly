@@ -1,9 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isAdminEmail } from "@/lib/auth/admin-access";
-import { ROUTES } from "@/lib/constants";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database.types";
 import { env } from "@/lib/utils/env";
 
@@ -31,49 +28,6 @@ export async function POST(request: Request) {
 
   const email = parsed.data.email.trim().toLowerCase();
   const nextPath = parsed.data.nextPath?.trim();
-  const allowlistedAdmin = isAdminEmail(email);
-  const adminClient = createSupabaseAdminClient();
-
-  let customer: { id: string } | null = null;
-  let customerError: { message: string } | null = null;
-
-  if (!allowlistedAdmin) {
-    const customerResponse = await adminClient
-      .from("customers")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    customer = customerResponse.data;
-    customerError = customerResponse.error;
-  }
-
-  if (customerError) {
-    console.error("Magic link customer lookup failed", {
-      email,
-      message: customerError.message,
-    });
-
-    return NextResponse.json(
-      {
-        error: "We couldn't verify your account right now. Please try again in a minute.",
-      },
-      { status: 500 },
-    );
-  }
-
-  if (!allowlistedAdmin && !customer) {
-    console.warn("Magic link rejected because customer record was not found", { email });
-
-    return NextResponse.json(
-      {
-        code: "account_not_found",
-        error: "We don't have an account for this email.",
-        redirectTo: ROUTES.SAMPLE,
-      },
-      { status: 404 },
-    );
-  }
 
   const authClient = createClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,

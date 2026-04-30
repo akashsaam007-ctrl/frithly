@@ -1,21 +1,21 @@
-import { ArrowDownRight, CircleOff, TimerReset, TriangleAlert } from "lucide-react";
+import { ArrowDownRight, ChevronDown, CircleOff, TimerReset, TriangleAlert } from "lucide-react";
 import { Container } from "@/components/ui/container";
 
 const painCards = [
   {
     icon: CircleOff,
     stat: "Low signal quality",
-    text: "List vendors stop at names and titles, so your team still has to guess who is actually worth contacting.",
+    text: "Most list vendors stop at names and titles, so your team still has to guess who is worth contacting right now.",
   },
   {
     icon: TimerReset,
     stat: "10+ hours lost",
-    text: "SDRs burn their best hours researching context instead of getting into market and generating pipeline.",
+    text: "SDRs burn their best hours gathering context instead of getting into market and creating pipeline.",
   },
   {
     icon: TriangleAlert,
     stat: "Reply rates collapse",
-    text: "When there is no real trigger or angle, outbound becomes volume theatre and the market tunes you out.",
+    text: "When there is no real trigger or angle, outbound turns into noise and the market quickly tunes it out.",
   },
 ];
 
@@ -28,7 +28,7 @@ const painPoints = [
 
 export function Problem() {
   return (
-    <section id="problem" className="bg-ink py-24 text-white">
+    <section id="problem" className="bg-ink py-16 text-white sm:py-20 lg:py-24">
       <Container className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div className="space-y-6">
           <div className="section-eyebrow border-white/10 bg-white/5 text-terracotta">
@@ -39,9 +39,9 @@ export function Problem() {
               Your outbound engine is still running on research debt.
             </h2>
             <p className="section-copy max-w-xl text-white/70">
-              Apollo, ZoomInfo, and enrichment tools are useful. They just are not the final
-              product your reps need. Frithly exists in the gap between raw data access and real
-              outreach readiness.
+              Apollo, ZoomInfo, and enrichment tools are useful, but they are not the finished
+              product your reps need. Frithly sits in the gap between raw data access and leads
+              that are genuinely ready for outreach.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export function Problem() {
                 </div>
                 <p className="text-lg leading-8 text-white/80">
                   More software spend, slower ramp time, and outreach that feels generic the moment
-                  it hits the inbox.
+                  it lands in an inbox.
                 </p>
               </div>
             </div>
@@ -64,14 +64,42 @@ export function Problem() {
         </div>
 
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="space-y-3 md:hidden">
+            {painCards.map((card) => {
+              const Icon = card.icon;
+
+              return (
+                <details
+                  key={card.stat}
+                  className="group overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5"
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left marker:hidden">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-terracotta">
+                        <Icon className="h-5 w-5" aria-hidden="true" />
+                      </div>
+                      <div className="text-base font-semibold text-white">{card.stat}</div>
+                    </div>
+                    <ChevronDown className="h-5 w-5 shrink-0 text-white/60 transition-transform duration-300 group-open:rotate-180" />
+                  </summary>
+                  <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 group-open:grid-rows-[1fr]">
+                    <div className="overflow-hidden px-5 pb-5 text-sm leading-7 text-white/65">
+                      {card.text}
+                    </div>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+
+          <div className="hidden gap-5 md:grid md:grid-cols-3">
             {painCards.map((card) => {
               const Icon = card.icon;
 
               return (
                 <div
                   key={card.stat}
-                  className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur"
+                  className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur md:rounded-[1.75rem]"
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-terracotta">
                     <Icon className="h-5 w-5" aria-hidden="true" />
@@ -83,21 +111,25 @@ export function Problem() {
             })}
           </div>
 
-          <div className="rounded-[1.75rem] border border-white/10 bg-white p-6 text-ink shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
+          <div className="rounded-[1.5rem] border border-white/10 bg-white p-5 text-ink shadow-[0_20px_60px_rgba(0,0,0,0.2)] sm:p-6 md:rounded-[1.75rem]">
             <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
               The pattern we keep seeing
             </div>
             <div className="mt-5 grid gap-4">
-              {painPoints.map((point) => (
-                <div key={point} className="flex gap-3 rounded-2xl bg-stone-50 px-4 py-4">
+              {painPoints.map((point, index) => (
+                <div
+                  key={point}
+                  className={`flex gap-3 rounded-2xl bg-stone-50 px-4 py-4 ${
+                    index > 1 ? "hidden md:flex" : ""
+                  }`}
+                >
                   <span className="mt-1 h-2.5 w-2.5 rounded-full bg-terracotta" aria-hidden="true" />
                   <p className="text-sm leading-7 text-muted md:text-base">{point}</p>
                 </div>
               ))}
             </div>
             <p className="mt-5 text-lg font-medium text-ink">
-              Frithly turns that messy middle layer into one weekly operating rhythm your team can
-              trust.
+              Frithly turns that messy middle layer into one weekly rhythm your team can trust.
             </p>
           </div>
         </div>

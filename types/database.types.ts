@@ -76,6 +76,7 @@ export type Database = {
           id?: string;
           notes?: string | null;
           plan?: "design_partner" | "growth" | "scale" | "starter" | null;
+          role?: "admin" | "customer";
           signup_date?: string | null;
           status?: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
           billing_customer_id?: string | null;
@@ -92,6 +93,7 @@ export type Database = {
           id: string;
           notes: string | null;
           plan: "design_partner" | "growth" | "scale" | "starter" | null;
+          role: "admin" | "customer";
           signup_date: string | null;
           status: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
           billing_customer_id: string | null;
@@ -107,6 +109,7 @@ export type Database = {
           id?: string;
           notes?: string | null;
           plan?: "design_partner" | "growth" | "scale" | "starter" | null;
+          role?: "admin" | "customer";
           signup_date?: string | null;
           status?: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
           billing_customer_id?: string | null;

@@ -1,26 +1,60 @@
+import Image from "next/image";
 import Link from "next/link";
-import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type LogoProps = {
   className?: string;
   href?: string;
+  imageClassName?: string;
+  priority?: boolean;
 };
 
-export function Logo({ className, href = "/" }: LogoProps) {
+type BrandMarkProps = {
+  className?: string;
+  imageClassName?: string;
+  priority?: boolean;
+};
+
+export function Logo({ className, href = "/", imageClassName, priority = false }: LogoProps) {
   return (
     <Link
       href={href}
-      aria-label={`${APP_NAME} home`}
+      aria-label="Frithly home"
       className={cn(
-        "inline-flex items-center gap-2 text-2xl font-bold tracking-tighter text-ink transition-colors hover:text-terracotta",
+        "inline-flex items-center rounded-2xl transition-opacity hover:opacity-90",
         className,
       )}
     >
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-terracotta text-sm font-extrabold text-white">
-        F
-      </span>
-      <span>{APP_NAME}</span>
+      <Image
+        src="/frithly-wordmark.png"
+        alt="Frithly"
+        width={228}
+        height={53}
+        priority={priority}
+        sizes="(min-width: 1024px) 160px, (min-width: 640px) 144px, 128px"
+        className={cn("h-8 w-auto sm:h-9 md:h-10", imageClassName)}
+      />
     </Link>
+  );
+}
+
+export function BrandMark({ className, imageClassName, priority = false }: BrandMarkProps) {
+  return (
+    <div
+      className={cn(
+        "inline-flex items-center justify-center overflow-hidden rounded-[1.25rem] border border-border/70 bg-white/95 shadow-sm",
+        className,
+      )}
+    >
+      <Image
+        src="/frithly-mark.png"
+        alt="Frithly mark"
+        width={112}
+        height={112}
+        priority={priority}
+        sizes="56px"
+        className={cn("h-14 w-14 object-cover", imageClassName)}
+      />
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ type CheckoutPageProps = {
   params: Promise<{ planId: string }>;
   searchParams?: Promise<{
     error?: string | string[] | undefined;
+    mode?: string | string[] | undefined;
   }>;
 };
 
@@ -33,6 +34,8 @@ function getErrorMessage(errorCode: string) {
   switch (errorCode) {
     case "create-failed":
       return "We couldn't create your Cashfree subscription session just now. Double-check your details and try again.";
+    case "customer-details-required":
+      return "We need your phone number to open Cashfree authorisation for this subscription.";
     case "invalid-details":
       return "Please provide a valid full name, work email, and phone number before continuing.";
     case "invalid-plan":
@@ -48,7 +51,9 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
   const { planId } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const errorCode = readParam(resolvedSearchParams?.error);
+  const mode = readParam(resolvedSearchParams?.mode);
   const errorMessage = getErrorMessage(errorCode);
+  const isDashboardUpgrade = mode === "dashboard-upgrade";
 
   if (!checkoutPlans.has(planId as PlanId)) {
     notFound();
@@ -58,6 +63,11 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    redirect(`${ROUTES.LOGIN}?next=${encodeURIComponent(`/checkout/${planId}`)}`);
+  }
+
   const selectedPlan =
     planId === "design_partner"
       ? PLANS.DESIGN_PARTNER
@@ -68,21 +78,28 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
   const defaultName =
     typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : "";
   const defaultEmail = user?.email ?? "";
+  const { data: existingCustomer } = await supabase
+    .from("customers")
+    .select("company_name, full_name")
+    .eq("email", defaultEmail.trim().toLowerCase())
+    .maybeSingle();
   const defaultCompany =
-    typeof user?.user_metadata?.company_name === "string" ? user.user_metadata.company_name : "";
+    existingCustomer?.company_name ||
+    (typeof user?.user_metadata?.company_name === "string" ? user.user_metadata.company_name : "");
+  const resolvedName = existingCustomer?.full_name || defaultName;
 
   return (
     <main className="py-16 md:py-24">
       <Container width="narrow" className="space-y-8">
         <div className="space-y-3 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
-            Secure Checkout
+            {isDashboardUpgrade ? "Complete billing setup" : "Secure Checkout"}
           </p>
           <h1>Start your {selectedPlan.name} subscription</h1>
           <p className="text-muted">
-            Cashfree will open a hosted card authorisation flow for your recurring Frithly plan.
-            We&apos;ll only use these details to create the subscription session and send your
-            service emails.
+            {isDashboardUpgrade
+              ? "You're already signed in. Add the few details Cashfree requires and we'll send you straight into the hosted card authorisation flow."
+              : "Cashfree will open a hosted card authorisation flow for your recurring Frithly plan. We&apos;ll only use these details to create the subscription session and send your service emails."}
           </p>
         </div>
 
@@ -104,37 +121,51 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
             ) : null}
 
             {checkoutConfigured ? (
-              <form
-                action="/api/billing/cashfree/checkout"
-                className="space-y-5"
-                method="post"
-              >
+              <form action="/api/billing/cashfree/checkout" className="space-y-5" method="post">
                 <input name="planId" type="hidden" value={selectedPlan.id} />
 
-                <div className="space-y-2">
-                  <Label htmlFor="full-name">Full name</Label>
-                  <Input
-                    autoComplete="name"
-                    defaultValue={defaultName}
-                    id="full-name"
-                    name="fullName"
-                    placeholder="Jane Smith"
-                    required
-                  />
-                </div>
+                {isDashboardUpgrade ? (
+                  <>
+                    <input name="fullName" type="hidden" value={resolvedName} />
+                    <input name="email" type="hidden" value={defaultEmail} />
+                    <input name="companyName" type="hidden" value={defaultCompany} />
 
-                <div className="space-y-2">
-                  <Label htmlFor="work-email">Work email</Label>
-                  <Input
-                    autoComplete="email"
-                    defaultValue={defaultEmail}
-                    id="work-email"
-                    name="email"
-                    placeholder="jane@company.com"
-                    required
-                    type="email"
-                  />
-                </div>
+                    <div className="rounded-xl bg-cream p-4 text-sm text-muted">
+                      <p className="font-semibold text-ink">Using your account details</p>
+                      <p className="mt-2">
+                        {resolvedName || "Your account name"} | {defaultEmail}
+                        {defaultCompany ? ` | ${defaultCompany}` : ""}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="full-name">Full name</Label>
+                      <Input
+                        autoComplete="name"
+                        defaultValue={resolvedName}
+                        id="full-name"
+                        name="fullName"
+                        placeholder="Jane Smith"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="work-email">Work email</Label>
+                      <Input
+                        autoComplete="email"
+                        defaultValue={defaultEmail}
+                        id="work-email"
+                        name="email"
+                        placeholder="jane@company.com"
+                        required
+                        type="email"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="phone-number">Phone number</Label>
@@ -148,37 +179,51 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="company-name">Company name</Label>
-                  <Input
-                    defaultValue={defaultCompany}
-                    id="company-name"
-                    name="companyName"
-                    placeholder="Acme SaaS"
-                  />
-                </div>
+                {isDashboardUpgrade ? null : (
+                  <div className="space-y-2">
+                    <Label htmlFor="company-name">Company name</Label>
+                    <Input
+                      defaultValue={defaultCompany}
+                      id="company-name"
+                      name="companyName"
+                      placeholder="Acme SaaS"
+                    />
+                  </div>
+                )}
 
                 <div className="rounded-xl bg-cream p-4 text-sm text-muted">
-                  <p className="font-semibold text-ink">Before you continue</p>
+                  <p className="font-semibold text-ink">
+                    {isDashboardUpgrade ? "What happens next" : "Before you continue"}
+                  </p>
                   <ul className="mt-3 list-disc space-y-2 pl-5">
-                    <li>Cashfree must have your whitelisted domain and active recurring billing setup.</li>
-                    <li>
-                      Sandbox flows may ask you to simulate authorisation before the subscription
-                      becomes active.
-                    </li>
-                    <li>
-                      Final subscription status should always be trusted from webhooks, not the
-                      browser redirect alone.
-                    </li>
+                    {isDashboardUpgrade ? (
+                      <>
+                        <li>We&apos;ll open Cashfree immediately after you submit this phone number.</li>
+                        <li>After successful authorisation, you&apos;ll come straight back to your dashboard.</li>
+                        <li>Final subscription state is confirmed in the background from Cashfree.</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>Cashfree must have your whitelisted domain and active recurring billing setup.</li>
+                        <li>
+                          Sandbox flows may ask you to simulate authorisation before the subscription
+                          becomes active.
+                        </li>
+                        <li>
+                          Final subscription status should always be trusted from webhooks, not the
+                          browser redirect alone.
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
                   <button className="btn-primary" type="submit">
-                    Continue to secure authorisation
+                    {isDashboardUpgrade ? "Continue to payment" : "Continue to secure authorisation"}
                   </button>
-                  <Link className="btn-secondary" href="/pricing">
-                    Back to pricing
+                  <Link className="btn-secondary" href={isDashboardUpgrade ? ROUTES.DASHBOARD : "/pricing"}>
+                    {isDashboardUpgrade ? "Back to dashboard" : "Back to pricing"}
                   </Link>
                 </div>
               </form>

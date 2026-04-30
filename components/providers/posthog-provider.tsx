@@ -3,18 +3,23 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { COOKIE_CONSENT_CHANGED_EVENT } from "@/lib/monitoring/consent";
-import { capturePageView, syncAnalyticsConsent } from "@/lib/monitoring/posthog";
+import {
+  capturePageView,
+  hasPostHogConfiguration,
+  syncAnalyticsConsent,
+} from "@/lib/monitoring/posthog";
 
-type PostHogProviderProps = {
-  children: React.ReactNode;
-};
-
-export function PostHogProvider({ children }: PostHogProviderProps) {
+export function PostHogProvider() {
   const pathname = usePathname();
+  const hasPostHog = hasPostHogConfiguration();
 
   useEffect(() => {
+    if (!hasPostHog) {
+      return;
+    }
+
     function handleConsentChange() {
-      syncAnalyticsConsent();
+      void syncAnalyticsConsent();
     }
 
     handleConsentChange();
@@ -25,12 +30,16 @@ export function PostHogProvider({ children }: PostHogProviderProps) {
       window.removeEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);
       window.removeEventListener("storage", handleConsentChange);
     };
-  }, []);
+  }, [hasPostHog]);
 
   useEffect(() => {
-    const search = typeof window === "undefined" ? "" : window.location.search;
-    capturePageView(pathname, search);
-  }, [pathname]);
+    if (!hasPostHog) {
+      return;
+    }
 
-  return children;
+    const search = typeof window === "undefined" ? "" : window.location.search;
+    void capturePageView(pathname, search);
+  }, [hasPostHog, pathname]);
+
+  return null;
 }

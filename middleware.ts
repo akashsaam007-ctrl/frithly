@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getBootstrapRoleForEmail, isMissingCustomerRoleColumnError } from "@/lib/auth/admin-access";
+import { hasCustomerWorkspaceAccess } from "@/lib/auth/customer-access";
 import { ROUTES } from "@/lib/constants";
 import { copyResponseCookies, updateSession } from "@/lib/supabase/middleware";
 import { isDemoMode } from "@/lib/utils/mode";
@@ -10,18 +12,17 @@ const PROTECTED_CUSTOMER_ROUTES = [
   ROUTES.BILLING,
   "/help",
 ];
+const PLAN_REQUIRED_CUSTOMER_ROUTES = [ROUTES.BRIEFS, ROUTES.ICP];
 const PROTECTED_ADMIN_ROUTES = [ROUTES.ADMIN];
-const ADMIN_EMAIL_ALLOWLIST = (process.env.ADMIN_EMAIL_ALLOWLIST || "")
-  .split(",")
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean);
 
 export async function middleware(request: NextRequest) {
-  if (isDemoMode) {
+  const demoMode = isDemoMode;
+
+  if (demoMode) {
     return NextResponse.next();
   }
 
-  const { response, user } = await updateSession(request);
+  const { response, supabase, user } = await updateSession(request);
   const path = request.nextUrl.pathname;
 
   if (PROTECTED_CUSTOMER_ROUTES.some((route) => path.startsWith(route))) {
@@ -34,12 +35,80 @@ export async function middleware(request: NextRequest) {
         response,
       );
     }
+
+    const email = user.email?.trim().toLowerCase();
+    let customerRecord:
+      | {
+          plan: "design_partner" | "growth" | "scale" | "starter" | null;
+          role: "admin" | "customer";
+          status: "active" | "cancelled" | "churned" | "paused" | "pending" | null;
+        }
+      | null = null;
+
+    if (email) {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("role, plan, status")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (error && isMissingCustomerRoleColumnError(error.message)) {
+        const { data: legacyData } = await supabase
+          .from("customers")
+          .select("plan, status")
+          .eq("email", email)
+          .maybeSingle();
+
+        customerRecord = legacyData
+          ? {
+              ...legacyData,
+              role: getBootstrapRoleForEmail(email),
+            }
+          : null;
+      } else {
+        customerRecord = data;
+      }
+    }
+
+    const isAdmin = customerRecord?.role === "admin";
+
+    if (
+      email &&
+      !isAdmin &&
+      PLAN_REQUIRED_CUSTOMER_ROUTES.some((route) => path.startsWith(route))
+    ) {
+      if (!hasCustomerWorkspaceAccess(customerRecord)) {
+        const dashboardUrl = new URL(ROUTES.DASHBOARD, request.url);
+        dashboardUrl.searchParams.set("access", "plan-required");
+        dashboardUrl.searchParams.set(
+          "locked",
+          path.startsWith(ROUTES.BRIEFS) ? "briefs" : "icp",
+        );
+
+        return copyResponseCookies(NextResponse.redirect(dashboardUrl), response);
+      }
+    }
   }
 
   if (PROTECTED_ADMIN_ROUTES.some((route) => path.startsWith(route))) {
     const email = user?.email?.toLowerCase();
+    let isAdmin = false;
 
-    if (!user || !email || !ADMIN_EMAIL_ALLOWLIST.includes(email)) {
+    if (email) {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("role")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (error && isMissingCustomerRoleColumnError(error.message)) {
+        isAdmin = getBootstrapRoleForEmail(email) === "admin";
+      } else {
+        isAdmin = data?.role === "admin";
+      }
+    }
+
+    if (!user || !email || !isAdmin) {
       return copyResponseCookies(
         NextResponse.redirect(new URL(ROUTES.HOME, request.url)),
         response,

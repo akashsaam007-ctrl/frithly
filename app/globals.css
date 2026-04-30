@@ -6,15 +6,19 @@
   html {
     scroll-behavior: smooth;
     min-height: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-cream font-sans text-ink antialiased;
     background-image:
-      radial-gradient(circle at top left, rgba(212, 98, 58, 0.12), transparent 24rem),
+      radial-gradient(circle at top left, rgba(212, 98, 58, 0.08), transparent 22rem),
       linear-gradient(180deg, #fdfcf9 0%, #f8f4ed 45%, #faf8f5 100%);
     font-feature-settings: "cv11", "ss01";
     min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   h1,
@@ -25,23 +29,23 @@
   }
 
   h1 {
-    @apply text-5xl md:text-6xl lg:text-7xl;
+    @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl;
+    @apply text-xl sm:text-2xl md:text-3xl;
   }
 
   h4 {
-    @apply text-xl md:text-2xl;
+    @apply text-lg sm:text-xl md:text-2xl;
   }
 
   p {
-    @apply text-base leading-relaxed md:text-lg;
+    @apply text-[15px] leading-7 md:text-lg;
   }
 
   ::selection {
@@ -59,15 +63,15 @@
   }
 
   .card {
-    @apply rounded-2xl border border-border bg-white p-8 shadow-sm;
+    @apply rounded-2xl border border-border bg-white p-6 shadow-sm md:p-8;
   }
 
   .container-narrow {
-    @apply mx-auto max-w-narrow px-6;
+    @apply mx-auto max-w-narrow px-4 sm:px-6;
   }
 
   .container-content {
-    @apply mx-auto max-w-content px-6;
+    @apply mx-auto max-w-content px-4 sm:px-6;
   }
 
   .section-eyebrow {
@@ -75,23 +79,23 @@
   }
 
   .section-title {
-    @apply text-4xl leading-[0.95] md:text-5xl lg:text-6xl;
+    @apply text-3xl leading-[0.95] sm:text-4xl md:text-5xl lg:text-6xl;
   }
 
   .section-copy {
-    @apply text-base leading-8 text-muted md:text-lg;
+    @apply text-[15px] leading-7 text-muted sm:text-base md:text-lg;
   }
 
   .surface-card {
-    @apply rounded-[1.75rem] border border-border/80 bg-white shadow-[0_18px_60px_rgba(26,26,26,0.06)];
+    @apply rounded-[1.5rem] border border-border/80 bg-white shadow-[0_18px_60px_rgba(26,26,26,0.06)] md:rounded-[1.75rem];
   }
 
   .surface-card-dark {
-    @apply rounded-[1.75rem] border border-white/10 bg-ink text-white shadow-[0_24px_70px_rgba(16,16,16,0.4)];
+    @apply rounded-[1.5rem] border border-white/10 bg-ink text-white shadow-[0_24px_70px_rgba(16,16,16,0.4)] md:rounded-[1.75rem];
   }
 
   .metric-chip {
-    @apply inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/85 px-4 py-2 text-sm font-medium text-ink shadow-sm;
+    @apply inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/85 px-3 py-2 text-xs font-medium text-ink shadow-sm sm:px-4 sm:text-sm;
   }
 
   .animated-fade-up {
@@ -99,15 +103,31 @@
   }
 
   .animated-float {
-    animation: float-soft 7s ease-in-out infinite;
+    animation: none;
   }
 
   .animated-float-delayed {
-    animation: float-soft 8.5s ease-in-out 1.2s infinite;
+    animation: none;
   }
 
   .animated-glow {
-    animation: pulse-glow 5s ease-in-out infinite;
+    animation: none;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @layer components {
+    .animated-float {
+      animation: float-soft 7s ease-in-out infinite;
+    }
+
+    .animated-float-delayed {
+      animation: float-soft 8.5s ease-in-out 1.2s infinite;
+    }
+
+    .animated-glow {
+      animation: pulse-glow 5s ease-in-out infinite;
+    }
   }
 }
 

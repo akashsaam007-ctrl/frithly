@@ -12,10 +12,26 @@ function isSafeNextPath(value: string | null) {
   return Boolean(value && value.startsWith("/") && !value.startsWith("//"));
 }
 
+function getVerifyHeading(nextPath: string | null) {
+  if (nextPath?.startsWith("/checkout/")) {
+    return {
+      description: "One moment while we sign you in and take you to secure checkout.",
+      title: "Preparing your checkout",
+    };
+  }
+
+  return {
+    description: "One moment while we log you in and send you to your dashboard.",
+    title: "Verifying your sign-in",
+  };
+}
+
 function VerifyPageContent() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next");
+  const verifyCopy = getVerifyHeading(nextPath);
 
   useEffect(() => {
     let cancelled = false;
@@ -31,6 +47,13 @@ function VerifyPageContent() {
       const nextPath = searchParams.get("next");
       const tokenHash = searchParams.get("token_hash");
       const type = searchParams.get("type") as EmailOtpType | null;
+      const storedNextPath = window.sessionStorage.getItem("frithly-post-auth-next");
+      const storedProvider = window.sessionStorage.getItem("frithly-post-auth-provider");
+      const resolvedNextPath = isSafeNextPath(nextPath)
+        ? nextPath
+        : isSafeNextPath(storedNextPath)
+          ? storedNextPath
+          : null;
 
       try {
         if (errorDescription) {
@@ -79,13 +102,24 @@ function VerifyPageContent() {
           } = await supabase.auth.getSession();
 
           if (!session) {
+            if (storedProvider === "google" && resolvedNextPath?.startsWith("/checkout/")) {
+              const restartUrl = new URL(ROUTES.LOGIN, window.location.origin);
+
+              restartUrl.searchParams.set("auth", "google");
+              restartUrl.searchParams.set("next", resolvedNextPath);
+              window.location.assign(restartUrl.toString());
+              return;
+            }
+
             throw new Error("Missing verification parameters");
           }
         }
 
         if (!cancelled) {
-          if (isSafeNextPath(nextPath)) {
-            router.replace(nextPath!);
+          if (resolvedNextPath) {
+            window.sessionStorage.removeItem("frithly-post-auth-next");
+            window.sessionStorage.removeItem("frithly-post-auth-provider");
+            window.location.assign(resolvedNextPath);
             return;
           }
 
@@ -96,10 +130,20 @@ function VerifyPageContent() {
             destination?: string;
           };
 
-          router.replace(destinationPayload.destination ?? ROUTES.DASHBOARD);
+          window.sessionStorage.removeItem("frithly-post-auth-provider");
+          window.location.assign(destinationPayload.destination ?? ROUTES.DASHBOARD);
         }
       } catch (error) {
         console.error("Magic link verification failed", error);
+
+        if (storedProvider === "google" && resolvedNextPath?.startsWith("/checkout/")) {
+          const restartUrl = new URL(ROUTES.LOGIN, window.location.origin);
+
+          restartUrl.searchParams.set("auth", "google");
+          restartUrl.searchParams.set("next", resolvedNextPath);
+          window.location.assign(restartUrl.toString());
+          return;
+        }
 
         if (!cancelled) {
           setHasError(true);
@@ -134,8 +178,8 @@ function VerifyPageContent() {
       <div className="flex flex-col items-center gap-4 text-center">
         <Spinner className="text-terracotta" />
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl">Verifying your magic link</h1>
-          <p className="text-muted">One moment while we log you in and send you to your dashboard.</p>
+          <h1 className="text-3xl md:text-4xl">{verifyCopy.title}</h1>
+          <p className="text-muted">{verifyCopy.description}</p>
         </div>
       </div>
     </main>
@@ -150,9 +194,9 @@ export default function VerifyPage() {
           <div className="flex flex-col items-center gap-4 text-center">
             <Spinner className="text-terracotta" />
             <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl">Verifying your magic link</h1>
+              <h1 className="text-3xl md:text-4xl">Verifying your sign-in</h1>
               <p className="text-muted">
-                One moment while we log you in and send you to your dashboard.
+                One moment while we log you in and get your next step ready.
               </p>
             </div>
           </div>

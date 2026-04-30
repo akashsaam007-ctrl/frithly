@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageEvent } from "@/components/analytics/page-event";
+import { AnswerEngineSection } from "@/components/landing/answer-engine-section";
 import { Comparison } from "@/components/landing/comparison";
 import { Faq } from "@/components/landing/faq";
 import { FinalCta } from "@/components/landing/final-cta";
@@ -8,55 +9,61 @@ import { Hero } from "@/components/landing/hero";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { PricingSection } from "@/components/landing/pricing";
 import { Problem } from "@/components/landing/problem";
+import { ProofSection } from "@/components/landing/proof-section";
 import { SampleLead } from "@/components/landing/sample-lead";
-import { META } from "@/lib/constants";
+import { StructuredData } from "@/components/seo/structured-data";
+import { landingFaqs } from "@/components/landing/faq";
+import {
+  buildFaqSchema,
+  buildOrganizationSchema,
+  buildPublicMetadata,
+  buildServiceSchema,
+  buildWebPageSchema,
+  buildWebSiteSchema,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Get 50 hyper-researched B2B leads with personalized opening lines delivered to your inbox every Monday. Apollo gives you data. We deliver intelligence.",
-  openGraph: {
-    description:
-      "Get 50 hyper-researched B2B leads with personalized opening lines delivered to your inbox every Monday.",
-    images: [
-      {
-        height: 630,
-        url: "https://frithly.com/og-image.png",
-        width: 1200,
-      },
-    ],
-    locale: "en_GB",
-    siteName: "Frithly",
-    title: META.TITLE,
-    type: "website",
-    url: "https://frithly.com",
-  },
-  robots: {
-    follow: true,
-    index: true,
-  },
-  title: META.TITLE,
-  twitter: {
-    card: "summary_large_image",
-    description:
-      "Get 50 hyper-researched B2B leads with personalized opening lines delivered to your inbox every Monday.",
-    images: ["https://frithly.com/og-image.png"],
-    title: META.TITLE,
-  },
-};
+    "Get 50 hyper-researched B2B leads with personalized opening lines delivered every Monday. Frithly helps B2B outbound teams turn raw lead data into ready-to-send pipeline.",
+  keywords: [
+    "B2B lead intelligence",
+    "hyper-researched leads",
+    "weekly outbound leads",
+    "personalized cold outreach",
+    "B2B prospect research",
+    "sales intelligence service",
+  ],
+  path: "/",
+  title: "Frithly | Weekly B2B Lead Intelligence for Outbound Teams",
+});
 
 export default function HomePage() {
   return (
     <main>
+      <StructuredData data={buildOrganizationSchema()} />
+      <StructuredData data={buildWebSiteSchema()} />
+      <StructuredData
+        data={buildWebPageSchema({
+          description:
+            "Frithly helps outbound teams turn raw lead data into weekly researched accounts, verified contacts, and ready-to-send outreach angles.",
+          path: "/",
+          title: "Frithly | Weekly B2B Lead Intelligence for Outbound Teams",
+        })}
+      />
+      <StructuredData data={buildServiceSchema()} />
+      <StructuredData data={buildFaqSchema(landingFaqs)} />
       <PageEvent
         name="landing_page_viewed"
         oncePerSessionKey="landing-page-viewed"
         properties={{ location: "home_page" }}
       />
       <Hero />
+      <AnswerEngineSection />
       <Problem />
       <Comparison />
       <SampleLead />
       <HowItWorks />
+      <ProofSection />
       <PricingSection />
       <Guarantees />
       <Faq />

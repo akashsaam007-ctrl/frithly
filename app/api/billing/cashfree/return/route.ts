@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchCashfreeSubscription, getFrithlyPlanIdFromCashfreeSubscription } from "@/lib/cashfree/client";
+import { ROUTES } from "@/lib/constants";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { env } from "@/lib/utils/env";
 import type { CustomerStatus } from "@/types";
 
 function mapCashfreeStatusToCustomerStatus(status: string): CustomerStatus {
@@ -58,14 +58,19 @@ export async function POST(request: Request) {
   const emailFromReturnUrl = requestUrl.searchParams.get("email")?.trim().toLowerCase() ?? "";
   const companyNameFromReturnUrl = requestUrl.searchParams.get("company_name")?.trim() ?? "";
   const planFromReturnUrl = requestUrl.searchParams.get("plan")?.trim() ?? "";
-  const redirectUrl = new URL("/pricing", env.NEXT_PUBLIC_APP_URL);
+  const checkoutState = resolveCheckoutState({
+    checkoutStatus,
+    status,
+  });
+  const redirectPath =
+    checkoutState === "authorized" || checkoutState === "pending"
+      ? ROUTES.DASHBOARD
+      : "/pricing";
+  const redirectUrl = new URL(redirectPath, requestUrl.origin);
 
   redirectUrl.searchParams.set(
     "checkout",
-    resolveCheckoutState({
-      checkoutStatus,
-      status,
-    }),
+    checkoutState,
   );
 
   if (subscriptionId) {

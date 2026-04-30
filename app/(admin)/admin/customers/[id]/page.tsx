@@ -1,3 +1,4 @@
+import { CustomerRoleControls } from "@/components/admin/customer-role-controls";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +14,8 @@ export default async function AdminCustomerDetailPage({
 }: AdminCustomerDetailPageProps) {
   const { id } = await params;
   const detail = await getAdminCustomerDetail(id);
-  const { activeIcp, approvalRateLabel, batches, customer, feedback, lifetimeLeadCount } = detail;
+  const { activeIcp, approvalRateLabel, batches, customer, feedback, lifetimeLeadCount, viewerEmail } =
+    detail;
 
   return (
     <Container className="space-y-8 px-0">
@@ -27,6 +29,9 @@ export default async function AdminCustomerDetailPage({
           </span>
           <span className="rounded-full bg-cream px-3 py-1 text-sm font-semibold text-ink capitalize">
             {customer.status ?? "pending"}
+          </span>
+          <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-ink capitalize">
+            {customer.role}
           </span>
         </div>
         <p className="text-muted">
@@ -53,6 +58,13 @@ export default async function AdminCustomerDetailPage({
           </p>
         ) : null}
       </div>
+
+      <CustomerRoleControls
+        customerEmail={customer.email}
+        customerId={customer.id}
+        initialRole={customer.role}
+        viewerEmail={viewerEmail}
+      />
 
       <Tabs defaultValue="overview">
         <TabsList>

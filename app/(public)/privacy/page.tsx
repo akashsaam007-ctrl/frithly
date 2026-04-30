@@ -1,35 +1,59 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { StructuredData } from "@/components/seo/structured-data";
 import { LegalPage } from "@/components/shared/legal-page";
 import { APP_NAME, APP_TAGLINE, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import {
+  buildBreadcrumbSchema,
+  buildPublicMetadata,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  description:
-    "Privacy policy for Frithly, including data collection, processors, retention, GDPR rights, CCPA rights, and cookie usage.",
+const privacyDescription =
+  "Privacy policy for Frithly, including data collection, processors, retention, GDPR rights, CCPA rights, and cookie usage.";
+
+export const metadata: Metadata = buildPublicMetadata({
+  description: privacyDescription,
+  keywords: ["Frithly privacy policy", "GDPR", "CCPA", "data processing"],
+  path: "/privacy",
   title: `Privacy Policy | ${APP_NAME}`,
-};
+});
 
 export default function PrivacyPage() {
   return (
-    <LegalPage
-      intro={
-        <>
-          <p>
-            This Privacy Policy explains how {APP_NAME} collects, uses, stores, and protects
-            information when prospects, customers, and site visitors use our website, request a
-            sample, purchase a subscription, or interact with our team.
-          </p>
-          <p>
-            This page is written to be publishable for launch, but it should still be reviewed by
-            your legal advisor before you accept large-scale production traffic or regulated
-            customer contracts.
-          </p>
-        </>
-      }
-      kicker="Privacy"
-      lastUpdated="28 April 2026"
-      title="Privacy Policy"
-      sections={[
+    <>
+      <StructuredData
+        data={buildBreadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy" },
+        ])}
+      />
+      <StructuredData
+        data={buildWebPageSchema({
+          description: privacyDescription,
+          path: "/privacy",
+          title: `Privacy Policy | ${APP_NAME}`,
+        })}
+      />
+      <LegalPage
+        intro={
+          <>
+            <p>
+              This Privacy Policy explains how {APP_NAME} collects, uses, stores, and protects
+              information when prospects, customers, and site visitors use our website, request a
+              sample, purchase a subscription, or interact with our team.
+            </p>
+            <p>
+              This page is written to be publishable for launch, but it should still be reviewed by
+              your legal advisor before you accept large-scale production traffic or regulated
+              customer contracts.
+            </p>
+          </>
+        }
+        kicker="Privacy"
+        lastUpdated="28 April 2026"
+        title="Privacy Policy"
+        sections={[
         {
           title: "Who we are",
           body: (
@@ -326,7 +350,8 @@ export default function PrivacyPage() {
             </>
           ),
         },
-      ]}
-    />
+        ]}
+      />
+    </>
   );
 }

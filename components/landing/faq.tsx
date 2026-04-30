@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
 
-const faqs = [
+export const landingFaqs = [
   {
     answer:
       "Apollo and ZoomInfo give you raw data access. Frithly gives your team a finished weekly brief with timing context, trigger signals, and outreach angles already attached.",
@@ -38,7 +38,7 @@ const faqs = [
 
 export function Faq() {
   return (
-    <section id="faq" className="py-24">
+    <section id="faq" className="py-16 sm:py-20 lg:py-24">
       <Container className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <div className="space-y-5">
           <div className="section-eyebrow">Questions from serious buyers</div>
@@ -49,8 +49,8 @@ export function Faq() {
           </p>
         </div>
 
-        <div className="surface-card overflow-hidden px-6">
-          {faqs.map((faq) => (
+        <div className="surface-card overflow-hidden px-4 sm:px-6">
+          {landingFaqs.map((faq) => (
             <details key={faq.question} className="group border-b border-border/70 py-1 last:border-b-0">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-6 text-left text-base font-semibold text-ink marker:hidden md:text-lg">
                 {faq.question}

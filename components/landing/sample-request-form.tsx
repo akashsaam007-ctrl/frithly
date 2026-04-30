@@ -42,7 +42,18 @@ export function SampleRequestForm() {
       });
 
       if (!response.ok) {
-        throw new Error("We couldn't submit your sample request right now.");
+        let errorMessage = "We couldn't submit your sample request right now.";
+
+        try {
+          const payload = (await response.json()) as { error?: string };
+          if (payload.error) {
+            errorMessage = payload.error;
+          }
+        } catch {
+          // Fall back to the generic message if the response body is not JSON.
+        }
+
+        throw new Error(errorMessage);
       }
 
       setFormState(initialFormState);
@@ -166,12 +177,14 @@ export function SampleRequestForm() {
           required
           id="frustration"
           name="frustration"
+          minLength={10}
           placeholder="Apollo gives us lists, but our SDRs still spend hours researching and replies are weak..."
           value={formState.frustration}
           onChange={(event) =>
             setFormState((current) => ({ ...current, frustration: event.target.value }))
           }
         />
+        <p className="text-sm text-muted">Give us at least a short sentence so we can tailor the sample well.</p>
       </div>
 
       <Button className="w-full sm:w-auto" size="lg" type="submit" disabled={isSubmitting}>

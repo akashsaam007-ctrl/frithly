@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
+import { buildPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPublicMetadata({
   description: "Start with a free Frithly sample or review pricing to choose the right plan.",
+  noIndex: true,
+  path: "/signup",
   title: "Sign Up | Frithly",
-};
+});
 
 export default function SignupPage() {
   return (

@@ -66,6 +66,7 @@ export default async function AdminCustomersPage({ searchParams }: AdminCustomer
                   <tr>
                     <th className="pb-4 pr-6 font-medium">Name</th>
                     <th className="pb-4 pr-6 font-medium">Email</th>
+                    <th className="pb-4 pr-6 font-medium">Role</th>
                     <th className="pb-4 pr-6 font-medium">Plan</th>
                     <th className="pb-4 pr-6 font-medium">Status</th>
                     <th className="pb-4 pr-6 font-medium">MRR</th>
@@ -79,6 +80,7 @@ export default async function AdminCustomersPage({ searchParams }: AdminCustomer
                     <tr key={customer.id} className="border-t border-border">
                       <td className="py-4 pr-6 text-ink">{customer.name}</td>
                       <td className="py-4 pr-6 text-ink">{customer.email}</td>
+                      <td className="py-4 pr-6 text-ink capitalize">{customer.role}</td>
                       <td className="py-4 pr-6 text-ink">{customer.planLabel}</td>
                       <td className="py-4 pr-6 text-ink capitalize">{customer.status}</td>
                       <td className="py-4 pr-6 text-ink">{customer.mrrLabel}</td>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -48,7 +49,7 @@ export function CashfreePayLoader({
       const cashfree = window.Cashfree({ mode: environment });
       setStatus("opening");
       const result = await cashfree.subscriptionsCheckout({
-        redirectTarget: "_blank",
+        redirectTarget: "_self",
         subsSessionId: subscriptionSessionId,
       });
 
@@ -132,8 +133,8 @@ export function CashfreePayLoader({
         <p className="text-lg font-semibold text-ink">Secure authorisation is opening</p>
         <p className="text-muted">
           Cashfree recommends launching subscription authorisation from a direct button click. Use
-          the button below to open the hosted checkout in a new tab and complete your recurring
-          Frithly authorisation.
+          the button below to open the hosted checkout in this tab, complete authorisation, and
+          return straight back to Frithly.
         </p>
       </div>
 
@@ -152,8 +153,8 @@ export function CashfreePayLoader({
           <p className="mt-2">Subscription reference: {subscriptionId}</p>
         ) : null}
         <p className="mt-2">
-          The authorisation window should open in a new tab. If nothing appears, click the button
-          again after allowing pop-ups for this site.
+          You&apos;ll leave Frithly briefly for Cashfree, then come back here automatically after
+          the subscription authorisation finishes.
         </p>
       </div>
 
@@ -164,7 +165,7 @@ export function CashfreePayLoader({
           Open secure authorisation
         </Button>
         <Button asChild type="button" variant="secondary">
-          <a href="/pricing">Back to pricing</a>
+          <Link href="/pricing">Back to pricing</Link>
         </Button>
       </div>
     </div>

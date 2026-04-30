@@ -33,20 +33,20 @@ const openers = [
 
 export function SampleLead() {
   return (
-    <section className="py-24">
+    <section className="py-16 sm:py-20 lg:py-24">
       <Container className="space-y-12">
         <div className="mx-auto max-w-3xl text-center">
           <div className="section-eyebrow">Inside the deliverable</div>
           <h2 className="section-title mt-5">This is the difference your team feels on Monday morning.</h2>
           <p className="section-copy mx-auto mt-5 max-w-2xl">
             One lead, fully packaged with context, timing, and messaging direction. Multiply this
-            by 50 and you have the weekly operating rhythm Frithly is designed to create.
+            by 50 and you have the weekly operating rhythm Frithly is built to create.
           </p>
         </div>
 
         <div className="surface-card-dark overflow-hidden">
           <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="border-b border-white/10 p-8 lg:border-b-0 lg:border-r lg:p-10">
+            <div className="border-b border-white/10 p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
               <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
                 <Sparkles className="h-4 w-4" aria-hidden="true" />
                 Lead intelligence snapshot
@@ -54,7 +54,7 @@ export function SampleLead() {
 
               <div className="mt-6 space-y-6">
                 <div>
-                  <h3 className="text-3xl font-semibold text-white md:text-4xl">
+                  <h3 className="text-2xl font-semibold text-white sm:text-3xl md:text-4xl">
                     Sarah Chen, Head of Operations
                   </h3>
                   <p className="mt-3 text-white/65">
@@ -81,8 +81,8 @@ export function SampleLead() {
                       Why this account
                     </div>
                     <p className="mt-3 text-sm leading-7 text-white/70">
-                      Expansion hiring and process ownership make this a strong timing fit for a
-                      workflow-focused outbound message.
+                      Expansion hiring and new process ownership make this a strong timing fit for
+                      a workflow-focused outbound message.
                     </p>
                   </div>
                 </div>
@@ -104,13 +104,15 @@ export function SampleLead() {
               </div>
             </div>
 
-            <div className="bg-white p-8 text-ink lg:p-10">
-              <div className="flex items-center justify-between gap-4">
+            <div className="bg-white p-5 text-ink sm:p-8 lg:p-10">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
                     Personalized opener set
                   </div>
-                  <h3 className="mt-3 text-3xl font-semibold text-ink">Three ways to start the same conversation.</h3>
+                  <h3 className="mt-3 text-2xl font-semibold text-ink sm:text-3xl">
+                    Three ways to open the same account.
+                  </h3>
                 </div>
                 <Badge>weekly brief</Badge>
               </div>
@@ -138,7 +140,7 @@ export function SampleLead() {
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="w-full sm:w-auto">
                   <Link href={ROUTES.SAMPLE}>
                     <span className="inline-flex items-center gap-2">
                       Get your free sample
@@ -146,7 +148,7 @@ export function SampleLead() {
                     </span>
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="secondary">
+                <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
                   <Link href={ROUTES.PRICING}>See pricing</Link>
                 </Button>
               </div>

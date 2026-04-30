@@ -77,14 +77,45 @@ async function sendFrithlyEmail(params: {
   text: string;
   to: string | string[];
 }) {
+  const html = buildEmailHtmlFromText(params.text);
+
   return resend.emails.send({
     from: env.RESEND_FROM_EMAIL,
-    react: params.react,
+    html,
     replyTo: params.replyTo ?? env.RESEND_REPLY_TO,
     subject: params.subject,
     text: params.text,
     to: params.to,
   });
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function buildEmailHtmlFromText(text: string) {
+  const paragraphs = text
+    .split(/\n\s*\n/g)
+    .map((section) => section.trim())
+    .filter(Boolean)
+    .map((section) => `<p style="margin:0 0 16px;line-height:1.7;color:#1A1A1A;font-size:16px;">${escapeHtml(section).replaceAll("\n", "<br />")}</p>`)
+    .join("");
+
+  return [
+    "<!DOCTYPE html>",
+    '<html lang="en">',
+    '<body style="margin:0;padding:24px 12px;background:#faf8f5;color:#1A1A1A;font-family:Inter,Arial,sans-serif;">',
+    '<div style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #E8E4DD;border-radius:24px;padding:32px;">',
+    paragraphs,
+    "</div>",
+    "</body>",
+    "</html>",
+  ].join("");
 }
 
 export function getFirstName(value: string | null | undefined, fallback = "there") {

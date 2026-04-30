@@ -1,13 +1,15 @@
-import { ArrowRight, BadgeCheck, BrainCircuit, Clock3, Radar, Sparkles } from "lucide-react";
-import { TrackedLink } from "@/components/analytics/tracked-link";
+import { ArrowRight, BadgeCheck, Clock3, Radar, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { BrandMark } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 const trustPoints = [
-  "50 leads every Monday",
-  "Verified contacts and live signals",
-  "Three opener angles on Growth",
+  "50 researched accounts every Monday",
+  "Verified contacts with live buying context",
+  "Message angles your reps can use immediately",
 ];
 
 const leadPreview = [
@@ -36,13 +38,13 @@ const proofStats = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border/60 py-16 md:py-20 lg:py-24">
+    <section className="relative overflow-hidden border-b border-border/60 py-12 sm:py-16 md:py-20 lg:py-24">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-terracotta/50 to-transparent" />
       <div className="absolute left-[-8rem] top-8 h-72 w-72 rounded-full bg-terracotta/10 blur-3xl" />
       <div className="absolute right-[-6rem] top-16 h-80 w-80 rounded-full bg-emerald-200/30 blur-3xl" />
 
       <Container className="relative">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div className="grid gap-10 lg:grid-cols-[1.12fr_0.88fr] lg:items-center xl:grid-cols-[1.08fr_0.92fr]">
           <div className="space-y-8 animated-fade-up">
             <div className="space-y-5">
               <div className="section-eyebrow">
@@ -51,47 +53,38 @@ export function Hero() {
               </div>
 
               <div className="space-y-5">
-                <h1 className="section-title max-w-[12ch]">
-                  Weekly B2B lead intelligence for teams that need signal, not spreadsheets.
+                <h1 className="section-title max-w-[13ch] text-balance">
+                  Weekly B2B lead intelligence your reps can turn into pipeline.
                 </h1>
-                <p className="section-copy max-w-2xl">
-                  Frithly delivers hyper-researched accounts, verified contacts, and personalized
-                  opener angles to your inbox every Monday. Your reps stop digging through Apollo
-                  tabs and start sending messages that actually make sense.
+                <p className="section-copy max-w-xl lg:max-w-2xl">
+                  Frithly delivers a Monday-ready brief of researched accounts, verified contacts,
+                  and why-now messaging angles. Your team stops stitching together Apollo tabs,
+                  enrichment tools, and manual notes, and starts the week with leads that already
+                  have context.
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Button asChild size="lg">
-                <TrackedLink
-                  eventName="cta_clicked"
-                  eventProperties={{ destination: ROUTES.SAMPLE, location: "hero_primary" }}
-                  href={ROUTES.SAMPLE}
-                >
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="w-full sm:w-auto">
+                <Link href={ROUTES.SAMPLE}>
                   <span className="inline-flex items-center gap-2">
                     Get Free 5-Lead Sample
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
-                </TrackedLink>
+                </Link>
               </Button>
-              <Button asChild size="lg" variant="secondary">
-                <TrackedLink
-                  eventName="cta_clicked"
-                  eventProperties={{
-                    destination: ROUTES.HOW_IT_WORKS,
-                    location: "hero_secondary",
-                  }}
-                  href={ROUTES.HOW_IT_WORKS}
-                >
-                  See the workflow
-                </TrackedLink>
+              <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
+                <Link href={ROUTES.HOW_IT_WORKS}>See the workflow</Link>
               </Button>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              {trustPoints.map((point) => (
-                <div key={point} className="metric-chip">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              {trustPoints.map((point, index) => (
+                <div
+                  key={point}
+                  className={cn("metric-chip", index === 2 && "hidden sm:inline-flex")}
+                >
                   <BadgeCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                   <span>{point}</span>
                 </div>
@@ -102,7 +95,7 @@ export function Hero() {
               {proofStats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl border border-border/70 bg-white/80 px-5 py-4 shadow-sm backdrop-blur"
+                  className="rounded-2xl border border-border/70 bg-white/80 px-4 py-4 shadow-sm backdrop-blur sm:px-5"
                 >
                   <div className="text-2xl font-bold tracking-tight text-ink">{stat.value}</div>
                   <div className="mt-1 text-sm text-muted">{stat.label}</div>
@@ -112,23 +105,25 @@ export function Hero() {
           </div>
 
           <div className="surface-card animated-float animated-glow overflow-hidden">
-            <div className="border-b border-border/70 bg-ink px-6 py-5 text-white">
-              <div className="flex items-center justify-between gap-4">
+            <div className="border-b border-border/70 bg-ink px-5 py-5 text-white sm:px-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="text-sm uppercase tracking-[0.18em] text-white/60">
-                    Monday intelligence brief
+                    Monday pipeline brief
                   </div>
-                  <div className="mt-2 text-2xl font-semibold">
-                    50 researched leads, prioritized and ready to send
+                  <div className="mt-2 text-xl font-semibold sm:text-2xl">
+                    50 researched leads, prioritized and ready for outreach.
                   </div>
                 </div>
-                <div className="hidden rounded-2xl border border-white/10 bg-white/5 p-3 lg:block">
-                  <BrainCircuit className="h-7 w-7 text-terracotta" aria-hidden="true" />
-                </div>
+                <BrandMark
+                  className="h-14 w-14 rounded-[1.1rem] border-white/10 bg-white/5 p-2 shadow-none sm:h-16 sm:w-16 sm:rounded-[1.35rem]"
+                  imageClassName="h-full w-full rounded-[1rem]"
+                  priority
+                />
               </div>
             </div>
 
-            <div className="space-y-6 p-6 md:p-7">
+            <div className="space-y-5 p-5 sm:p-6 md:p-7">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-border/70 bg-stone-50 p-4 transition-transform duration-300 hover:-translate-y-1">
                   <div className="flex items-center gap-2 text-sm font-semibold text-ink">
@@ -136,8 +131,8 @@ export function Hero() {
                     Why now signals
                   </div>
                   <p className="mt-3 text-sm leading-7 text-muted">
-                    Hiring momentum, recent content, GTM change, and stack friction surfaced per
-                    account before your team writes a single line.
+                    Hiring moves, GTM changes, recent content, and stack friction surfaced before
+                    a rep writes the first email.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border/70 bg-stone-50 p-4 transition-transform duration-300 hover:-translate-y-1">
@@ -146,25 +141,32 @@ export function Hero() {
                     Delivery cadence
                   </div>
                   <p className="mt-3 text-sm leading-7 text-muted">
-                    Monday batch delivery, with Growth refreshes mid-week so your pipeline does not
-                    go stale after one send.
+                    Monday delivery on every plan, plus a mid-week refresh on Growth so your
+                    pipeline does not stall after one send.
                   </p>
                 </div>
               </div>
 
               <div className="rounded-[1.5rem] border border-border/70 bg-white">
-                <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
+                <div className="flex flex-col gap-3 border-b border-border/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                   <div>
-                    <div className="text-sm font-semibold text-ink">Live lead preview</div>
-                    <div className="text-sm text-muted">Exactly how Frithly packages weekly output</div>
+                    <div className="text-sm font-semibold text-ink">Lead brief preview</div>
+                    <div className="text-sm text-muted">
+                      A slice of the weekly brief your team actually receives
+                    </div>
                   </div>
                   <div className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
                     ready to send
                   </div>
                 </div>
                 <div className="divide-y divide-border/70">
-                  {leadPreview.map((lead) => (
-                    <div key={lead.person} className="grid gap-2 px-5 py-4 md:grid-cols-[1fr_auto] md:items-center">
+                  {leadPreview.map((lead, index) => (
+                    <div
+                      key={lead.person}
+                      className={`grid gap-2 px-4 py-4 sm:px-5 md:grid-cols-[1fr_auto] md:items-center ${
+                        index === 2 ? "hidden sm:grid" : ""
+                      }`}
+                    >
                       <div>
                         <div className="font-semibold text-ink">{lead.person}</div>
                         <div className="text-sm text-muted">{lead.company}</div>

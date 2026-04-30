@@ -277,6 +277,7 @@ export function getFrithlyPlanIdFromCashfreeSubscription(params: {
 }
 
 export async function createCashfreeSubscription(params: {
+  appBaseUrl?: string;
   companyName?: string | null;
   email: string;
   frithlyPlanId: PlanId;
@@ -304,7 +305,10 @@ export async function createCashfreeSubscription(params: {
     tags.company_name = params.companyName.trim();
   }
 
-  const returnUrl = new URL("/api/billing/cashfree/return", env.NEXT_PUBLIC_APP_URL);
+  const returnUrl = new URL(
+    "/api/billing/cashfree/return",
+    params.appBaseUrl ?? env.NEXT_PUBLIC_APP_URL,
+  );
   returnUrl.searchParams.set("email", params.email);
   returnUrl.searchParams.set("plan", params.frithlyPlanId);
 

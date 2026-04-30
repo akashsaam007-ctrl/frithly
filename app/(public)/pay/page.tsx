@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { CashfreePayLoader } from "@/components/billing/cashfree-pay-loader";
 import { Container } from "@/components/ui/container";
+import { buildPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPublicMetadata({
   description: "Secure checkout handoff for Frithly subscriptions.",
+  noIndex: true,
+  path: "/pay",
   title: "Secure checkout | Frithly",
-};
+});
 
 type PayPageProps = {
   searchParams?: Promise<{

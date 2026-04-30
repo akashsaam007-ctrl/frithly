@@ -3,15 +3,32 @@ import Link from "next/link";
 import { FinalCta } from "@/components/landing/final-cta";
 import { Guarantees } from "@/components/landing/guarantees";
 import { PricingSection } from "@/components/landing/pricing";
+import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
+import {
+  buildBreadcrumbSchema,
+  buildPublicMetadata,
+  buildServiceSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  description: "Frithly pricing for B2B teams that want researched intelligence, not raw lead lists.",
+const pricingDescription =
+  "Frithly pricing for B2B teams that want weekly researched lead intelligence, verified contacts, and personalized outreach angles instead of raw lead lists.";
+
+export const metadata: Metadata = buildPublicMetadata({
+  description: pricingDescription,
+  keywords: [
+    "Frithly pricing",
+    "B2B lead generation pricing",
+    "sales intelligence pricing",
+    "outbound research service pricing",
+  ],
+  path: "/pricing",
   title: "Pricing | Frithly",
-};
+});
 
 type PricingPageProps = {
   searchParams?: Promise<{
@@ -44,6 +61,20 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
 
   return (
     <main>
+      <StructuredData
+        data={buildBreadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ])}
+      />
+      <StructuredData
+        data={buildWebPageSchema({
+          description: pricingDescription,
+          path: "/pricing",
+          title: "Pricing | Frithly",
+        })}
+      />
+      <StructuredData data={buildServiceSchema()} />
       <section className="py-20 md:py-24">
         <Container width="narrow" className="space-y-6 text-center">
           <h1>Choose the right Frithly plan for your team.</h1>

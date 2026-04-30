@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { PageEvent } from "@/components/analytics/page-event";
+import { PlanGate } from "@/components/customer/plan-gate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
+import { hasCustomerWorkspaceAccess } from "@/lib/auth/customer-access";
 import { ROUTES } from "@/lib/constants";
 import {
   getCurrentCustomerContext,
@@ -10,11 +12,49 @@ import {
 } from "@/lib/supabase/customer-data";
 import { getNextMondayLabel } from "@/lib/utils";
 
-export default async function DashboardPage() {
-  const [customerContext, icpSummary] = await Promise.all([
-    getCurrentCustomerContext(),
-    getCurrentCustomerIcpSummary(),
-  ]);
+type DashboardPageProps = {
+  searchParams?: Promise<{
+    access?: string | string[] | undefined;
+    locked?: string | string[] | undefined;
+  }>;
+};
+
+function readParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const customerContext = await getCurrentCustomerContext();
+  const hasWorkspaceAccess = hasCustomerWorkspaceAccess(customerContext.customer);
+
+  if (!hasWorkspaceAccess) {
+    const accessReason = readParam(resolvedSearchParams?.access);
+    const lockedFeature = readParam(resolvedSearchParams?.locked) || null;
+
+    return (
+      <Container className="space-y-8 px-0">
+        <PageEvent
+          name="dashboard_viewed"
+          oncePerSessionKey="dashboard-viewed"
+          properties={{
+            access_state: "plan_required",
+            location: ROUTES.DASHBOARD,
+          }}
+        />
+
+        {accessReason === "plan-required" ? (
+          <div className="rounded-2xl border border-border bg-white px-5 py-4 text-sm text-muted">
+            Choose a plan below to unlock the rest of your customer workspace.
+          </div>
+        ) : null}
+
+        <PlanGate customer={customerContext.customer} lockedFeature={lockedFeature} />
+      </Container>
+    );
+  }
+
+  const icpSummary = await getCurrentCustomerIcpSummary();
   const {
     daysSubscribed,
     firstName,

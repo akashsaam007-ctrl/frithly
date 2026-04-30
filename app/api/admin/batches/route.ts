@@ -5,7 +5,7 @@ import {
   getVerifiedEmailCount,
   parseBatchLeads,
 } from "@/lib/admin/batch-builder";
-import { isAdminEmail } from "@/lib/auth/admin-access";
+import { getUserRoleByEmail } from "@/lib/auth/admin-access";
 import { ROUTES } from "@/lib/constants";
 import { sendBriefDeliveredEmail } from "@/lib/resend/send";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "You must be signed in as an admin." }, { status: 401 });
   }
 
-  if (!isAdminEmail(email)) {
+  if ((await getUserRoleByEmail(email)) !== "admin") {
     return NextResponse.json({ error: "You are not allowed to create batches." }, { status: 403 });
   }
 

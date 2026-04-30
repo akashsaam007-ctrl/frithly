@@ -1,34 +1,39 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { TrackedLink } from "@/components/analytics/tracked-link";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { BrandMark } from "@/components/ui/logo";
 import { CALCOM_URL, ROUTES } from "@/lib/constants";
 
 const ctaPoints = [
-  "Weekly delivery cadence",
-  "Researched context per lead",
-  "Flexible monthly pricing",
+  "Tailored sample against your ICP",
+  "First brief within 7 days",
+  "No annual contract",
 ];
 
 export function FinalCta() {
   return (
-    <section className="py-24">
+    <section className="py-16 sm:py-20 lg:py-24">
       <Container>
-        <div className="surface-card-dark animated-glow relative overflow-hidden px-8 py-10 md:px-12 md:py-14">
+        <div className="surface-card-dark animated-glow relative overflow-hidden px-5 py-8 sm:px-8 sm:py-10 md:px-12 md:py-14">
           <div className="absolute inset-y-0 right-[-8rem] hidden w-64 rounded-full bg-terracotta/20 blur-3xl lg:block" />
 
           <div className="relative grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
             <div className="space-y-6">
-              <div className="section-eyebrow border-white/10 bg-white/5 text-terracotta">
-                Ready when your team is
+              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                <BrandMark className="h-14 w-14 rounded-[1.2rem] border-white/10 bg-white/5 p-1.5 shadow-none" imageClassName="h-full w-full rounded-[0.95rem]" />
+                <div className="section-eyebrow border-white/10 bg-white/5 text-terracotta">
+                  Want to see the brief first?
+                </div>
               </div>
               <div className="space-y-5">
                 <h2 className="section-title text-white">
-                  Stop paying reps to do research. Start handing them better conversations.
+                  Start with a sample. Move to a plan when the output feels right.
                 </h2>
                 <p className="max-w-2xl text-base leading-8 text-white/70 md:text-lg">
-                  If your outbound team already has enough tools, Frithly is the layer that turns
-                  those tools into focused weekly action.
+                  The fastest way to evaluate Frithly is to see one brief take shape against your
+                  market. Request the sample if you want proof first, or book a short call if you
+                  already know your team needs a better weekly outbound rhythm.
                 </p>
               </div>
 
@@ -46,29 +51,22 @@ export function FinalCta() {
             </div>
 
             <div className="flex flex-col gap-4 lg:min-w-[18rem]">
-              <Button asChild size="lg">
-                <TrackedLink
-                  eventName="cta_clicked"
-                  eventProperties={{ destination: ROUTES.SAMPLE, location: "final_cta_primary" }}
-                  href={ROUTES.SAMPLE}
-                >
+              <Button asChild size="lg" className="w-full">
+                <Link href={ROUTES.SAMPLE}>
                   <span className="inline-flex items-center gap-2">
                     Get a free 5-lead sample
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
-                </TrackedLink>
+                </Link>
               </Button>
-              <Button asChild size="lg" variant="secondary">
-                <TrackedLink
-                  eventName="cta_clicked"
-                  eventProperties={{ destination: CALCOM_URL, location: "final_cta_secondary" }}
-                  href={CALCOM_URL}
-                  rel="noreferrer"
-                  target="_blank"
-                >
+              <Button asChild size="lg" variant="secondary" className="w-full">
+                <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
                   Book a 15-minute demo
-                </TrackedLink>
+                </Link>
               </Button>
+              <p className="text-sm text-white/60">
+                Best for teams that want to buy finished weekly output, not manage another tool.
+              </p>
             </div>
           </div>
         </div>

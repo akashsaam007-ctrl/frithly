@@ -1,33 +1,57 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { StructuredData } from "@/components/seo/structured-data";
 import { LegalPage } from "@/components/shared/legal-page";
 import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import {
+  buildBreadcrumbSchema,
+  buildPublicMetadata,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  description:
-    "Refund Policy for Frithly covering the 50% ICP match guarantee, cancellations, and billing dispute handling.",
+const refundDescription =
+  "Refund Policy for Frithly covering the 50% ICP match guarantee, cancellations, and billing dispute handling.";
+
+export const metadata: Metadata = buildPublicMetadata({
+  description: refundDescription,
+  keywords: ["Frithly refund policy", "billing disputes", "ICP match guarantee"],
+  path: "/refund-policy",
   title: `Refund Policy | ${APP_NAME}`,
-};
+});
 
 export default function RefundPolicyPage() {
   return (
-    <LegalPage
-      intro={
-        <>
-          <p>
-            This Refund Policy explains when Frithly may issue refunds for subscription charges and
-            how customers can request a review of a delivered batch.
-          </p>
-          <p>
-            This page is intended to support launch and payment-provider verification. It should be
-            reviewed with legal counsel before high-volume production use.
-          </p>
-        </>
-      }
-      kicker="Refunds"
-      lastUpdated="28 April 2026"
-      title="Refund Policy"
-      sections={[
+    <>
+      <StructuredData
+        data={buildBreadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Refund Policy", path: "/refund-policy" },
+        ])}
+      />
+      <StructuredData
+        data={buildWebPageSchema({
+          description: refundDescription,
+          path: "/refund-policy",
+          title: `Refund Policy | ${APP_NAME}`,
+        })}
+      />
+      <LegalPage
+        intro={
+          <>
+            <p>
+              This Refund Policy explains when Frithly may issue refunds for subscription charges and
+              how customers can request a review of a delivered batch.
+            </p>
+            <p>
+              This page is intended to support launch and payment-provider verification. It should be
+              reviewed with legal counsel before high-volume production use.
+            </p>
+          </>
+        }
+        kicker="Refunds"
+        lastUpdated="28 April 2026"
+        title="Refund Policy"
+        sections={[
         {
           title: "How Frithly charges for the service",
           body: (
@@ -143,7 +167,8 @@ export default function RefundPolicyPage() {
             </>
           ),
         },
-      ]}
-    />
+        ]}
+      />
+    </>
   );
 }

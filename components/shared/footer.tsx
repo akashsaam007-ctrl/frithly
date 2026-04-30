@@ -5,11 +5,14 @@ import { APP_LOCATION, APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-ink py-14 text-white">
+    <footer className="border-t border-white/10 bg-ink py-12 text-white sm:py-14">
       <Container className="space-y-12">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_2fr]">
           <div className="space-y-4">
-            <Logo className="text-white hover:text-white" />
+            <Logo
+              className="w-fit rounded-[1.35rem] bg-white px-4 py-3 shadow-sm hover:opacity-100"
+              imageClassName="h-8 md:h-9"
+            />
             <p className="max-w-sm text-base leading-8 text-white/70">
               Weekly B2B lead intelligence for outbound teams that need signal, timing, and
               messaging context.
@@ -29,6 +32,12 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href={ROUTES.SAMPLE}>
                   Sample
                 </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.GUIDES}>
+                  Guides
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.PROOF}>
+                  Proof
+                </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ
                 </Link>
@@ -38,14 +47,14 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Company</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <span className="block">About: N/A for now</span>
+                <span className="block">B2B lead intelligence for outbound teams</span>
                 <a
                   className="block transition-colors hover:text-white"
                   href={`mailto:${SUPPORT_EMAIL}`}
                 >
                   Contact
                 </a>
-                <span className="block">Careers: N/A for now</span>
+                <span className="block">Based in {APP_LOCATION}, serving teams globally</span>
               </div>
             </div>
 
@@ -75,9 +84,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-6 text-sm text-white/60">
+        <div className="space-y-2 border-t border-white/10 pt-6 text-sm text-white/60 md:space-y-1">
           <p>Copyright 2026 {APP_NAME}. All rights reserved.</p>
-          <p>{SUPPORT_EMAIL} | Based in {APP_LOCATION} | Working globally</p>
+          <p className="leading-7">{SUPPORT_EMAIL} | Based in {APP_LOCATION} | Working globally</p>
         </div>
       </Container>
     </footer>

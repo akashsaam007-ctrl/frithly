@@ -1,14 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: ROUTES.HOW_IT_WORKS, label: "How It Works" },
@@ -17,29 +12,10 @@ const navLinks = [
 ];
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 100);
-
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const closeMobileMenu = () => setMobileOpen(false);
-
   return (
-    <nav
-      className={cn(
-        "sticky top-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-xl transition-all",
-        scrolled && "border-border bg-white/92 shadow-[0_10px_40px_rgba(26,26,26,0.08)]",
-      )}
-    >
-      <Container className="flex h-14 items-center justify-between md:h-16">
-        <Logo />
+    <nav className="sticky top-0 z-50 border-b border-border/70 bg-white/88 shadow-[0_6px_24px_rgba(26,26,26,0.04)] backdrop-blur-xl">
+      <Container className="relative flex h-16 items-center justify-between">
+        <Logo priority />
 
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
@@ -61,73 +37,40 @@ export function Navbar() {
             Login
           </Link>
           <Button asChild size="md">
-            <TrackedLink
-              eventName="cta_clicked"
-              eventProperties={{ destination: ROUTES.SIGNUP, location: "navbar_primary" }}
-              href={ROUTES.SIGNUP}
-            >
-              Get Free Sample
-            </TrackedLink>
+            <Link href={ROUTES.SIGNUP}>Get Free Sample</Link>
           </Button>
         </div>
 
-        <button
-          type="button"
-          aria-controls="mobile-navigation"
-          aria-expanded={mobileOpen}
-          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-          className="inline-flex items-center justify-center rounded-lg p-2 text-ink transition-colors hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta md:hidden"
-          onClick={() => setMobileOpen((value) => !value)}
-        >
-          {mobileOpen ? (
-            <X className="h-5 w-5" aria-hidden="true" />
-          ) : (
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          )}
-        </button>
-      </Container>
+        <details className="group md:hidden">
+          <summary className="inline-flex list-none items-center justify-center rounded-lg p-2 text-ink transition-colors hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta">
+            <Menu className="h-5 w-5 group-open:hidden" aria-hidden="true" />
+            <X className="hidden h-5 w-5 group-open:block" aria-hidden="true" />
+          </summary>
 
-      <div
-        className={cn(
-          "grid transition-[grid-template-rows] duration-200 md:hidden",
-          mobileOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-        )}
-      >
-        <div id="mobile-navigation" className="overflow-hidden border-t border-border">
-          <Container className="flex flex-col gap-4 py-6">
-            {navLinks.map((link) => (
+          <div className="absolute inset-x-0 top-full border-t border-border bg-white/96 shadow-[0_16px_40px_rgba(26,26,26,0.08)] backdrop-blur">
+            <Container className="flex flex-col gap-4 py-5">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-base font-medium text-muted transition-colors hover:text-ink"
+                >
+                  {link.label}
+                </Link>
+              ))}
               <Link
-                key={link.href}
-                href={link.href}
+                href={ROUTES.LOGIN}
                 className="text-base font-medium text-muted transition-colors hover:text-ink"
-                onClick={closeMobileMenu}
               >
-                {link.label}
+                Login
               </Link>
-            ))}
-            <Link
-              href={ROUTES.LOGIN}
-              className="text-base font-medium text-muted transition-colors hover:text-ink"
-              onClick={closeMobileMenu}
-            >
-              Login
-            </Link>
-            <Button asChild size="lg">
-              <TrackedLink
-                eventName="cta_clicked"
-                eventProperties={{
-                  destination: ROUTES.SIGNUP,
-                  location: "navbar_mobile_primary",
-                }}
-                href={ROUTES.SIGNUP}
-                onClick={closeMobileMenu}
-              >
-                Get Free Sample
-              </TrackedLink>
-            </Button>
-          </Container>
-        </div>
-      </div>
+              <Button asChild size="lg">
+                <Link href={ROUTES.SIGNUP}>Get Free Sample</Link>
+              </Button>
+            </Container>
+          </div>
+        </details>
+      </Container>
     </nav>
   );
 }

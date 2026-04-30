@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { isAfter, subDays } from "date-fns";
 import { notFound, redirect } from "next/navigation";
-import { isAdminEmail } from "@/lib/auth/admin-access";
+import { getBootstrapRoleForEmail, getUserRoleByEmail } from "@/lib/auth/admin-access";
 import { PLANS, ROUTES } from "@/lib/constants";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -32,7 +32,7 @@ const getAdminBase = cache(async () => {
     redirect(ROUTES.LOGIN);
   }
 
-  if (!isAdminEmail(email)) {
+  if ((await getUserRoleByEmail(email)) !== "admin") {
     redirect(ROUTES.HOME);
   }
 
@@ -231,6 +231,7 @@ export type AdminCustomerListItem = {
   mrrLabel: string;
   name: string;
   planLabel: string;
+  role: "admin" | "customer";
   signupDateLabel: string;
   status: string;
 };
@@ -276,6 +277,7 @@ export async function getAdminCustomersData(filters?: { search?: string; status?
         mrrLabel: formatCurrency(getPlanPrice(customer.plan)),
         name: getCustomerDisplayName(customer),
         planLabel: getPlanName(customer.plan),
+        role: customer.role ?? getBootstrapRoleForEmail(customer.email),
         signupDateLabel: customer.signup_date ? formatLongDate(customer.signup_date) : "Unknown",
         status: customer.status ?? "pending",
       } satisfies AdminCustomerListItem;
@@ -307,15 +309,21 @@ export type AdminCustomerDetail = {
   customer: CustomerRow;
   feedback: (FeedbackRow & { leadName: string; batchDateLabel: string | null })[];
   lifetimeLeadCount: number;
+  viewerEmail: string;
 };
 
 export async function getAdminCustomerDetail(customerId: string): Promise<AdminCustomerDetail> {
-  const { adminClient } = await getAdminBase();
+  const { adminClient, email } = await getAdminBase();
   const { data: customer } = await adminClient.from("customers").select("*").eq("id", customerId).maybeSingle();
 
   if (!customer) {
     notFound();
   }
+
+  const normalizedCustomer = {
+    ...customer,
+    role: customer.role ?? getBootstrapRoleForEmail(customer.email),
+  };
 
   const [{ data: icps }, { data: batches }, { data: feedback }] = await Promise.all([
     adminClient.from("icps").select("*").eq("customer_id", customer.id).order("updated_at", { ascending: false }),
@@ -337,7 +345,7 @@ export async function getAdminCustomerDetail(customerId: string): Promise<AdminC
     approvalRateLabel:
       getApprovalRate(feedback ?? []) !== null ? `${getApprovalRate(feedback ?? [])}%` : "--",
     batches: batches ?? [],
-    customer,
+    customer: normalizedCustomer,
     feedback: (feedback ?? []).map((entry) => {
       const lead = entry.lead_id ? leadById.get(entry.lead_id) : undefined;
       const batch = lead?.batch_id ? batchById.get(lead.batch_id) : undefined;
@@ -349,6 +357,7 @@ export async function getAdminCustomerDetail(customerId: string): Promise<AdminC
       };
     }),
     lifetimeLeadCount: leadRows.length,
+    viewerEmail: email,
   };
 }
 

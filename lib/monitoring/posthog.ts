@@ -1,7 +1,6 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
-import posthog from "posthog-js";
 import {
   COOKIE_CONSENT_STORAGE_KEY,
   type CookieConsentChoice,
@@ -14,6 +13,10 @@ import type {
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 const posthogToken = process.env.NEXT_PUBLIC_POSTHOG_TOKEN;
 
+type PostHogClient = typeof import("posthog-js").default;
+
+let posthogClient: PostHogClient | null = null;
+let posthogLoadingPromise: Promise<PostHogClient | null> | null = null;
 let posthogInitialized = false;
 
 function getConsentChoice(): CookieConsentChoice | null {
@@ -39,21 +42,50 @@ export function hasAnalyticsConsent() {
   return getConsentChoice() === "accepted";
 }
 
-export function syncAnalyticsConsent() {
+export function hasPostHogConfiguration() {
+  return Boolean(posthogToken);
+}
+
+async function loadPostHogClient() {
+  if (!posthogToken || typeof window === "undefined") {
+    return null;
+  }
+
+  if (posthogClient) {
+    return posthogClient;
+  }
+
+  if (!posthogLoadingPromise) {
+    posthogLoadingPromise = import("posthog-js").then((module) => {
+      posthogClient = module.default;
+      return posthogClient;
+    });
+  }
+
+  return posthogLoadingPromise;
+}
+
+export async function syncAnalyticsConsent() {
   if (!posthogToken || typeof window === "undefined") {
     return false;
   }
 
   if (!hasAnalyticsConsent()) {
-    if (posthogInitialized) {
-      posthog.opt_out_capturing();
+    if (posthogInitialized && posthogClient) {
+      posthogClient.opt_out_capturing();
     }
 
     return false;
   }
 
+  const client = await loadPostHogClient();
+
+  if (!client) {
+    return false;
+  }
+
   if (!posthogInitialized) {
-    posthog.init(posthogToken, {
+    client.init(posthogToken, {
       api_host: posthogHost,
       capture_pageleave: true,
       capture_pageview: false,
@@ -62,7 +94,7 @@ export function syncAnalyticsConsent() {
     posthogInitialized = true;
   }
 
-  posthog.opt_in_capturing();
+  client.opt_in_capturing();
   return true;
 }
 
@@ -70,22 +102,30 @@ export function captureEvent(
   eventName: AnalyticsEventName,
   properties?: AnalyticsEventProperties,
 ) {
-  if (!syncAnalyticsConsent()) {
-    return;
-  }
+  void syncAnalyticsConsent().then((ready) => {
+    if (!ready || !posthogClient) {
+      return;
+    }
 
-  posthog.capture(eventName, sanitizeProperties(properties));
+    posthogClient.capture(eventName, sanitizeProperties(properties));
+  });
 }
 
 export function capturePageView(pathname: string, search: string) {
-  if (!syncAnalyticsConsent() || typeof window === "undefined") {
+  if (typeof window === "undefined") {
     return;
   }
 
-  posthog.capture("$pageview", {
-    pathname,
-    search,
-    url: window.location.href,
+  void syncAnalyticsConsent().then((ready) => {
+    if (!ready || !posthogClient) {
+      return;
+    }
+
+    posthogClient.capture("$pageview", {
+      pathname,
+      search,
+      url: window.location.href,
+    });
   });
 }
 
@@ -99,13 +139,15 @@ export function identifyAnalyticsUser(params: {
     id: params.distinctId,
   });
 
-  if (!syncAnalyticsConsent()) {
-    return;
-  }
+  void syncAnalyticsConsent().then((ready) => {
+    if (!ready || !posthogClient) {
+      return;
+    }
 
-  posthog.identify(params.distinctId, {
-    account_type: params.type,
-    email: params.email ?? undefined,
+    posthogClient.identify(params.distinctId, {
+      account_type: params.type,
+      email: params.email ?? undefined,
+    });
   });
 }
 
@@ -116,5 +158,5 @@ export function resetAnalyticsUser() {
     return;
   }
 
-  posthog.reset();
+  posthogClient?.reset();
 }
