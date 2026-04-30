@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, Check, CreditCard, LockKeyhole } from "lucide-react";
+import { ArrowRight, Check, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
+import { CALCOM_URL, PLANS, SUPPORT_EMAIL } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 
@@ -22,14 +22,14 @@ function getPlanGateCopy(customer: Pick<CustomerRow, "plan" | "status">) {
       : null;
 
   if (customer.status === "paused" && currentPlan) {
-    return `Your ${currentPlan.name} subscription is paused. Reactivate it from billing or choose a plan below to unlock the workspace again.`;
+    return `Your ${currentPlan.name} access is paused right now. Book a quick call and we'll help you restart delivery or move you to the right plan.`;
   }
 
   if ((customer.status === "cancelled" || customer.status === "churned") && currentPlan) {
-    return `Your ${currentPlan.name} subscription is no longer active. Choose a plan below to regain access to briefs, ICP settings, and weekly delivery.`;
+    return `Your ${currentPlan.name} access is no longer active. Talk to sales to regain access to briefs, ICP settings, and weekly delivery.`;
   }
 
-  return "Choose a plan to unlock briefs, ICP settings, and your weekly Frithly workflow.";
+  return "Talk to sales to activate briefs, ICP settings, and your weekly Frithly workflow.";
 }
 
 type PlanGateProps = {
@@ -47,7 +47,7 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
           <LockKeyhole className="h-4 w-4" aria-hidden="true" />
           Workspace locked
         </div>
-        <h1 className="mt-4 text-4xl md:text-5xl">Choose a plan to get access.</h1>
+        <h1 className="mt-4 text-4xl md:text-5xl">Talk to sales to get access.</h1>
         <p className="mt-4 max-w-3xl text-lg text-muted">{getPlanGateCopy(customer)}</p>
         {lockedLabel ? (
           <div className="mt-5 rounded-2xl border border-border bg-stone-50 px-5 py-4 text-sm text-muted">
@@ -59,9 +59,6 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
 
       <section className="grid gap-6 xl:grid-cols-3">
         {selectablePlans.map((plan) => {
-          const href = plan.id === PLANS.SCALE.id ? CALCOM_URL : `/checkout/${plan.id}`;
-          const isExternal = href === CALCOM_URL;
-
           return (
             <Card
               key={plan.id}
@@ -93,25 +90,19 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
                   ))}
                 </ul>
 
-                {isExternal ? (
-                  <Button asChild className="w-full" size="lg" variant={plan.id === PLANS.GROWTH.id ? "primary" : "secondary"}>
-                    <Link href={href} rel="noreferrer" target="_blank">
-                      <span className="inline-flex items-center gap-2">
-                        Talk to sales
-                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button asChild className="w-full" size="lg" variant={plan.id === PLANS.GROWTH.id ? "primary" : "secondary"}>
-                    <Link href={`/checkout/${plan.id}?mode=dashboard-upgrade`}>
-                      <span className="inline-flex items-center gap-2">
-                        {`Choose ${plan.name}`}
-                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                    </Link>
-                  </Button>
-                )}
+                <Button
+                  asChild
+                  className="w-full"
+                  size="lg"
+                  variant={plan.id === PLANS.GROWTH.id ? "primary" : "secondary"}
+                >
+                  <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+                    <span className="inline-flex items-center gap-2">
+                      Talk to sales
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           );
@@ -120,13 +111,13 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>What unlocks with a plan</CardTitle>
+          <CardTitle>What unlocks once your plan is active</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
             "Weekly lead briefs with researched accounts and verified contacts.",
             "ICP settings so Frithly can keep improving who gets delivered.",
-            "Billing controls for pausing, reactivating, and plan changes.",
+            "Plan setup and rollout guidance tailored to your workflow.",
             "Direct support if you need help during onboarding or delivery.",
           ].map((item) => (
             <div key={item} className="rounded-2xl border border-border bg-stone-50 px-4 py-4 text-sm leading-7 text-muted">
@@ -143,21 +134,17 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
               Need help choosing?
             </p>
             <p className="text-sm leading-7 text-muted">
-              If you&apos;re not sure which plan fits your workflow, talk to us or open billing once
-              you&apos;ve chosen a plan.
+              We&apos;ll recommend the right plan, confirm fit, and activate access after a quick intro call.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button asChild variant="secondary">
-              <Link href={ROUTES.BILLING}>
-                <span className="inline-flex items-center gap-2">
-                  Open billing
-                  <CreditCard className="h-4 w-4" aria-hidden="true" />
-                </span>
+            <Button asChild>
+              <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+                Book intro call
               </Link>
             </Button>
-            <Button asChild>
-              <Link href={ROUTES.HELP}>Contact support</Link>
+            <Button asChild variant="secondary">
+              <Link href={`mailto:${SUPPORT_EMAIL}?subject=Frithly plan help`}>Email support</Link>
             </Button>
           </div>
         </CardContent>

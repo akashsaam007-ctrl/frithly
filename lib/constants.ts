@@ -3,7 +3,6 @@ import { publicEnv } from "@/lib/utils/public-env";
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE = "50 hyper-researched B2B leads. Every Monday.";
 export const APP_DOMAIN = "frithly.com";
-export const APP_LOCATION = "London";
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
 export const SUPPORT_EMAIL = "hi@frithly.com";
 
@@ -87,6 +86,7 @@ export const COLORS = {
 } as const;
 
 export const ROUTES = {
+  ABOUT: "/about",
   ADMIN: "/admin",
   ADMIN_BATCHES_NEW: "/admin/batches/new",
   ADMIN_CUSTOMERS: "/admin/customers",

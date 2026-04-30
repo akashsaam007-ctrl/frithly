@@ -4,26 +4,25 @@ import { SectionViewEvent } from "@/components/analytics/section-view-event";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { hasCashfreeCheckoutConfiguration } from "@/lib/cashfree/env";
 import { CALCOM_URL, PLANS, ROUTES } from "@/lib/constants";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const pricingPlans = [
   {
-    buttonLabel: "Choose Starter",
+    buttonLabel: "Talk to Sales",
     description:
       "For lean founder-led teams that need quality pipeline without building a research function.",
     fit: "Best when founder selling still drives pipeline.",
-    href: `${ROUTES.LOGIN}?next=${encodeURIComponent(`/checkout/${PLANS.STARTER.id}`)}&auth=google`,
+    href: CALCOM_URL,
     note: "50 leads every Monday",
     plan: PLANS.STARTER,
   },
   {
-    buttonLabel: "Choose Growth",
+    buttonLabel: "Talk to Sales",
     description:
       "For outbound teams that need deeper research, sharper timing, and more angle variety.",
     fit: "Best when reps need more context and more volume.",
-    href: `${ROUTES.LOGIN}?next=${encodeURIComponent(`/checkout/${PLANS.GROWTH.id}`)}&auth=google`,
+    href: CALCOM_URL,
     note: "100 leads, plus refreshes",
     plan: PLANS.GROWTH,
   },
@@ -39,8 +38,6 @@ const pricingPlans = [
 ] as const;
 
 export function PricingSection() {
-  const hasCheckout = hasCashfreeCheckoutConfiguration();
-
   return (
     <section id="pricing" className="py-16 sm:py-20 lg:py-24">
       <Container className="space-y-12">
@@ -88,8 +85,6 @@ export function PricingSection() {
         <div className="space-y-3 lg:hidden">
           {pricingPlans.map(({ buttonLabel, description, fit, href, note, plan }) => {
             const badge = "badge" in plan ? plan.badge : undefined;
-            const isHostedCheckout = href.startsWith("/checkout/");
-            const resolvedHref = isHostedCheckout && !hasCheckout ? ROUTES.SAMPLE : href;
 
             return (
               <details key={plan.id} className="group surface-card overflow-hidden p-0">
@@ -137,15 +132,7 @@ export function PricingSection() {
 
                     <div className="mt-5">
                       <Button asChild className="w-full" size="lg">
-                        <Link
-                          href={resolvedHref}
-                          rel={
-                            !isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "noreferrer" : undefined
-                          }
-                          target={
-                            !isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "_blank" : undefined
-                          }
-                        >
+                        <Link href={href} rel="noreferrer" target="_blank">
                           <span className="inline-flex items-center gap-2">
                             {buttonLabel}
                             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -164,8 +151,6 @@ export function PricingSection() {
           {pricingPlans.map(({ buttonLabel, description, fit, href, note, plan }, index) => {
             const badge = "badge" in plan ? plan.badge : undefined;
             const isHighlighted = "isHighlighted" in plan && Boolean(plan.isHighlighted);
-            const isHostedCheckout = href.startsWith("/checkout/");
-            const resolvedHref = isHostedCheckout && !hasCheckout ? ROUTES.SAMPLE : href;
 
             return (
               <div
@@ -239,15 +224,7 @@ export function PricingSection() {
                     size="lg"
                     variant={isHighlighted ? "primary" : "secondary"}
                   >
-                    <Link
-                      href={resolvedHref}
-                      rel={
-                        !isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "noreferrer" : undefined
-                      }
-                      target={
-                        !isHostedCheckout && resolvedHref !== ROUTES.SAMPLE ? "_blank" : undefined
-                      }
-                    >
+                    <Link href={href} rel="noreferrer" target="_blank">
                       <span className="inline-flex items-center gap-2">
                         {buttonLabel}
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -261,11 +238,7 @@ export function PricingSection() {
         </div>
 
         <div className="grid gap-4 rounded-[1.5rem] border border-border/70 bg-white/70 px-5 py-5 text-sm text-muted shadow-sm sm:px-6 md:grid-cols-3 md:px-8 md:py-6">
-          <p>
-            {hasCheckout
-              ? "Starter and Growth open a Cashfree-hosted recurring subscription checkout."
-              : "Cashfree checkout is not configured yet, so local preview falls back to the sample flow."}
-          </p>
+          <p>Starter, Growth, and Scale are currently sold through a short sales call so we can confirm fit and rollout scope.</p>
           <p>Every plan includes onboarding support and ICP alignment before the first brief lands.</p>
           <p>
             Not sure which tier fits?{" "}

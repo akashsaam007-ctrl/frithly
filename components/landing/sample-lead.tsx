@@ -58,7 +58,7 @@ export function SampleLead() {
                     Sarah Chen, Head of Operations
                   </h3>
                   <p className="mt-3 text-white/65">
-                    Volcano Digital, 54 employees, London
+                    Volcano Digital, 54 employees, UK
                   </p>
                 </div>
 

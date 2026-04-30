@@ -15,7 +15,7 @@ const navItems = [
   { href: ROUTES.DASHBOARD, icon: BarChart3, label: "Dashboard" },
   { href: ROUTES.BRIEFS, icon: Inbox, label: "Briefs", requiresPlan: true },
   { href: ROUTES.ICP, icon: Target, label: "ICP Settings", requiresPlan: true },
-  { href: ROUTES.BILLING, icon: CreditCard, label: "Billing" },
+  { href: ROUTES.BILLING, icon: CreditCard, label: "Plans" },
   { href: ROUTES.HELP, icon: CircleHelp, label: "Help" },
 ];
 
@@ -79,9 +79,9 @@ export function CustomerShell({ children, companyName, hasWorkspaceAccess }: Cus
 
     return (
       <div className="mt-6 rounded-2xl border border-terracotta/20 bg-terracotta/5 p-4 text-sm text-muted">
-        <p className="font-semibold text-ink">Choose a plan to unlock your workspace.</p>
+        <p className="font-semibold text-ink">Talk to sales to unlock your workspace.</p>
         <p className="mt-2 leading-6">
-          Briefs and ICP settings open as soon as your plan is active.
+          We&apos;ll confirm the right plan and switch on briefs and ICP settings after kickoff.
         </p>
         <Link
           href={ROUTES.DASHBOARD}
@@ -116,19 +116,19 @@ export function CustomerShell({ children, companyName, hasWorkspaceAccess }: Cus
               <Button size="sm" variant="secondary">Account</Button>
             </summary>
             <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border bg-white p-3 shadow-lg">
-              <div className="space-y-2">
-                <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.BILLING}>
-                  Billing
-                </Link>
-                {hasWorkspaceAccess ? (
-                  <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.ICP}>
+            <div className="space-y-2">
+              <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.BILLING}>
+                  Plans
+              </Link>
+              {hasWorkspaceAccess ? (
+                <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.ICP}>
                     Settings
-                  </Link>
-                ) : (
-                  <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.DASHBOARD}>
-                    Choose a plan
-                  </Link>
-                )}
+                </Link>
+              ) : (
+                <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.DASHBOARD}>
+                    Talk to sales
+                </Link>
+              )}
                 <SignOutButton className="w-full justify-start" size="sm" variant="ghost" />
               </div>
             </div>

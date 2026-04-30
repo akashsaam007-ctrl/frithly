@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import {
-  APP_DOMAIN,
-  APP_LOCATION,
-  APP_NAME,
-  APP_TAGLINE,
-  META,
-  PLANS,
-  SUPPORT_EMAIL,
-} from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, APP_TAGLINE, META, PLANS, SUPPORT_EMAIL } from "@/lib/constants";
 import { publicEnv } from "@/lib/utils/public-env";
 
 const SITE_URL = publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`;
@@ -98,11 +90,6 @@ export function buildOrganizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": absoluteUrl("/#organization"),
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: "GB",
-      addressLocality: APP_LOCATION,
-    },
     description: META.DESCRIPTION,
     email: SUPPORT_EMAIL,
     knowsAbout: [

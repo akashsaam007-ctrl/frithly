@@ -45,7 +45,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {accessReason === "plan-required" ? (
           <div className="rounded-2xl border border-border bg-white px-5 py-4 text-sm text-muted">
-            Choose a plan below to unlock the rest of your customer workspace.
+            Talk to sales below to unlock the rest of your customer workspace.
           </div>
         ) : null}
 

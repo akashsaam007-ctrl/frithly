@@ -6,6 +6,7 @@ import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 
 const navLinks = [
+  { href: ROUTES.ABOUT, label: "About" },
   { href: ROUTES.HOW_IT_WORKS, label: "How It Works" },
   { href: ROUTES.PRICING, label: "Pricing" },
   { href: ROUTES.FAQ, label: "FAQ" },
