@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_NAME, BUSINESS_ADDRESS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 
 export function Footer() {
   return (
@@ -54,12 +54,9 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href={ROUTES.ABOUT}>
                   Our story
                 </Link>
-                <a
-                  className="block transition-colors hover:text-white"
-                  href={`mailto:${SUPPORT_EMAIL}`}
-                >
+                <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT}>
                   Contact
-                </a>
+                </Link>
                 <span className="block">Serving B2B teams globally</span>
               </div>
             </div>
@@ -92,7 +89,7 @@ export function Footer() {
 
         <div className="space-y-2 border-t border-white/10 pt-6 text-sm text-white/60 md:space-y-1">
           <p>Copyright 2026 {APP_NAME}. All rights reserved.</p>
-          <p className="leading-7">{SUPPORT_EMAIL} | Working with teams globally</p>
+          <p className="leading-7">{SUPPORT_EMAIL} | {BUSINESS_ADDRESS}</p>
         </div>
       </Container>
     </footer>
