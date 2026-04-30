@@ -47,7 +47,7 @@ export function LoginForm({
       window.sessionStorage.setItem("frithly-post-auth-provider", "google");
 
       const supabase = createSupabaseBrowserClient();
-      const redirectUrl = new URL("/auth/callback", window.location.origin);
+      const redirectUrl = new URL("/verify", window.location.origin);
 
       if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
         redirectUrl.searchParams.set("next", nextPath);

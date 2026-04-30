@@ -16,6 +16,21 @@ const PLAN_REQUIRED_CUSTOMER_ROUTES = [ROUTES.BRIEFS, ROUTES.ICP];
 const PROTECTED_ADMIN_ROUTES = [ROUTES.ADMIN];
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  const isOauthCallbackOnHome =
+    path === ROUTES.HOME &&
+    (request.nextUrl.searchParams.has("code") ||
+      request.nextUrl.searchParams.has("token_hash") ||
+      request.nextUrl.searchParams.has("error_description") ||
+      request.nextUrl.searchParams.has("type"));
+
+  if (isOauthCallbackOnHome) {
+    const verifyUrl = new URL("/verify", request.url);
+    verifyUrl.search = request.nextUrl.search;
+
+    return NextResponse.redirect(verifyUrl);
+  }
+
   const demoMode = isDemoMode;
 
   if (demoMode) {
@@ -23,7 +38,6 @@ export async function middleware(request: NextRequest) {
   }
 
   const { response, supabase, user } = await updateSession(request);
-  const path = request.nextUrl.pathname;
 
   if (PROTECTED_CUSTOMER_ROUTES.some((route) => path.startsWith(route))) {
     if (!user) {
@@ -121,6 +135,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/",
     "/dashboard/:path*",
     "/briefs/:path*",
     "/icp/:path*",
