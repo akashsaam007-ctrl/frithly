@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { BarChart3, CircleHelp, CreditCard, Inbox, LockKeyhole, Menu, Target, X } from "lucide-react";
-import { SignOutButton } from "@/components/shared/sign-out-button";
+import { BarChart3, CircleHelp, CreditCard, Inbox, LockKeyhole, Menu, Target, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
@@ -28,6 +27,7 @@ type CustomerShellProps = {
 export function CustomerShell({ children, companyName, hasWorkspaceAccess }: CustomerShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isAccountPage = pathname === ROUTES.ACCOUNT;
 
   function renderNavItem({
     href,
@@ -111,28 +111,12 @@ export function CustomerShell({ children, companyName, hasWorkspaceAccess }: Cus
 
           <p className="hidden text-sm font-semibold text-muted md:block">{companyName}</p>
 
-          <details className="relative">
-            <summary className="list-none">
-              <Button size="sm" variant="secondary">Account</Button>
-            </summary>
-            <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border bg-white p-3 shadow-lg">
-            <div className="space-y-2">
-              <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.BILLING}>
-                  Plans
-              </Link>
-              {hasWorkspaceAccess ? (
-                <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.ICP}>
-                    Settings
-                </Link>
-              ) : (
-                <Link className="block rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-cream" href={ROUTES.DASHBOARD}>
-                    Talk to sales
-                </Link>
-              )}
-                <SignOutButton className="w-full justify-start" size="sm" variant="ghost" />
-              </div>
-            </div>
-          </details>
+          <Button asChild size="sm" variant={isAccountPage ? "primary" : "secondary"}>
+            <Link href={ROUTES.ACCOUNT}>
+              <User className="mr-2 h-4 w-4" aria-hidden="true" />
+              Account
+            </Link>
+          </Button>
         </div>
       </header>
 

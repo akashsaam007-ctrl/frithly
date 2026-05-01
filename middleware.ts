@@ -6,6 +6,7 @@ import { copyResponseCookies, updateSession } from "@/lib/supabase/middleware";
 import { isDemoMode } from "@/lib/utils/mode";
 
 const PROTECTED_CUSTOMER_ROUTES = [
+  ROUTES.ACCOUNT,
   ROUTES.DASHBOARD,
   ROUTES.BRIEFS,
   ROUTES.ICP,
@@ -136,6 +137,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/account/:path*",
     "/dashboard/:path*",
     "/briefs/:path*",
     "/icp/:path*",

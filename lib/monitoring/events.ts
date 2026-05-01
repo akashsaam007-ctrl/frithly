@@ -1,4 +1,5 @@
 export type AnalyticsEventName =
+  | "account_settings_viewed"
   | "brief_viewed"
   | "cta_clicked"
   | "dashboard_viewed"

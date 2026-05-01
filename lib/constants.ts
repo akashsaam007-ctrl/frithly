@@ -89,6 +89,7 @@ export const COLORS = {
 
 export const ROUTES = {
   ABOUT: "/about",
+  ACCOUNT: "/account",
   ADMIN: "/admin",
   ADMIN_BATCHES_NEW: "/admin/batches/new",
   ADMIN_CUSTOMERS: "/admin/customers",
