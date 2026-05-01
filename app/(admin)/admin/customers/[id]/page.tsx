@@ -1,3 +1,4 @@
+import { CustomerPlanControls } from "@/components/admin/customer-plan-controls";
 import { CustomerRoleControls } from "@/components/admin/customer-role-controls";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -64,6 +65,12 @@ export default async function AdminCustomerDetailPage({
         customerId={customer.id}
         initialRole={customer.role}
         viewerEmail={viewerEmail}
+      />
+
+      <CustomerPlanControls
+        customerId={customer.id}
+        initialPlan={customer.plan}
+        initialStatus={customer.status}
       />
 
       <Tabs defaultValue="overview">
