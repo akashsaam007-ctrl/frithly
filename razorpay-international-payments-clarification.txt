@@ -1,0 +1,63 @@
+Razorpay International Payments Clarification
+
+Business Name:
+Frithly
+
+Website:
+https://frithly.com
+
+Business Use Case:
+Frithly is a B2B lead intelligence and outbound research service for founders, SDR teams, small sales teams, early-stage SaaS companies, and B2B service businesses. We help customers improve outbound prospecting by delivering researched target accounts, relevant decision-maker contacts, company-fit context, buying and intent signals, and personalized outreach angles. Our service is digital only and no physical goods are sold or shipped.
+
+Services Offered:
+1. Free sample delivery for evaluation:
+We may provide a small sample of researched leads so prospects can evaluate the quality of our research and targeting before subscribing.
+
+2. Monthly lead intelligence service:
+Paying customers subscribe to a recurring monthly service where we deliver curated B2B prospecting briefs. These briefs can include researched target companies, relevant contacts, contact confidence or verification where available, why-now buying signals, ICP-fit reasoning, and personalized opener angles for outbound outreach.
+
+3. Higher-touch or custom plans:
+For some customers, we may offer higher-volume or deeper-research plans depending on lead volume, research depth, and support requirements.
+
+International Payments Requirement:
+A meaningful share of our target customers are outside India, especially in the United Kingdom, United States, Canada, Australia, Singapore, and the United Arab Emirates. Since Frithly is a digital B2B SaaS and service business serving international customers, we need international card acceptance so overseas customers can subscribe and pay directly on our website.
+
+Payment Process:
+Customers typically discover Frithly through our website, referrals, founder-led demos, direct outbound, email, or LinkedIn. Interested prospects may first request a sample or speak with us. If they want to continue, they subscribe to a monthly plan for recurring weekly or ongoing delivery of lead intelligence services. Payments are collected online through our website for digital service subscriptions or service retainers. No physical goods are shipped, and no cash-on-delivery or offline product fulfillment is involved.
+
+Pricing and Cost Structure:
+Our pricing is based on the selected plan scope, lead volume, research depth, and support level. Customers are charged fixed monthly subscription amounts or custom monthly retainers depending on service requirements. We do not process arbitrary open-ended consumer transactions. Transaction values are tied to our defined SaaS and service pricing.
+
+What Customers Receive:
+- Researched target accounts
+- Relevant decision-maker or operator contacts
+- Contact confidence or verification where available
+- Company fit context
+- Buying or intent signals
+- Personalized outbound opener angles
+- Weekly or periodic lead intelligence brief delivery
+
+Customer Information Collected:
+We collect basic customer and business information required to provide the service, including full name, work email, company name, industry, target role or persona, company size, geography, service requirements, and billing or account details required to manage subscriptions and support.
+
+Domestic vs International Customers:
+Yes, we differentiate between domestic and international customers for payment processing, billing, invoicing, and compliance purposes.
+
+Fraud and Risk Controls:
+We maintain internal checks for suspicious activity, unusual payment behavior, repeated failed attempts, and blacklisting or negative-list controls for suspicious or confirmed fraud cases where required.
+
+Registered Address:
+55, Peranayakanvalasu,
+Dharapuram,
+Tiruppur,
+Mulanur,
+Tamil Nadu,
+India - 638106
+
+Operating Address:
+55, Peranayakanvalasu,
+Dharapuram,
+Tiruppur,
+Mulanur,
+Tamil Nadu,
+India - 638106

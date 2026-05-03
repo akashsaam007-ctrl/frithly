@@ -4,7 +4,7 @@ export const APP_NAME = "Frithly";
 export const APP_TAGLINE = "50 hyper-researched B2B leads. Every Monday.";
 export const APP_DOMAIN = "frithly.com";
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
-export const SUPPORT_EMAIL = "hi@frithly.com";
+export const SUPPORT_EMAIL = "support@frithly.com";
 export const BUSINESS_ADDRESS =
   "55, Peranayakanvalasu, Dharapuram, Tiruppur, Mulanur, Tamil Nadu, India - 638106";
 

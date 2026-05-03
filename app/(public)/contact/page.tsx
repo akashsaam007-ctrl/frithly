@@ -4,13 +4,7 @@ import { PageEvent } from "@/components/analytics/page-event";
 import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import {
-  APP_NAME,
-  BUSINESS_ADDRESS,
-  CALCOM_URL,
-  ROUTES,
-  SUPPORT_EMAIL,
-} from "@/lib/constants";
+import { APP_NAME, CALCOM_URL, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
   buildPublicMetadata,
@@ -19,16 +13,15 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Contact Frithly for plan discussions, sample requests, and business information. View our operating and registered address, support email, and sales booking link.",
+    "Contact Frithly for plan discussions, sample requests, and support. Use our support email or book a sales conversation.",
   keywords: [
     "Frithly contact",
-    "Frithly address",
     "contact Frithly",
-    "Frithly registered address",
-    "Frithly operating address",
+    "Frithly support",
+    "Frithly sales",
   ],
   path: "/contact",
-  title: "Contact Frithly | Address, Support, and Sales",
+  title: "Contact Frithly | Support and Sales",
 });
 
 export default function ContactPage() {
@@ -37,9 +30,9 @@ export default function ContactPage() {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Contact Frithly for plan discussions, sample requests, and business information. View our operating and registered address, support email, and sales booking link.",
+            "Contact Frithly for plan discussions, sample requests, and support. Use our support email or book a sales conversation.",
           path: "/contact",
-          title: "Contact Frithly | Address, Support, and Sales",
+          title: "Contact Frithly | Support and Sales",
         })}
       />
       <StructuredData
@@ -64,8 +57,8 @@ export default function ContactPage() {
               Contact {APP_NAME} for sales, support, and company details.
             </h1>
             <p className="max-w-3xl text-lg leading-8 text-muted sm:text-xl">
-              If you want to discuss plans, request a sample, or need our registered business
-              details, you can use the information below.
+              If you want to discuss plans, request a sample, or need help with Frithly, use the
+              options below and we will point you in the right direction.
             </p>
           </div>
         </section>
@@ -73,24 +66,26 @@ export default function ContactPage() {
         <section className="grid gap-6 lg:grid-cols-2">
           <article className="rounded-[1.9rem] border border-border/80 bg-white/90 p-7 shadow-[0_18px_50px_rgba(26,26,26,0.06)]">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-              Business address
+              Best for
             </p>
-            <div className="mt-5 space-y-6">
+            <div className="mt-5 space-y-5">
               <div>
                 <h2 className="text-xl font-semibold tracking-[-0.03em] text-ink">
-                  Registered address
+                  Sales and plan questions
                 </h2>
                 <p className="mt-2 max-w-xl text-base leading-8 text-muted">
-                  {BUSINESS_ADDRESS}
+                  Use this page when you want to talk through plan fit, onboarding, outbound goals,
+                  or how Frithly can support your workflow.
                 </p>
               </div>
 
               <div>
                 <h2 className="text-xl font-semibold tracking-[-0.03em] text-ink">
-                  Operating address
+                  Samples and support
                 </h2>
                 <p className="mt-2 max-w-xl text-base leading-8 text-muted">
-                  {BUSINESS_ADDRESS}
+                  If you want a free sample, help with your account, or a fast support response,
+                  email us directly and we will take it from there.
                 </p>
               </div>
             </div>
