@@ -445,14 +445,14 @@ export function PlatformHomepage() {
             </p>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-5">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
             {workflowSteps.map((step) => {
               const Icon = step.icon;
 
               return (
                 <div
                   key={step.label}
-                  className="surface-card animated-fade-up-soft flex h-full flex-col p-5 transition-all duration-500 hover:-translate-y-1 hover:border-terracotta/20 hover:shadow-[0_24px_70px_rgba(26,26,26,0.08)] sm:p-6"
+                  className="surface-card animated-fade-up-soft flex h-full min-w-0 flex-col p-5 transition-all duration-500 hover:-translate-y-1 hover:border-terracotta/20 hover:shadow-[0_24px_70px_rgba(26,26,26,0.08)] sm:p-6"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
@@ -462,7 +462,7 @@ export function PlatformHomepage() {
                       {step.step}
                     </span>
                   </div>
-                  <h3 className="mt-6 text-2xl font-semibold text-ink">{step.label}</h3>
+                  <h3 className="mt-6 text-[2rem] leading-[1.05] font-semibold text-ink">{step.label}</h3>
                   <p className="mt-4 text-sm leading-7 text-muted md:text-base">
                     {step.description}
                   </p>
