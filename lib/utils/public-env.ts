@@ -14,15 +14,20 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
 });
 
+function normalizeOptionalEnv(value: string | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
 const parsedPublicEnv = publicEnvSchema.safeParse({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   NEXT_PUBLIC_CALCOM_URL: process.env.NEXT_PUBLIC_CALCOM_URL,
-  NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV: process.env.NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV,
-  NEXT_PUBLIC_ENABLE_DEMO_MODE: process.env.NEXT_PUBLIC_ENABLE_DEMO_MODE,
-  NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-  NEXT_PUBLIC_POSTHOG_TOKEN: process.env.NEXT_PUBLIC_POSTHOG_TOKEN,
-  NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV: process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV,
-  NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV: normalizeOptionalEnv(process.env.NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV),
+  NEXT_PUBLIC_ENABLE_DEMO_MODE: normalizeOptionalEnv(process.env.NEXT_PUBLIC_ENABLE_DEMO_MODE),
+  NEXT_PUBLIC_POSTHOG_HOST: normalizeOptionalEnv(process.env.NEXT_PUBLIC_POSTHOG_HOST),
+  NEXT_PUBLIC_POSTHOG_TOKEN: normalizeOptionalEnv(process.env.NEXT_PUBLIC_POSTHOG_TOKEN),
+  NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV: normalizeOptionalEnv(process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV),
+  NEXT_PUBLIC_SENTRY_DSN: normalizeOptionalEnv(process.env.NEXT_PUBLIC_SENTRY_DSN),
   NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

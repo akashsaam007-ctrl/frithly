@@ -20,20 +20,25 @@ const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 });
 
+function normalizeOptionalEnv(value: string | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
 const parsedServerEnv = serverEnvSchema.safeParse({
   ADMIN_EMAIL_ALLOWLIST: process.env.ADMIN_EMAIL_ALLOWLIST,
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
-  LEADGEN_BACKEND_API_URL: process.env.LEADGEN_BACKEND_API_URL,
-  LEADGEN_BACKEND_SHARED_SECRET: process.env.LEADGEN_BACKEND_SHARED_SECRET,
-  NODE_ENV: process.env.NODE_ENV,
-  OWNED_COMPANY_DATASET_PATH: process.env.OWNED_COMPANY_DATASET_PATH,
+  GOOGLE_MAPS_API_KEY: normalizeOptionalEnv(process.env.GOOGLE_MAPS_API_KEY),
+  LEADGEN_BACKEND_API_URL: normalizeOptionalEnv(process.env.LEADGEN_BACKEND_API_URL),
+  LEADGEN_BACKEND_SHARED_SECRET: normalizeOptionalEnv(process.env.LEADGEN_BACKEND_SHARED_SECRET),
+  NODE_ENV: normalizeOptionalEnv(process.env.NODE_ENV) as "development" | "production" | "test" | undefined,
+  OWNED_COMPANY_DATASET_PATH: normalizeOptionalEnv(process.env.OWNED_COMPANY_DATASET_PATH),
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
   RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
-  SEARXNG_BASE_URL: process.env.SEARXNG_BASE_URL,
-  SEARXNG_ENGINES: process.env.SEARXNG_ENGINES,
-  SEARXNG_LANGUAGE: process.env.SEARXNG_LANGUAGE,
+  SEARXNG_BASE_URL: normalizeOptionalEnv(process.env.SEARXNG_BASE_URL),
+  SEARXNG_ENGINES: normalizeOptionalEnv(process.env.SEARXNG_ENGINES),
+  SEARXNG_LANGUAGE: normalizeOptionalEnv(process.env.SEARXNG_LANGUAGE),
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 });
 
