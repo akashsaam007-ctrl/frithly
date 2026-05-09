@@ -19,8 +19,10 @@ export const metadata: Metadata = {
   description: META.DESCRIPTION,
   manifest: "/manifest.webmanifest",
   icons: {
-    apple: "/apple-touch-icon.png",
+    apple: [{ sizes: "180x180", type: "image/png", url: "/apple-touch-icon.png" }],
     icon: [
+      { sizes: "any", url: "/favicon.ico" },
+      { sizes: "48x48", type: "image/png", url: "/favicon-48x48.png" },
       { sizes: "192x192", type: "image/png", url: "/icon-192.png" },
       { sizes: "512x512", type: "image/png", url: "/icon-512.png" },
     ],
