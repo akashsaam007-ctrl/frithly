@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PageEvent } from "@/components/analytics/page-event";
-import { PlatformHomepage, platformFaqs } from "@/components/landing/platform-homepage";
+import { platformFaqs } from "@/components/landing/platform-homepage-data";
+import { PlatformHomepage } from "@/components/landing/platform-homepage";
 import { StructuredData } from "@/components/seo/structured-data";
 import {
   buildFaqSchema,
@@ -14,17 +15,17 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Frithly is a confidence-aware outbound intelligence platform that turns client ICPs into selective delivery pipelines, ranked opportunities, source-backed drafts, SMTP-safe cohorts, and outcome-driven learning.",
+    "Frithly is a premium curated outbound intelligence service that delivers reviewed, founder-aware, SMTP-conscious opportunities in weekly outbound cohorts.",
   keywords: [
-    "outbound intelligence platform",
-    "curated outbound opportunities",
-    "founder contact intelligence",
-    "SMTP-safe outbound workflow",
-    "B2B recommendation engine",
-    "outbound operations software",
+    "curated outbound intelligence service",
+    "weekly outbound opportunity delivery",
+    "founder-aware outbound targeting",
+    "SMTP-safe opportunity routing",
+    "premium outbound intelligence",
+    "curated lead research service",
   ],
   path: "/",
-  title: "Frithly | Confidence-Aware Outbound Intelligence Platform",
+  title: "Frithly | Curated Outbound Intelligence Delivered Weekly",
 });
 
 type HomePageProps = {
@@ -86,9 +87,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Frithly helps outbound teams turn ICPs into selective delivery pipelines, ranked recommendations, safe contact validation, and deployment-ready outbound cohorts.",
+            "Frithly helps agencies and outbound teams discover higher-confidence opportunities through reviewed intelligence, SMTP-aware routing, founder targeting, and curated weekly delivery.",
           path: "/",
-          title: "Frithly | Confidence-Aware Outbound Intelligence Platform",
+          title: "Frithly | Curated Outbound Intelligence Delivered Weekly",
         })}
       />
       <StructuredData data={buildServiceSchema()} />
