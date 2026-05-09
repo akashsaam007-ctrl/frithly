@@ -84,6 +84,44 @@ type BatchGenerateApiResponse = {
   success?: boolean;
 };
 
+function parseBoundedInteger(rawValue: string, fallback: number, min: number, max: number) {
+  const trimmed = rawValue.trim();
+
+  if (!trimmed) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(trimmed, 10);
+
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(max, Math.max(min, parsed));
+}
+
+async function parseResponsePayload<T extends { error?: string }>(response: Response): Promise<T> {
+  const raw = await response.text();
+
+  if (!raw) {
+    return {} as T;
+  }
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    const trimmed = raw.trim();
+    const looksLikeMarkup =
+      trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html") || trimmed.startsWith("<");
+
+    return {
+      error: looksLikeMarkup
+        ? "The server returned an unexpected response while processing this request."
+        : trimmed,
+    } as T;
+  }
+}
+
 const sampleLeadPayload = `[
   {
     "full_name": "Sarah Chen",
@@ -147,9 +185,11 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<BatchAction | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationCount, setGenerationCount] = useState(customers[0]?.recommendedLeadCount ?? 50);
-  const [queryBudget, setQueryBudget] = useState(120);
-  const [minMatchPercent, setMinMatchPercent] = useState(60);
+  const [generationCountInput, setGenerationCountInput] = useState(
+    String(customers[0]?.recommendedLeadCount ?? 50),
+  );
+  const [queryBudgetInput, setQueryBudgetInput] = useState("120");
+  const [minMatchPercentInput, setMinMatchPercentInput] = useState("60");
   const [generationSummary, setGenerationSummary] = useState<{
     diagnostics: BatchGenerationDiagnostics;
     logs: string[];
@@ -167,10 +207,18 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
   });
   const selectedCustomer =
     customers.find((customer) => customer.id === selectedCustomerId) ?? filteredCustomers[0] ?? null;
+  const generationCount = parseBoundedInteger(
+    generationCountInput,
+    selectedCustomer?.recommendedLeadCount ?? 50,
+    1,
+    250,
+  );
+  const queryBudget = parseBoundedInteger(queryBudgetInput, 120, 20, 500);
+  const minMatchPercent = parseBoundedInteger(minMatchPercentInput, 60, 40, 100);
 
   useEffect(() => {
     if (selectedCustomer?.recommendedLeadCount) {
-      setGenerationCount(selectedCustomer.recommendedLeadCount);
+      setGenerationCountInput(String(selectedCustomer.recommendedLeadCount));
     }
   }, [selectedCustomerId, selectedCustomer?.recommendedLeadCount]);
 
@@ -206,7 +254,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
         },
         method: "POST",
       });
-      const payload = (await response.json()) as BatchApiResponse;
+      const payload = await parseResponsePayload<BatchApiResponse>(response);
 
       if (!response.ok || !payload.success) {
         throw new Error(payload.error ?? "We couldn't finish that batch action.");
@@ -276,7 +324,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
         },
         method: "POST",
       });
-      const payload = (await response.json()) as BatchGenerateApiResponse;
+      const payload = await parseResponsePayload<BatchGenerateApiResponse>(response);
 
       if (!response.ok || !payload.success || !payload.leadsJson || !payload.preview || !payload.diagnostics) {
         throw new Error(payload.error ?? "We couldn't generate leads from the saved ICP.");
@@ -388,10 +436,9 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
                     min={1}
                     max={250}
                     type="number"
-                    value={generationCount}
-                    onChange={(event) =>
-                      setGenerationCount(Math.max(1, Number.parseInt(event.target.value || "0", 10) || 1))
-                    }
+                    value={generationCountInput}
+                    onBlur={() => setGenerationCountInput(String(generationCount))}
+                    onChange={(event) => setGenerationCountInput(event.target.value)}
                   />
                 </div>
 
@@ -402,10 +449,9 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
                     min={20}
                     max={500}
                     type="number"
-                    value={queryBudget}
-                    onChange={(event) =>
-                      setQueryBudget(Math.max(20, Number.parseInt(event.target.value || "0", 10) || 20))
-                    }
+                    value={queryBudgetInput}
+                    onBlur={() => setQueryBudgetInput(String(queryBudget))}
+                    onChange={(event) => setQueryBudgetInput(event.target.value)}
                   />
                 </div>
 
@@ -416,12 +462,9 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
                     min={40}
                     max={100}
                     type="number"
-                    value={minMatchPercent}
-                    onChange={(event) =>
-                      setMinMatchPercent(
-                        Math.min(100, Math.max(40, Number.parseInt(event.target.value || "0", 10) || 60)),
-                      )
-                    }
+                    value={minMatchPercentInput}
+                    onBlur={() => setMinMatchPercentInput(String(minMatchPercent))}
+                    onChange={(event) => setMinMatchPercentInput(event.target.value)}
                   />
                 </div>
               </div>
