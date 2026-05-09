@@ -310,8 +310,8 @@ type CoverageOption = (typeof coverageOptions)[number]["id"];
 type SupportOption = (typeof supportOptions)[number]["id"];
 type CadenceOption = (typeof cadenceOptions)[number]["id"];
 
-function revealProps(reduceMotion: boolean, delay = 0) {
-  if (reduceMotion) {
+function revealProps(enableAnimation: boolean, delay = 0) {
+  if (!enableAnimation) {
     return {};
   }
 
@@ -439,6 +439,7 @@ function SliderControl({
 
 export function PlatformHomepage() {
   const reduceMotion = useReducedMotion() ?? false;
+  const [hasMounted, setHasMounted] = useState(false);
   const [activeHeroSignal, setActiveHeroSignal] = useState(0);
   const [activeEngineStep, setActiveEngineStep] = useState(0);
   const [activeEvolutionStage, setActiveEvolutionStage] = useState(0);
@@ -449,6 +450,10 @@ export function PlatformHomepage() {
   const [cadence, setCadence] = useState<CadenceOption>("weekly");
   const [founderPriority, setFounderPriority] = useState(true);
   const [smtpPriority, setSmtpPriority] = useState(true);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     if (reduceMotion) {
@@ -488,6 +493,7 @@ export function PlatformHomepage() {
 
   const activeStage = engineStages[activeEngineStep];
   const activeEvolution = evolutionStages[activeEvolutionStage];
+  const enableReveal = hasMounted && !reduceMotion;
 
   const programPreview = useMemo(() => {
     const monthlyReviewed = weeklyOpportunityTarget * (cadence === "weekly" ? 4 : 2);
@@ -548,7 +554,7 @@ export function PlatformHomepage() {
 
       <section className="relative overflow-hidden pb-10 pt-10 sm:pb-14 sm:pt-14 lg:pb-20 lg:pt-20">
         <Container className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <motion.div className="space-y-8" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-8" {...revealProps(enableReveal, 0.04)}>
             <Badge className="w-fit border-white/10 bg-white/[0.05] text-[#f0b38e] shadow-[0_16px_38px_rgba(0,0,0,0.18)]" variant="outline">
               A living outbound intelligence system
             </Badge>
@@ -616,7 +622,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="relative min-h-[34rem] overflow-hidden rounded-[2.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_36px_120px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-8"
-            {...revealProps(reduceMotion, 0.12)}
+            {...revealProps(enableReveal, 0.12)}
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.22),transparent_16rem),radial-gradient(circle_at_bottom_right,rgba(89,130,167,0.18),transparent_18rem)]" />
             <div className="pointer-events-none absolute inset-x-8 top-8 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent" />
@@ -751,7 +757,7 @@ export function PlatformHomepage() {
 
       <section id="why-outbound-fails" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
-          <motion.div className="space-y-7" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-7" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="Outbound failure narrative"
               title="Mass outbound creates activity. It rarely creates conviction."
@@ -772,7 +778,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-6"
-            {...revealProps(reduceMotion, 0.12)}
+            {...revealProps(enableReveal, 0.12)}
           >
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-[1.5rem] border border-rose-300/18 bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-5">
@@ -855,7 +861,7 @@ export function PlatformHomepage() {
 
       <section id="living-engine" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-6" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="Living intelligence engine"
               title="As the system moves, the opportunity field narrows and confidence rises."
@@ -896,7 +902,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
-            {...revealProps(reduceMotion, 0.12)}
+            {...revealProps(enableReveal, 0.12)}
           >
             <div className="grid gap-6">
               <div className="flex flex-wrap gap-2">
@@ -1049,7 +1055,7 @@ export function PlatformHomepage() {
 
       <section id="opportunity-evolution" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="space-y-10">
-          <motion.div {...revealProps(reduceMotion, 0.04)}>
+          <motion.div {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               align="center"
               eyebrow="Opportunity evolution"
@@ -1060,7 +1066,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
-            {...revealProps(reduceMotion, 0.1)}
+            {...revealProps(enableReveal, 0.1)}
           >
             <div className="flex flex-wrap gap-3">
               {evolutionStages.map((stage, index) => (
@@ -1178,7 +1184,7 @@ export function PlatformHomepage() {
 
       <section id="weekly-delivery" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-10 lg:grid-cols-[0.84fr_1.16fr] lg:items-start">
-          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-6" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="Weekly delivery system"
               title="Frithly is not instant SaaS automation. It is a premium weekly outbound operation."
@@ -1198,7 +1204,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
-            {...revealProps(reduceMotion, 0.12)}
+            {...revealProps(enableReveal, 0.12)}
           >
             <div className="grid gap-4">
               {mondayMoments.map((moment) => (
@@ -1233,7 +1239,7 @@ export function PlatformHomepage() {
 
       <section id="icp-demo" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-6" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="Interactive ICP intelligence demo"
               title="Preview the thinking before you ever start a program."
@@ -1267,7 +1273,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
-            {...revealProps(reduceMotion, 0.12)}
+            {...revealProps(enableReveal, 0.12)}
           >
             <div className="rounded-[1.6rem] border border-white/10 bg-[#f8f4ec] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
               <IcpDemoExperience />
@@ -1278,7 +1284,7 @@ export function PlatformHomepage() {
 
       <section id="program-builder" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-6" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="Custom program builder"
               title="Frithly is configured like a program, not sold like software."
@@ -1326,7 +1332,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
-            {...revealProps(reduceMotion, 0.12)}
+            {...revealProps(enableReveal, 0.12)}
           >
             <div className="space-y-6">
               <div className="flex items-center justify-between gap-4">
@@ -1424,7 +1430,7 @@ export function PlatformHomepage() {
 
       <section id="roi-intelligence" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="space-y-10">
-          <motion.div {...revealProps(reduceMotion, 0.04)}>
+          <motion.div {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               align="center"
               eyebrow="ROI intelligence experience"
@@ -1436,7 +1442,7 @@ export function PlatformHomepage() {
           <div className="grid gap-5 lg:grid-cols-2">
             <motion.div
               className="rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-6"
-              {...revealProps(reduceMotion, 0.08)}
+              {...revealProps(enableReveal, 0.08)}
             >
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-rose-200">
                 Traditional outbound
@@ -1459,7 +1465,7 @@ export function PlatformHomepage() {
 
             <motion.div
               className="rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-6"
-              {...revealProps(reduceMotion, 0.12)}
+              {...revealProps(enableReveal, 0.12)}
             >
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
                 Frithly
@@ -1486,7 +1492,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] px-5 py-5 text-center text-sm leading-7 text-white/66"
-            {...revealProps(reduceMotion, 0.14)}
+            {...revealProps(enableReveal, 0.14)}
           >
             With better targeting, you could get more replies and better meetings without increasing
             outreach volume.
@@ -1494,7 +1500,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
-            {...revealProps(reduceMotion, 0.16)}
+            {...revealProps(enableReveal, 0.16)}
           >
             <div className="rounded-[1.6rem] border border-white/10 bg-[#f8f4ec] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
               <RoiCalculatorExperience />
@@ -1505,7 +1511,7 @@ export function PlatformHomepage() {
 
       <section id="trust-layer" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-8 lg:grid-cols-[0.84fr_1.16fr] lg:items-start">
-          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-6" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="Operational trust layer"
               title="Trust should come from operational depth, not startup vanity."
@@ -1539,7 +1545,7 @@ export function PlatformHomepage() {
                 <motion.div
                   key={signal.title}
                   className="rounded-[1.7rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl"
-                  {...revealProps(reduceMotion, 0.08 + index * 0.04)}
+                  {...revealProps(enableReveal, 0.08 + index * 0.04)}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-[#f0b38e]/12 text-[#f0b38e]">
                     <Icon className="h-5 w-5" aria-hidden="true" />
@@ -1555,7 +1561,7 @@ export function PlatformHomepage() {
 
       <section id="delivery-timeline" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="space-y-10">
-          <motion.div {...revealProps(reduceMotion, 0.04)}>
+          <motion.div {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               align="center"
               eyebrow="Intelligence delivery timeline"
@@ -1572,7 +1578,7 @@ export function PlatformHomepage() {
                 <motion.div
                   key={item.day}
                   className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl"
-                  {...revealProps(reduceMotion, 0.08 + index * 0.04)}
+                  {...revealProps(enableReveal, 0.08 + index * 0.04)}
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[#f0b38e]/12 text-[#f0b38e]">
                     <Icon className="h-5 w-5" aria-hidden="true" />
@@ -1588,7 +1594,7 @@ export function PlatformHomepage() {
 
       <section id="faq" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+          <motion.div className="space-y-6" {...revealProps(enableReveal, 0.04)}>
             <SectionIntro
               eyebrow="FAQ"
               title="The calm explanation behind the intelligence system."
@@ -1598,7 +1604,7 @@ export function PlatformHomepage() {
 
           <motion.div
             className="overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] px-5 py-3 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-2xl sm:px-6"
-            {...revealProps(reduceMotion, 0.1)}
+            {...revealProps(enableReveal, 0.1)}
           >
             <Accordion type="single" collapsible>
               {platformFaqs.map((faq, index) => (
@@ -1624,7 +1630,7 @@ export function PlatformHomepage() {
         <Container>
           <motion.div
             className="relative overflow-hidden rounded-[2.2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(10,17,26,0.98)_0%,rgba(6,11,18,0.98)_100%)] px-6 py-10 shadow-[0_34px_110px_rgba(0,0,0,0.35)] sm:px-8 sm:py-12 lg:px-12 lg:py-16"
-            {...revealProps(reduceMotion, 0.04)}
+            {...revealProps(enableReveal, 0.04)}
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.22),transparent_28rem),radial-gradient(circle_at_bottom_right,rgba(97,146,186,0.12),transparent_24rem)]" />
             <div className="pointer-events-none absolute right-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-[#f0b38e]/15 blur-3xl" />
