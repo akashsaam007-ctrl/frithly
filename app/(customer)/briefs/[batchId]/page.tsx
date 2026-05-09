@@ -69,9 +69,9 @@ export default async function BriefDetailPage({ params }: BriefDetailPageProps) 
         properties={{ batch_id: batch.id, location: batchId }}
       />
       <div className="space-y-3">
-        <h1 className="text-4xl md:text-5xl">Brief delivered {batch.deliveryDateLabel}</h1>
+        <h1 className="text-4xl md:text-5xl">Delivery snapshot from {batch.deliveryDateLabel}</h1>
         <p className="text-muted">
-          {batch.leadCount} hyper-researched leads | {batch.verifiedEmails} verified emails
+          {batch.leadCount} curated opportunities | {batch.verifiedEmails} verified emails
         </p>
       </div>
 
@@ -137,14 +137,14 @@ export default async function BriefDetailPage({ params }: BriefDetailPageProps) 
               role={lead.current_title}
               signals={lead.trigger_signals ?? ["No trigger signals recorded yet."]}
               triggerSummary={lead.recommended_reason ?? lead.why_this_lead ?? "No summary available yet."}
-              whyNow={lead.why_this_lead ?? "No why-now note is available for this lead yet."}
+              whyNow={lead.why_this_lead ?? "No why-now note is available for this opportunity yet."}
             />
           ))}
         </div>
       ) : (
         <EmptyState
-          description="This batch exists, but no lead records have been added yet. Once leads are loaded, they will appear here with opener copy and trigger signals."
-          title="No leads in this batch yet"
+          description="This delivery exists, but no opportunity records have been added yet. Once opportunities are loaded, they will appear here with opener copy and trigger signals."
+          title="No opportunities in this delivery yet"
         />
       )}
 

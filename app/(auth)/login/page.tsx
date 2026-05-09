@@ -20,7 +20,6 @@ export const metadata: Metadata = buildPublicMetadata({
 type LoginPageProps = {
   searchParams?: Promise<{
     auth?: string | string[] | undefined;
-    email?: string | string[] | undefined;
     next?: string | string[] | undefined;
   }>;
 };
@@ -36,7 +35,6 @@ function isSafeNextPath(value: string) {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const authMode = readParam(resolvedSearchParams?.auth);
-  const initialEmail = readParam(resolvedSearchParams?.email);
   const nextPath = readParam(resolvedSearchParams?.next);
   const forceGoogleCheckoutAuth =
     authMode === "google" && nextPath.startsWith("/checkout/");
@@ -80,20 +78,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   : forceGoogleCheckoutAuth
                     ? "Continue with Google to unlock your secure checkout, then we'll take you straight to payment."
                   : nextPath.startsWith("/checkout/")
-                    ? "Continue with Google or email to unlock your secure checkout, then we'll take you straight to payment."
+                    ? "Continue with Google to unlock your secure checkout, then we'll take you straight to payment."
                   : nextPath === "/billing"
-                    ? "Use the same email you used during checkout and we'll send a login link to open billing."
-                  : initialEmail
-                    ? "Use the same email you used during checkout and we'll send a login link."
-                    : "Enter your email to receive a login link"}
+                    ? "Continue with Google to open billing for your workspace."
+                    : "Continue with Google to open your Frithly workspace."}
               </p>
             </div>
           </div>
-          <LoginForm
-            initialEmail={initialEmail}
-            nextPath={nextPath}
-            preferredAuth={forceGoogleCheckoutAuth ? "google" : undefined}
-          />
+          <LoginForm nextPath={nextPath} preferredAuth={forceGoogleCheckoutAuth ? "google" : undefined} />
         </CardContent>
       </Card>
     </main>

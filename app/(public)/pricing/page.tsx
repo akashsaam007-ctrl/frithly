@@ -16,7 +16,7 @@ import {
 } from "@/lib/seo";
 
 const pricingDescription =
-  "Frithly pricing for B2B teams that want weekly researched lead intelligence, verified contacts, and personalized outreach angles instead of raw lead lists.";
+  "Frithly pricing for B2B teams that want reviewed outbound opportunities, verified contacts, and personalized outreach angles instead of raw lead lists.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: pricingDescription,
@@ -69,7 +69,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
         <Container width="narrow" className="space-y-6 text-center">
           <h1>Choose the right Frithly plan for your team.</h1>
           <p className="mt-6 text-muted">
-            Weekly lead intelligence, personalized openers, and zero annual contracts.
+            Weekly opportunity delivery, personalized openers, and zero annual contracts.
           </p>
           {checkoutState ? (
             <Card className="mx-auto max-w-[680px] text-left">

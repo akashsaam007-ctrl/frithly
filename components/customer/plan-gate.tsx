@@ -9,8 +9,15 @@ import type { Database } from "@/types/database.types";
 type CustomerRow = Database["public"]["Tables"]["customers"]["Row"];
 
 const lockedFeatureLabels: Record<string, string> = {
-  briefs: "Briefs",
-  icp: "ICP settings",
+  analytics: "Analytics",
+  briefs: "Delivery history",
+  campaigns: "Delivery pipeline",
+  cohorts: "Cohorts",
+  drafts: "Draft workspace",
+  exports: "Exports",
+  icp: "ICP profile",
+  recommendations: "Opportunities",
+  smtp: "Safety review",
 };
 
 const selectablePlans = [PLANS.STARTER, PLANS.GROWTH, PLANS.SCALE];
@@ -22,14 +29,14 @@ function getPlanGateCopy(customer: Pick<CustomerRow, "plan" | "status">) {
       : null;
 
   if (customer.status === "paused" && currentPlan) {
-    return `Your ${currentPlan.name} access is paused right now. Book a quick call and we'll help you restart delivery or move you to the right plan.`;
+    return `Your ${currentPlan.name} access is paused right now. Book a quick call and we'll help you restart curated delivery or move you to the right plan.`;
   }
 
   if ((customer.status === "cancelled" || customer.status === "churned") && currentPlan) {
-    return `Your ${currentPlan.name} access is no longer active. Talk to sales to regain access to briefs, ICP settings, and weekly delivery.`;
+    return `Your ${currentPlan.name} access is no longer active. Talk to sales to regain access to your delivery center, ICP profile, and weekly opportunity flow.`;
   }
 
-  return "Talk to sales to activate briefs, ICP settings, and your weekly Frithly workflow.";
+  return "Talk to sales to activate your delivery center, ICP profile, and weekly Frithly opportunity workflow.";
 }
 
 type PlanGateProps = {
@@ -115,10 +122,10 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            "Weekly lead briefs with researched accounts and verified contacts.",
-            "ICP settings so Frithly can keep improving who gets delivered.",
-            "Plan setup and rollout guidance tailored to your workflow.",
-            "Direct support if you need help during onboarding or delivery.",
+            "Curated opportunity delivery with reviewed contacts and visible reasoning.",
+            "ICP profile refinement so Frithly can keep improving what gets delivered.",
+            "Rollout guidance tailored to your outbound workflow and quality bar.",
+            "Direct support during onboarding, delivery, and early cohort execution.",
           ].map((item) => (
             <div key={item} className="rounded-2xl border border-border bg-stone-50 px-4 py-4 text-sm leading-7 text-muted">
               {item}

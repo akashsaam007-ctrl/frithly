@@ -130,28 +130,28 @@ export function buildServiceSchema() {
       "@type": "Audience",
       audienceType: "B2B sales teams, founders, SDR teams, and GTM operators",
     },
-    category: "B2B lead intelligence",
+    category: "Outbound intelligence platform",
     description:
-      "Weekly B2B lead intelligence delivered as researched accounts, verified contacts, and personalized opening angles for outbound teams.",
-    name: `${APP_NAME} B2B lead intelligence`,
+      "Confidence-aware outbound intelligence for turning client ICPs into selective campaigns, ranked recommendations, source-backed drafts, SMTP-safe cohorts, and outcome-driven learning.",
+    name: `${APP_NAME} outbound intelligence platform`,
     offers: [PLANS.STARTER, PLANS.GROWTH, PLANS.SCALE].map((plan) => ({
       "@type": "Offer",
       availability: "https://schema.org/InStock",
       category: "Recurring subscription",
-      description: `${plan.name} plan for ${APP_NAME} lead intelligence`,
+      description: `${plan.name} plan for ${APP_NAME} outbound intelligence`,
       name: plan.name,
       price: plan.price,
       priceCurrency: plan.currency,
-      url: absoluteUrl("/pricing"),
+      url: absoluteUrl("/#pricing"),
     })),
     provider: {
       "@id": absoluteUrl("/#organization"),
     },
     serviceOutput:
-      "A weekly outbound brief with researched leads, verified contacts, timing context, and message angles.",
-    serviceType: "B2B lead intelligence service",
+      "A ranked set of outbound opportunities with recommendation reasoning, verified contact paths, drafts, readiness states, and exportable execution context.",
+    serviceType: "Outbound intelligence platform",
     slogan: APP_TAGLINE,
-    url: absoluteUrl("/pricing"),
+    url: absoluteUrl("/"),
   };
 }
 

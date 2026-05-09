@@ -25,29 +25,29 @@ export default async function BriefsPage({ searchParams }: BriefsPageProps) {
   return (
     <Container className="space-y-8 px-0">
       <div className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">Briefs</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">Delivery history</p>
         <h1 className="text-4xl md:text-5xl">All deliveries</h1>
         <p className="text-muted">
-          Most recent first. Use these pages to review lead quality and replay your best openers.
+          Most recent first. Use these pages to review opportunity quality and replay your best openers.
         </p>
       </div>
 
       {batches.length === 0 ? (
         <EmptyState
-          description="Your first brief will appear here after the next delivery window. We'll list every batch with lead counts and feedback trends once they start landing."
-          title="No briefs yet"
+          description="Your first delivery snapshot will appear here after the next review window. We&apos;ll list each delivery with opportunity counts and feedback trends once they start landing."
+          title="No delivery history yet"
         />
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Weekly briefs</CardTitle>
+            <CardTitle>Weekly deliveries</CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead className="text-muted">
                 <tr>
                   <th className="pb-4 pr-6 font-medium">Delivery date</th>
-                  <th className="pb-4 pr-6 font-medium">Lead count</th>
+                  <th className="pb-4 pr-6 font-medium">Opportunity count</th>
                   <th className="pb-4 pr-6 font-medium">% positive feedback</th>
                   <th className="pb-4 font-medium">View</th>
                 </tr>
@@ -76,7 +76,7 @@ export default async function BriefsPage({ searchParams }: BriefsPageProps) {
             <div className="mt-6 flex items-center justify-between text-sm text-muted">
               <span>
                 Showing {pageStart + 1}-{Math.min(pageStart + visibleBatches.length, batches.length)}{" "}
-                of {batches.length} briefs
+                of {batches.length} deliveries
               </span>
               <div className="flex gap-3">
                 <Link

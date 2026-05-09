@@ -102,6 +102,10 @@
     animation: fade-up 0.8s ease both;
   }
 
+  .animated-fade-up-soft {
+    animation: fade-up-soft 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
   .animated-float {
     animation: none;
   }
@@ -135,6 +139,18 @@
   from {
     opacity: 0;
     transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
   }
 
   to {

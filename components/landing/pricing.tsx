@@ -11,19 +11,19 @@ const pricingPlans = [
   {
     buttonLabel: "Talk to Sales",
     description:
-      "For lean founder-led teams that need quality pipeline without building a research function.",
-    fit: "Best when founder selling still drives pipeline.",
+      "For lean founder-led teams that need curated opportunities without building an internal research function.",
+    fit: "Best when founder-led selling still needs selective weekly delivery.",
     href: CALCOM_URL,
-    note: "50 leads every Monday",
+    note: "Selective weekly delivery",
     plan: PLANS.STARTER,
   },
   {
     buttonLabel: "Talk to Sales",
     description:
-      "For outbound teams that need deeper research, sharper timing, and more angle variety.",
-    fit: "Best when reps need more context and more volume.",
+      "For outbound teams that need deeper intelligence, sharper timing, and stronger opportunity density.",
+    fit: "Best when reps need more context and a steadier stream of reviewed opportunities.",
     href: CALCOM_URL,
-    note: "100 leads, plus refreshes",
+    note: "Expanded weekly delivery",
     plan: PLANS.GROWTH,
   },
   {
@@ -49,11 +49,11 @@ export function PricingSection() {
 
         <div className="mx-auto max-w-3xl text-center">
           <div className="section-eyebrow">Pricing</div>
-          <h2 className="section-title mt-5">Choose the weekly output your team actually needs.</h2>
+          <h2 className="section-title mt-5">Choose the delivery cadence your team actually needs.</h2>
           <p className="section-copy mx-auto mt-5 max-w-2xl">
-            Every plan is monthly, flexible, and built around finished weekly output. No annual
-            contract, no setup fee, and no seat-based pricing because the work is done for the
-            team, not sold tool by tool.
+            Every plan is monthly, flexible, and built around reviewed weekly opportunity delivery.
+            No annual contract, no setup fee, and no seat-based pricing because the work is done
+            for the team, not sold tool by tool.
           </p>
         </div>
 
@@ -239,7 +239,7 @@ export function PricingSection() {
 
         <div className="grid gap-4 rounded-[1.5rem] border border-border/70 bg-white/70 px-5 py-5 text-sm text-muted shadow-sm sm:px-6 md:grid-cols-3 md:px-8 md:py-6">
           <p>Starter, Growth, and Scale are currently sold through a short sales call so we can confirm fit and rollout scope.</p>
-          <p>Every plan includes onboarding support and ICP alignment before the first brief lands.</p>
+          <p>Every plan includes onboarding support and ICP alignment before the first opportunity cohort lands.</p>
           <p>
             Not sure which tier fits?{" "}
             <Link

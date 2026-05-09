@@ -1,19 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PageEvent } from "@/components/analytics/page-event";
-import { AnswerEngineSection } from "@/components/landing/answer-engine-section";
-import { Comparison } from "@/components/landing/comparison";
-import { Faq } from "@/components/landing/faq";
-import { FinalCta } from "@/components/landing/final-cta";
-import { Guarantees } from "@/components/landing/guarantees";
-import { Hero } from "@/components/landing/hero";
-import { HowItWorks } from "@/components/landing/how-it-works";
-import { PricingSection } from "@/components/landing/pricing";
-import { Problem } from "@/components/landing/problem";
-import { ProofSection } from "@/components/landing/proof-section";
-import { SampleLead } from "@/components/landing/sample-lead";
+import { PlatformHomepage, platformFaqs } from "@/components/landing/platform-homepage";
 import { StructuredData } from "@/components/seo/structured-data";
-import { landingFaqs } from "@/components/landing/faq";
 import {
   buildFaqSchema,
   buildOrganizationSchema,
@@ -25,17 +14,17 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Get 50 hyper-researched B2B leads with personalized opening lines delivered every Monday. Frithly helps B2B outbound teams turn raw lead data into ready-to-send pipeline.",
+    "Frithly is a confidence-aware outbound intelligence platform that turns client ICPs into selective delivery pipelines, ranked opportunities, source-backed drafts, SMTP-safe cohorts, and outcome-driven learning.",
   keywords: [
-    "B2B lead intelligence",
-    "hyper-researched leads",
-    "weekly outbound leads",
-    "personalized cold outreach",
-    "B2B prospect research",
-    "sales intelligence service",
+    "outbound intelligence platform",
+    "curated outbound opportunities",
+    "founder contact intelligence",
+    "SMTP-safe outbound workflow",
+    "B2B recommendation engine",
+    "outbound operations software",
   ],
   path: "/",
-  title: "Frithly | Weekly B2B Lead Intelligence for Outbound Teams",
+  title: "Frithly | Confidence-Aware Outbound Intelligence Platform",
 });
 
 type HomePageProps = {
@@ -76,8 +65,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   if (
     normalizedSearchParams.has("code") ||
+    normalizedSearchParams.has("error_description")
+  ) {
+    const queryString = normalizedSearchParams.toString();
+    redirect(queryString ? `/auth/callback?${queryString}` : "/auth/callback");
+  }
+
+  if (
     normalizedSearchParams.has("token_hash") ||
-    normalizedSearchParams.has("error_description") ||
     normalizedSearchParams.has("type")
   ) {
     const queryString = normalizedSearchParams.toString();
@@ -91,29 +86,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Frithly helps outbound teams turn raw lead data into weekly researched accounts, verified contacts, and ready-to-send outreach angles.",
+            "Frithly helps outbound teams turn ICPs into selective delivery pipelines, ranked recommendations, safe contact validation, and deployment-ready outbound cohorts.",
           path: "/",
-          title: "Frithly | Weekly B2B Lead Intelligence for Outbound Teams",
+          title: "Frithly | Confidence-Aware Outbound Intelligence Platform",
         })}
       />
       <StructuredData data={buildServiceSchema()} />
-      <StructuredData data={buildFaqSchema(landingFaqs)} />
+      <StructuredData data={buildFaqSchema(platformFaqs)} />
       <PageEvent
         name="landing_page_viewed"
         oncePerSessionKey="landing-page-viewed"
         properties={{ location: "home_page" }}
       />
-      <Hero />
-      <AnswerEngineSection />
-      <Problem />
-      <Comparison />
-      <SampleLead />
-      <HowItWorks />
-      <ProofSection />
-      <PricingSection />
-      <Guarantees />
-      <Faq />
-      <FinalCta />
+      <PlatformHomepage />
     </main>
   );
 }

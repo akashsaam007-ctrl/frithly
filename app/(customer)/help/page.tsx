@@ -23,7 +23,7 @@ export default function HelpPage() {
             </summary>
             <ul className="mt-4 space-y-2 text-muted">
               <li>1. Confirm your ICP and exclusions.</li>
-              <li>2. Review Monday&apos;s top 10 leads first.</li>
+              <li>2. Review Monday&apos;s top opportunities first.</li>
               <li>3. Track which opener angles win the fastest replies.</li>
             </ul>
           </details>

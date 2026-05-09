@@ -1,7 +1,7 @@
 import { publicEnv } from "@/lib/utils/public-env";
 
 export const APP_NAME = "Frithly";
-export const APP_TAGLINE = "50 hyper-researched B2B leads. Every Monday.";
+export const APP_TAGLINE = "Curated outbound intelligence for selective pipeline teams.";
 export const APP_DOMAIN = "frithly.com";
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
 export const SUPPORT_EMAIL = "support@frithly.com";
@@ -13,11 +13,11 @@ export const PLANS = {
     badge: "First 3 Customers Only",
     currency: "GBP",
     features: [
-      "50 leads per week",
-      "Basic research",
-      "1 personalized opener per lead",
-      "Monday delivery",
-      "Email support",
+      "1 active outbound delivery pipeline",
+      "Selective opportunity queue",
+      "Source-backed draft generation",
+      "Human-gated SMTP review",
+      "CRM and CSV exports",
       "Locked-in for life",
     ],
     id: "design_partner",
@@ -30,10 +30,10 @@ export const PLANS = {
     badge: "Most Popular",
     currency: "GBP",
     features: [
-      "100 leads per week",
-      "Deep research",
-      "3 openers per lead (situational, content, company)",
-      "Wednesday mid-week refresh",
+      "Multi-city delivery orchestration",
+      "Expanded opportunity coverage",
+      "Draft review and cohort packaging",
+      "Analytics and outcome learning",
       "Bi-weekly ICP refinement calls",
       "Slack/email support",
     ],
@@ -46,11 +46,11 @@ export const PLANS = {
   SCALE: {
     currency: "GBP",
     features: [
-      "200 leads per week",
-      "Multi-ICP support",
-      "Multi-channel openers",
-      "CRM integration",
-      "Intent data signals",
+      "Multi-ICP delivery support",
+      "Advanced opportunity routing",
+      "Premium cohort operations",
+      "Custom export and CRM workflows",
+      "Priority intelligence tuning",
       "Weekly strategy call",
       "Priority support",
     ],
@@ -62,10 +62,10 @@ export const PLANS = {
   STARTER: {
     currency: "GBP",
     features: [
-      "50 leads per week",
-      "Basic research",
-      "1 personalized opener per lead",
-      "Monday delivery",
+      "1 active outbound delivery pipeline",
+      "Recommendation-first opportunity review",
+      "Draft workspace and export packaging",
+      "SMTP-safe routing review",
       "Email support",
     ],
     id: "starter",
@@ -91,13 +91,22 @@ export const ROUTES = {
   ABOUT: "/about",
   ACCOUNT: "/account",
   ADMIN: "/admin",
+  ADMIN_APPLICATIONS: "/admin/applications",
   ADMIN_BATCHES_NEW: "/admin/batches/new",
   ADMIN_CUSTOMERS: "/admin/customers",
+  ADMIN_DELIVERIES: "/admin/deliveries",
   ADMIN_FEEDBACK: "/admin/feedback",
+  ANALYTICS: "/analytics",
+  APPLY: "/apply",
   BILLING: "/billing",
   BRIEFS: "/briefs",
+  CAMPAIGNS: "/campaigns",
+  COHORTS: "/cohorts",
   CONTACT: "/contact",
   DASHBOARD: "/dashboard",
+  DEMO: "/demo",
+  DRAFTS: "/drafts",
+  EXPORTS: "/exports",
   FAQ: "/#faq",
   GUIDES: "/guides",
   HELP: "/help",
@@ -109,15 +118,18 @@ export const ROUTES = {
   PRIVACY: "/privacy",
   PROOF: "/proof",
   REFUND_POLICY: "/refund-policy",
+  RECOMMENDATIONS: "/recommendations",
+  ROI: "/roi",
   SAMPLE: "/sample",
   SIGNUP: "/signup",
+  SMTP: "/smtp",
   TERMS: "/terms",
 } as const;
 
 export const META = {
   DESCRIPTION:
-    "Frithly delivers 50 deeply-researched B2B leads with personalized opening lines to your inbox every Monday morning. Apollo gives you data. We deliver intelligence.",
+    "Frithly is a confidence-aware outbound intelligence platform for turning client ICPs into selective delivery pipelines, ranked opportunities, source-backed drafts, SMTP-safe cohorts, and outcome learning.",
   KEYWORDS:
-    "B2B lead generation, sales intelligence, personalized outreach, lead research, sales automation",
-  TITLE: "Frithly - 50 Hyper-Researched B2B Leads, Every Monday",
+    "outbound intelligence, lead qualification, recommendation engine, SMTP-safe outreach, founder contact intelligence, campaign orchestration",
+  TITLE: "Frithly - Confidence-Aware Outbound Intelligence Platform",
 } as const;

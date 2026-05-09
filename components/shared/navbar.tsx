@@ -7,11 +7,13 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import { ROUTES } from "@/lib/constants";
+import { CALCOM_URL, ROUTES } from "@/lib/constants";
 
 const navLinks = [
   { href: ROUTES.ABOUT, label: "About" },
   { href: ROUTES.CONTACT, label: "Contact" },
+  { href: ROUTES.DEMO, label: "Demo" },
+  { href: ROUTES.ROI, label: "ROI" },
   { href: ROUTES.HOW_IT_WORKS, label: "How It Works" },
   { href: ROUTES.PRICING, label: "Pricing" },
   { href: ROUTES.FAQ, label: "FAQ" },
@@ -38,7 +40,7 @@ export function Navbar() {
   }, [isMenuOpen]);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/70 bg-white/88 shadow-[0_6px_24px_rgba(26,26,26,0.04)] backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-border/70 bg-white/84 shadow-[0_8px_26px_rgba(26,26,26,0.05)] backdrop-blur-xl">
       <Container className="relative flex h-16 items-center justify-between">
         <Logo priority />
 
@@ -62,7 +64,9 @@ export function Navbar() {
             Login
           </Link>
           <Button asChild size="md">
-            <Link href={ROUTES.SIGNUP}>Get Free Sample</Link>
+            <Link href={ROUTES.APPLY}>
+              Apply
+            </Link>
           </Button>
         </div>
 
@@ -96,7 +100,8 @@ export function Navbar() {
                   Explore Frithly
                 </p>
                 <p className="text-sm leading-6 text-muted">
-                  See how Frithly turns raw lead data into weekly outbound briefs your team can use.
+                  See how Frithly turns client ICPs into recommended outbound opportunities, safe
+                  contact validation, and deployment-ready cohorts.
                 </p>
               </div>
 
@@ -120,10 +125,14 @@ export function Navbar() {
 
               <div className="flex flex-col gap-3">
                 <Button asChild size="lg" className="w-full">
-                  <Link href={ROUTES.SIGNUP}>Get Free Sample</Link>
+                  <Link href={ROUTES.APPLY}>
+                    Apply for a campaign
+                  </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary" className="w-full">
-                  <Link href={ROUTES.PRICING}>View plans</Link>
+                  <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+                    Request walkthrough
+                  </Link>
                 </Button>
               </div>
             </Container>

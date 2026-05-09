@@ -104,6 +104,40 @@ create table if not exists sample_requests (
   created_at timestamptz default now()
 );
 
+-- CAMPAIGN APPLICATIONS
+create table if not exists campaign_applications (
+  id uuid primary key default gen_random_uuid(),
+  full_name text not null,
+  email text not null,
+  company text not null,
+  role text,
+  website text,
+  industry text not null,
+  countries text[] not null default '{}',
+  cities text[],
+  company_size text not null,
+  target_titles text[],
+  services text[],
+  lead_goal int not null,
+  minimum_score int not null check (minimum_score between 50 and 90),
+  required_contactability text not null check (required_contactability in ('strong', 'premium')),
+  founder_confidence_min numeric(3,2) not null check (founder_confidence_min between 0.5 and 0.95),
+  average_client_value numeric(12,2) not null,
+  currency text not null check (currency in ('EUR', 'GBP', 'USD')),
+  outbound_maturity text not null check (outbound_maturity in ('none', 'manual', 'structured', 'team')),
+  current_challenges text not null,
+  success_definition text,
+  qualification_notes text,
+  feasibility_notes text,
+  risk_notes text,
+  onboarding_notes text,
+  recommended_plan text check (recommended_plan in ('design_partner', 'starter', 'growth', 'scale')),
+  reviewed_at timestamptz,
+  updated_at timestamptz default now(),
+  status text default 'pending' check (status in ('pending', 'reviewing', 'qualified', 'accepted', 'rejected', 'onboarding', 'active')),
+  created_at timestamptz default now()
+);
+
 -- INDEXES
 create index if not exists idx_customers_email on customers(email);
 create index if not exists idx_customers_billing_customer_id on customers(billing_customer_id);
@@ -112,6 +146,9 @@ create index if not exists idx_batches_delivery_date on batches(delivery_date de
 create index if not exists idx_leads_batch_id on leads(batch_id);
 create index if not exists idx_feedback_customer_id on feedback(customer_id);
 create index if not exists idx_sample_requests_status on sample_requests(status);
+create index if not exists idx_campaign_applications_status on campaign_applications(status);
+create index if not exists idx_campaign_applications_created_at on campaign_applications(created_at desc);
+create index if not exists idx_campaign_applications_status_created_at on campaign_applications(status, created_at desc);
 
 -- UPDATED_AT TRIGGER
 create or replace function update_updated_at_column()

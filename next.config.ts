@@ -26,6 +26,12 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 };
 
-export default withSentryConfig(nextConfig, {
-  silent: true,
-});
+const sentryEnabledInDev = process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
+const shouldEnableSentryConfig =
+  process.env.NODE_ENV === "production" || sentryEnabledInDev;
+
+export default shouldEnableSentryConfig
+  ? withSentryConfig(nextConfig, {
+      silent: true,
+    })
+  : nextConfig;

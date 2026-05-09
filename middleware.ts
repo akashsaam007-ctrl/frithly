@@ -18,14 +18,36 @@ const PROTECTED_ADMIN_ROUTES = [ROUTES.ADMIN];
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const isOauthCallbackOnHome =
+  const isOauthCodeOnVerify =
+    path === "/verify" &&
+    (request.nextUrl.searchParams.has("code") ||
+      request.nextUrl.searchParams.has("error_description"));
+
+  if (isOauthCodeOnVerify) {
+    const callbackUrl = new URL("/auth/callback", request.url);
+    callbackUrl.search = request.nextUrl.search;
+
+    return NextResponse.redirect(callbackUrl);
+  }
+
+  const isOauthCodeOnHome =
     path === ROUTES.HOME &&
     (request.nextUrl.searchParams.has("code") ||
-      request.nextUrl.searchParams.has("token_hash") ||
-      request.nextUrl.searchParams.has("error_description") ||
+      request.nextUrl.searchParams.has("error_description"));
+
+  if (isOauthCodeOnHome) {
+    const callbackUrl = new URL("/auth/callback", request.url);
+    callbackUrl.search = request.nextUrl.search;
+
+    return NextResponse.redirect(callbackUrl);
+  }
+
+  const isLegacyVerifyOnHome =
+    path === ROUTES.HOME &&
+    (request.nextUrl.searchParams.has("token_hash") ||
       request.nextUrl.searchParams.has("type"));
 
-  if (isOauthCallbackOnHome) {
+  if (isLegacyVerifyOnHome) {
     const verifyUrl = new URL("/verify", request.url);
     verifyUrl.search = request.nextUrl.search;
 

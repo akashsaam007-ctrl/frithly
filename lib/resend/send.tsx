@@ -2,6 +2,16 @@ import type { ReactElement } from "react";
 import { PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import { resend } from "@/lib/resend/client";
 import {
+  CampaignApplicationAlertEmail,
+  type CampaignApplicationAlertEmailProps,
+} from "@/lib/resend/templates/campaign-application-alert";
+import {
+  CampaignApplicationReceivedEmail,
+  getCampaignApplicationReceivedEmailSubject,
+  getCampaignApplicationReceivedEmailText,
+  type CampaignApplicationReceivedEmailProps,
+} from "@/lib/resend/templates/campaign-application-received";
+import {
   BriefDeliveredEmail,
   getBriefDeliveredEmailSubject,
   getBriefDeliveredEmailText,
@@ -51,6 +61,12 @@ import {
   WelcomeEmail,
   type WelcomeEmailProps,
 } from "@/lib/resend/templates/welcome";
+import {
+  getWeeklyDeliveryReadyEmailSubject,
+  getWeeklyDeliveryReadyEmailText,
+  WeeklyDeliveryReadyEmail,
+  type WeeklyDeliveryReadyEmailProps,
+} from "@/lib/resend/templates/weekly-delivery-ready";
 import { env } from "@/lib/utils/env";
 import { formatCurrency } from "@/lib/utils";
 import type { PlanId } from "@/types";
@@ -154,6 +170,15 @@ export async function sendBriefDeliveredEmail(props: BriefDeliveredEmailProps) {
   });
 }
 
+export async function sendWeeklyDeliveryReadyEmail(props: WeeklyDeliveryReadyEmailProps) {
+  return sendFrithlyEmail({
+    react: <WeeklyDeliveryReadyEmail {...props} />,
+    subject: getWeeklyDeliveryReadyEmailSubject(props.firstName),
+    text: getWeeklyDeliveryReadyEmailText(props),
+    to: props.recipientEmail,
+  });
+}
+
 export async function sendSampleRequestReceivedEmail(
   props: SampleRequestReceivedEmailProps,
 ) {
@@ -161,6 +186,17 @@ export async function sendSampleRequestReceivedEmail(
     react: <SampleRequestReceivedEmail {...props} />,
     subject: getSampleRequestReceivedEmailSubject(),
     text: getSampleRequestReceivedEmailText(props),
+    to: props.recipientEmail,
+  });
+}
+
+export async function sendCampaignApplicationReceivedEmail(
+  props: CampaignApplicationReceivedEmailProps,
+) {
+  return sendFrithlyEmail({
+    react: <CampaignApplicationReceivedEmail {...props} />,
+    subject: getCampaignApplicationReceivedEmailSubject(),
+    text: getCampaignApplicationReceivedEmailText(props),
     to: props.recipientEmail,
   });
 }
@@ -243,6 +279,43 @@ export async function sendSampleRequestAlertEmail(props: SampleRequestAlertEmail
     react: <SampleRequestAlertEmail {...props} />,
     replyTo: props.email,
     subject: `Sample request: ${props.fullName}`,
+    text,
+    to: SUPPORT_EMAIL,
+  });
+}
+
+export async function sendCampaignApplicationAlertEmail(
+  props: CampaignApplicationAlertEmailProps,
+) {
+  const text = [
+    "New campaign application",
+    "",
+    `Name: ${props.fullName}`,
+    `Email: ${props.email}`,
+    `Company: ${props.company}`,
+    `Role: ${props.role ?? "Not provided"}`,
+    `Website: ${props.website ?? "Not provided"}`,
+    `Industry: ${props.industry}`,
+    `Geography: ${props.geography}`,
+    `Company size: ${props.companySize}`,
+    `Lead goal: ${props.leadGoal}`,
+    `Minimum score: ${props.minimumScore}`,
+    `Required contactability: ${props.requiredContactability}`,
+    `Founder confidence min: ${props.founderConfidenceMin}`,
+    `Average client value: ${props.averageClientValueLabel}`,
+    `Outbound maturity: ${props.outboundMaturity}`,
+    `Target titles: ${props.targetTitles.length > 0 ? props.targetTitles.join(", ") : "Not provided"}`,
+    `Services: ${props.services.length > 0 ? props.services.join(", ") : "Not provided"}`,
+    `Stored in: ${props.storage}`,
+    "",
+    props.currentChallenges,
+    ...(props.successDefinition ? ["", props.successDefinition] : []),
+  ].join("\n");
+
+  return sendFrithlyEmail({
+    react: <CampaignApplicationAlertEmail {...props} />,
+    replyTo: props.email,
+    subject: `Campaign application: ${props.fullName}`,
     text,
     to: SUPPORT_EMAIL,
   });

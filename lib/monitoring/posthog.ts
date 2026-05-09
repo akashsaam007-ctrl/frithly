@@ -12,6 +12,10 @@ import type {
 
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 const posthogToken = process.env.NEXT_PUBLIC_POSTHOG_TOKEN;
+const posthogEnabledInDev = process.env.NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV === "true";
+const posthogEnabled =
+  Boolean(posthogToken) &&
+  (process.env.NODE_ENV === "production" || posthogEnabledInDev);
 
 type PostHogClient = typeof import("posthog-js").default;
 
@@ -43,11 +47,11 @@ export function hasAnalyticsConsent() {
 }
 
 export function hasPostHogConfiguration() {
-  return Boolean(posthogToken);
+  return posthogEnabled;
 }
 
 async function loadPostHogClient() {
-  if (!posthogToken || typeof window === "undefined") {
+  if (!posthogEnabled || !posthogToken || typeof window === "undefined") {
     return null;
   }
 
@@ -66,7 +70,7 @@ async function loadPostHogClient() {
 }
 
 export async function syncAnalyticsConsent() {
-  if (!posthogToken || typeof window === "undefined") {
+  if (!posthogEnabled || !posthogToken || typeof window === "undefined") {
     return false;
   }
 

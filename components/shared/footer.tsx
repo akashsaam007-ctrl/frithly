@@ -14,8 +14,8 @@ export function Footer() {
               imageClassName="h-8 md:h-9"
             />
             <p className="max-w-sm text-base leading-8 text-white/70">
-              Weekly B2B lead intelligence for outbound teams that need signal, timing, and
-              messaging context.
+              Confidence-aware outbound intelligence for teams that want fewer, stronger, and safer
+              opportunities to pursue.
             </p>
           </div>
 
@@ -28,6 +28,15 @@ export function Footer() {
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRICING}>
                   Pricing
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.DEMO}>
+                  Demo
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.APPLY}>
+                  Apply
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.ROI}>
+                  ROI Calculator
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.LOGIN}>
                   Login
@@ -50,7 +59,7 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Company</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <span className="block">B2B lead intelligence for outbound teams</span>
+                <span className="block">Selective outbound intelligence for premium pipeline teams</span>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.ABOUT}>
                   Our story
                 </Link>

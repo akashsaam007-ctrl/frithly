@@ -34,6 +34,7 @@ codex-dev.stdout.log
 codex-dev.stderr.log
 .codex-dev*.log
 .codex-logs/
+/data/owned-company-dataset.json
 
 # env files (can opt-in for committing if needed)
 .env*

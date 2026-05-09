@@ -14,21 +14,21 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Learn what Frithly is, who it is built for, and why we focus on weekly researched leads, verified contacts, and ready-to-use outbound context for serious B2B teams.",
+    "Learn what Frithly is, who it is built for, and why we focus on curated opportunities, verified contacts, and ready-to-use outbound context for serious B2B teams.",
   keywords: [
     "about Frithly",
     "Frithly company",
-    "B2B lead intelligence service",
+    "B2B outbound intelligence service",
     "weekly outbound research",
     "sales prospect research service",
   ],
   path: "/about",
-  title: "About Frithly | B2B Lead Intelligence Built for Real Outbound Teams",
+  title: "About Frithly | Outbound Intelligence Built for Real Teams",
 });
 
 const principles = [
   {
-    body: "Big lead lists are easy to buy. Useful outbound context is not. Frithly exists to close that gap.",
+    body: "Big contact lists are easy to buy. Useful outbound context is not. Frithly exists to close that gap.",
     title: "Signal over volume",
   },
   {
@@ -43,7 +43,7 @@ const principles = [
 
 const forTeams = [
   "Founder-led teams doing outbound without a full research function",
-  "Small SDR teams that need better weekly lead quality",
+  "Small SDR teams that need better weekly opportunity quality",
   "Agencies and operators who need sharper prospect context before they write",
 ];
 
@@ -54,9 +54,9 @@ export default function AboutPage() {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Learn what Frithly is, who it is built for, and why we focus on weekly researched leads, verified contacts, and ready-to-use outbound context for serious B2B teams.",
+            "Learn what Frithly is, who it is built for, and why we focus on curated opportunities, verified contacts, and ready-to-use outbound context for serious B2B teams.",
           path: "/about",
-          title: "About Frithly | B2B Lead Intelligence Built for Real Outbound Teams",
+          title: "About Frithly | Outbound Intelligence Built for Real Teams",
         })}
       />
       <StructuredData
@@ -79,7 +79,7 @@ export default function AboutPage() {
             </span>
             <div className="space-y-5">
               <h1 className="max-w-4xl text-balance text-5xl font-semibold tracking-[-0.04em] text-ink sm:text-6xl">
-                We help outbound teams start the week with leads they can actually use.
+                We help outbound teams start the week with opportunities they can actually use.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-muted sm:text-xl">
                 {APP_NAME} was built for teams that are tired of stitching together list tools,
@@ -166,7 +166,7 @@ export default function AboutPage() {
               </h2>
               <p className="max-w-2xl text-base leading-8 text-muted">
                 Start with a sample if you want to evaluate quality first, or book a conversation
-                if you already know you need a stronger outbound research engine.
+                if you already know you need a stronger outbound intelligence engine.
               </p>
             </div>
 

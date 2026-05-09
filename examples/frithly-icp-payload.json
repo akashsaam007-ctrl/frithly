@@ -1,0 +1,11 @@
+{
+  "brandVoice": "direct",
+  "companySizeMax": 250,
+  "companySizeMin": 20,
+  "exclusions": "Publishers, media companies, communities, job boards, directories, universities, nonprofits, government, local businesses, restaurants, agencies without a software product, consulting firms over 1000 employees, consumer apps, ecommerce brands",
+  "geographies": "US, CA, UK",
+  "industries": "B2B SaaS, Sales Software, Revenue Intelligence, Sales Enablement, RevOps Software, GTM AI, Prospecting Software",
+  "productDescription": "Frithly is a B2B lead intelligence and outbound research service for founders, SDR teams, small sales teams, early-stage SaaS companies, and B2B service businesses. We help customers improve outbound prospecting by delivering researched target accounts, relevant decision-maker contacts, company-fit context, buying and intent signals, and personalized outreach angles.",
+  "signals": "Hiring SDRs, Hiring AEs, Hiring RevOps, Hiring demand gen, Recent funding, New GTM content, Expansion into new markets, New pricing page",
+  "titles": "Founder, Co-Founder, CEO, CRO, VP Sales, Head of Sales, RevOps Manager, Head of Revenue Operations"
+}

@@ -3,7 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { BarChart3, CircleHelp, CreditCard, Inbox, LockKeyhole, Menu, Target, User, X } from "lucide-react";
+import {
+  BarChart3,
+  CircleHelp,
+  CreditCard,
+  Download,
+  Layers3,
+  LockKeyhole,
+  Menu,
+  Sparkles,
+  TrendingUp,
+  User,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
@@ -12,8 +24,10 @@ import { isDemoMode } from "@/lib/utils/mode";
 
 const navItems = [
   { href: ROUTES.DASHBOARD, icon: BarChart3, label: "Dashboard" },
-  { href: ROUTES.BRIEFS, icon: Inbox, label: "Briefs", requiresPlan: true },
-  { href: ROUTES.ICP, icon: Target, label: "ICP Settings", requiresPlan: true },
+  { href: ROUTES.RECOMMENDATIONS, icon: Sparkles, label: "Opportunities", requiresPlan: true },
+  { href: ROUTES.COHORTS, icon: Layers3, label: "Cohorts", requiresPlan: true },
+  { href: ROUTES.ANALYTICS, icon: TrendingUp, label: "Analytics", requiresPlan: true },
+  { href: ROUTES.EXPORTS, icon: Download, label: "Exports", requiresPlan: true },
   { href: ROUTES.BILLING, icon: CreditCard, label: "Plans" },
   { href: ROUTES.HELP, icon: CircleHelp, label: "Help" },
 ];
@@ -28,6 +42,18 @@ export function CustomerShell({ children, companyName, hasWorkspaceAccess }: Cus
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isAccountPage = pathname === ROUTES.ACCOUNT;
+
+  function isActiveRoute(href: string) {
+    if (pathname === href) {
+      return true;
+    }
+
+    if (href === ROUTES.DASHBOARD || href === ROUTES.BILLING || href === ROUTES.HELP) {
+      return false;
+    }
+
+    return pathname.startsWith(`${href}/`);
+  }
 
   function renderNavItem({
     href,
@@ -62,7 +88,9 @@ export function CustomerShell({ children, companyName, hasWorkspaceAccess }: Cus
         href={href}
         className={cn(
           sharedClasses,
-          pathname === href ? "bg-cream text-ink" : "text-muted hover:bg-cream hover:text-ink",
+          isActiveRoute(href)
+            ? "bg-cream text-ink"
+            : "text-muted hover:bg-cream hover:text-ink",
         )}
         onClick={onClick}
       >
@@ -81,10 +109,11 @@ export function CustomerShell({ children, companyName, hasWorkspaceAccess }: Cus
       <div className="mt-6 rounded-2xl border border-terracotta/20 bg-terracotta/5 p-4 text-sm text-muted">
         <p className="font-semibold text-ink">Talk to sales to unlock your workspace.</p>
         <p className="mt-2 leading-6">
-          We&apos;ll confirm the right plan and switch on briefs and ICP settings after kickoff.
+          We&apos;ll confirm the right plan and switch on curated delivery, cohort review, and
+          analytics after kickoff.
         </p>
         <Link
-          href={ROUTES.DASHBOARD}
+          href={ROUTES.BILLING}
           className="mt-3 inline-flex font-semibold text-terracotta underline underline-offset-4"
         >
           View plans

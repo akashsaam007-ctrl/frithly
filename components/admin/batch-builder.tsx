@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ParsedBatchPreview } from "@/lib/admin/batch-builder";
 import { ROUTES } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,9 @@ type BatchBuilderProps = {
     email: string;
     id: string;
     label: string;
+    planId: "design_partner" | "growth" | "scale" | "starter" | null;
     planLabel: string;
+    recommendedLeadCount: number;
     status: string;
   }[];
   defaultDeliveryDate: string;
@@ -44,6 +46,42 @@ type BatchApiResponse = {
   preview?: ParsedBatchPreview;
   success?: boolean;
   warning?: string | null;
+};
+
+type BatchGenerationDiagnostics = {
+  crawledDomains: number;
+  datasetCandidates: number;
+  datasetSize: number;
+  dedupedDomains: number;
+  directorySeeds: number;
+  excludedDuplicates: number;
+  excludedExclusions: number;
+  excludedNonCompany: number;
+  excludedSize: number;
+  finalLeads: number;
+  localPipelineEnabled: boolean;
+  localResults: number;
+  minMatchPercent: number;
+  pipelineCounts: Record<"company_search" | "directory" | "job_signal" | "local_search", number>;
+  queriesExecuted: number;
+  queriesGenerated: number;
+  rawResults: number;
+  scoredCandidates: number;
+  belowThreshold: number;
+};
+
+type BatchGenerateApiResponse = {
+  customer?: {
+    email: string;
+    id: string;
+    name: string;
+  };
+  diagnostics?: BatchGenerationDiagnostics;
+  error?: string;
+  leadsJson?: string;
+  logs?: string[];
+  preview?: ParsedBatchPreview;
+  success?: boolean;
 };
 
 const sampleLeadPayload = `[
@@ -108,6 +146,14 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
     warning: string | null;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<BatchAction | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationCount, setGenerationCount] = useState(customers[0]?.recommendedLeadCount ?? 50);
+  const [queryBudget, setQueryBudget] = useState(120);
+  const [minMatchPercent, setMinMatchPercent] = useState(60);
+  const [generationSummary, setGenerationSummary] = useState<{
+    diagnostics: BatchGenerationDiagnostics;
+    logs: string[];
+  } | null>(null);
 
   const normalizedSearch = customerSearch.trim().toLowerCase();
   const filteredCustomers = customers.filter((customer) => {
@@ -121,6 +167,12 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
   });
   const selectedCustomer =
     customers.find((customer) => customer.id === selectedCustomerId) ?? filteredCustomers[0] ?? null;
+
+  useEffect(() => {
+    if (selectedCustomer?.recommendedLeadCount) {
+      setGenerationCount(selectedCustomer.recommendedLeadCount);
+    }
+  }, [selectedCustomerId, selectedCustomer?.recommendedLeadCount]);
 
   async function runAction(action: BatchAction) {
     if (!selectedCustomerId) {
@@ -196,6 +248,61 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
     }
   }
 
+  async function runGeneration() {
+    if (!selectedCustomerId) {
+      toast.error("Choose a customer before generating leads.");
+      return;
+    }
+
+    if (!deliveryDate) {
+      toast.error("Pick a delivery date first.");
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerationSummary(null);
+
+    try {
+      const response = await fetch("/api/admin/batches/generate", {
+        body: JSON.stringify({
+          customerId: selectedCustomerId,
+          deliveryDate,
+          minMatchPercent,
+          queryBudget,
+          requestedLeadCount: generationCount,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
+      const payload = (await response.json()) as BatchGenerateApiResponse;
+
+      if (!response.ok || !payload.success || !payload.leadsJson || !payload.preview || !payload.diagnostics) {
+        throw new Error(payload.error ?? "We couldn't generate leads from the saved ICP.");
+      }
+
+      setLeads(payload.leadsJson);
+      setPreview(payload.preview);
+      setGenerationSummary({
+        diagnostics: payload.diagnostics,
+        logs: payload.logs ?? [],
+      });
+      toast.success(
+        payload.diagnostics.finalLeads > 0
+          ? `Generated ${payload.diagnostics.finalLeads} leads at ${payload.diagnostics.minMatchPercent}%+ ICP match.`
+          : "Generation finished, but no leads cleared the ICP match floor.",
+      );
+    } catch (error) {
+      setGenerationSummary(null);
+      toast.error(
+        error instanceof Error ? error.message : "We couldn't generate leads from the saved ICP.",
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
   return (
     <div className="space-y-8">
       {customers.length === 0 ? (
@@ -254,6 +361,71 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
 
           <div className="space-y-2">
             <Label htmlFor="batch-leads">Leads (JSON or CSV)</Label>
+            <div className="rounded-2xl border border-border bg-cream p-4">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
+                    Generate from saved ICP
+                  </p>
+                  <p className="text-sm text-muted">
+                    Wide collection {"->"} crawl {"->"} score {"->"} filter. Only leads matching at least {minMatchPercent}% of the ICP are returned.
+                  </p>
+                </div>
+                <Button
+                  disabled={customers.length === 0 || isGenerating || isSubmitting !== null}
+                  onClick={() => void runGeneration()}
+                  type="button"
+                >
+                  {isGenerating ? "Generating..." : "Generate from customer ICP"}
+                </Button>
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="generate-lead-count">Requested leads</Label>
+                  <Input
+                    id="generate-lead-count"
+                    min={1}
+                    max={250}
+                    type="number"
+                    value={generationCount}
+                    onChange={(event) =>
+                      setGenerationCount(Math.max(1, Number.parseInt(event.target.value || "0", 10) || 1))
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="generate-query-budget">Query budget</Label>
+                  <Input
+                    id="generate-query-budget"
+                    min={20}
+                    max={500}
+                    type="number"
+                    value={queryBudget}
+                    onChange={(event) =>
+                      setQueryBudget(Math.max(20, Number.parseInt(event.target.value || "0", 10) || 20))
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="generate-min-match">Minimum ICP match %</Label>
+                  <Input
+                    id="generate-min-match"
+                    min={40}
+                    max={100}
+                    type="number"
+                    value={minMatchPercent}
+                    onChange={(event) =>
+                      setMinMatchPercent(
+                        Math.min(100, Math.max(40, Number.parseInt(event.target.value || "0", 10) || 60)),
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            </div>
             <Textarea
               id="batch-leads"
               onChange={(event) => setLeads(event.target.value)}
@@ -264,6 +436,55 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
             <p className="text-sm text-muted">
               Required fields per lead: full name, title, and company. JSON gives you the cleanest import for opener text and signal arrays.
             </p>
+            {generationSummary ? (
+              <div className="rounded-2xl border border-border bg-white p-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="text-lg text-ink">Generation diagnostics</h3>
+                  <Badge variant="outline">
+                    {generationSummary.diagnostics.finalLeads} leads
+                  </Badge>
+                  <Badge variant="muted">
+                    floor {generationSummary.diagnostics.minMatchPercent}%
+                  </Badge>
+                </div>
+
+                <div className="mt-4 grid gap-3 text-sm text-muted md:grid-cols-2 xl:grid-cols-4">
+                  <p>Queries generated: {generationSummary.diagnostics.queriesGenerated}</p>
+                  <p>Queries executed: {generationSummary.diagnostics.queriesExecuted}</p>
+                  <p>Raw results: {generationSummary.diagnostics.rawResults}</p>
+                  <p>Domains crawled: {generationSummary.diagnostics.crawledDomains}</p>
+                  <p>Unique domains: {generationSummary.diagnostics.dedupedDomains}</p>
+                  <p>Scored candidates: {generationSummary.diagnostics.scoredCandidates}</p>
+                  <p>Below floor: {generationSummary.diagnostics.belowThreshold}</p>
+                  <p>Owned dataset size: {generationSummary.diagnostics.datasetSize}</p>
+                  <p>Owned dataset matches: {generationSummary.diagnostics.datasetCandidates}</p>
+                  <p>Directory seeds: {generationSummary.diagnostics.directorySeeds}</p>
+                  <p>Directory hits: {generationSummary.diagnostics.pipelineCounts.directory}</p>
+                  <p>Job-signal hits: {generationSummary.diagnostics.pipelineCounts.job_signal}</p>
+                  <p>Local/Maps hits: {generationSummary.diagnostics.localResults}</p>
+                  <p>
+                    Local/Maps pipeline: {generationSummary.diagnostics.localPipelineEnabled ? "on" : "off"}
+                  </p>
+                  <p>Excluded as non-company: {generationSummary.diagnostics.excludedNonCompany}</p>
+                  <p>Excluded by size: {generationSummary.diagnostics.excludedSize}</p>
+                  <p>Excluded by exclusions: {generationSummary.diagnostics.excludedExclusions}</p>
+                  <p>Excluded as duplicates: {generationSummary.diagnostics.excludedDuplicates}</p>
+                </div>
+
+                {generationSummary.logs.length > 0 ? (
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
+                      Pipeline log
+                    </p>
+                    <div className="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-border bg-cream p-3 text-sm text-muted">
+                      {generationSummary.logs.map((entry, index) => (
+                        <p key={`${index}-${entry}`}>- {entry}</p>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div className="space-y-2">
