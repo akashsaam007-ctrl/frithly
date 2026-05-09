@@ -4,13 +4,10 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
-  BarChart3,
   CircleDollarSign,
   GaugeCircle,
-  LineChart,
   MailCheck,
   ShieldCheck,
-  Sparkles,
   Target,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -348,36 +345,53 @@ export function RoiCalculatorExperience() {
     setInputState(formatRoiInputState(nextState));
   }
 
-  const waterfallSteps = [
+  const comparisonRows = [
     {
-      current: formatMaybeDecimal(formState.outboundVolume, 0),
-      improved: formatMaybeDecimal(formState.outboundVolume, 0),
-      label: "Qualified opportunities",
-      lift: "same volume",
-    },
-    {
+      change: `+${formatMaybeDecimal(model.additionalReplies)} replies`,
       current: formatMaybeDecimal(model.currentReplies),
       improved: formatMaybeDecimal(model.improvedReplies),
-      label: "Replies",
-      lift: `+${formatMaybeDecimal(model.additionalReplies)} replies`,
+      label: "Replies / month",
     },
     {
+      change: `+${formatMaybeDecimal(model.additionalMeetings)} meetings`,
       current: formatMaybeDecimal(model.currentMeetings),
       improved: formatMaybeDecimal(model.improvedMeetings),
-      label: "Qualified meetings",
-      lift: `+${formatMaybeDecimal(model.additionalMeetings)} meetings`,
+      label: "Qualified meetings / month",
     },
     {
+      change: `+${formatMaybeDecimal(model.additionalClients)} clients`,
       current: formatMaybeDecimal(model.currentClients),
       improved: formatMaybeDecimal(model.improvedClients),
-      label: "Expected clients",
-      lift: `+${formatMaybeDecimal(model.additionalClients)} clients`,
+      label: "Expected clients / month",
     },
     {
+      change: `+${formatCompactMoney(model.incrementalRevenue, formState.currency)}`,
       current: formatCompactMoney(model.currentRevenue, formState.currency),
       improved: formatCompactMoney(model.improvedRevenue, formState.currency),
       label: "Projected revenue / month",
-      lift: `+${formatCompactMoney(model.incrementalRevenue, formState.currency)}`,
+    },
+  ];
+
+  const summaryMetrics = [
+    {
+      icon: CircleDollarSign,
+      label: "Extra revenue / month",
+      value: formatCompactMoney(model.incrementalRevenue, formState.currency),
+    },
+    {
+      icon: MailCheck,
+      label: "Extra meetings / month",
+      value: formatMaybeDecimal(model.additionalMeetings),
+    },
+    {
+      icon: GaugeCircle,
+      label: "Less outbound per win",
+      value: formatPercent(model.wastedOutboundReduction),
+    },
+    {
+      icon: Target,
+      label: "Efficiency lift",
+      value: formatPercent(model.efficiencyLift),
     },
   ];
 
@@ -387,15 +401,14 @@ export function RoiCalculatorExperience() {
         <div className="surface-card p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
           <div className="space-y-6">
             <div className="space-y-3">
-              <div className="section-eyebrow">Opportunity inputs</div>
+              <div className="section-eyebrow">1. Enter your baseline</div>
               <div>
                 <h2 className="max-w-xl text-3xl font-semibold text-ink sm:text-4xl">
-                  Model the revenue lift before you think about send volume.
+                  Start with the numbers you already know.
                 </h2>
                 <p className="mt-3 max-w-2xl text-muted">
-                  This calculator keeps the math simple on purpose. It assumes the same monthly
-                  outbound volume, then shows what better opportunity quality can unlock in replies,
-                  meetings, and revenue.
+                  Keep this directional and conservative. We hold monthly opportunity volume steady,
+                  then show what better lead quality could change.
                 </p>
               </div>
             </div>
@@ -524,18 +537,17 @@ export function RoiCalculatorExperience() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-1 h-5 w-5 text-terracotta" aria-hidden="true" />
                 <div className="space-y-2">
-                  <div className="text-sm font-semibold text-ink">Conservative model assumptions</div>
+                  <div className="text-sm font-semibold text-ink">How we keep this conservative</div>
                   <p className="text-sm leading-7 text-muted">
-                    Frithly assumes roughly {formatPercent(QUALIFIED_REPLY_TO_MEETING_RATE * 100)} of
-                    qualified replies turn into real meetings, then uses the more conservative of your
-                    close-rate math and meetings-needed math when projecting client wins.
+                    We assume about {formatPercent(QUALIFIED_REPLY_TO_MEETING_RATE * 100)} of qualified
+                    replies turn into meetings, then we use the tighter of your close-rate math and
+                    meetings-needed math so the upside does not get overstated.
                   </p>
                   {model.closeRateGap > 2 ? (
                     <p className="text-xs leading-6 text-terracotta">
-                      Your inputs imply about {formatPercent(model.closeRateImpliedByMeetingsNeeded, 1)}
-                      {" "}
-                      close rate from meetings-needed alone. We keep the tighter assumption so the
-                      revenue model does not overstate upside.
+                      Your meetings-needed input implies about{" "}
+                      {formatPercent(model.closeRateImpliedByMeetingsNeeded, 1)} close rate on its own,
+                      so we keep the stricter assumption.
                     </p>
                   ) : null}
                 </div>
@@ -545,76 +557,76 @@ export function RoiCalculatorExperience() {
         </div>
 
         <div className="surface-card-dark animated-glow overflow-hidden p-6 shadow-[0_30px_90px_rgba(12,12,12,0.34)] sm:p-7">
-          <div className="space-y-7">
+          <div className="space-y-6">
             <div className="space-y-4">
               <Badge className="border-white/10 bg-white/10 text-white" variant="outline">
-                Opportunity model
+                2. Read the estimate
               </Badge>
               <div className="space-y-3">
                 <h2 className="max-w-3xl text-3xl font-semibold text-white sm:text-4xl">
-                  The same {formatMaybeDecimal(formState.outboundVolume, 0)} monthly opportunities can
-                  unlock materially more revenue when the routing quality improves.
+                  {formatCurrency(model.annualRevenueUnlocked, formState.currency)} in annual upside
+                  from the same monthly volume.
                 </h2>
                 <p className="max-w-2xl text-white/70">
-                  This is the commercial story behind selective outbound: better recommendation quality
-                  does not just create prettier lists. It changes how much pipeline value the same team
-                  can realistically unlock.
+                  This assumes your reply rate moves from {formatPercent(formState.currentReplyRate)} to{" "}
+                  {formatPercent(formState.improvedReplyRate)} while outbound volume stays at{" "}
+                  {formatMaybeDecimal(formState.outboundVolume, 0)} opportunities per month.
                 </p>
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-[1.35rem] border border-terracotta/20 bg-white/[0.06] p-5">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-terracotta-light">
-                  Revenue opportunity unlocked
-                </div>
-                <div className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                  {formatCurrency(model.annualRevenueUnlocked, formState.currency)}
-                </div>
-                <p className="mt-3 max-w-xl text-sm leading-7 text-white/70">
-                  Directional annualized lift if stronger opportunity quality moves you from{" "}
-                  {formatPercent(formState.currentReplyRate)} replies to{" "}
-                  {formatPercent(formState.improvedReplyRate)} on the same monthly volume.
-                </p>
-              </div>
-
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-5">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-                  Projected pipeline value / month
+                  Today
+                </div>
+                <div className="mt-3 text-3xl font-semibold tracking-tight text-white">
+                  {formatCompactMoney(model.currentRevenue, formState.currency)}
+                </div>
+                <div className="mt-2 text-sm text-white/65">Projected revenue / month</div>
+                <div className="mt-5 space-y-2 text-sm text-white/72">
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Replies</span>
+                    <span className="font-semibold text-white">{formatMaybeDecimal(model.currentReplies)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Meetings</span>
+                    <span className="font-semibold text-white">{formatMaybeDecimal(model.currentMeetings)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Expected clients</span>
+                    <span className="font-semibold text-white">{formatMaybeDecimal(model.currentClients)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.35rem] border border-terracotta/20 bg-white/[0.06] p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
+                  With stronger lead quality
                 </div>
                 <div className="mt-3 text-3xl font-semibold tracking-tight text-white">
                   {formatCurrency(model.improvedRevenue, formState.currency)}
                 </div>
-                <p className="mt-3 text-sm leading-7 text-white/65">
-                  Equivalent to about {formatMaybeDecimal(model.improvedClients)} expected client wins
-                  from the same monthly opportunity count.
-                </p>
+                <div className="mt-2 text-sm text-white/65">Projected revenue / month</div>
+                <div className="mt-5 space-y-2 text-sm text-white/72">
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Replies</span>
+                    <span className="font-semibold text-white">{formatMaybeDecimal(model.improvedReplies)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Meetings</span>
+                    <span className="font-semibold text-white">{formatMaybeDecimal(model.improvedMeetings)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Expected clients</span>
+                    <span className="font-semibold text-white">{formatMaybeDecimal(model.improvedClients)}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {[
-                {
-                  icon: CircleDollarSign,
-                  label: "Incremental replies",
-                  value: `+${formatMaybeDecimal(model.additionalReplies)}`,
-                },
-                {
-                  icon: MailCheck,
-                  label: "Qualified meetings / month",
-                  value: formatMaybeDecimal(model.improvedMeetings),
-                },
-                {
-                  icon: GaugeCircle,
-                  label: "Efficiency lift",
-                  value: formatPercent(model.efficiencyLift),
-                },
-                {
-                  icon: Target,
-                  label: "Less wasted outbound per win",
-                  value: formatPercent(model.wastedOutboundReduction),
-                },
-              ].map((metric) => (
+              {summaryMetrics.map((metric) => (
                 <div
                   key={metric.label}
                   className="rounded-[1.1rem] border border-white/10 bg-white/[0.05] px-4 py-4"
@@ -629,14 +641,11 @@ export function RoiCalculatorExperience() {
             </div>
 
             <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                <LineChart className="h-4 w-4 text-terracotta" aria-hidden="true" />
-                Why the economics change
-              </div>
+              <div className="text-sm font-semibold text-white">Plain-English takeaway</div>
               <p className="mt-3 text-sm leading-7 text-white/70">
-                You would need about {formatMaybeDecimal(model.currentOutboundPerClientWin, 0)} outbound
-                opportunities to create one client win at your current assumptions. At the improved
-                opportunity quality, that drops to about{" "}
+                Right now you need about {formatMaybeDecimal(model.currentOutboundPerClientWin, 0)}{" "}
+                opportunities to create one client win. If stronger opportunity quality lifts reply
+                performance to {formatPercent(formState.improvedReplyRate)}, that drops to about{" "}
                 {formatMaybeDecimal(model.improvedOutboundPerClientWin, 0)}.
               </p>
             </div>
@@ -676,80 +685,40 @@ export function RoiCalculatorExperience() {
         </div>
       </div>
 
-      <div className="surface-card overflow-hidden p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="space-y-3">
-            <div className="section-eyebrow">Pipeline waterfall</div>
-            <div>
-              <h2 className="text-3xl font-semibold text-ink sm:text-4xl">
-                Quality changes the whole pipeline, not just the reply line.
-              </h2>
-              <p className="mt-3 max-w-3xl text-muted">
-                This keeps the monthly opportunity count fixed, then shows how stronger routing and
-                better readiness move through the full commercial chain.
-              </p>
-            </div>
-          </div>
-          <Badge variant="success">Same volume, better opportunity quality</Badge>
-        </div>
-
-        <div className="mt-6 grid gap-4 xl:grid-cols-5">
-          {waterfallSteps.map((step, index) => (
-            <div
-              key={step.label}
-              className="relative rounded-[1.2rem] border border-border/70 bg-stone-50 p-5"
-            >
-              {index < waterfallSteps.length - 1 ? (
-                <div className="pointer-events-none absolute -right-2 top-1/2 hidden h-px w-4 -translate-y-1/2 bg-border xl:block" />
-              ) : null}
-              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
-                {step.label}
-              </div>
-              <div className="mt-4 text-3xl font-semibold tracking-tight text-ink">{step.improved}</div>
-              <div className="mt-2 text-sm text-muted">Current: {step.current}</div>
-              <div className="mt-4 inline-flex rounded-full bg-terracotta/10 px-3 py-1 text-xs font-semibold text-terracotta">
-                {step.lift}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
-        <div className="surface-card p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
-              <BarChart3 className="h-5 w-5" aria-hidden="true" />
-            </div>
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                What improves
-              </div>
-              <h2 className="mt-1 text-2xl font-semibold text-ink">The lift comes from selectivity.</h2>
-            </div>
+        <div className="surface-card overflow-hidden p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
+          <div className="space-y-3">
+            <div className="section-eyebrow">3. Compare the before and after</div>
+            <h2 className="text-3xl font-semibold text-ink sm:text-4xl">
+              The opportunity count stays the same. The output changes.
+            </h2>
+            <p className="max-w-3xl text-muted">
+              This is the simplest way to read the model: same monthly volume, stronger lead quality,
+              better commercial output.
+            </p>
           </div>
 
-          <div className="mt-6 grid gap-4">
-            {[
-              {
-                description:
-                  "Better-ranked opportunities create more replies from the same outbound volume. That is why the model focuses on quality lift, not send inflation.",
-                title: "More signal from the same list size",
-              },
-              {
-                description:
-                  "Stronger contactability and higher founder confidence create a denser meeting pipeline, which is usually where the real commercial upside starts to appear.",
-                title: "More meetings without widening the ICP",
-              },
-              {
-                description:
-                  "When you need fewer opportunities to produce a client win, you waste less operator time, less personalization effort, and less deliverability headroom.",
-                title: "Less outbound waste per client win",
-              },
-            ].map((item) => (
-              <div key={item.title} className="rounded-[1.2rem] border border-border/70 bg-white p-5">
-                <div className="text-lg font-semibold text-ink">{item.title}</div>
-                <p className="mt-3 text-sm leading-7 text-muted">{item.description}</p>
+          <div className="mt-6 space-y-3">
+            {comparisonRows.map((row) => (
+              <div
+                key={row.label}
+                className="grid gap-3 rounded-[1.2rem] border border-border/70 bg-stone-50 p-4 md:grid-cols-[1.1fr_0.7fr_0.7fr_auto] md:items-center"
+              >
+                <div>
+                  <div className="text-sm font-semibold text-ink">{row.label}</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-muted">Same volume model</div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-[0.16em] text-muted">Today</div>
+                  <div className="mt-1 text-lg font-semibold text-ink">{row.current}</div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-[0.16em] text-muted">With Frithly-style quality</div>
+                  <div className="mt-1 text-lg font-semibold text-ink">{row.improved}</div>
+                </div>
+                <div className="inline-flex rounded-full bg-terracotta/10 px-3 py-1 text-xs font-semibold text-terracotta">
+                  {row.change}
+                </div>
               </div>
             ))}
           </div>
@@ -759,71 +728,58 @@ export function RoiCalculatorExperience() {
           <div className="space-y-6">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.22em] text-terracotta">
-                Why this matters
+                Best next step
               </div>
               <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                This is not a volume calculator. It is a better-opportunity calculator.
+                If the upside looks meaningful, test it against your real ICP.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/70">
-                Frithly is built to surface fewer, stronger outbound opportunities. The point is not
-                to justify blasting more messages. It is to show how better opportunity selection can
-                compound into more replies, more calls, and more revenue opportunity.
+                This is a directional model, not a guarantee. The useful next step is to run one real
+                campaign and inspect the recommendation quality, readiness, and draft layer yourself.
               </p>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                "Selective recommendations protect team attention instead of padding the queue.",
-                "Human-gated review and SMTP controls preserve trust before outreach starts.",
-                "The best upside usually comes from better readiness and stronger contact paths, not more raw volume.",
-              ].map((point) => (
-                <div key={point} className="flex items-start gap-3 text-sm leading-7 text-white/72">
-                  <Sparkles className="mt-1 h-4 w-4 text-terracotta" aria-hidden="true" />
-                  <span>{point}</span>
-                </div>
-              ))}
             </div>
 
             <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-5">
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-                Best next step
+                What you are really testing
               </div>
-              <p className="mt-3 text-sm leading-7 text-white/70">
-                If this model looks directionally meaningful, the next step is not a free trial. It is
-                a real ICP campaign run against your market so you can inspect the recommendation
-                quality, readiness, and draft layer for yourself.
-              </p>
-              <div className="mt-5 flex flex-col gap-3">
-                <Button asChild size="lg" className="w-full">
-                  <Link
-                    href={ROUTES.APPLY}
-                    onClick={() =>
-                      captureEvent("cta_clicked", {
-                        location: "roi_page_bottom",
-                        target: "apply_for_campaign",
-                      })
-                    }
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      See what your outbound pipeline actually looks like
-                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </span>
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="secondary" className="w-full">
-                  <Link
-                    href={ROUTES.DEMO}
-                    onClick={() =>
-                      captureEvent("cta_clicked", {
-                        location: "roi_page_bottom",
-                        target: "interactive_demo",
-                      })
-                    }
-                  >
-                    Open the interactive demo
-                  </Link>
-                </Button>
+              <div className="mt-4 space-y-3 text-sm leading-7 text-white/72">
+                <div>Whether better opportunity selection can raise reply quality without raising send volume.</div>
+                <div>Whether stronger contact paths create more meetings from the same outbound effort.</div>
+                <div>Whether a selective queue is worth more to your team than a bigger noisy list.</div>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button asChild size="lg" className="w-full">
+                <Link
+                  href={ROUTES.APPLY}
+                  onClick={() =>
+                    captureEvent("cta_clicked", {
+                      location: "roi_page_bottom",
+                      target: "apply_for_campaign",
+                    })
+                  }
+                >
+                  <span className="inline-flex items-center gap-2">
+                    Apply for a custom campaign
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary" className="w-full">
+                <Link
+                  href={ROUTES.DEMO}
+                  onClick={() =>
+                    captureEvent("cta_clicked", {
+                      location: "roi_page_bottom",
+                      target: "interactive_demo",
+                    })
+                  }
+                >
+                  Open the interactive demo
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

@@ -50,11 +50,10 @@ export default function RoiPage() {
       <Container className="space-y-10">
         <div className="max-w-3xl space-y-5">
           <div className="section-eyebrow">Opportunity modeling</div>
-          <h1>See what better outbound opportunity quality could be worth before you ever scale volume.</h1>
+          <h1>Estimate what better lead quality could add before you scale outbound.</h1>
           <p className="max-w-2xl text-muted">
-            This calculator translates a stronger recommendation pipeline into expected replies,
-            meetings, client wins, and revenue opportunity. It is directional by design, but it keeps
-            the commercial question front and center.
+            Enter your current numbers, set a better reply-rate target, and see the before-versus-after
+            revenue picture. It is directional by design and intentionally simple.
           </p>
         </div>
 
