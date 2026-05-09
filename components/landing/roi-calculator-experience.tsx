@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   CircleDollarSign,
-  GaugeCircle,
   MailCheck,
   ShieldCheck,
   Target,
@@ -23,17 +22,13 @@ import {
 } from "@/components/ui/select";
 import { ROUTES } from "@/lib/constants";
 import { captureEvent } from "@/lib/monitoring/posthog";
-import { formatCurrency } from "@/lib/utils";
 
-type CurrencyOption = "EUR" | "GBP" | "USD";
+type CurrencyOption = "EUR" | "GBP" | "INR" | "USD";
 
 type RoiFormState = {
   averageClientValue: number;
-  closeRate: number;
   currency: CurrencyOption;
   currentReplyRate: number;
-  improvedReplyRate: number;
-  meetingsNeeded: number;
   outboundVolume: number;
 };
 
@@ -41,6 +36,16 @@ type RoiNumericField = Exclude<keyof RoiFormState, "currency">;
 type RoiInputState = Record<RoiNumericField, string>;
 
 const QUALIFIED_REPLY_TO_MEETING_RATE = 0.4;
+const MEETINGS_PER_CLIENT = 5;
+const MIN_CLIENT_VALUE = 1000;
+const MAX_CLIENT_VALUE = 5000000;
+const MIN_OUTBOUND_VOLUME = 25;
+const MAX_OUTBOUND_VOLUME = 2000;
+const MIN_REPLY_RATE = 1;
+const MAX_CURRENT_REPLY_RATE = 12;
+const MAX_IMPROVED_REPLY_RATE = 18;
+const TARGETING_MULTIPLIER = 3;
+const MIN_REPLY_RATE_LIFT = 3;
 
 const presets: Array<{
   description: string;
@@ -49,114 +54,82 @@ const presets: Array<{
   state: RoiFormState;
 }> = [
   {
-    description: "Founder-led agency with modest current reply performance.",
+    description: "A smaller founder-led team with a low baseline reply rate.",
     id: "lean-agency",
     label: "Lean agency",
     state: {
       averageClientValue: 5000,
-      closeRate: 20,
       currency: "GBP",
       currentReplyRate: 2,
-      improvedReplyRate: 6,
-      meetingsNeeded: 5,
       outboundVolume: 100,
     },
   },
   {
-    description: "Higher-ticket services motion where a small quality lift matters fast.",
-    id: "premium-services",
-    label: "High-ticket services",
-    state: {
-      averageClientValue: 12000,
-      closeRate: 18,
-      currency: "EUR",
-      currentReplyRate: 3,
-      improvedReplyRate: 7,
-      meetingsNeeded: 6,
-      outboundVolume: 140,
-    },
-  },
-  {
-    description: "Growth team that already has some traction and wants better routing efficiency.",
-    id: "growing-team",
+    description: "A growing team with steadier outbound volume and mid-ticket deals.",
+    id: "growth-team",
     label: "Growth team",
     state: {
       averageClientValue: 9000,
-      closeRate: 22,
       currency: "USD",
       currentReplyRate: 4,
-      improvedReplyRate: 8,
-      meetingsNeeded: 5,
       outboundVolume: 180,
+    },
+  },
+  {
+    description: "A services motion where every extra client win materially changes monthly revenue.",
+    id: "india-services",
+    label: "Services team",
+    state: {
+      averageClientValue: 200000,
+      currency: "INR",
+      currentReplyRate: 3,
+      outboundVolume: 150,
     },
   },
 ];
 
-const initialFormState: RoiFormState = presets[0].state;
+const stepContent = [
+  {
+    description: "Keep this to real monthly outreach volume, not your theoretical max.",
+    title: "How many businesses do you contact each month?",
+  },
+  {
+    description: "This is your current baseline today, not your best week.",
+    title: "What percentage usually reply?",
+  },
+  {
+    description: "Use a realistic average, not a top-end upside case.",
+    title: "What is one client worth?",
+  },
+] as const;
+
+const initialFormState = presets[0].state;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-function formatRoiInputState(formState: RoiFormState): RoiInputState {
-  return {
-    averageClientValue: String(formState.averageClientValue),
-    closeRate: String(formState.closeRate),
-    currentReplyRate: String(formState.currentReplyRate),
-    improvedReplyRate: String(formState.improvedReplyRate),
-    meetingsNeeded: String(formState.meetingsNeeded),
-    outboundVolume: String(formState.outboundVolume),
-  };
+function getCurrencyLocale(currency: CurrencyOption) {
+  return currency === "INR" ? "en-IN" : "en-GB";
 }
 
-function normalizeRoiFormState<K extends keyof RoiFormState>(
-  current: RoiFormState,
-  field: K,
-  nextValue: RoiFormState[K],
-) {
-  const nextState = { ...current, [field]: nextValue };
-
-  if (field === "averageClientValue") {
-    nextState.averageClientValue = clamp(Number(nextValue), 1000, 100000);
-  }
-
-  if (field === "closeRate") {
-    nextState.closeRate = clamp(Number(nextValue), 5, 80);
-  }
-
-  if (field === "currentReplyRate") {
-    nextState.currentReplyRate = clamp(Number(nextValue), 1, 30);
-    nextState.improvedReplyRate = Math.max(nextState.improvedReplyRate, nextState.currentReplyRate);
-  }
-
-  if (field === "improvedReplyRate") {
-    nextState.improvedReplyRate = clamp(
-      Math.max(Number(nextValue), nextState.currentReplyRate),
-      nextState.currentReplyRate,
-      35,
-    );
-  }
-
-  if (field === "meetingsNeeded") {
-    nextState.meetingsNeeded = clamp(Number(nextValue), 1, 12);
-  }
-
-  if (field === "outboundVolume") {
-    nextState.outboundVolume = clamp(Number(nextValue), 25, 2000);
-  }
-
-  return nextState;
+function formatMoney(value: number, currency: CurrencyOption, maximumFractionDigits = 0) {
+  return new Intl.NumberFormat(getCurrencyLocale(currency), {
+    currency,
+    maximumFractionDigits,
+    style: "currency",
+  }).format(value);
 }
 
 function formatCompactMoney(value: number, currency: CurrencyOption) {
   if (Math.abs(value) < 10000) {
-    return formatCurrency(value, currency);
+    return formatMoney(value, currency);
   }
 
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat(getCurrencyLocale(currency), {
     currency,
     maximumFractionDigits: 1,
-    notation: Math.abs(value) >= 10000 ? "compact" : "standard",
+    notation: "compact",
     style: "currency",
   }).format(value);
 }
@@ -164,7 +137,8 @@ function formatCompactMoney(value: number, currency: CurrencyOption) {
 function formatMaybeDecimal(value: number, maximumFractionDigits = 1) {
   return new Intl.NumberFormat("en-GB", {
     maximumFractionDigits,
-    minimumFractionDigits: value > 0 && value < 10 ? 1 : 0,
+    minimumFractionDigits:
+      value > 0 && value < 10 && Math.abs(value - Math.round(value)) > 0.001 ? 1 : 0,
   }).format(value);
 }
 
@@ -174,115 +148,154 @@ function formatPercent(value: number, maximumFractionDigits = 0) {
   }).format(value)}%`;
 }
 
-function calculateModel(formState: RoiFormState) {
-  const currentReplyRateDecimal = formState.currentReplyRate / 100;
-  const improvedReplyRateDecimal = formState.improvedReplyRate / 100;
-
-  const currentReplies = formState.outboundVolume * currentReplyRateDecimal;
-  const improvedReplies = formState.outboundVolume * improvedReplyRateDecimal;
-
-  const currentMeetings = currentReplies * QUALIFIED_REPLY_TO_MEETING_RATE;
-  const improvedMeetings = improvedReplies * QUALIFIED_REPLY_TO_MEETING_RATE;
-
-  const currentClientsByCloseRate = currentMeetings * (formState.closeRate / 100);
-  const improvedClientsByCloseRate = improvedMeetings * (formState.closeRate / 100);
-
-  const currentClientsByMeetingNeed = currentMeetings / formState.meetingsNeeded;
-  const improvedClientsByMeetingNeed = improvedMeetings / formState.meetingsNeeded;
-
-  const currentClients = Math.min(currentClientsByCloseRate, currentClientsByMeetingNeed);
-  const improvedClients = Math.min(improvedClientsByCloseRate, improvedClientsByMeetingNeed);
-
-  const currentRevenue = currentClients * formState.averageClientValue;
-  const improvedRevenue = improvedClients * formState.averageClientValue;
-  const incrementalRevenue = improvedRevenue - currentRevenue;
-  const annualRevenueUnlocked = incrementalRevenue * 12;
-
-  const additionalReplies = improvedReplies - currentReplies;
-  const additionalMeetings = improvedMeetings - currentMeetings;
-  const additionalClients = improvedClients - currentClients;
-
-  const efficiencyLift =
-    formState.currentReplyRate > 0
-      ? ((formState.improvedReplyRate - formState.currentReplyRate) / formState.currentReplyRate) * 100
-      : 0;
-
-  const currentOutboundPerClientWin =
-    formState.meetingsNeeded / QUALIFIED_REPLY_TO_MEETING_RATE / currentReplyRateDecimal;
-  const improvedOutboundPerClientWin =
-    formState.meetingsNeeded / QUALIFIED_REPLY_TO_MEETING_RATE / improvedReplyRateDecimal;
-  const wastedOutboundReduction =
-    currentOutboundPerClientWin > 0
-      ? (1 - improvedOutboundPerClientWin / currentOutboundPerClientWin) * 100
-      : 0;
-
-  const closeRateImpliedByMeetingsNeeded = 100 / formState.meetingsNeeded;
-  const closeRateGap = Math.abs(closeRateImpliedByMeetingsNeeded - formState.closeRate);
-
+function formatInputState(formState: RoiFormState): RoiInputState {
   return {
-    additionalClients,
-    additionalMeetings,
-    additionalReplies,
-    annualRevenueUnlocked,
-    closeRateGap,
-    closeRateImpliedByMeetingsNeeded,
-    currentClients,
-    currentMeetings,
-    currentOutboundPerClientWin,
-    currentReplies,
-    currentRevenue,
-    efficiencyLift,
-    improvedClients,
-    improvedMeetings,
-    improvedOutboundPerClientWin,
-    improvedReplies,
-    improvedRevenue,
-    incrementalRevenue,
-    wastedOutboundReduction,
+    averageClientValue: String(formState.averageClientValue),
+    currentReplyRate: String(formState.currentReplyRate),
+    outboundVolume: String(formState.outboundVolume),
   };
 }
 
-function MetricInput({
-  hint,
+function normalizeFormState<K extends keyof RoiFormState>(
+  current: RoiFormState,
+  field: K,
+  nextValue: RoiFormState[K],
+) {
+  const nextState = { ...current, [field]: nextValue };
+
+  if (field === "averageClientValue") {
+    nextState.averageClientValue = clamp(Number(nextValue), MIN_CLIENT_VALUE, MAX_CLIENT_VALUE);
+  }
+
+  if (field === "currentReplyRate") {
+    nextState.currentReplyRate = clamp(Number(nextValue), MIN_REPLY_RATE, MAX_CURRENT_REPLY_RATE);
+  }
+
+  if (field === "outboundVolume") {
+    nextState.outboundVolume = clamp(Number(nextValue), MIN_OUTBOUND_VOLUME, MAX_OUTBOUND_VOLUME);
+  }
+
+  return nextState;
+}
+
+function getImprovedReplyRate(currentReplyRate: number) {
+  return Math.min(
+    Math.max(currentReplyRate * TARGETING_MULTIPLIER, currentReplyRate + MIN_REPLY_RATE_LIFT),
+    MAX_IMPROVED_REPLY_RATE,
+  );
+}
+
+function calculateModel(formState: RoiFormState) {
+  const improvedReplyRate = getImprovedReplyRate(formState.currentReplyRate);
+  const currentReplies = formState.outboundVolume * (formState.currentReplyRate / 100);
+  const improvedReplies = formState.outboundVolume * (improvedReplyRate / 100);
+  const currentMeetings = currentReplies * QUALIFIED_REPLY_TO_MEETING_RATE;
+  const improvedMeetings = improvedReplies * QUALIFIED_REPLY_TO_MEETING_RATE;
+  const currentClients = currentMeetings / MEETINGS_PER_CLIENT;
+  const improvedClients = improvedMeetings / MEETINGS_PER_CLIENT;
+  const currentRevenue = currentClients * formState.averageClientValue;
+  const improvedRevenue = improvedClients * formState.averageClientValue;
+  const revenueLift = improvedRevenue - currentRevenue;
+  const replyMultiplier = currentReplies > 0 ? improvedReplies / currentReplies : 1;
+  const sampleCurrentReplies = clamp(Math.round(formState.currentReplyRate), 0, 100);
+  const sampleImprovedReplies = clamp(Math.round(improvedReplyRate), 0, 100);
+
+  return {
+    annualRevenueLift: revenueLift * 12,
+    currentClients,
+    currentMeetings,
+    currentReplies,
+    currentRevenue,
+    extraMeetings: improvedMeetings - currentMeetings,
+    extraReplies: improvedReplies - currentReplies,
+    extraRevenue: revenueLift,
+    ignoredToday: 100 - sampleCurrentReplies,
+    ignoredWithBetterTargeting: 100 - sampleImprovedReplies,
+    improvedClients,
+    improvedMeetings,
+    improvedReplies,
+    improvedReplyRate,
+    improvedRevenue,
+    repliesPerWinNow:
+      currentClients > 0 ? formState.outboundVolume / currentClients : formState.outboundVolume,
+    repliesPerWinWithBetterTargeting:
+      improvedClients > 0 ? formState.outboundVolume / improvedClients : formState.outboundVolume,
+    replyMultiplier,
+    sampleCurrentReplies,
+    sampleImprovedReplies,
+  };
+}
+
+function ReplyGrid({
+  replies,
+  title,
+  tone,
+}: {
+  replies: number;
+  title: string;
+  tone: "current" | "improved";
+}) {
+  const cells = Array.from({ length: 100 }, (_, index) => index < replies);
+
+  return (
+    <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.05] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-white">{title}</div>
+          <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/45">Out of 100 leads</div>
+        </div>
+        <div
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            tone === "improved" ? "bg-emerald-400/15 text-emerald-200" : "bg-white/10 text-white"
+          }`}
+        >
+          {replies} reply
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-10 gap-1.5">
+        {cells.map((isReply, index) => (
+          <div
+            key={`${title}-${index}`}
+            className={`h-4 rounded-[0.35rem] ${
+              isReply ? "bg-emerald-400" : "bg-rose-300/75"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between text-sm">
+        <span className="text-white/70">{100 - replies} ignore</span>
+        <span className="font-semibold text-white">{replies} reply</span>
+      </div>
+    </div>
+  );
+}
+
+function SummaryMetric({
+  icon: Icon,
   label,
-  max,
-  min,
-  onBlur,
-  onChange,
-  suffix,
   value,
 }: {
-  hint?: string;
+  icon: typeof CircleDollarSign;
   label: string;
-  max: number;
-  min: number;
-  onBlur: () => void;
-  onChange: (value: string) => void;
-  suffix?: string;
   value: string;
 }) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <Label className="text-sm font-semibold text-ink">{label}</Label>
-        {suffix ? <span className="text-xs font-medium text-muted">{suffix}</span> : null}
+    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4">
+      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+        <Icon className="h-4 w-4 text-terracotta" aria-hidden="true" />
+        {label}
       </div>
-      <Input
-        max={max}
-        min={min}
-        onBlur={onBlur}
-        onChange={(event) => onChange(event.target.value)}
-        type="number"
-        value={value}
-      />
-      {hint ? <p className="text-xs leading-6 text-muted">{hint}</p> : null}
+      <div className="mt-3 text-2xl font-semibold tracking-tight text-white">{value}</div>
     </div>
   );
 }
 
 export function RoiCalculatorExperience() {
   const [formState, setFormState] = useState<RoiFormState>(initialFormState);
-  const [inputState, setInputState] = useState<RoiInputState>(() => formatRoiInputState(initialFormState));
+  const [inputState, setInputState] = useState<RoiInputState>(() => formatInputState(initialFormState));
+  const [currentStep, setCurrentStep] = useState(0);
   const hasTrackedInitialUpdateRef = useRef(false);
 
   const model = useMemo(() => calculateModel(formState), [formState]);
@@ -291,11 +304,8 @@ export function RoiCalculatorExperience() {
       presets.find(
         (preset) =>
           preset.state.averageClientValue === formState.averageClientValue &&
-          preset.state.closeRate === formState.closeRate &&
           preset.state.currency === formState.currency &&
           preset.state.currentReplyRate === formState.currentReplyRate &&
-          preset.state.improvedReplyRate === formState.improvedReplyRate &&
-          preset.state.meetingsNeeded === formState.meetingsNeeded &&
           preset.state.outboundVolume === formState.outboundVolume,
       ),
     [formState],
@@ -310,479 +320,538 @@ export function RoiCalculatorExperience() {
     const timer = window.setTimeout(() => {
       captureEvent("roi_calculator_updated", {
         average_client_value: formState.averageClientValue,
-        close_rate: formState.closeRate,
         current_reply_rate: formState.currentReplyRate,
         currency: formState.currency,
-        improved_reply_rate: formState.improvedReplyRate,
-        meetings_needed: formState.meetingsNeeded,
         outbound_volume: formState.outboundVolume,
       });
-    }, 500);
+    }, 400);
 
     return () => {
       window.clearTimeout(timer);
     };
   }, [formState]);
 
-  const updateFormState = <K extends keyof RoiFormState>(field: K, nextValue: RoiFormState[K]) => {
-    setFormState((current) => normalizeRoiFormState(current, field, nextValue));
-  };
-
   function updateNumericInput(field: RoiNumericField, value: string) {
     setInputState((current) => ({ ...current, [field]: value }));
+
+    if (!value.trim()) {
+      return;
+    }
+
+    const parsedValue = Number(value);
+
+    if (!Number.isFinite(parsedValue)) {
+      return;
+    }
+
+    setFormState((current) => normalizeFormState(current, field, parsedValue));
   }
 
   function commitNumericInput(field: RoiNumericField) {
     const trimmedValue = inputState[field].trim();
     const parsedValue = trimmedValue ? Number(trimmedValue) : formState[field];
-    const nextState = normalizeRoiFormState(
+    const nextState = normalizeFormState(
       formState,
       field,
       Number.isFinite(parsedValue) ? parsedValue : formState[field],
     );
 
     setFormState(nextState);
-    setInputState(formatRoiInputState(nextState));
+    setInputState(formatInputState(nextState));
   }
 
-  const comparisonRows = [
-    {
-      change: `+${formatMaybeDecimal(model.additionalReplies)} replies`,
-      current: formatMaybeDecimal(model.currentReplies),
-      improved: formatMaybeDecimal(model.improvedReplies),
-      label: "Replies / month",
-    },
-    {
-      change: `+${formatMaybeDecimal(model.additionalMeetings)} meetings`,
-      current: formatMaybeDecimal(model.currentMeetings),
-      improved: formatMaybeDecimal(model.improvedMeetings),
-      label: "Qualified meetings / month",
-    },
-    {
-      change: `+${formatMaybeDecimal(model.additionalClients)} clients`,
-      current: formatMaybeDecimal(model.currentClients),
-      improved: formatMaybeDecimal(model.improvedClients),
-      label: "Expected clients / month",
-    },
-    {
-      change: `+${formatCompactMoney(model.incrementalRevenue, formState.currency)}`,
-      current: formatCompactMoney(model.currentRevenue, formState.currency),
-      improved: formatCompactMoney(model.improvedRevenue, formState.currency),
-      label: "Projected revenue / month",
-    },
-  ];
+  function setRangeValue(field: RoiNumericField, value: number) {
+    const nextState = normalizeFormState(formState, field, value);
+    setFormState(nextState);
+    setInputState(formatInputState(nextState));
+  }
 
-  const summaryMetrics = [
-    {
-      icon: CircleDollarSign,
-      label: "Extra revenue / month",
-      value: formatCompactMoney(model.incrementalRevenue, formState.currency),
-    },
-    {
-      icon: MailCheck,
-      label: "Extra meetings / month",
-      value: formatMaybeDecimal(model.additionalMeetings),
-    },
-    {
-      icon: GaugeCircle,
-      label: "Less outbound per win",
-      value: formatPercent(model.wastedOutboundReduction),
-    },
-    {
-      icon: Target,
-      label: "Efficiency lift",
-      value: formatPercent(model.efficiencyLift),
-    },
-  ];
+  function applyPreset(presetId: string) {
+    const preset = presets.find((item) => item.id === presetId);
+
+    if (!preset) {
+      return;
+    }
+
+    setFormState(preset.state);
+    setInputState(formatInputState(preset.state));
+    setCurrentStep(3);
+  }
+
+  function goToNextStep() {
+    if (currentStep < 3) {
+      setCurrentStep((step) => step + 1);
+    }
+  }
+
+  function goToPreviousStep() {
+    if (currentStep > 0) {
+      setCurrentStep((step) => step - 1);
+    }
+  }
+
+  const clientValueChips: Record<CurrencyOption, number[]> = {
+    EUR: [4000, 8000, 15000],
+    GBP: [3000, 5000, 10000],
+    INR: [100000, 200000, 500000],
+    USD: [5000, 10000, 20000],
+  };
+
+  const resultTone =
+    model.extraRevenue >= formState.averageClientValue
+      ? "meaningful"
+      : model.extraRevenue >= formState.averageClientValue * 0.5
+        ? "promising"
+        : "early";
 
   return (
     <div className="space-y-8">
-      <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-        <div className="surface-card p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <div className="section-eyebrow">1. Enter your baseline</div>
-              <div>
-                <h2 className="max-w-xl text-3xl font-semibold text-ink sm:text-4xl">
-                  Start with the numbers you already know.
-                </h2>
-                <p className="mt-3 max-w-2xl text-muted">
-                  Keep this directional and conservative. We hold monthly opportunity volume steady,
-                  then show what better lead quality could change.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                Common scenarios
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {presets.map((preset) => (
-                  <button
-                    key={preset.id}
-                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                      activePreset?.id === preset.id
-                        ? "border-terracotta bg-terracotta/10 text-terracotta"
-                        : "border-border bg-white text-ink hover:border-ink"
-                    }`}
-                    onClick={() => {
-                      setFormState(preset.state);
-                      setInputState(formatRoiInputState(preset.state));
-                    }}
-                    type="button"
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-              {activePreset ? (
-                <p className="text-xs leading-6 text-muted">{activePreset.description}</p>
-              ) : (
-                <p className="text-xs leading-6 text-muted">
-                  Custom scenario. Keep the model directional and conservative rather than forcing
-                  perfect precision.
-                </p>
-              )}
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between gap-3">
-                  <Label className="text-sm font-semibold text-ink">Average client value</Label>
-                  <div className="w-[7.5rem]">
-                    <Select
-                      onValueChange={(value) => updateFormState("currency", value as CurrencyOption)}
-                      value={formState.currency}
-                    >
-                      <SelectTrigger className="h-9 rounded-full px-3 text-xs font-semibold uppercase tracking-[0.16em]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="GBP">GBP</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <Input
-                  max={100000}
-                  min={1000}
-                  onBlur={() => commitNumericInput("averageClientValue")}
-                  onChange={(event) => updateNumericInput("averageClientValue", event.target.value)}
-                  type="number"
-                  value={inputState.averageClientValue}
-                />
-                <p className="text-xs leading-6 text-muted">
-                  Use your typical first-year client value, not a best-case upside number.
-                </p>
-              </div>
-
-              <MetricInput
-                hint="If 5 meetings usually produces 1 client, enter 5."
-                label="Meetings needed per client"
-                max={12}
-                min={1}
-                onBlur={() => commitNumericInput("meetingsNeeded")}
-                onChange={(value) => updateNumericInput("meetingsNeeded", value)}
-                value={inputState.meetingsNeeded}
-              />
-
-              <MetricInput
-                hint="A conservative meeting-to-client conversion rate keeps the model honest."
-                label="Close rate"
-                max={80}
-                min={5}
-                onBlur={() => commitNumericInput("closeRate")}
-                onChange={(value) => updateNumericInput("closeRate", value)}
-                suffix="%"
-                value={inputState.closeRate}
-              />
-
-              <MetricInput
-                hint="Only count the monthly opportunities you would genuinely be willing to pursue."
-                label="Outbound volume / month"
-                max={2000}
-                min={25}
-                onBlur={() => commitNumericInput("outboundVolume")}
-                onChange={(value) => updateNumericInput("outboundVolume", value)}
-                value={inputState.outboundVolume}
-              />
-
-              <MetricInput
-                hint="This is your baseline today."
-                label="Current reply rate"
-                max={30}
-                min={1}
-                onBlur={() => commitNumericInput("currentReplyRate")}
-                onChange={(value) => updateNumericInput("currentReplyRate", value)}
-                suffix="%"
-                value={inputState.currentReplyRate}
-              />
-
-              <MetricInput
-                hint="Model the reply rate you believe stronger opportunity quality could create."
-                label="Improved reply rate"
-                max={35}
-                min={formState.currentReplyRate}
-                onBlur={() => commitNumericInput("improvedReplyRate")}
-                onChange={(value) => updateNumericInput("improvedReplyRate", value)}
-                suffix="%"
-                value={inputState.improvedReplyRate}
-              />
-            </div>
-
-            <div className="rounded-[1.25rem] border border-border/70 bg-stone-50 p-4">
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-1 h-5 w-5 text-terracotta" aria-hidden="true" />
-                <div className="space-y-2">
-                  <div className="text-sm font-semibold text-ink">How we keep this conservative</div>
-                  <p className="text-sm leading-7 text-muted">
-                    We assume about {formatPercent(QUALIFIED_REPLY_TO_MEETING_RATE * 100)} of qualified
-                    replies turn into meetings, then we use the tighter of your close-rate math and
-                    meetings-needed math so the upside does not get overstated.
-                  </p>
-                  {model.closeRateGap > 2 ? (
-                    <p className="text-xs leading-6 text-terracotta">
-                      Your meetings-needed input implies about{" "}
-                      {formatPercent(model.closeRateImpliedByMeetingsNeeded, 1)} close rate on its own,
-                      so we keep the stricter assumption.
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="space-y-3">
+        <div className="section-eyebrow">Quick scenarios</div>
+        <div className="flex flex-wrap gap-2">
+          {presets.map((preset) => (
+            <button
+              key={preset.id}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                activePreset?.id === preset.id
+                  ? "border-terracotta bg-terracotta/10 text-terracotta"
+                  : "border-border bg-white text-ink hover:border-ink"
+              }`}
+              onClick={() => applyPreset(preset.id)}
+              type="button"
+            >
+              {preset.label}
+            </button>
+          ))}
         </div>
-
-        <div className="surface-card-dark animated-glow overflow-hidden p-6 shadow-[0_30px_90px_rgba(12,12,12,0.34)] sm:p-7">
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <Badge className="border-white/10 bg-white/10 text-white" variant="outline">
-                2. Read the estimate
-              </Badge>
-              <div className="space-y-3">
-                <h2 className="max-w-3xl text-3xl font-semibold text-white sm:text-4xl">
-                  {formatCurrency(model.annualRevenueUnlocked, formState.currency)} in annual upside
-                  from the same monthly volume.
-                </h2>
-                <p className="max-w-2xl text-white/70">
-                  This assumes your reply rate moves from {formatPercent(formState.currentReplyRate)} to{" "}
-                  {formatPercent(formState.improvedReplyRate)} while outbound volume stays at{" "}
-                  {formatMaybeDecimal(formState.outboundVolume, 0)} opportunities per month.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-5">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-                  Today
-                </div>
-                <div className="mt-3 text-3xl font-semibold tracking-tight text-white">
-                  {formatCompactMoney(model.currentRevenue, formState.currency)}
-                </div>
-                <div className="mt-2 text-sm text-white/65">Projected revenue / month</div>
-                <div className="mt-5 space-y-2 text-sm text-white/72">
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Replies</span>
-                    <span className="font-semibold text-white">{formatMaybeDecimal(model.currentReplies)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Meetings</span>
-                    <span className="font-semibold text-white">{formatMaybeDecimal(model.currentMeetings)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Expected clients</span>
-                    <span className="font-semibold text-white">{formatMaybeDecimal(model.currentClients)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[1.35rem] border border-terracotta/20 bg-white/[0.06] p-5">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-                  With stronger lead quality
-                </div>
-                <div className="mt-3 text-3xl font-semibold tracking-tight text-white">
-                  {formatCurrency(model.improvedRevenue, formState.currency)}
-                </div>
-                <div className="mt-2 text-sm text-white/65">Projected revenue / month</div>
-                <div className="mt-5 space-y-2 text-sm text-white/72">
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Replies</span>
-                    <span className="font-semibold text-white">{formatMaybeDecimal(model.improvedReplies)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Meetings</span>
-                    <span className="font-semibold text-white">{formatMaybeDecimal(model.improvedMeetings)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Expected clients</span>
-                    <span className="font-semibold text-white">{formatMaybeDecimal(model.improvedClients)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {summaryMetrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="rounded-[1.1rem] border border-white/10 bg-white/[0.05] px-4 py-4"
-                >
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-                    <metric.icon className="h-4 w-4 text-terracotta" aria-hidden="true" />
-                    {metric.label}
-                  </div>
-                  <div className="mt-3 text-2xl font-semibold tracking-tight text-white">{metric.value}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-              <div className="text-sm font-semibold text-white">Plain-English takeaway</div>
-              <p className="mt-3 text-sm leading-7 text-white/70">
-                Right now you need about {formatMaybeDecimal(model.currentOutboundPerClientWin, 0)}{" "}
-                opportunities to create one client win. If stronger opportunity quality lifts reply
-                performance to {formatPercent(formState.improvedReplyRate)}, that drops to about{" "}
-                {formatMaybeDecimal(model.improvedOutboundPerClientWin, 0)}.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link
-                  href={ROUTES.APPLY}
-                  onClick={() =>
-                    captureEvent("cta_clicked", {
-                      location: "roi_page",
-                      target: "apply_for_campaign",
-                    })
-                  }
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Apply for a custom campaign
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link
-                  href={ROUTES.DEMO}
-                  onClick={() =>
-                    captureEvent("cta_clicked", {
-                      location: "roi_page",
-                      target: "open_interactive_demo",
-                    })
-                  }
-                >
-                  Revisit the interactive demo
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <p className="text-sm text-muted">
+          Start with a preset or answer the three questions below.
+        </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
-        <div className="surface-card overflow-hidden p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
-          <div className="space-y-3">
-            <div className="section-eyebrow">3. Compare the before and after</div>
-            <h2 className="text-3xl font-semibold text-ink sm:text-4xl">
-              The opportunity count stays the same. The output changes.
-            </h2>
-            <p className="max-w-3xl text-muted">
-              This is the simplest way to read the model: same monthly volume, stronger lead quality,
-              better commercial output.
-            </p>
-          </div>
-
-          <div className="mt-6 space-y-3">
-            {comparisonRows.map((row) => (
-              <div
-                key={row.label}
-                className="grid gap-3 rounded-[1.2rem] border border-border/70 bg-stone-50 p-4 md:grid-cols-[1.1fr_0.7fr_0.7fr_auto] md:items-center"
-              >
-                <div>
-                  <div className="text-sm font-semibold text-ink">{row.label}</div>
-                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-muted">Same volume model</div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-[0.16em] text-muted">Today</div>
-                  <div className="mt-1 text-lg font-semibold text-ink">{row.current}</div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-[0.16em] text-muted">With Frithly-style quality</div>
-                  <div className="mt-1 text-lg font-semibold text-ink">{row.improved}</div>
-                </div>
-                <div className="inline-flex rounded-full bg-terracotta/10 px-3 py-1 text-xs font-semibold text-terracotta">
-                  {row.change}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="surface-card-dark p-6 shadow-[0_28px_80px_rgba(12,12,12,0.32)] sm:p-7">
+      <div className="grid gap-6 xl:grid-cols-[0.86fr_1.14fr]">
+        <div className="surface-card p-6 shadow-[0_22px_70px_rgba(26,26,26,0.08)] sm:p-7">
           <div className="space-y-6">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.22em] text-terracotta">
-                Best next step
-              </div>
-              <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                If the upside looks meaningful, test it against your real ICP.
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-white/70">
-                This is a directional model, not a guarantee. The useful next step is to run one real
-                campaign and inspect the recommendation quality, readiness, and draft layer yourself.
-              </p>
+            <div className="flex flex-wrap gap-2">
+              {stepContent.map((step, index) => {
+                const isActive = currentStep === index;
+                const isComplete = currentStep > index || currentStep === 3;
+
+                return (
+                  <button
+                    key={step.title}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
+                      isActive
+                        ? "border-terracotta bg-terracotta/10 text-terracotta"
+                        : isComplete
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : "border-border bg-white text-muted"
+                    }`}
+                    onClick={() => setCurrentStep(index)}
+                    type="button"
+                  >
+                    {`Step ${index + 1}`}
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-5">
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-                What you are really testing
-              </div>
-              <div className="mt-4 space-y-3 text-sm leading-7 text-white/72">
-                <div>Whether better opportunity selection can raise reply quality without raising send volume.</div>
-                <div>Whether stronger contact paths create more meetings from the same outbound effort.</div>
-                <div>Whether a selective queue is worth more to your team than a bigger noisy list.</div>
-              </div>
-            </div>
+            {currentStep < 3 ? (
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <div className="section-eyebrow">{`Question ${currentStep + 1}`}</div>
+                  <div>
+                    <h2 className="max-w-xl text-3xl font-semibold text-ink sm:text-4xl">
+                      {stepContent[currentStep].title}
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-muted">{stepContent[currentStep].description}</p>
+                  </div>
+                </div>
 
-            <div className="flex flex-col gap-3">
-              <Button asChild size="lg" className="w-full">
-                <Link
-                  href={ROUTES.APPLY}
-                  onClick={() =>
-                    captureEvent("cta_clicked", {
-                      location: "roi_page_bottom",
-                      target: "apply_for_campaign",
-                    })
-                  }
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Apply for a custom campaign
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary" className="w-full">
-                <Link
-                  href={ROUTES.DEMO}
-                  onClick={() =>
-                    captureEvent("cta_clicked", {
-                      location: "roi_page_bottom",
-                      target: "interactive_demo",
-                    })
-                  }
-                >
-                  Open the interactive demo
-                </Link>
-              </Button>
-            </div>
+                {currentStep === 0 ? (
+                  <div className="space-y-5">
+                    <div className="rounded-[1.3rem] border border-border/70 bg-stone-50 p-5">
+                      <div className="text-5xl font-semibold tracking-tight text-ink">
+                        {formatMaybeDecimal(formState.outboundVolume, 0)}
+                      </div>
+                      <div className="mt-2 text-sm text-muted">businesses contacted each month</div>
+                      <input
+                        className="mt-6 h-2 w-full cursor-pointer appearance-none rounded-full bg-border accent-terracotta"
+                        max={MAX_OUTBOUND_VOLUME}
+                        min={MIN_OUTBOUND_VOLUME}
+                        onChange={(event) => setRangeValue("outboundVolume", Number(event.target.value))}
+                        step={25}
+                        type="range"
+                        value={formState.outboundVolume}
+                      />
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+                      <div className="space-y-2">
+                        <Label htmlFor="outboundVolume">Monthly outbound volume</Label>
+                        <Input
+                          id="outboundVolume"
+                          max={MAX_OUTBOUND_VOLUME}
+                          min={MIN_OUTBOUND_VOLUME}
+                          onBlur={() => commitNumericInput("outboundVolume")}
+                          onChange={(event) => updateNumericInput("outboundVolume", event.target.value)}
+                          type="number"
+                          value={inputState.outboundVolume}
+                        />
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {[100, 250, 500].map((value) => (
+                          <button
+                            key={value}
+                            className="rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
+                            onClick={() => setRangeValue("outboundVolume", value)}
+                            type="button"
+                          >
+                            {value}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {currentStep === 1 ? (
+                  <div className="space-y-5">
+                    <div className="rounded-[1.3rem] border border-border/70 bg-stone-50 p-5">
+                      <div className="text-5xl font-semibold tracking-tight text-ink">
+                        {formatPercent(formState.currentReplyRate, 1)}
+                      </div>
+                      <div className="mt-2 text-sm text-muted">reply rate today</div>
+                      <input
+                        className="mt-6 h-2 w-full cursor-pointer appearance-none rounded-full bg-border accent-terracotta"
+                        max={MAX_CURRENT_REPLY_RATE}
+                        min={MIN_REPLY_RATE}
+                        onChange={(event) => setRangeValue("currentReplyRate", Number(event.target.value))}
+                        step={0.5}
+                        type="range"
+                        value={formState.currentReplyRate}
+                      />
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+                      <div className="space-y-2">
+                        <Label htmlFor="currentReplyRate">Current reply rate</Label>
+                        <Input
+                          id="currentReplyRate"
+                          max={MAX_CURRENT_REPLY_RATE}
+                          min={MIN_REPLY_RATE}
+                          onBlur={() => commitNumericInput("currentReplyRate")}
+                          onChange={(event) => updateNumericInput("currentReplyRate", event.target.value)}
+                          type="number"
+                          value={inputState.currentReplyRate}
+                        />
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {[2, 5, 8].map((value) => (
+                          <button
+                            key={value}
+                            className="rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
+                            onClick={() => setRangeValue("currentReplyRate", value)}
+                            type="button"
+                          >
+                            {formatPercent(value)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {currentStep === 2 ? (
+                  <div className="space-y-5">
+                    <div className="grid gap-4 sm:grid-cols-[0.34fr_0.66fr]">
+                      <div className="space-y-2">
+                        <Label>Currency</Label>
+                        <Select
+                          onValueChange={(value) =>
+                            setFormState((current) => ({
+                              ...current,
+                              currency: value as CurrencyOption,
+                            }))
+                          }
+                          value={formState.currency}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="GBP">GBP</SelectItem>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                            <SelectItem value="INR">INR</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="averageClientValue">Average client value</Label>
+                        <Input
+                          id="averageClientValue"
+                          max={MAX_CLIENT_VALUE}
+                          min={MIN_CLIENT_VALUE}
+                          onBlur={() => commitNumericInput("averageClientValue")}
+                          onChange={(event) => updateNumericInput("averageClientValue", event.target.value)}
+                          type="number"
+                          value={inputState.averageClientValue}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="rounded-[1.3rem] border border-border/70 bg-stone-50 p-5">
+                      <div className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
+                        One client is worth
+                      </div>
+                      <div className="mt-3 text-4xl font-semibold tracking-tight text-ink">
+                        {formatMoney(formState.averageClientValue, formState.currency)}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {clientValueChips[formState.currency].map((value) => (
+                        <button
+                          key={`${formState.currency}-${value}`}
+                          className="rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
+                          onClick={() => setRangeValue("averageClientValue", value)}
+                          type="button"
+                        >
+                          {formatMoney(value, formState.currency)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <Button
+                    disabled={currentStep === 0}
+                    size="lg"
+                    variant="ghost"
+                    onClick={goToPreviousStep}
+                  >
+                    Back
+                  </Button>
+                  <Button size="lg" onClick={goToNextStep}>
+                    <span className="inline-flex items-center gap-2">
+                      {currentStep === 2 ? "Show my estimate" : "Continue"}
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <div className="section-eyebrow">Your baseline</div>
+                  <h2 className="max-w-xl text-3xl font-semibold text-ink sm:text-4xl">
+                    The estimate is based on just three inputs.
+                  </h2>
+                  <p className="max-w-2xl text-muted">
+                    Same outreach volume. Same team. Better targeting.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  {[
+                    {
+                      label: "Businesses contacted / month",
+                      value: formatMaybeDecimal(formState.outboundVolume, 0),
+                    },
+                    {
+                      label: "Reply rate today",
+                      value: formatPercent(formState.currentReplyRate, 1),
+                    },
+                    {
+                      label: "Average client value",
+                      value: formatMoney(formState.averageClientValue, formState.currency),
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between gap-4 rounded-[1rem] border border-border/70 bg-stone-50 px-4 py-4"
+                    >
+                      <span className="text-sm text-muted">{item.label}</span>
+                      <span className="text-lg font-semibold text-ink">{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-[1.2rem] border border-border/70 bg-stone-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <ShieldCheck className="mt-1 h-5 w-5 text-terracotta" aria-hidden="true" />
+                    <div className="space-y-2">
+                      <div className="text-sm font-semibold text-ink">Assumptions behind the result</div>
+                      <p className="text-sm leading-7 text-muted">
+                        We model better targeting as a lift from {formatPercent(formState.currentReplyRate, 1)} to{" "}
+                        {formatPercent(model.improvedReplyRate, 1)} replies, with about{" "}
+                        {formatPercent(QUALIFIED_REPLY_TO_MEETING_RATE * 100)} of replies becoming meetings
+                        and 1 client win per {MEETINGS_PER_CLIENT} meetings.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Button size="lg" variant="secondary" onClick={() => setCurrentStep(0)}>
+                    Edit inputs
+                  </Button>
+                  <Button size="lg" variant="ghost" onClick={() => applyPreset("lean-agency")}>
+                    Reset to example
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
+        {currentStep < 3 ? (
+          <div className="surface-card-dark animated-glow overflow-hidden p-6 shadow-[0_30px_90px_rgba(12,12,12,0.34)] sm:p-7">
+            <div className="space-y-6">
+              <Badge className="border-white/10 bg-white/10 text-white" variant="outline">
+                Live preview
+              </Badge>
+
+              <div className="space-y-3">
+                <h2 className="max-w-3xl text-3xl font-semibold text-white sm:text-4xl">
+                  Out of 100 leads, about {model.sampleCurrentReplies} reply today.
+                </h2>
+                <p className="max-w-2xl text-white/70">
+                  That currently turns into about {formatMaybeDecimal(model.currentMeetings)} meetings and{" "}
+                  {formatMaybeDecimal(model.currentClients)} expected client wins per month.
+                </p>
+              </div>
+
+              <ReplyGrid replies={model.sampleCurrentReplies} title="Today" tone="current" />
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <SummaryMetric
+                  icon={MailCheck}
+                  label="Replies / month"
+                  value={formatMaybeDecimal(model.currentReplies)}
+                />
+                <SummaryMetric
+                  icon={CircleDollarSign}
+                  label="Revenue / month"
+                  value={formatCompactMoney(model.currentRevenue, formState.currency)}
+                />
+              </div>
+
+              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-5">
+                <div className="text-sm font-semibold text-white">What happens next</div>
+                <p className="mt-3 text-sm leading-7 text-white/70">
+                  Finish the three questions and we&apos;ll estimate how much more revenue stronger
+                  targeting could unlock without increasing outreach volume.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="surface-card-dark animated-glow overflow-hidden p-6 shadow-[0_30px_90px_rgba(12,12,12,0.34)] sm:p-7">
+            <div className="space-y-6">
+              <Badge className="border-white/10 bg-white/10 text-white" variant="outline">
+                Estimated upside
+              </Badge>
+
+              <div className="space-y-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-terracotta">
+                  {resultTone === "meaningful"
+                    ? "Meaningful upside"
+                    : resultTone === "promising"
+                      ? "Promising upside"
+                      : "Early upside"}
+                </div>
+                <div className="space-y-3">
+                  <h2 className="max-w-3xl text-3xl font-semibold text-white sm:text-5xl">
+                    You are likely losing {formatMoney(model.extraRevenue, formState.currency)}/month
+                    from weak targeting.
+                  </h2>
+                  <p className="max-w-2xl text-white/72">
+                    With better targeting, you could get{" "}
+                    {`${formatMaybeDecimal(model.replyMultiplier, 1)}x more replies`} without increasing
+                    outreach.
+                  </p>
+                  <p className="text-sm text-white/60">
+                    Annual upside: {formatCompactMoney(model.annualRevenueLift, formState.currency)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <ReplyGrid replies={model.sampleCurrentReplies} title="Today" tone="current" />
+                <ReplyGrid
+                  replies={model.sampleImprovedReplies}
+                  title="With better targeting"
+                  tone="improved"
+                />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <SummaryMetric
+                  icon={MailCheck}
+                  label="Extra replies / month"
+                  value={formatMaybeDecimal(model.extraReplies)}
+                />
+                <SummaryMetric
+                  icon={Target}
+                  label="Extra meetings / month"
+                  value={formatMaybeDecimal(model.extraMeetings)}
+                />
+                <SummaryMetric
+                  icon={CircleDollarSign}
+                  label="Extra revenue / month"
+                  value={formatCompactMoney(model.extraRevenue, formState.currency)}
+                />
+              </div>
+
+              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-5">
+                <div className="text-sm font-semibold text-white">Plain-English takeaway</div>
+                <p className="mt-3 text-sm leading-7 text-white/70">
+                  At your current baseline, you need about {formatMaybeDecimal(model.repliesPerWinNow, 0)}{" "}
+                  contacted businesses to create one client win. With stronger targeting, that drops to
+                  about {formatMaybeDecimal(model.repliesPerWinWithBetterTargeting, 0)}.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg">
+                  <Link
+                    href={ROUTES.APPLY}
+                    onClick={() =>
+                      captureEvent("cta_clicked", {
+                        location: "roi_page",
+                        target: "apply_for_campaign",
+                      })
+                    }
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      Apply for a custom campaign
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="secondary">
+                  <Link
+                    href={ROUTES.DEMO}
+                    onClick={() =>
+                      captureEvent("cta_clicked", {
+                        location: "roi_page",
+                        target: "open_interactive_demo",
+                      })
+                    }
+                  >
+                    Open the interactive demo
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

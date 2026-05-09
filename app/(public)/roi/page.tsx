@@ -10,7 +10,7 @@ import {
 } from "@/lib/seo";
 
 const roiDescription =
-  "Model how stronger opportunity quality can turn the same outbound volume into more replies, meetings, and revenue opportunity.";
+  "Answer three quick questions and estimate how much revenue better targeting could unlock from the same outbound volume.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: roiDescription,
@@ -50,10 +50,11 @@ export default function RoiPage() {
       <Container className="space-y-10">
         <div className="max-w-3xl space-y-5">
           <div className="section-eyebrow">Opportunity modeling</div>
-          <h1>Estimate what better lead quality could add before you scale outbound.</h1>
+          <h1>Answer three quick questions and see what weak targeting may be costing you.</h1>
           <p className="max-w-2xl text-muted">
-            Enter your current numbers, set a better reply-rate target, and see the before-versus-after
-            revenue picture. It is directional by design and intentionally simple.
+            This calculator walks through your monthly outreach, your current reply rate, and what one
+            client is worth. Then it shows the extra replies, meetings, and revenue stronger targeting
+            could create without increasing outreach.
           </p>
         </div>
 
