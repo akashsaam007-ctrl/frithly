@@ -26,7 +26,7 @@ export const metadata: Metadata = buildPublicMetadata({
 
 export default function ContactPage() {
   return (
-    <main className="bg-[radial-gradient(circle_at_top_left,_rgba(212,98,58,0.12),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(141,216,207,0.18),_transparent_28%),#faf8f5] py-16 sm:py-20">
+    <main className="bg-[radial-gradient(circle_at_top_left,_rgba(212,98,58,0.12),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(97,146,186,0.12),_transparent_28%),linear-gradient(180deg,#050c14_0%,#07111b_42%,#050d15_100%)] py-16 sm:py-20">
       <StructuredData
         data={buildWebPageSchema({
           description:
@@ -49,7 +49,7 @@ export default function ContactPage() {
 
       <Container className="space-y-10 sm:space-y-14">
         <section className="space-y-6">
-          <span className="inline-flex rounded-full border border-border bg-white/80 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-terracotta shadow-sm">
+          <span className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-terracotta shadow-sm">
             Contact us
           </span>
           <div className="space-y-4">
@@ -64,7 +64,7 @@ export default function ContactPage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <article className="rounded-[1.9rem] border border-border/80 bg-white/90 p-7 shadow-[0_18px_50px_rgba(26,26,26,0.06)]">
+          <article className="rounded-[1.9rem] border border-white/10 bg-[#0b1520]/90 p-7 shadow-[0_18px_50px_rgba(0,0,0,0.24)]">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
               Best for
             </p>
@@ -91,7 +91,7 @@ export default function ContactPage() {
             </div>
           </article>
 
-          <article className="rounded-[1.9rem] border border-border/80 bg-white/90 p-7 shadow-[0_18px_50px_rgba(26,26,26,0.06)]">
+          <article className="rounded-[1.9rem] border border-white/10 bg-[#0b1520]/90 p-7 shadow-[0_18px_50px_rgba(0,0,0,0.24)]">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
               Reach us
             </p>

@@ -42,7 +42,7 @@ export function BrandMark({ className, imageClassName, priority = false }: Brand
   return (
     <div
       className={cn(
-        "inline-flex items-center justify-center overflow-hidden rounded-[1.25rem] border border-border/70 bg-white/95 shadow-sm",
+        "inline-flex items-center justify-center overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#0b1520]/92 shadow-[0_18px_50px_rgba(0,0,0,0.3)]",
         className,
       )}
     >

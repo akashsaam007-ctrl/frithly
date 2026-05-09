@@ -11,9 +11,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "bg-terracotta/10 text-terracotta",
-        muted: "bg-ink/5 text-muted",
-        outline: "border border-border bg-white text-ink",
-        success: "bg-emerald-50 text-emerald-700",
+        muted: "bg-white/[0.06] text-muted",
+        outline: "border border-white/10 bg-white/[0.05] text-ink",
+        success: "bg-emerald-400/12 text-emerald-200",
       },
     },
   },

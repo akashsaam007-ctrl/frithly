@@ -13,8 +13,9 @@
   body {
     @apply bg-cream font-sans text-ink antialiased;
     background-image:
-      radial-gradient(circle at top left, rgba(212, 98, 58, 0.08), transparent 22rem),
-      linear-gradient(180deg, #fdfcf9 0%, #f8f4ed 45%, #faf8f5 100%);
+      radial-gradient(circle at top left, rgba(212, 98, 58, 0.12), transparent 22rem),
+      radial-gradient(circle at 72% 18%, rgba(97, 146, 186, 0.12), transparent 24rem),
+      linear-gradient(180deg, #050c14 0%, #07111b 42%, #050d15 100%);
     font-feature-settings: "cv11", "ss01";
     min-height: 100vh;
     max-width: 100%;
@@ -59,11 +60,19 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-border bg-white px-6 py-3 font-semibold text-ink transition-colors duration-200 hover:border-ink;
+    @apply inline-flex items-center justify-center rounded-lg border border-border px-6 py-3 font-semibold text-ink transition-colors duration-200;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.24);
+    background-color: rgba(255, 255, 255, 0.08);
   }
 
   .card {
-    @apply rounded-2xl border border-border bg-white p-6 shadow-sm md:p-8;
+    @apply rounded-2xl border border-border p-6 md:p-8;
+    background-color: rgba(11, 21, 32, 0.88);
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
   }
 
   .container-narrow {
@@ -75,7 +84,8 @@
   }
 
   .section-eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-terracotta shadow-sm backdrop-blur;
+    @apply inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-terracotta shadow-sm backdrop-blur;
+    background-color: rgba(255, 255, 255, 0.05);
   }
 
   .section-title {
@@ -87,15 +97,20 @@
   }
 
   .surface-card {
-    @apply rounded-[1.5rem] border border-border/80 bg-white shadow-[0_18px_60px_rgba(26,26,26,0.06)] md:rounded-[1.75rem];
+    @apply rounded-[1.5rem] border border-border md:rounded-[1.75rem];
+    background-color: rgba(11, 21, 32, 0.88);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
   }
 
   .surface-card-dark {
-    @apply rounded-[1.5rem] border border-white/10 bg-ink text-white shadow-[0_24px_70px_rgba(16,16,16,0.4)] md:rounded-[1.75rem];
+    @apply rounded-[1.5rem] border border-border text-white md:rounded-[1.75rem];
+    background-color: #07111b;
+    box-shadow: 0 24px 70px rgba(16, 16, 16, 0.4);
   }
 
   .metric-chip {
-    @apply inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/85 px-3 py-2 text-xs font-medium text-ink shadow-sm sm:px-4 sm:text-sm;
+    @apply inline-flex items-center gap-2 rounded-full border border-border px-3 py-2 text-xs font-medium text-ink shadow-sm sm:px-4 sm:text-sm;
+    background-color: rgba(255, 255, 255, 0.06);
   }
 
   .animated-fade-up {
@@ -173,11 +188,11 @@
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 18px 60px rgba(26, 26, 26, 0.06);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.26);
   }
 
   50% {
-    box-shadow: 0 24px 80px rgba(212, 98, 58, 0.18);
+    box-shadow: 0 24px 80px rgba(212, 98, 58, 0.22);
   }
 }
 

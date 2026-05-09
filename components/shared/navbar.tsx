@@ -73,15 +73,15 @@ export function Navbar() {
     ? isScrolled
       ? "border-b border-white/10 bg-[#06101a]/84 shadow-[0_12px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl"
       : "border-b border-transparent bg-transparent"
-    : "border-b border-border/70 bg-white/84 shadow-[0_8px_26px_rgba(26,26,26,0.05)] backdrop-blur-xl";
+    : "border-b border-white/10 bg-[#06101a]/88 shadow-[0_12px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl";
 
   const homeTextClassName = isScrolled ? "text-white/76 hover:text-white" : "text-white/78 hover:text-white";
-  const defaultTextClassName = "text-muted transition-colors hover:text-ink";
+  const defaultTextClassName = "text-white/72 transition-colors hover:text-white";
   const linkClassName = isHome ? homeTextClassName : defaultTextClassName;
   const iconButtonClassName = isHome
     ? "inline-flex items-center justify-center rounded-lg p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
-    : "inline-flex items-center justify-center rounded-lg p-2 text-ink transition-colors hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta";
-  const loginClassName = isHome ? "text-sm font-medium text-white/76 transition-colors hover:text-white" : "text-sm font-medium text-muted transition-colors hover:text-ink";
+    : "inline-flex items-center justify-center rounded-lg p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta";
+  const loginClassName = isHome ? "text-sm font-medium text-white/76 transition-colors hover:text-white" : "text-sm font-medium text-white/72 transition-colors hover:text-white";
 
   return (
     <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navClassName}`}>
@@ -137,47 +137,39 @@ export function Navbar() {
         <div className="md:hidden">
           <button
             aria-label="Close menu overlay"
-            className={isHome ? "fixed inset-0 top-16 z-40 bg-[rgba(4,10,17,0.68)] backdrop-blur-[3px]" : "fixed inset-0 top-16 z-40 bg-[rgba(12,12,12,0.18)] backdrop-blur-[2px]"}
+            className="fixed inset-0 top-16 z-40 bg-[rgba(4,10,17,0.68)] backdrop-blur-[3px]"
             onClick={() => setIsMenuOpen(false)}
             type="button"
           />
           <div
             className={
-              isHome
-                ? "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-[#06101a] shadow-[0_24px_60px_rgba(0,0,0,0.32)]"
-                : "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-white shadow-[0_18px_44px_rgba(26,26,26,0.12)]"
+              "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-[#06101a] shadow-[0_24px_60px_rgba(0,0,0,0.32)]"
             }
           >
             <Container className="flex flex-col gap-6 px-5 py-6">
               <div className="space-y-2">
-                <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${isHome ? "text-[#f0b38e]" : "text-terracotta"}`}>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#f0b38e]">
                   Explore Frithly
                 </p>
-                <p className={`text-sm leading-6 ${isHome ? "text-white/62" : "text-muted"}`}>
+                <p className="text-sm leading-6 text-white/62">
                   Step into the intelligence flow: reviewed opportunities, founder-aware targeting,
                   SMTP-aware routing, and premium weekly delivery.
                 </p>
               </div>
 
-              <div
-                className={
-                  isHome
-                    ? "flex flex-col divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03]"
-                    : "flex flex-col divide-y divide-border/70 rounded-2xl border border-border/80 bg-stone-50"
-                }
-              >
+              <div className="flex flex-col divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03]">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={isHome ? "px-4 py-4 text-base font-semibold text-white transition-colors hover:text-[#f0b38e]" : "px-4 py-4 text-base font-semibold text-ink transition-colors hover:text-terracotta"}
+                    className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-[#f0b38e]"
                   >
                     {link.label}
                   </Link>
                 ))}
                 <Link
                   href={ROUTES.LOGIN}
-                  className={isHome ? "px-4 py-4 text-base font-semibold text-white transition-colors hover:text-[#f0b38e]" : "px-4 py-4 text-base font-semibold text-ink transition-colors hover:text-terracotta"}
+                  className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-[#f0b38e]"
                 >
                   Login
                 </Link>
@@ -193,7 +185,7 @@ export function Navbar() {
                   asChild
                   size="lg"
                   variant="secondary"
-                  className={isHome ? "w-full border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white" : "w-full"}
+                  className="w-full border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
                 >
                   <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
                     Request walkthrough

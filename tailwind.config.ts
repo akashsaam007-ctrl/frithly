@@ -11,10 +11,10 @@ const config: Config = {
         xl: "1rem",
       },
       colors: {
-        border: "#E8E4DD",
-        cream: "#FAF8F5",
-        ink: "#1A1A1A",
-        muted: "#6B6B6B",
+        border: "#243241",
+        cream: "#07111B",
+        ink: "#FFF7F1",
+        muted: "#9EAAB6",
         terracotta: {
           DEFAULT: "#D4623A",
           dark: "#B14E2A",

@@ -10,7 +10,7 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.05fr_1.95fr]">
           <div className="space-y-5">
             <Logo
-              className="w-fit rounded-[1.35rem] bg-white px-4 py-3 shadow-sm hover:opacity-100"
+              className="w-fit rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.28)] hover:opacity-100"
               imageClassName="h-8 md:h-9"
             />
             <p className="max-w-sm text-base leading-8 text-white/70">
@@ -36,7 +36,7 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href="/#icp-demo">
                   ICP demo
                 </Link>
-                <Link className="block transition-colors hover:text-white" href="/#roi-experience">
+                <Link className="block transition-colors hover:text-white" href="/#roi-intelligence">
                   ROI simulator
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>

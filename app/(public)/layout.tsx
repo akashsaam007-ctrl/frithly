@@ -8,11 +8,11 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="relative min-h-screen bg-[#050c14] text-[#fff7f1]">
       <Navbar />
       {children}
       <Footer />
       <CookieBanner />
-    </>
+    </div>
   );
 }

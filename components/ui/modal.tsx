@@ -33,13 +33,13 @@ const ModalContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-white p-6 shadow-xl focus:outline-none",
+        "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/12 bg-[#0b1520] p-6 shadow-[0_24px_90px_rgba(0,0,0,0.36)] focus:outline-none",
         className,
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full p-2 text-muted transition-colors hover:bg-cream hover:text-ink focus:outline-none focus:ring-2 focus:ring-terracotta focus:ring-offset-2">
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full p-2 text-muted transition-colors hover:bg-white/[0.08] hover:text-ink focus:outline-none focus:ring-2 focus:ring-terracotta focus:ring-offset-2">
         <X className="h-4 w-4" aria-hidden="true" />
         <span className="sr-only">Close dialog</span>
       </DialogPrimitive.Close>

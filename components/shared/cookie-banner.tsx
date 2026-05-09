@@ -34,7 +34,7 @@ export function CookieBanner() {
 
   return (
     <div className="no-print fixed inset-x-0 bottom-4 z-50 px-4 sm:left-auto sm:right-4 sm:max-w-[28rem] sm:px-0">
-      <Card className="mx-auto max-w-4xl border-border/80 bg-white/95 shadow-[0_18px_50px_rgba(26,26,26,0.16)] backdrop-blur-xl sm:mx-0 sm:max-w-[28rem]">
+      <Card className="mx-auto max-w-4xl border-white/10 bg-[#0b1520]/95 shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:mx-0 sm:max-w-[28rem]">
         <CardContent className="flex flex-col gap-4 p-4 sm:p-5">
           <div className="space-y-2">
             <p className="text-base font-semibold text-ink sm:text-lg">Cookie preferences</p>

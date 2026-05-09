@@ -17,9 +17,9 @@ const buttonVariants = cva(
         sm: "h-10 px-4 text-sm",
       },
       variant: {
-        ghost: "bg-transparent text-ink hover:bg-white hover:text-ink",
+        ghost: "bg-transparent text-ink hover:bg-white/[0.06] hover:text-ink",
         primary: "bg-terracotta text-white hover:bg-terracotta-dark",
-        secondary: "border border-border bg-white text-ink hover:border-ink",
+        secondary: "border border-white/12 bg-white/[0.05] text-ink hover:border-white/24 hover:bg-white/[0.09]",
       },
     },
   },

@@ -415,7 +415,7 @@ export function RoiCalculatorExperience() {
               className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                 activePreset?.id === preset.id
                   ? "border-terracotta bg-terracotta/10 text-terracotta"
-                  : "border-border bg-white text-ink hover:border-ink"
+                  : "border-white/10 bg-white/[0.04] text-ink hover:border-white/18 hover:bg-white/[0.06]"
               }`}
               onClick={() => applyPreset(preset.id)}
               type="button"
@@ -443,9 +443,9 @@ export function RoiCalculatorExperience() {
                     className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
                       isActive
                         ? "border-terracotta bg-terracotta/10 text-terracotta"
-                        : isComplete
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "border-border bg-white text-muted"
+                          : isComplete
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : "border-white/10 bg-white/[0.04] text-muted"
                     }`}
                     onClick={() => setCurrentStep(index)}
                     type="button"
@@ -470,7 +470,7 @@ export function RoiCalculatorExperience() {
 
                 {currentStep === 0 ? (
                   <div className="space-y-5">
-                    <div className="rounded-[1.3rem] border border-border/70 bg-stone-50 p-5">
+                    <div className="rounded-[1.3rem] border border-white/10 bg-white/[0.04] p-5">
                       <div className="text-5xl font-semibold tracking-tight text-ink">
                         {formatMaybeDecimal(formState.outboundVolume, 0)}
                       </div>
@@ -504,7 +504,7 @@ export function RoiCalculatorExperience() {
                         {[100, 250, 500].map((value) => (
                           <button
                             key={value}
-                            className="rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
+                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-white/18 hover:bg-white/[0.06]"
                             onClick={() => setRangeValue("outboundVolume", value)}
                             type="button"
                           >
@@ -518,7 +518,7 @@ export function RoiCalculatorExperience() {
 
                 {currentStep === 1 ? (
                   <div className="space-y-5">
-                    <div className="rounded-[1.3rem] border border-border/70 bg-stone-50 p-5">
+                    <div className="rounded-[1.3rem] border border-white/10 bg-white/[0.04] p-5">
                       <div className="text-5xl font-semibold tracking-tight text-ink">
                         {formatPercent(formState.currentReplyRate, 1)}
                       </div>
@@ -552,7 +552,7 @@ export function RoiCalculatorExperience() {
                         {[2, 5, 8].map((value) => (
                           <button
                             key={value}
-                            className="rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
+                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-white/18 hover:bg-white/[0.06]"
                             onClick={() => setRangeValue("currentReplyRate", value)}
                             type="button"
                           >
@@ -604,7 +604,7 @@ export function RoiCalculatorExperience() {
                       </div>
                     </div>
 
-                    <div className="rounded-[1.3rem] border border-border/70 bg-stone-50 p-5">
+                    <div className="rounded-[1.3rem] border border-white/10 bg-white/[0.04] p-5">
                       <div className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
                         One client is worth
                       </div>
@@ -617,7 +617,7 @@ export function RoiCalculatorExperience() {
                       {clientValueChips[formState.currency].map((value) => (
                         <button
                           key={`${formState.currency}-${value}`}
-                          className="rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
+                          className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-white/18 hover:bg-white/[0.06]"
                           onClick={() => setRangeValue("averageClientValue", value)}
                           type="button"
                         >
@@ -674,7 +674,7 @@ export function RoiCalculatorExperience() {
                   ].map((item) => (
                     <div
                       key={item.label}
-                      className="flex items-center justify-between gap-4 rounded-[1rem] border border-border/70 bg-stone-50 px-4 py-4"
+                      className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/[0.04] px-4 py-4"
                     >
                       <span className="text-sm text-muted">{item.label}</span>
                       <span className="text-lg font-semibold text-ink">{item.value}</span>
@@ -682,7 +682,7 @@ export function RoiCalculatorExperience() {
                   ))}
                 </div>
 
-                <div className="rounded-[1.2rem] border border-border/70 bg-stone-50 p-4">
+                <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] p-4">
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="mt-1 h-5 w-5 text-terracotta" aria-hidden="true" />
                     <div className="space-y-2">

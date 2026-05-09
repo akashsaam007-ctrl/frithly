@@ -49,7 +49,7 @@ const forTeams = [
 
 export default function AboutPage() {
   return (
-    <main className="bg-[radial-gradient(circle_at_top_left,_rgba(212,98,58,0.12),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(141,216,207,0.18),_transparent_28%),#faf8f5] py-16 sm:py-20">
+    <main className="bg-[radial-gradient(circle_at_top_left,_rgba(212,98,58,0.12),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(97,146,186,0.12),_transparent_28%),linear-gradient(180deg,#050c14_0%,#07111b_42%,#050d15_100%)] py-16 sm:py-20">
       <StructuredData data={buildOrganizationSchema()} />
       <StructuredData
         data={buildWebPageSchema({
@@ -74,7 +74,7 @@ export default function AboutPage() {
       <Container className="space-y-12 sm:space-y-16">
         <section className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
           <div className="space-y-6">
-            <span className="inline-flex rounded-full border border-border bg-white/80 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-terracotta shadow-sm">
+            <span className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-terracotta shadow-sm">
               About Frithly
             </span>
             <div className="space-y-5">
@@ -99,7 +99,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-border/80 bg-white/90 p-6 shadow-[0_24px_60px_rgba(26,26,26,0.08)] backdrop-blur">
+          <div className="rounded-[2rem] border border-white/10 bg-[#0b1520]/90 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.28)] backdrop-blur">
             <div className="space-y-5">
               <div className="border-b border-border/80 pb-5">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
@@ -121,7 +121,7 @@ export default function AboutPage() {
           {principles.map((item) => (
             <article
               key={item.title}
-              className="rounded-[1.75rem] border border-border/80 bg-white/90 p-6 shadow-[0_16px_40px_rgba(26,26,26,0.05)]"
+              className="rounded-[1.75rem] border border-white/10 bg-[#0b1520]/90 p-6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
             >
               <h2 className="text-2xl font-semibold tracking-[-0.03em] text-ink">{item.title}</h2>
               <p className="mt-3 text-base leading-8 text-muted">{item.body}</p>
@@ -155,7 +155,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-border/80 bg-white/90 p-8 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:p-10">
+        <section className="rounded-[2rem] border border-white/10 bg-[#0b1520]/90 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.24)] sm:p-10">
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="space-y-4">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">

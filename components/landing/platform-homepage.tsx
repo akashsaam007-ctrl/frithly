@@ -1068,7 +1068,7 @@ export function PlatformHomepage() {
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
             {...revealProps(enableReveal, 0.12)}
           >
-            <div className="rounded-[1.6rem] border border-white/10 bg-[#f8f4ec] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+            <div className="rounded-[1.6rem] border border-white/10 bg-[#07111b] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <IcpDemoExperience />
             </div>
           </motion.div>
@@ -1298,7 +1298,7 @@ export function PlatformHomepage() {
             className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
             {...revealProps(enableReveal, 0.16)}
           >
-            <div className="rounded-[1.6rem] border border-white/10 bg-[#f8f4ec] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+            <div className="rounded-[1.6rem] border border-white/10 bg-[#07111b] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <RoiCalculatorExperience />
             </div>
           </motion.div>

@@ -661,7 +661,7 @@ export function IcpDemoExperience() {
   return (
     <div className="space-y-10">
       <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-        <Card className="overflow-hidden border-border/80 bg-white/90 shadow-[0_26px_70px_rgba(26,26,26,0.06)]">
+        <Card className="overflow-hidden border-white/10 bg-[#0b1520]/92 shadow-[0_26px_70px_rgba(0,0,0,0.28)]">
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-3">
               <Badge variant="outline">Demo controls</Badge>
@@ -687,7 +687,7 @@ export function IcpDemoExperience() {
                   className={`rounded-[1.15rem] border px-4 py-4 text-left transition-all duration-300 ${
                     preset.state.city === formState.city && preset.state.industry === formState.industry
                       ? "border-terracotta/30 bg-terracotta/10 shadow-sm"
-                      : "border-border/80 bg-stone-50 hover:border-terracotta/20 hover:bg-white"
+                      : "border-white/10 bg-white/[0.04] hover:border-white/18 hover:bg-white/[0.06]"
                   }`}
                   onClick={() => applyPreset(preset.id)}
                   type="button"
@@ -795,7 +795,7 @@ export function IcpDemoExperience() {
               </div>
             </div>
 
-            <div className="rounded-[1.25rem] border border-border/80 bg-stone-50 p-4">
+            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
               <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
                 <Clock3 className="h-4 w-4 text-terracotta" aria-hidden="true" />
                 Demo mode
@@ -1028,7 +1028,7 @@ export function IcpDemoExperience() {
                         {opportunity.services.map((service) => (
                           <span
                             key={service}
-                            className="rounded-full border border-border/80 bg-stone-50 px-3 py-1 text-xs font-medium text-ink"
+                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-ink"
                           >
                             {service}
                           </span>
@@ -1047,7 +1047,7 @@ export function IcpDemoExperience() {
                   </div>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+                    <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                       <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                         Founder confidence
                       </div>
@@ -1056,14 +1056,14 @@ export function IcpDemoExperience() {
                       </div>
                       <div className="mt-1 text-xs text-terracotta">High-trust routing</div>
                     </div>
-                    <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+                    <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                       <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                         Contactability
                       </div>
                       <div className="mt-2 text-lg font-semibold text-ink">{opportunity.contactability}</div>
                       <div className="mt-1 text-xs text-terracotta">{opportunity.readiness}</div>
                     </div>
-                    <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+                    <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                       <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                         Outreach angle
                       </div>
@@ -1072,7 +1072,7 @@ export function IcpDemoExperience() {
                   </div>
 
                   <div className="mt-5 grid gap-3 lg:grid-cols-[0.95fr_1.05fr]">
-                    <div className="rounded-[1rem] border border-border/70 bg-stone-50 p-4">
+                    <div className="rounded-[1rem] border border-white/10 bg-white/[0.04] p-4">
                       <div className="flex items-center gap-2 text-sm font-semibold text-ink">
                         <BadgeCheck className="h-4 w-4 text-terracotta" aria-hidden="true" />
                         Why recommended
@@ -1087,7 +1087,7 @@ export function IcpDemoExperience() {
                       </div>
                     </div>
 
-                    <div className="rounded-[1rem] border border-emerald-100 bg-emerald-50/70 p-4">
+                    <div className="rounded-[1rem] border border-emerald-400/20 bg-emerald-400/10 p-4">
                       <div className="flex items-center gap-2 text-sm font-semibold text-ink">
                         <MailCheck className="h-4 w-4 text-terracotta" aria-hidden="true" />
                         Readiness state
@@ -1122,25 +1122,25 @@ export function IcpDemoExperience() {
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+              <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                 <div className="text-2xl font-semibold tracking-tighter text-ink">
                   {runState === "complete" ? scenario.cohort.approved : 0}
                 </div>
                 <div className="mt-1 text-sm text-muted">Approved opportunities</div>
               </div>
-              <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+              <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                 <div className="text-2xl font-semibold tracking-tighter text-ink">
                   {runState === "complete" ? scenario.cohort.smtpSafe : 0}
                 </div>
                 <div className="mt-1 text-sm text-muted">SMTP-safe candidates</div>
               </div>
-              <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+              <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                 <div className="text-2xl font-semibold tracking-tighter text-ink">
                   {runState === "complete" ? scenario.cohort.pendingManualReview : 0}
                 </div>
                 <div className="mt-1 text-sm text-muted">Manual-review holds</div>
               </div>
-              <div className="rounded-[1rem] border border-border/70 bg-white p-4">
+              <div className="rounded-[1rem] border border-white/10 bg-[#0b1520]/92 p-4">
                 <div className="text-2xl font-semibold tracking-tighter text-ink">
                   {runState === "complete" ? scenario.cohort.premiumDensity : "--"}
                 </div>
