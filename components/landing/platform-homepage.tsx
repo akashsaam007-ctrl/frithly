@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Fraunces } from "next/font/google";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -17,21 +21,17 @@ import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
-  BadgeCheck,
   CalendarDays,
   CheckCircle2,
-  Compass,
-  FileCheck2,
   Filter,
   Globe2,
   Layers3,
   MailCheck,
   Radar,
-  Search,
+  Send,
   ShieldCheck,
   Sparkles,
-  Target,
-  Users2,
+  Users,
 } from "lucide-react";
 
 const displayFont = Fraunces({
@@ -39,183 +39,307 @@ const displayFont = Fraunces({
   weight: ["500", "600"],
 });
 
+const heroParticles = [
+  { delay: 0.2, duration: 10, left: "10%", size: 8, top: "18%" },
+  { delay: 1.0, duration: 13, left: "18%", size: 10, top: "70%" },
+  { delay: 0.6, duration: 11, left: "35%", size: 7, top: "42%" },
+  { delay: 1.3, duration: 12, left: "52%", size: 12, top: "16%" },
+  { delay: 0.4, duration: 9, left: "74%", size: 9, top: "57%" },
+  { delay: 1.6, duration: 14, left: "87%", size: 11, top: "30%" },
+] as const;
+
 const heroSignals = [
-  "Reviewed weekly cohorts",
+  "Reviewed intelligence",
   "Founder-aware targeting",
-  "SMTP-safe prioritization",
-  "Outreach-ready delivery",
-];
+  "SMTP-aware routing",
+  "Weekly cohort delivery",
+] as const;
 
-const sampleCohort = [
-  {
-    company: "Northstar Digital",
-    note: "Founder posted about CRM migration and hiring outbound support.",
-    owner: "Olivia Hart, Founder",
-  },
-  {
-    company: "Beacon Studio",
-    note: "Recently expanded into the UK and added a first RevOps hire.",
-    owner: "Samir Clarke, Commercial Director",
-  },
-  {
-    company: "Alta Growth",
-    note: "Demand-gen team is active again after a new service launch.",
-    owner: "Nina Brooks, Head of Growth",
-  },
-];
+const failureSignals = [
+  "Noisy lead lists create activity, not conviction.",
+  "Generic scraping pushes weak-fit accounts into the funnel.",
+  "Poor routing increases bounce risk before outreach even starts.",
+  "Weak personalization usually means weak account understanding.",
+] as const;
 
-const trustStats = [
-  { label: "Delivery rhythm", value: "Every Monday" },
-  { label: "Opportunity posture", value: "Reviewed before release" },
-  { label: "Routing posture", value: "SMTP-safe first" },
-  { label: "Targeting posture", value: "Founder-aware" },
-];
+const engineStages = [
+  {
+    body: "Frithly starts by translating the ICP into a real operating brief: geography, exclusion logic, commercial fit, and where confidence should matter most.",
+    confidence: 22,
+    id: "icp",
+    incoming: 184,
+    label: "ICP brief",
+    narrowed: 184,
+    signal: "Signal intake aligned",
+    title: "Translate the ICP into an outbound operating brief.",
+    traits: ["Market shape", "Geo focus", "Commercial exclusions"],
+  },
+  {
+    body: "Discovery expands through intent-aware search patterns so the system can widen coverage without rewarding volume for its own sake.",
+    confidence: 34,
+    id: "discovery",
+    incoming: 268,
+    label: "Discovery",
+    narrowed: 138,
+    signal: "Coverage expands",
+    title: "Expand the field without turning noise into progress.",
+    traits: ["Source expansion", "Signal-first coverage", "Research pathways"],
+  },
+  {
+    body: "Enrichment adds service fit, website context, and delivery clues so accounts start behaving like opportunities instead of raw company records.",
+    confidence: 48,
+    id: "enrichment",
+    incoming: 268,
+    label: "Enrichment",
+    narrowed: 92,
+    signal: "Context accumulates",
+    title: "Turn raw company records into believable outbound context.",
+    traits: ["Service fit", "Website cues", "Contact routes"],
+  },
+  {
+    body: "Recommendation scoring narrows attention toward opportunities with fresher movement, better context, and stronger commercial relevance.",
+    confidence: 62,
+    id: "scoring",
+    incoming: 268,
+    label: "Recommendation scoring",
+    narrowed: 46,
+    signal: "Priority queue tightening",
+    title: "Strengthen the queue with confidence-aware ranking.",
+    traits: ["Recommendation weight", "Freshness", "Outcome bias"],
+  },
+  {
+    body: "SMTP-aware routing sits inside the workflow so delivery quality is considered before the cohort is released, not after the campaign struggles.",
+    confidence: 74,
+    id: "smtp",
+    incoming: 268,
+    label: "SMTP-safe filtering",
+    narrowed: 29,
+    signal: "Routing discipline engaged",
+    title: "Reduce wasted outreach before the team ever touches the list.",
+    traits: ["MX posture", "Syntax confidence", "Route safety"],
+  },
+  {
+    body: "Founder intelligence makes the system more selective by increasing clarity around who actually matters inside the account.",
+    confidence: 81,
+    id: "founders",
+    incoming: 268,
+    label: "Founder intelligence",
+    narrowed: 21,
+    signal: "Decision-maker clarity rising",
+    title: "Layer founder-aware targeting into the final shortlist.",
+    traits: ["Founder confidence", "Role fit", "Decision-maker context"],
+  },
+  {
+    body: "Only the strongest reviewed opportunities survive into the release queue, where scarcity is intentional and priority is obvious.",
+    confidence: 89,
+    id: "ranking",
+    incoming: 268,
+    label: "Opportunity ranking",
+    narrowed: 15,
+    signal: "Scarcity by design",
+    title: "Package quality into a deliberately small set of strong options.",
+    traits: ["Reviewed shortlist", "Priority ordering", "Release notes"],
+  },
+  {
+    body: "The output is not a bulk export. It is a weekly cohort: reviewed, founder-aware, SMTP-safe, and ready for calm operational delivery.",
+    confidence: 94,
+    id: "cohort",
+    incoming: 268,
+    label: "Weekly cohort assembly",
+    narrowed: 11,
+    signal: "Monday cohort prepared",
+    title: "Finalize the weekly outbound intelligence cohort.",
+    traits: ["Weekly release", "Delivery handoff", "Outreach readiness"],
+  },
+] as const;
 
-const comparisonRows = [
+const evolutionStages = [
   {
-    frithly: "Reviewed opportunities ranked against ICP fit, founder relevance, and routing quality.",
-    label: "What reaches the rep",
-    traditional: "A raw lead list that still needs cleanup, context gathering, and triage.",
+    confidence: "0.28",
+    id: "raw",
+    note: "A raw account record is still mostly noise. It has a name, a website, and almost no operational confidence.",
+    route: "Unclear",
+    stage: "Raw company",
+    tags: ["Website only", "Unknown owner", "Generic route"],
   },
   {
-    frithly: "A real reason to contact now, not just a contact record.",
-    label: "Why-now context",
-    traditional: "Little or no commercial timing signal attached to the account.",
+    confidence: "0.49",
+    id: "enriched",
+    note: "Research adds service fit, market context, and signals that explain why the account may be commercially relevant now.",
+    route: "Partial",
+    stage: "Enriched context",
+    tags: ["Service fit", "Geo match", "Recent movement"],
   },
   {
-    frithly: "SMTP-safe prioritization before a cohort is released.",
-    label: "Delivery readiness",
-    traditional: "Routing issues discovered after the team already starts sending.",
+    confidence: "0.74",
+    id: "validated",
+    note: "Founder intelligence and routing discipline raise the floor, making the opportunity safer and more believable before release.",
+    route: "Improving",
+    stage: "Validated opportunity",
+    tags: ["Founder signal", "SMTP-aware", "Recommendation lift"],
   },
   {
-    frithly: "Founder-aware targeting that helps teams focus on the right conversations.",
-    label: "Decision-maker clarity",
-    traditional: "Generic role data with no confidence in who actually matters.",
+    confidence: "0.92",
+    id: "released",
+    note: "Now it behaves like premium outbound intelligence: scarce, ranked, reviewed, and ready for a weekly cohort release.",
+    route: "Release ready",
+    stage: "Weekly cohort asset",
+    tags: ["Reviewed shortlist", "Priority notes", "Delivery-ready"],
   },
-];
+] as const;
 
-const workflowSteps = [
+const mondayMoments = [
   {
-    body: "We map ICP shape, geography, exclusions, and what a commercially interesting company actually looks like for your motion.",
-    icon: Compass,
-    label: "Brief alignment",
-    title: "Turn the ICP into a working outbound brief.",
+    body: "Cohorts are finalized against the live brief so the release reflects fit, confidence, and route quality rather than raw volume.",
+    label: "Reviewed opportunities locked",
+    time: "08:30",
   },
   {
-    body: "Frithly researches throughout the week, layering service fit, company context, founder signals, and account timing.",
-    icon: Search,
-    label: "Research layer",
-    title: "Find signal before the queue gets noisy.",
+    body: "SMTP-aware export packaging, routing notes, and founder context are assembled before the handoff leaves operations.",
+    label: "SMTP-safe delivery packaging",
+    time: "10:15",
   },
   {
-    body: "The queue is narrowed through recommendation review, routing confidence, and founder relevance so weak opportunities stay buried.",
-    icon: Filter,
-    label: "Quality control",
-    title: "Filter for what is believable, routeable, and worth attention.",
+    body: "Premium recommendations are released with structure, ordering, and context that makes outreach execution calmer and sharper.",
+    label: "Outreach-ready cohort released",
+    time: "13:00",
   },
-  {
-    body: "Every Monday the strongest reviewed opportunities are packaged with context and released as a ready-to-work cohort.",
-    icon: Radar,
-    label: "Weekly release",
-    title: "Ship a finished intelligence brief, not another export.",
-  },
-];
-
-const weeklyTimeline = [
-  {
-    copy: "Cohort finalized against the live brief and ranked for release.",
-    day: "Monday",
-    icon: CalendarDays,
-  },
-  {
-    copy: "Founder notes and outreach direction are refined on the strongest accounts.",
-    day: "Tuesday",
-    icon: Users2,
-  },
-  {
-    copy: "SMTP-aware routing and export prep are reviewed before delivery.",
-    day: "Wednesday",
-    icon: MailCheck,
-  },
-  {
-    copy: "QA confirms confidence, account fit, and delivery readiness.",
-    day: "Thursday",
-    icon: FileCheck2,
-  },
-  {
-    copy: "Outcome signals are folded back into the next cycle so delivery keeps improving.",
-    day: "Friday",
-    icon: Layers3,
-  },
-];
-
-const programModules = [
-  {
-    body: "Define opportunity volume, market focus, and the weekly release shape around your actual outbound goals.",
-    title: "Volume and coverage",
-  },
-  {
-    body: "Add deeper founder intelligence, heavier routing discipline, or tighter review depth when the motion needs it.",
-    title: "Quality controls",
-  },
-  {
-    body: "Choose whether Frithly stops at intelligence delivery or extends into draft support and rollout guidance.",
-    title: "Execution support",
-  },
-];
-
-const samplePrograms = [
-  {
-    details: "40 to 60 reviewed opportunities per month, UK-only, high-fit service accounts.",
-    label: "Focused weekly brief",
-    price: "Starting from EUR 499/month",
-  },
-  {
-    details: "80 to 120 reviewed opportunities per month with broader UK + EU coverage and stronger founder context.",
-    label: "Growth program",
-    price: "Often EUR 1,100 to EUR 1,500/month",
-  },
-  {
-    details: "Multi-market delivery with heavier review depth, founder priority, and export support.",
-    label: "Expanded coverage",
-    price: "Scoped consultatively",
-  },
-];
+] as const;
 
 const trustSignals = [
   {
-    body: "Opportunities are reviewed before release so teams inherit judgment, not just access.",
+    body: "Every weekly release is reviewed. The system is built to reduce chaos, not disguise it.",
     icon: ShieldCheck,
     title: "Reviewed weekly",
   },
   {
-    body: "SMTP-safe prioritization stays inside the workflow instead of being treated as an afterthought.",
+    body: "Routing quality is evaluated before the cohort is released, so delivery discipline is part of the product itself.",
     icon: MailCheck,
-    title: "Reputation-conscious routing",
+    title: "SMTP-aware prioritization",
   },
   {
-    body: "Founder relevance and decision-maker confidence help the queue stay commercially useful.",
-    icon: Target,
-    title: "Better target selection",
+    body: "Founder-aware targeting raises relevance by bringing clearer decision-maker confidence into the final queue.",
+    icon: Users,
+    title: "Founder intelligence",
   },
   {
-    body: "Weekly QA keeps the operating rhythm disciplined enough to trust across campaigns and handoffs.",
-    icon: BadgeCheck,
-    title: "Operational consistency",
+    body: "Delivery QA, confidence notes, and release rhythm make the operation feel premium and believable.",
+    icon: Layers3,
+    title: "Operational QA",
   },
-];
+] as const;
 
-const fitProfiles = [
-  "Founder-led outbound teams that know research debt is slowing pipeline creation.",
-  "Agencies that want a tighter weekly prospecting rhythm without building an internal research operation.",
-  "Lean SDR motions that need stronger opportunity quality before more volume makes sense.",
-];
+const deliveryTimeline = [
+  {
+    copy: "Cohort finalized and ranked against the active outbound brief.",
+    day: "Monday",
+    icon: CalendarDays,
+  },
+  {
+    copy: "Draft refinement and account notes are shaped around the strongest opportunities.",
+    day: "Tuesday",
+    icon: Sparkles,
+  },
+  {
+    copy: "Exports, routing context, and release notes are prepared for delivery.",
+    day: "Wednesday",
+    icon: Send,
+  },
+  {
+    copy: "QA verifies confidence, fit, and delivery readiness before the next cycle.",
+    day: "Thursday",
+    icon: CheckCircle2,
+  },
+  {
+    copy: "Outcome signals feed back into the following week’s intelligence decisions.",
+    day: "Friday",
+    icon: Radar,
+  },
+] as const;
+
+const coverageOptions = [
+  {
+    description: "Focused market coverage with tighter signal density.",
+    id: "uk",
+    label: "UK",
+  },
+  {
+    description: "Balanced UK + EU coverage for broader weekly cohorts.",
+    id: "uk-eu",
+    label: "UK + EU",
+  },
+  {
+    description: "Expanded transatlantic coverage for larger outbound programs.",
+    id: "global",
+    label: "UK + EU + US",
+  },
+] as const;
+
+const supportOptions = [
+  {
+    description: "Reviewed intelligence with ranking logic, founder notes, and release context.",
+    id: "core",
+    label: "Core intelligence",
+  },
+  {
+    description: "Adds curated draft refinement so the handoff lands closer to execution.",
+    id: "drafts",
+    label: "Draft support",
+  },
+  {
+    description: "Higher-touch weekly coordination around delivery and outbound use.",
+    id: "delivery",
+    label: "Delivery support",
+  },
+] as const;
+
+const cadenceOptions = [
+  {
+    description: "A reviewed release every Monday for the strongest operating rhythm.",
+    id: "weekly",
+    label: "Weekly",
+  },
+  {
+    description: "A lighter program for teams that want more space between releases.",
+    id: "biweekly",
+    label: "Bi-weekly",
+  },
+] as const;
+
+type CoverageOption = (typeof coverageOptions)[number]["id"];
+type SupportOption = (typeof supportOptions)[number]["id"];
+type CadenceOption = (typeof cadenceOptions)[number]["id"];
+
+function revealProps(reduceMotion: boolean, delay = 0) {
+  if (reduceMotion) {
+    return {};
+  }
+
+  return {
+    initial: { opacity: 0, y: 28 },
+    transition: { delay, duration: 0.75, ease: "easeOut" as const },
+    viewport: { amount: 0.18, once: true },
+    whileInView: { opacity: 1, y: 0 },
+  };
+}
+
+function formatEuro(value: number) {
+  return new Intl.NumberFormat("en-GB", {
+    currency: "EUR",
+    maximumFractionDigits: 0,
+    style: "currency",
+  }).format(value);
+}
+
+function formatEuroRange(low: number, high: number) {
+  return `${formatEuro(low)}-${formatEuro(high)}/month`;
+}
 
 function SectionIntro({
+  align = "left",
   copy,
   eyebrow,
   title,
-  align = "left",
 }: {
   align?: "center" | "left";
   copy: string;
@@ -224,20 +348,20 @@ function SectionIntro({
 }) {
   return (
     <div className={cn("space-y-5", align === "center" && "mx-auto max-w-3xl text-center")}>
-      <div className="section-eyebrow">{eyebrow}</div>
+      <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e] backdrop-blur-xl">
+        {eyebrow}
+      </div>
       <h2
         className={cn(
-          "section-title text-balance text-ink",
-          displayFont.className,
-          align === "center" && "mx-auto max-w-4xl",
-          align === "left" && "max-w-4xl",
+          `${displayFont.className} text-4xl leading-[0.92] text-[#fff7f1] sm:text-5xl lg:text-6xl`,
+          align === "center" ? "mx-auto max-w-4xl" : "max-w-4xl",
         )}
       >
         {title}
       </h2>
       <p
         className={cn(
-          "section-copy max-w-2xl",
+          "max-w-2xl text-base leading-8 text-white/66 md:text-[1.03rem] md:leading-8",
           align === "center" && "mx-auto",
         )}
       >
@@ -247,38 +371,203 @@ function SectionIntro({
   );
 }
 
-export function PlatformHomepage() {
+function ToggleCard({
+  active,
+  description,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  description: string;
+  label: string;
+  onClick: () => void;
+}) {
   return (
-    <div className="overflow-hidden">
-      <section className="relative border-b border-border/70 py-12 sm:py-16 lg:py-20">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-terracotta/45 to-transparent" />
-        <div className="absolute left-[-9rem] top-8 h-72 w-72 rounded-full bg-terracotta/10 blur-3xl" />
-        <div className="absolute right-[-6rem] top-16 h-80 w-80 rounded-full bg-emerald-200/40 blur-3xl" />
+    <button
+      className={cn(
+        "rounded-[1.2rem] border p-4 text-left transition-colors",
+        active
+          ? "border-[#f0b38e]/35 bg-[#f0b38e]/10 text-white shadow-[0_20px_40px_rgba(240,179,142,0.08)]"
+          : "border-white/10 bg-white/[0.03] text-white/72 hover:border-white/20 hover:bg-white/[0.05]",
+      )}
+      onClick={onClick}
+      type="button"
+    >
+      <div className="text-sm font-semibold text-white">{label}</div>
+      <p className="mt-2 text-sm leading-7 text-white/60">{description}</p>
+    </button>
+  );
+}
 
-        <Container className="relative grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-          <div className="space-y-8">
-            <Badge className="w-fit border-border/70 bg-white/85 text-terracotta shadow-sm" variant="outline">
-              Premium curated outbound intelligence
+function SliderControl({
+  label,
+  max,
+  min,
+  onChange,
+  step = 1,
+  value,
+  valueLabel,
+}: {
+  label: string;
+  max: number;
+  min: number;
+  onChange: (value: number) => void;
+  step?: number;
+  value: number;
+  valueLabel: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-white">{label}</span>
+        <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-sm text-white/76">
+          {valueLabel}
+        </span>
+      </div>
+      <input
+        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-terracotta"
+        max={max}
+        min={min}
+        onChange={(event) => onChange(Number(event.target.value))}
+        step={step}
+        type="range"
+        value={value}
+      />
+    </div>
+  );
+}
+
+export function PlatformHomepage() {
+  const reduceMotion = useReducedMotion() ?? false;
+  const [activeHeroSignal, setActiveHeroSignal] = useState(0);
+  const [activeEngineStep, setActiveEngineStep] = useState(0);
+  const [activeEvolutionStage, setActiveEvolutionStage] = useState(0);
+  const [weeklyOpportunityTarget, setWeeklyOpportunityTarget] = useState(45);
+  const [targetingDepth, setTargetingDepth] = useState(3);
+  const [coverage, setCoverage] = useState<CoverageOption>("uk-eu");
+  const [support, setSupport] = useState<SupportOption>("delivery");
+  const [cadence, setCadence] = useState<CadenceOption>("weekly");
+  const [founderPriority, setFounderPriority] = useState(true);
+  const [smtpPriority, setSmtpPriority] = useState(true);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      return undefined;
+    }
+
+    const heroTimer = window.setInterval(() => {
+      setActiveHeroSignal((current) => (current + 1) % heroSignals.length);
+    }, 2600);
+
+    return () => window.clearInterval(heroTimer);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      return undefined;
+    }
+
+    const engineTimer = window.setInterval(() => {
+      setActiveEngineStep((current) => (current + 1) % engineStages.length);
+    }, 3400);
+
+    return () => window.clearInterval(engineTimer);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      return undefined;
+    }
+
+    const evolutionTimer = window.setInterval(() => {
+      setActiveEvolutionStage((current) => (current + 1) % evolutionStages.length);
+    }, 3200);
+
+    return () => window.clearInterval(evolutionTimer);
+  }, [reduceMotion]);
+
+  const activeStage = engineStages[activeEngineStep];
+  const activeEvolution = evolutionStages[activeEvolutionStage];
+
+  const programPreview = useMemo(() => {
+    const monthlyReviewed = weeklyOpportunityTarget * (cadence === "weekly" ? 4 : 2);
+    const coverageCost = coverage === "uk" ? 0 : coverage === "uk-eu" ? 260 : 460;
+    const supportCost = support === "core" ? 0 : support === "drafts" ? 180 : 340;
+    const founderCost = founderPriority ? 140 : 0;
+    const smtpCost = smtpPriority ? 95 : 0;
+    const depthCost = targetingDepth * 120;
+    const volumeCost = weeklyOpportunityTarget * 4;
+    const cadenceCost = cadence === "weekly" ? 170 : 0;
+    const priceLow =
+      499 +
+      coverageCost +
+      supportCost +
+      founderCost +
+      smtpCost +
+      depthCost +
+      volumeCost +
+      cadenceCost;
+    const priceHigh = priceLow + 240 + targetingDepth * 35 + (support === "delivery" ? 120 : 40);
+
+    return {
+      coverageLabel:
+        coverageOptions.find((item) => item.id === coverage)?.label ?? "UK + EU",
+      monthlyReviewed,
+      priceHigh,
+      priceLow,
+      supportLabel:
+        supportOptions.find((item) => item.id === support)?.label ?? "Delivery support",
+      targetingLabel:
+        targetingDepth === 1
+          ? "Core fit signals"
+          : targetingDepth === 2
+            ? "Expanded market context"
+            : targetingDepth === 3
+              ? "Founder and routing depth"
+              : targetingDepth === 4
+                ? "High-touch intelligence layering"
+                : "Maximum review precision",
+    };
+  }, [
+    cadence,
+    coverage,
+    founderPriority,
+    smtpPriority,
+    support,
+    targetingDepth,
+    weeklyOpportunityTarget,
+  ]);
+
+  return (
+    <div className="relative overflow-hidden bg-[#050c14] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.18),transparent_26rem),radial-gradient(circle_at_72%_18%,rgba(98,130,164,0.16),transparent_30rem),linear-gradient(180deg,#050c14_0%,#07101a_42%,#050b13_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.022)_1px,transparent_1px)] bg-[size:88px_88px] opacity-[0.22]" />
+      <div className="pointer-events-none absolute left-[-7rem] top-[12rem] h-72 w-72 rounded-full bg-[#f0b38e]/10 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-9rem] top-[26rem] h-96 w-96 rounded-full bg-[#4a6580]/10 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-[26rem] hidden h-[calc(100%-34rem)] w-px -translate-x-1/2 bg-[linear-gradient(180deg,rgba(240,179,142,0),rgba(240,179,142,0.24),rgba(255,255,255,0.04),rgba(240,179,142,0))] lg:block" />
+
+      <section className="relative overflow-hidden pb-10 pt-10 sm:pb-14 sm:pt-14 lg:pb-20 lg:pt-20">
+        <Container className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <motion.div className="space-y-8" {...revealProps(reduceMotion, 0.04)}>
+            <Badge className="w-fit border-white/10 bg-white/[0.05] text-[#f0b38e] shadow-[0_16px_38px_rgba(0,0,0,0.18)]" variant="outline">
+              A living outbound intelligence system
             </Badge>
 
             <div className="space-y-6">
               <h1
-                className={cn(
-                  "max-w-[11ch] text-balance text-[3.15rem] leading-[0.9] text-ink sm:text-[4.45rem] lg:text-[5.85rem]",
-                  displayFont.className,
-                )}
+                className={`${displayFont.className} max-w-[11ch] text-[3.15rem] leading-[0.88] text-[#fff8f1] sm:text-[4.7rem] lg:text-[6.15rem]`}
               >
                 Curated Outbound Intelligence Delivered Weekly.
               </h1>
-              <p className="section-copy max-w-2xl md:text-[1.08rem]">
+              <p className="max-w-3xl text-base leading-8 text-white/70 md:text-[1.12rem] md:leading-9">
                 Frithly helps outbound teams discover higher-confidence opportunities through
-                reviewed intelligence, founder-aware targeting, SMTP-safe prioritization, and a
-                calm weekly delivery rhythm.
+                reviewed intelligence, SMTP-aware routing, founder targeting, and curated delivery
+                systems.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="shadow-[0_18px_48px_rgba(212,98,58,0.28)]">
                 <Link href={ROUTES.APPLY}>
                   <span className="inline-flex items-center gap-2">
                     Apply for a Campaign
@@ -286,392 +575,836 @@ export function PlatformHomepage() {
                   </span>
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="#workflow">Explore the Delivery Model</Link>
+              <Button
+                asChild
+                size="lg"
+                variant="secondary"
+                className="border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
+              >
+                <Link href="#living-engine">Watch the Intelligence Flow</Link>
               </Button>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              {heroSignals.map((signal) => (
-                <div key={signal} className="metric-chip">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-hidden="true" />
-                  <span>{signal}</span>
-                </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {heroSignals.map((signal, index) => (
+                <motion.div
+                  key={signal}
+                  className={cn(
+                    "rounded-[1.25rem] border px-4 py-4 text-sm transition-colors",
+                    activeHeroSignal === index
+                      ? "border-[#f0b38e]/30 bg-[#f0b38e]/10 text-white"
+                      : "border-white/10 bg-white/[0.03] text-white/62",
+                  )}
+                  animate={
+                    reduceMotion
+                      ? undefined
+                      : activeHeroSignal === index
+                        ? { y: [0, -2, 0] }
+                        : { y: 0 }
+                  }
+                  transition={
+                    reduceMotion
+                      ? undefined
+                      : { duration: 1.8, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }
+                  }
+                >
+                  {signal}
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="surface-card animated-glow relative overflow-hidden border-terracotta/15">
-            <div className="absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(212,98,58,0.12),transparent)]" />
+          <motion.div
+            className="relative min-h-[34rem] overflow-hidden rounded-[2.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_36px_120px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-8"
+            {...revealProps(reduceMotion, 0.12)}
+          >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.22),transparent_16rem),radial-gradient(circle_at_bottom_right,rgba(89,130,167,0.18),transparent_18rem)]" />
+            <div className="pointer-events-none absolute inset-x-8 top-8 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent" />
 
-            <div className="relative border-b border-border/70 px-5 py-5 sm:px-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="space-y-2">
-                  <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                    Sample Monday release
+            {heroParticles.map((particle) => (
+              <motion.span
+                key={`${particle.left}-${particle.top}`}
+                className="absolute rounded-full bg-[#f0b38e]/80 shadow-[0_0_24px_rgba(240,179,142,0.65)]"
+                style={{
+                  height: particle.size,
+                  left: particle.left,
+                  top: particle.top,
+                  width: particle.size,
+                }}
+                animate={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        opacity: [0.28, 1, 0.28],
+                        y: [0, -24, 0],
+                      }
+                }
+                transition={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        delay: particle.delay,
+                        duration: particle.duration,
+                        ease: "easeInOut",
+                        repeat: Number.POSITIVE_INFINITY,
+                      }
+                }
+              />
+            ))}
+
+            <div className="relative flex h-full flex-col justify-between gap-6">
+              <div className="flex items-start justify-between gap-5">
+                <div className="space-y-4">
+                  <BrandMark
+                    className="h-14 w-14 rounded-[1.1rem] border-white/10 bg-white/[0.06] p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
+                    imageClassName="h-full w-full rounded-[0.95rem]"
+                    priority
+                  />
+                  <div className="max-w-xs rounded-[1.25rem] border border-white/10 bg-[#07111b]/80 px-4 py-4 text-sm leading-7 text-white/68">
+                    The Frithly system is designed to feel less like software and more like a
+                    disciplined weekly operating rhythm.
                   </div>
-                  <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-[2rem]">
-                    The brief feels ready before your team opens it.
-                  </h2>
-                  <p className="text-sm leading-7 text-muted">
-                    Reviewed accounts, founder context, routing confidence, and why-now notes are
-                    packaged together so the first touch does not start with more research work.
-                  </p>
                 </div>
-                <BrandMark
-                  className="h-14 w-14 rounded-[1.2rem] border-border/70 bg-white/95 p-1.5 shadow-sm"
-                  imageClassName="h-full w-full rounded-[0.95rem]"
-                  priority
-                />
-              </div>
-            </div>
 
-            <div className="space-y-5 p-5 sm:p-6">
-              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-right">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                    Cohort release state
+                  </div>
+                  <div className="mt-2 text-lg font-semibold text-white">Assembling</div>
+                  <div className="mt-1 text-sm text-white/58">11 reviewed opportunities</div>
+                </div>
+              </div>
+
+              <div className="relative mx-auto flex h-[17rem] w-full max-w-[30rem] items-center justify-center">
+                <motion.div
+                  className="absolute h-[15rem] w-[15rem] rounded-full border border-[#f0b38e]/18 bg-[radial-gradient(circle,rgba(240,179,142,0.12),transparent_60%)]"
+                  animate={reduceMotion ? undefined : { scale: [1, 1.03, 1] }}
+                  transition={
+                    reduceMotion
+                      ? undefined
+                      : { duration: 6, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }
+                  }
+                />
+                <motion.div
+                  className="absolute h-[11rem] w-[11rem] rounded-full border border-white/10"
+                  animate={reduceMotion ? undefined : { rotate: 360 }}
+                  transition={
+                    reduceMotion
+                      ? undefined
+                      : { duration: 28, ease: "linear", repeat: Number.POSITIVE_INFINITY }
+                  }
+                >
+                  <span className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f0b38e] shadow-[0_0_18px_rgba(240,179,142,0.7)]" />
+                </motion.div>
+                <motion.div
+                  className="absolute h-[8.4rem] w-[8.4rem] rounded-full border border-white/12"
+                  animate={reduceMotion ? undefined : { rotate: -360 }}
+                  transition={
+                    reduceMotion
+                      ? undefined
+                      : { duration: 20, ease: "linear", repeat: Number.POSITIVE_INFINITY }
+                  }
+                >
+                  <span className="absolute bottom-0 left-1/2 h-2.5 w-2.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-[#90b6d9] shadow-[0_0_18px_rgba(144,182,217,0.7)]" />
+                </motion.div>
+
+                <div className="relative z-10 rounded-full border border-white/12 bg-[#09131d]/90 px-8 py-7 text-center shadow-[0_26px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
+                    Confidence index
+                  </div>
+                  <div className="mt-3 text-5xl font-semibold text-[#fff7f1]">94</div>
+                  <div className="mt-2 text-sm text-white/64">Signal strength rising</div>
+                </div>
+
+                <div className="absolute left-2 top-10 rounded-[1.15rem] border border-white/10 bg-[#07111b]/84 px-4 py-3 text-sm text-white/70">
+                  Founder confidence
+                  <div className="mt-1 text-lg font-semibold text-white">0.87</div>
+                </div>
+                <div className="absolute right-2 top-16 rounded-[1.15rem] border border-white/10 bg-[#07111b]/84 px-4 py-3 text-sm text-white/70">
+                  SMTP-aware route
+                  <div className="mt-1 text-lg font-semibold text-white">Safe</div>
+                </div>
+                <div className="absolute bottom-5 left-5 rounded-[1.15rem] border border-white/10 bg-[#07111b]/84 px-4 py-3 text-sm text-white/70">
+                  Recommendation lift
+                  <div className="mt-1 text-lg font-semibold text-white">4.8x focus</div>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
                 {[
-                  { label: "Reviewed opportunities", value: "42" },
-                  { label: "Founder-priority accounts", value: "14" },
-                  { label: "SMTP-safe routes ready", value: "9" },
-                  { label: "Weekly delivery rhythm", value: "Monday" },
-                ].map((stat) => (
+                  "Noise filtered before release",
+                  "Routing checked before outreach",
+                  "Cohort packaged for Monday delivery",
+                ].map((item) => (
                   <div
-                    key={stat.label}
-                    className="rounded-2xl border border-border/70 bg-stone-50 px-4 py-4"
+                    key={item}
+                    className="rounded-[1.15rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66"
                   >
-                    <div className="text-2xl font-semibold tracking-tight text-ink">{stat.value}</div>
-                    <div className="mt-1 text-sm text-muted">{stat.label}</div>
+                    {item}
                   </div>
                 ))}
               </div>
-
-              <div className="rounded-[1.5rem] border border-border/70 bg-white">
-                <div className="border-b border-border/70 px-4 py-4 sm:px-5">
-                  <div className="text-sm font-semibold text-ink">Inside the cohort</div>
-                  <div className="text-sm text-muted">
-                    A realistic slice of what gets packaged into weekly delivery
-                  </div>
-                </div>
-
-                <div className="divide-y divide-border/70">
-                  {sampleCohort.map((account) => (
-                    <div
-                      key={account.owner}
-                      className="grid gap-2 px-4 py-4 sm:px-5 md:grid-cols-[0.9fr_1.1fr] md:items-center"
-                    >
-                      <div>
-                        <div className="font-semibold text-ink">{account.owner}</div>
-                        <div className="text-sm text-muted">{account.company}</div>
-                      </div>
-                      <div className="text-sm leading-7 text-muted">{account.note}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
-          </div>
+          </motion.div>
         </Container>
       </section>
 
-      <section className="py-6 sm:py-8">
-        <Container>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {trustStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-[1.35rem] border border-border/70 bg-white/80 px-4 py-4 shadow-sm backdrop-blur"
-              >
-                <div className="text-lg font-semibold text-ink">{stat.value}</div>
-                <div className="mt-1 text-sm text-muted">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section id="why-outbound-fails" className="py-16 sm:py-20 lg:py-24">
+      <section id="why-outbound-fails" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
-          <div className="space-y-6">
+          <motion.div className="space-y-7" {...revealProps(reduceMotion, 0.04)}>
             <SectionIntro
-              eyebrow="Why quality wins"
-              title="Traditional outbound fails because the research burden never really disappears."
-              copy="Most teams are not short on access to leads. They are short on context, timing, routing confidence, and clarity about who is actually worth contacting now. That is the gap Frithly is built to close."
+              eyebrow="Outbound failure narrative"
+              title="Mass outbound creates activity. It rarely creates conviction."
+              copy="Traditional outbound usually fails because too much of the workflow is optimized for volume. Frithly flips the logic by making route quality, founder relevance, and review discipline part of the operating system itself."
             />
 
-            <div className="rounded-[1.75rem] border border-border/70 bg-white/85 p-6 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-terracotta/10 p-3 text-terracotta">
-                  <Target className="h-5 w-5" aria-hidden="true" />
+            <div className="space-y-3">
+              {failureSignals.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-7 text-white/66"
+                >
+                  {item}
                 </div>
-                <div className="space-y-2">
-                  <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                    The real cost
-                  </div>
-                  <p className="text-base leading-8 text-muted">
-                    Reps spend their best hours cleaning lists, checking routes, and inventing
-                    personalization from weak signals. More tooling does not solve that. Better
-                    weekly output does.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="surface-card overflow-hidden border-transparent bg-stone-100/90">
-              <div className="border-b border-stone-200 px-5 py-5 sm:px-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-6"
+            {...revealProps(reduceMotion, 0.12)}
+          >
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-[1.5rem] border border-rose-300/18 bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-5">
+                <div className="flex items-center gap-3 text-sm font-semibold text-rose-200">
+                  <Filter className="h-4 w-4" aria-hidden="true" />
                   Traditional outbound
                 </div>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">
-                  Bigger lists, weaker confidence.
-                </h3>
-              </div>
-
-              <div className="divide-y divide-stone-200">
-                {comparisonRows.map((row) => (
-                  <div key={row.label} className="space-y-2 px-5 py-5 sm:px-6">
-                    <div className="text-sm font-semibold text-ink">{row.label}</div>
-                    <p className="text-sm leading-7 text-muted md:text-base">{row.traditional}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="surface-card overflow-hidden border-terracotta/30">
-              <div className="border-b border-border/70 bg-[linear-gradient(135deg,rgba(212,98,58,0.08),rgba(255,255,255,0.96))] px-5 py-5 sm:px-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                  Frithly
-                </div>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">
-                  Fewer opportunities, stronger reasons to act.
-                </h3>
-              </div>
-
-              <div className="divide-y divide-border/70">
-                {comparisonRows.map((row) => (
-                  <div key={row.label} className="space-y-2 px-5 py-5 sm:px-6">
-                    <div className="text-sm font-semibold text-ink">{row.label}</div>
-                    <p className="text-sm leading-7 text-muted md:text-base">{row.frithly}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section id="workflow" className="border-y border-border/70 bg-white/60 py-16 sm:py-20 lg:py-24">
-        <Container className="space-y-12">
-          <SectionIntro
-            align="center"
-            eyebrow="Operating model"
-            title="A living outbound system, but presented with the calm of a service."
-            copy="Frithly is not instant automation. It is a disciplined weekly workflow that turns a brief into stronger outbound opportunities through research, filtering, review, and delivery."
-          />
-
-          <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-            <div className="grid gap-5">
-              {workflowSteps.map((step, index) => {
-                const Icon = step.icon;
-
-                return (
-                  <div
-                    key={step.title}
-                    className="surface-card flex gap-4 p-5 transition-transform duration-300 hover:-translate-y-1 sm:p-6"
-                  >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                        Step {index + 1} · {step.label}
-                      </div>
-                      <h3 className="text-xl font-semibold text-ink">{step.title}</h3>
-                      <p className="text-sm leading-7 text-muted md:text-base">{step.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="surface-card overflow-hidden border-terracotta/20">
-              <div className="border-b border-border/70 bg-[linear-gradient(180deg,rgba(212,98,58,0.08),rgba(255,255,255,0.92))] px-5 py-5 sm:px-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                  What changes through the flow
-                </div>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">
-                  Signal becomes intelligence because the queue keeps narrowing.
-                </h3>
-              </div>
-
-              <div className="space-y-4 px-5 py-5 sm:px-6">
-                {[
-                  "Raw accounts become commercially useful only after enrichment and context.",
-                  "Founder relevance raises confidence on who should be contacted first.",
-                  "SMTP-safe prioritization removes a chunk of avoidable delivery waste.",
-                  "Review keeps the final cohort deliberately scarce, not inflated for volume.",
-                ].map((point) => (
-                  <div
-                    key={point}
-                    className="rounded-2xl border border-border/70 bg-stone-50 px-4 py-4 text-sm leading-7 text-muted"
-                  >
-                    {point}
-                  </div>
-                ))}
-
-                <div className="rounded-[1.5rem] border border-border/70 bg-ink px-5 py-5 text-white">
-                  <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                    <Sparkles className="h-4 w-4" aria-hidden="true" />
-                    The outcome
-                  </div>
-                  <p className="mt-3 text-base leading-8 text-white/75">
-                    Your team starts the week with a reviewed outbound brief that already contains
-                    targeting logic, delivery discipline, and account-level context.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section className="py-16 sm:py-20 lg:py-24">
-        <Container className="space-y-12">
-          <SectionIntro
-            align="center"
-            eyebrow="Weekly delivery system"
-            title="The delivery model is intentionally high-touch."
-            copy="Frithly is designed to feel operationally disciplined. Each day plays a role in keeping the cohort selective, reviewable, and useful before it lands with the team."
-          />
-
-          <div className="grid gap-5 lg:grid-cols-5">
-            {weeklyTimeline.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div
-                  key={item.day}
-                  className="surface-card h-full p-5 transition-transform duration-300 hover:-translate-y-1"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </div>
-                  <div className="mt-5 text-lg font-semibold text-ink">{item.day}</div>
-                  <p className="mt-3 text-sm leading-7 text-muted">{item.copy}</p>
-                </div>
-              );
-            })}
-          </div>
-        </Container>
-      </section>
-
-      <section id="icp-demo" className="border-y border-border/70 bg-white/60 py-16 sm:py-20 lg:py-24">
-        <Container className="space-y-10">
-          <SectionIntro
-            eyebrow="Interactive ICP demo"
-            title="Let the intelligence system respond to a real targeting brief."
-            copy="The demo is not here to look flashy. It is here to help buyers feel the difference between generic lead access and a more selective, better-structured outbound operating model."
-          />
-
-          <div className="grid gap-8 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
-            <div className="space-y-5">
-              <div className="surface-card p-5 sm:p-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                  What to test
-                </div>
-                <div className="mt-4 space-y-3">
+                <div className="mt-5 space-y-3">
                   {[
-                    "Choose the industry, geography, and opportunity volume you actually care about.",
-                    "Watch how opportunity quality improves as founder, routing, and recommendation layers appear.",
-                    "Use the output as a preview of the operating logic, not as a promise of instant volume.",
-                  ].map((point) => (
-                    <div key={point} className="flex gap-3 rounded-2xl bg-stone-50 px-4 py-4">
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-terracotta" aria-hidden="true" />
-                      <p className="text-sm leading-7 text-muted">{point}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-emerald-200 bg-emerald-50/70 px-5 py-5 text-sm leading-7 text-emerald-900">
-                The strongest part of the demo is not the UI. It is the difference in how the
-                system narrows the queue before calling something ready.
-              </div>
-            </div>
-
-            <div className="surface-card overflow-hidden border-terracotta/15 bg-[#f8f4ec] p-2 shadow-[0_24px_70px_rgba(26,26,26,0.08)]">
-              <IcpDemoExperience />
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section id="program-builder" className="py-16 sm:py-20 lg:py-24">
-        <Container className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
-          <div className="space-y-6">
-            <SectionIntro
-              eyebrow="Custom program design"
-              title="Programs should feel consultative, not like software plans."
-              copy="Frithly starts with a core operating model and then adapts around opportunity volume, geography coverage, review depth, founder priority, and the level of rollout support you want inside the weekly cycle."
-            />
-
-            <div className="grid gap-4">
-              {programModules.map((module) => (
-                <div key={module.title} className="surface-card p-5 sm:p-6">
-                  <h3 className="text-xl font-semibold text-ink">{module.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted md:text-base">{module.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="surface-card overflow-hidden border-terracotta/20">
-            <div className="border-b border-border/70 bg-[linear-gradient(135deg,rgba(212,98,58,0.08),rgba(255,255,255,0.95))] px-5 py-5 sm:px-6">
-              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                Frithly Core Intelligence Program
-              </div>
-              <div className="mt-2 text-3xl font-semibold tracking-tight text-ink">
-                Starting from EUR 499/month
-              </div>
-              <p className="mt-3 text-sm leading-7 text-muted">
-                The shape changes with coverage, review depth, and support needs, but the promise
-                stays the same: better outbound opportunities delivered in a cleaner weekly rhythm.
-              </p>
-            </div>
-
-            <div className="space-y-4 px-5 py-5 sm:px-6">
-              {samplePrograms.map((program) => (
-                <div
-                  key={program.label}
-                  className="rounded-[1.4rem] border border-border/70 bg-white px-4 py-4"
-                >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="text-lg font-semibold text-ink">{program.label}</div>
-                    <div className="text-sm font-semibold uppercase tracking-[0.16em] text-terracotta">
-                      {program.price}
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-muted">{program.details}</p>
-                </div>
-              ))}
-
-              <div className="rounded-[1.5rem] border border-border/70 bg-stone-50 px-5 py-5">
-                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                  <Globe2 className="h-4 w-4" aria-hidden="true" />
-                  Included in every program
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {[
-                    "Reviewed opportunity queue",
-                    "Founder-aware targeting",
-                    "SMTP-safe prioritization",
-                    "Weekly delivery rhythm",
-                    "Account-level context",
-                    "Export-ready handoff",
+                    "Noisy lead lists",
+                    "Generic scraping",
+                    "Poor targeting",
+                    "High bounce risk",
+                    "Weak personalization",
+                    "Wasted outreach",
                   ].map((item) => (
                     <div
                       key={item}
-                      className="rounded-2xl border border-border/70 bg-white px-4 py-3 text-sm text-ink"
+                      className="rounded-[1rem] border border-white/8 bg-[#0a131d]/84 px-4 py-3 text-sm text-white/68"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 rounded-[1.15rem] border border-white/8 bg-white/[0.04] p-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/46">
+                    Outcome
+                  </div>
+                  <div className="mt-2 text-lg font-semibold text-white">Busy, but low-trust</div>
+                  <p className="mt-2 text-sm leading-7 text-white/58">
+                    The team spends more time fighting poor input quality than building better
+                    conversations.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-[#f0b38e]/18 bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-5">
+                <div className="flex items-center gap-3 text-sm font-semibold text-[#f0b38e]">
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                  Frithly intelligence
+                </div>
+                <div className="mt-5 space-y-3">
+                  {[
+                    "Reviewed opportunities",
+                    "Founder-aware targeting",
+                    "SMTP-aware routing",
+                    "Confidence-ranked recommendations",
+                    "Curated weekly delivery",
+                    "Outreach-ready context",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-[1rem] border border-white/8 bg-[#0a131d]/84 px-4 py-3 text-sm text-white/72"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 rounded-[1.15rem] border border-white/8 bg-white/[0.04] p-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/46">
+                    Outcome
+                  </div>
+                  <div className="mt-2 text-lg font-semibold text-white">
+                    Smaller list, stronger conviction
+                  </div>
+                  <p className="mt-2 text-sm leading-7 text-white/58">
+                    Better opportunities outperform bigger lists because the system increases signal
+                    quality before delivery.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-[#08111a]/88 px-5 py-5 text-center text-sm leading-7 text-white/66">
+              Better opportunities outperform bigger lists.
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+
+      <section id="living-engine" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              eyebrow="Living intelligence engine"
+              title="As the system moves, the opportunity field narrows and confidence rises."
+              copy="This is the part of the experience that should feel like watching Frithly think. Each stage reduces noise, increases operational clarity, and prepares the eventual weekly cohort."
+            />
+
+            <div className="space-y-3">
+              {engineStages.map((stage, index) => (
+                <button
+                  key={stage.id}
+                  className={cn(
+                    "flex w-full items-start gap-4 rounded-[1.25rem] border px-4 py-4 text-left transition-colors",
+                    activeEngineStep === index
+                      ? "border-[#f0b38e]/30 bg-[#f0b38e]/10"
+                      : "border-white/10 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.05]",
+                  )}
+                  onClick={() => setActiveEngineStep(index)}
+                  type="button"
+                >
+                  <div
+                    className={cn(
+                      "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold",
+                      activeEngineStep === index
+                        ? "border-[#f0b38e]/35 bg-[#f0b38e]/14 text-[#f0b38e]"
+                        : "border-white/12 bg-white/[0.04] text-white/54",
+                    )}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-white">{stage.label}</div>
+                    <p className="mt-1 text-sm leading-7 text-white/58">{stage.signal}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
+            {...revealProps(reduceMotion, 0.12)}
+          >
+            <div className="grid gap-6">
+              <div className="flex flex-wrap gap-2">
+                {engineStages.map((stage, index) => (
+                  <div
+                    key={stage.id}
+                    className={cn(
+                      "rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em]",
+                      activeEngineStep === index
+                        ? "border-[#f0b38e]/30 bg-[#f0b38e]/10 text-[#f0b38e]"
+                        : "border-white/10 bg-white/[0.03] text-white/42",
+                    )}
+                  >
+                    {stage.label}
+                  </div>
+                ))}
+              </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeStage.id}
+                  className="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]"
+                  initial={reduceMotion ? undefined : { opacity: 0, y: 18 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -18 }}
+                  transition={reduceMotion ? undefined : { duration: 0.34, ease: "easeOut" }}
+                >
+                  <div className="space-y-5">
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                        {activeStage.signal}
+                      </div>
+                      <h3 className="mt-3 text-3xl font-semibold text-white">
+                        {activeStage.title}
+                      </h3>
+                      <p className="mt-4 text-base leading-8 text-white/66">{activeStage.body}</p>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      <div className="rounded-[1.2rem] border border-white/10 bg-[#09131c]/88 px-4 py-4">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
+                          Accounts in play
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-white">
+                          {activeStage.incoming}
+                        </div>
+                      </div>
+                      <div className="rounded-[1.2rem] border border-white/10 bg-[#09131c]/88 px-4 py-4">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
+                          Still worth review
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-white">
+                          {activeStage.narrowed}
+                        </div>
+                      </div>
+                      <div className="rounded-[1.2rem] border border-white/10 bg-[#09131c]/88 px-4 py-4">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
+                          Confidence
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-white">
+                          {activeStage.confidence}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {activeStage.traits.map((trait) => (
+                        <div
+                          key={trait}
+                          className="rounded-[1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/68"
+                        >
+                          {trait}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-5 rounded-[1.7rem] border border-white/10 bg-[#07111a]/86 p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                          Quality compression
+                        </div>
+                        <div className="mt-2 text-lg font-semibold text-white">
+                          The system keeps fewer accounts and better reasons.
+                        </div>
+                      </div>
+                      <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white/68">
+                        Stage {activeEngineStep + 1} / {engineStages.length}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-sm text-white/64">
+                          <span>Candidate field</span>
+                          <span>{activeStage.incoming}</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-white/8">
+                          <motion.div
+                            className="h-2 rounded-full bg-[#90b6d9]"
+                            animate={{ width: `${Math.max((activeStage.incoming / 268) * 100, 20)}%` }}
+                            transition={reduceMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-sm text-white/64">
+                          <span>Still worth review</span>
+                          <span>{activeStage.narrowed}</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-white/8">
+                          <motion.div
+                            className="h-2 rounded-full bg-[#f0b38e]"
+                            animate={{ width: `${Math.max((activeStage.narrowed / 184) * 100, 12)}%` }}
+                            transition={reduceMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-sm text-white/64">
+                          <span>Confidence lift</span>
+                          <span>{activeStage.confidence}/100</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-white/8">
+                          <motion.div
+                            className="h-2 rounded-full bg-gradient-to-r from-[#f0b38e] to-[#fff4e2]"
+                            animate={{ width: `${activeStage.confidence}%` }}
+                            transition={reduceMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.03] p-4">
+                      <div className="text-sm font-semibold text-white">What changes here</div>
+                      <p className="mt-3 text-sm leading-7 text-white/62">
+                        Frithly is intentionally opinionated at this stage. The workflow narrows
+                        accounts faster as soon as the confidence signals become clear enough to act
+                        on.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+
+      <section id="opportunity-evolution" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="space-y-10">
+          <motion.div {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              eyebrow="Opportunity evolution"
+              title="Signal becomes intelligence through a visible sequence of refinement."
+              copy="What Frithly delivers looks different because the opportunity itself changes shape as it moves through research, routing, founder context, and review."
+            />
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
+            {...revealProps(reduceMotion, 0.1)}
+          >
+            <div className="flex flex-wrap gap-3">
+              {evolutionStages.map((stage, index) => (
+                <button
+                  key={stage.id}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
+                    activeEvolutionStage === index
+                      ? "border-[#f0b38e]/30 bg-[#f0b38e]/10 text-white"
+                      : "border-white/10 bg-white/[0.03] text-white/54 hover:border-white/18 hover:text-white/74",
+                  )}
+                  onClick={() => setActiveEvolutionStage(index)}
+                  type="button"
+                >
+                  {stage.stage}
+                </button>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeEvolution.id}
+                className="mt-6 grid gap-6 lg:grid-cols-[1.02fr_0.98fr]"
+                initial={reduceMotion ? undefined : { opacity: 0, y: 18 }}
+                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -18 }}
+                transition={reduceMotion ? undefined : { duration: 0.34, ease: "easeOut" }}
+              >
+                <div className="rounded-[1.7rem] border border-white/10 bg-[#07111a]/86 p-5 sm:p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                        {activeEvolution.stage}
+                      </div>
+                      <div className="mt-2 text-2xl font-semibold text-white">Confidence {activeEvolution.confidence}</div>
+                    </div>
+                    <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white/66">
+                      Route: {activeEvolution.route}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-4">
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-4">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/44">
+                        Opportunity card
+                      </div>
+                      <div className="mt-3 space-y-3">
+                        <div className="flex items-center justify-between rounded-[1rem] border border-white/8 bg-[#0a131d]/90 px-4 py-3">
+                          <div>
+                            <div className="text-sm font-semibold text-white">Selected account</div>
+                            <div className="mt-1 text-sm text-white/58">Outbound operations studio</div>
+                          </div>
+                          <div className="rounded-full bg-[#f0b38e]/12 px-3 py-1 text-sm text-[#f0b38e]">
+                            {activeEvolution.route}
+                          </div>
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {activeEvolution.tags.map((tag) => (
+                            <div
+                              key={tag}
+                              className="rounded-[1rem] border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-white/66"
+                            >
+                              {tag}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-4">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/44">
+                        Why it matters
+                      </div>
+                      <p className="mt-3 text-sm leading-7 text-white/66">{activeEvolution.note}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
+                    <div className="text-sm font-semibold text-white">Pipeline transformation</div>
+                    <div className="mt-4 space-y-4">
+                      {[
+                        { label: "Raw field", value: 100, tone: "bg-white/18" },
+                        { label: "Enriched", value: 62, tone: "bg-[#90b6d9]" },
+                        { label: "Validated", value: 31, tone: "bg-[#f0b38e]/85" },
+                        { label: "Release ready", value: 12, tone: "bg-[#fff4e2]" },
+                      ].map((bar) => (
+                        <div key={bar.label}>
+                          <div className="mb-2 flex items-center justify-between text-sm text-white/62">
+                            <span>{bar.label}</span>
+                            <span>{bar.value}</span>
+                          </div>
+                          <div className="h-2 rounded-full bg-white/8">
+                            <div className={cn("h-2 rounded-full", bar.tone)} style={{ width: `${bar.value}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(240,179,142,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-5">
+                    <div className="text-sm font-semibold text-white">The core idea</div>
+                    <p className="mt-3 text-sm leading-7 text-white/64">
+                      Frithly opportunities are different because the pipeline is not trying to keep
+                      everything. It is designed to let better evidence eliminate weaker accounts.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        </Container>
+      </section>
+
+      <section id="weekly-delivery" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="grid gap-10 lg:grid-cols-[0.84fr_1.16fr] lg:items-start">
+          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              eyebrow="Weekly delivery system"
+              title="Frithly is not instant SaaS automation. It is a premium weekly outbound operation."
+              copy="The rhythm matters. Every Monday the reviewed cohort is finalized, routing context is packaged, and the release goes out as a calm operational handoff instead of a dump of unfinished data."
+            />
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                Weekly rhythm
+              </div>
+              <div className="mt-3 text-2xl font-semibold text-white">Every Monday</div>
+              <p className="mt-3 text-sm leading-7 text-white/64">
+                Reviewed opportunities delivered, SMTP-safe exports prepared, founder context
+                attached, and premium recommendations released.
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
+            {...revealProps(reduceMotion, 0.12)}
+          >
+            <div className="grid gap-4">
+              {mondayMoments.map((moment) => (
+                <div
+                  key={moment.label}
+                  className="grid gap-4 rounded-[1.5rem] border border-white/10 bg-[#07111a]/86 p-5 sm:grid-cols-[auto_1fr]"
+                >
+                  <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] border border-[#f0b38e]/20 bg-[#f0b38e]/10 text-center text-sm font-semibold text-[#f0b38e]">
+                    {moment.time}
+                  </div>
+                  <div>
+                    <div className="text-lg font-semibold text-white">{moment.label}</div>
+                    <p className="mt-2 text-sm leading-7 text-white/62">{moment.body}</p>
+                  </div>
+                </div>
+              ))}
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
+                <div className="flex items-center gap-3 text-sm font-semibold text-white">
+                  <CalendarDays className="h-4 w-4 text-[#f0b38e]" aria-hidden="true" />
+                  Operationally disciplined by design
+                </div>
+                <p className="mt-3 text-sm leading-7 text-white/64">
+                  The weekly cadence keeps the service high-touch, selective, and easier to trust.
+                  Frithly is positioned as an operating rhythm, not a button that sprays outreach.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+
+      <section id="icp-demo" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              eyebrow="Interactive ICP intelligence demo"
+              title="Preview the thinking before you ever start a program."
+              copy="Use the demo to shape industry, geography, and opportunity goals. Then watch how the intelligence layer responds with recommendation logic, founder confidence, and cohort emergence."
+            />
+
+            <div className="space-y-3">
+              {[
+                "Opportunity generation appears instead of a static form result.",
+                "Recommendation confidence evolves as the brief sharpens.",
+                "Founder and SMTP-safe signals surface before the cohort looks complete.",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-7 text-white/66"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <Button
+              asChild
+              size="lg"
+              variant="secondary"
+              className="w-fit border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
+            >
+              <Link href={ROUTES.DEMO}>Launch Full Demo</Link>
+            </Button>
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
+            {...revealProps(reduceMotion, 0.12)}
+          >
+            <div className="rounded-[1.6rem] border border-white/10 bg-[#f8f4ec] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+              <IcpDemoExperience />
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+
+      <section id="program-builder" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              eyebrow="Custom program builder"
+              title="Frithly is configured like a program, not sold like software."
+              copy="Start with Frithly Core Intelligence Program from EUR 499/month, then shape the delivery around volume, geography, targeting depth, founder priority, SMTP-safe prioritization, support, and cadence."
+            />
+
+            <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl sm:p-6">
+              <div className="space-y-5">
+                <SliderControl
+                  label="Weekly opportunity target"
+                  max={90}
+                  min={18}
+                  onChange={setWeeklyOpportunityTarget}
+                  step={3}
+                  value={weeklyOpportunityTarget}
+                  valueLabel={`${weeklyOpportunityTarget} / week`}
+                />
+
+                <SliderControl
+                  label="Targeting depth"
+                  max={5}
+                  min={1}
+                  onChange={setTargetingDepth}
+                  value={targetingDepth}
+                  valueLabel={`${targetingDepth} layers`}
+                />
+
+                <div className="space-y-3">
+                  <div className="text-sm font-semibold text-white">Geography coverage</div>
+                  <div className="grid gap-3">
+                    {coverageOptions.map((option) => (
+                      <ToggleCard
+                        key={option.id}
+                        active={coverage === option.id}
+                        description={option.description}
+                        label={option.label}
+                        onClick={() => setCoverage(option.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
+            {...revealProps(reduceMotion, 0.12)}
+          >
+            <div className="space-y-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                    Your Intelligence Program
+                  </div>
+                  <div className="mt-2 text-3xl font-semibold text-white">
+                    {formatEuroRange(programPreview.priceLow, programPreview.priceHigh)}
+                  </div>
+                </div>
+                <div className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-white/72">
+                  Consultative estimate
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <ToggleCard
+                  active={founderPriority}
+                  description="Increase founder intelligence depth so decision-maker clarity influences the final queue more heavily."
+                  label="Founder-priority targeting"
+                  onClick={() => setFounderPriority((current) => !current)}
+                />
+                <ToggleCard
+                  active={smtpPriority}
+                  description="Keep SMTP-aware prioritization higher inside the release workflow for a safer delivery posture."
+                  label="SMTP-aware prioritization"
+                  onClick={() => setSmtpPriority((current) => !current)}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-sm font-semibold text-white">Support level</div>
+                <div className="grid gap-3">
+                  {supportOptions.map((option) => (
+                    <ToggleCard
+                      key={option.id}
+                      active={support === option.id}
+                      description={option.description}
+                      label={option.label}
+                      onClick={() => setSupport(option.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-sm font-semibold text-white">Delivery cadence</div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {cadenceOptions.map((option) => (
+                    <ToggleCard
+                      key={option.id}
+                      active={cadence === option.id}
+                      description={option.description}
+                      label={option.label}
+                      onClick={() => setCadence(option.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-[#07111a]/86 p-5">
+                <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <Globe2 className="h-4 w-4 text-[#f0b38e]" aria-hidden="true" />
+                  Live program preview
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {[
+                    `${programPreview.monthlyReviewed} reviewed opportunities/month`,
+                    `${programPreview.coverageLabel} coverage`,
+                    programPreview.targetingLabel,
+                    programPreview.supportLabel,
+                    founderPriority ? "Founder-priority targeting" : "Balanced targeting",
+                    cadence === "weekly" ? "Weekly intelligence cohorts" : "Bi-weekly releases",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-[1rem] border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-white/74"
                     >
                       {item}
                     </div>
@@ -679,219 +1412,271 @@ export function PlatformHomepage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link href={ROUTES.APPLY}>
-                    <span className="inline-flex items-center gap-2">
-                      Apply for a Campaign
-                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </span>
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="secondary">
-                  <Link href="#roi-experience">Model the ROI</Link>
-                </Button>
-              </div>
+              <p className="text-sm leading-7 text-white/60">
+                This is intentionally framed as program design, not cheap calculator logic. The
+                final range depends on ICP complexity, review depth, coverage, and how much
+                operational support you want in the weekly cycle.
+              </p>
             </div>
-          </div>
+          </motion.div>
         </Container>
       </section>
 
-      <section id="roi-experience" className="border-y border-border/70 bg-white/60 py-16 sm:py-20 lg:py-24">
+      <section id="roi-intelligence" className="relative py-20 sm:py-24 lg:py-28">
         <Container className="space-y-10">
-          <SectionIntro
-            eyebrow="ROI simulator"
-            title="The cost of weak outbound is usually hidden inside wasted effort."
-            copy="Frithly works best when the team is already spending money and time on outbound, but too much of that effort is being absorbed by noise, weak routing, and low-confidence targeting."
-          />
+          <motion.div {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              eyebrow="ROI intelligence experience"
+              title="Outbound inefficiency is expensive. Better targeting changes the conversation quality."
+              copy="This should not feel like a spreadsheet. It should feel like an opportunity simulator that shows how noisy outbound leaks money, time, and attention."
+            />
+          </motion.div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="surface-card overflow-hidden border-transparent bg-stone-100/90">
-              <div className="border-b border-stone-200 px-5 py-5 sm:px-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
-                  Typical outbound
-                </div>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">More activity, weaker signal.</h3>
+          <div className="grid gap-5 lg:grid-cols-2">
+            <motion.div
+              className="rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-6"
+              {...revealProps(reduceMotion, 0.08)}
+            >
+              <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-rose-200">
+                Traditional outbound
               </div>
-              <div className="space-y-3 px-5 py-5 sm:px-6">
+              <div className="mt-4 space-y-4">
+                {["1000 noisy contacts", "Generic outreach", "Low-quality conversations"].map(
+                  (item, index) => (
+                    <div key={item} className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-300/10 text-sm font-semibold text-rose-200">
+                        {index + 1}
+                      </div>
+                      <div className="rounded-[1rem] border border-white/10 bg-[#0a131d]/90 px-4 py-3 text-sm text-white/70">
+                        {item}
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-6"
+              {...revealProps(reduceMotion, 0.12)}
+            >
+              <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                Frithly
+              </div>
+              <div className="mt-4 space-y-4">
                 {[
-                  "Large raw lead lists still require manual filtering and cleanup.",
-                  "Generic contact data creates weaker first touches and slower rep ramp time.",
-                  "Routing issues are discovered after the market has already seen the outreach.",
-                ].map((point) => (
-                  <div key={point} className="rounded-2xl bg-white/80 px-4 py-4 text-sm leading-7 text-muted">
-                    {point}
+                  "100 reviewed opportunities",
+                  "SMTP-aware routing",
+                  "Founder-aware targeting",
+                  "Higher-quality conversations",
+                ].map((item, index) => (
+                  <div key={item} className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0b38e]/12 text-sm font-semibold text-[#f0b38e]">
+                      {index + 1}
+                    </div>
+                    <div className="rounded-[1rem] border border-white/10 bg-[#0a131d]/90 px-4 py-3 text-sm text-white/72">
+                      {item}
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className="surface-card overflow-hidden border-terracotta/25">
-              <div className="border-b border-border/70 bg-[linear-gradient(135deg,rgba(212,98,58,0.08),rgba(255,255,255,0.96))] px-5 py-5 sm:px-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                  Frithly
-                </div>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">Smaller cohorts, stronger odds.</h3>
-              </div>
-              <div className="space-y-3 px-5 py-5 sm:px-6">
-                {[
-                  "The queue is reviewed before release so reps inherit better decisions, not just more records.",
-                  "Founder-aware targeting and timing context improve conversation quality before volume scales.",
-                  "SMTP-safe prioritization helps protect delivery quality instead of treating it as post-send cleanup.",
-                ].map((point) => (
-                  <div key={point} className="rounded-2xl bg-stone-50 px-4 py-4 text-sm leading-7 text-muted">
-                    {point}
-                  </div>
-                ))}
-              </div>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="surface-card overflow-hidden border-terracotta/15 bg-[#f8f4ec] p-2 shadow-[0_24px_70px_rgba(26,26,26,0.08)]">
-            <RoiCalculatorExperience />
-          </div>
+          <motion.div
+            className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] px-5 py-5 text-center text-sm leading-7 text-white/66"
+            {...revealProps(reduceMotion, 0.14)}
+          >
+            With better targeting, you could get more replies and better meetings without increasing
+            outreach volume.
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
+            {...revealProps(reduceMotion, 0.16)}
+          >
+            <div className="rounded-[1.6rem] border border-white/10 bg-[#f8f4ec] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+              <RoiCalculatorExperience />
+            </div>
+          </motion.div>
         </Container>
       </section>
 
-      <section className="py-16 sm:py-20 lg:py-24">
-        <Container className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div className="space-y-6">
+      <section id="trust-layer" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="grid gap-8 lg:grid-cols-[0.84fr_1.16fr] lg:items-start">
+          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
             <SectionIntro
-              eyebrow="Operational trust"
-              title="Trust should come from operational depth, not vanity metrics."
-              copy="Frithly is easiest to believe when the service makes its operating discipline obvious: reviewed delivery, cleaner targeting, better routing habits, and a weekly cadence teams can actually plan around."
+              eyebrow="Operational trust layer"
+              title="Trust should come from operational depth, not startup vanity."
+              copy="Reviewed opportunities, SMTP-aware prioritization, founder intelligence, release QA, and weekly review cycles are what make Frithly feel premium and believable."
             />
 
-            <div className="rounded-[1.75rem] border border-border/70 bg-ink px-6 py-6 text-white shadow-[0_24px_70px_rgba(16,16,16,0.18)]">
-              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                Best fit
+            <div className="rounded-[1.7rem] border border-white/10 bg-white/[0.03] p-5">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                Delivery QA snapshot
               </div>
               <div className="mt-4 space-y-3">
-                {fitProfiles.map((profile) => (
-                  <div key={profile} className="flex gap-3 rounded-2xl bg-white/5 px-4 py-4">
-                    <Sparkles className="mt-1 h-4 w-4 shrink-0 text-terracotta" aria-hidden="true" />
-                    <p className="text-sm leading-7 text-white/75">{profile}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-5">
-            <div className="grid gap-5 sm:grid-cols-2">
-              {trustSignals.map((signal) => {
-                const Icon = signal.icon;
-
-                return (
-                  <div key={signal.title} className="surface-card h-full p-5">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </div>
-                    <h3 className="mt-5 text-xl font-semibold text-ink">{signal.title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-muted">{signal.body}</p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="surface-card overflow-hidden border-terracotta/20">
-              <div className="border-b border-border/70 bg-[linear-gradient(135deg,rgba(212,98,58,0.08),rgba(255,255,255,0.96))] px-5 py-5 sm:px-6">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
-                  What ships weekly
-                </div>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">
-                  A finished delivery layer, not just research access.
-                </h3>
-              </div>
-              <div className="grid gap-3 px-5 py-5 sm:grid-cols-2 sm:px-6">
                 {[
-                  "Reviewed opportunity cohort",
-                  "Founder context and targeting notes",
-                  "SMTP-safe prioritization cues",
-                  "Why-now signals and account timing",
-                  "Outreach-ready export structure",
-                  "Weekly handoff consistency",
+                  "Recommendation reasoning attached",
+                  "Founder context present where confidence is strong",
+                  "SMTP-aware route notes prepared before handoff",
                 ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl border border-border/70 bg-stone-50 px-4 py-4 text-sm text-ink"
-                  >
-                    {item}
+                  <div key={item} className="flex gap-3 rounded-[1rem] border border-white/8 bg-[#07111a]/84 px-4 py-3">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#f0b38e]" aria-hidden="true" />
+                    <p className="text-sm leading-7 text-white/64">{item}</p>
                   </div>
                 ))}
               </div>
             </div>
+          </motion.div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {trustSignals.map((signal, index) => {
+              const Icon = signal.icon;
+
+              return (
+                <motion.div
+                  key={signal.title}
+                  className="rounded-[1.7rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl"
+                  {...revealProps(reduceMotion, 0.08 + index * 0.04)}
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-[#f0b38e]/12 text-[#f0b38e]">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-semibold text-white">{signal.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/64">{signal.body}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </Container>
       </section>
 
-      <section id="faq" className="border-y border-border/70 bg-white/60 py-16 sm:py-20 lg:py-24">
-        <Container className="grid gap-8 lg:grid-cols-[0.84fr_1.16fr] lg:items-start">
-          <SectionIntro
-            eyebrow="FAQ"
-            title="Clear answers for teams deciding whether Frithly fits."
-            copy="The best buyers do not want vague claims. They want to understand how the service works, where the quality comes from, and whether it will fit the motion they are already running."
-          />
+      <section id="delivery-timeline" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="space-y-10">
+          <motion.div {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              eyebrow="Intelligence delivery timeline"
+              title="The customer experience is a premium weekly operating rhythm."
+              copy="Monday finalization, Tuesday refinement, Wednesday export preparation, Thursday QA review, and Friday optimization reinforce the service structure behind every delivery."
+            />
+          </motion.div>
 
-          <div className="surface-card overflow-hidden px-5 py-2 sm:px-6">
+          <div className="grid gap-5 lg:grid-cols-5">
+            {deliveryTimeline.map((item, index) => {
+              const Icon = item.icon;
+
+              return (
+                <motion.div
+                  key={item.day}
+                  className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl"
+                  {...revealProps(reduceMotion, 0.08 + index * 0.04)}
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[#f0b38e]/12 text-[#f0b38e]">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </div>
+                  <div className="mt-5 text-lg font-semibold text-white">{item.day}</div>
+                  <p className="mt-3 text-sm leading-7 text-white/64">{item.copy}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </Container>
+      </section>
+
+      <section id="faq" className="relative py-20 sm:py-24 lg:py-28">
+        <Container className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <motion.div className="space-y-6" {...revealProps(reduceMotion, 0.04)}>
+            <SectionIntro
+              eyebrow="FAQ"
+              title="The calm explanation behind the intelligence system."
+              copy="These answers are here to clarify how Frithly differs from lead-generation tools, why weekly delivery matters, and why reviewed quality wins over scraped volume."
+            />
+          </motion.div>
+
+          <motion.div
+            className="overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] px-5 py-3 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-2xl sm:px-6"
+            {...revealProps(reduceMotion, 0.1)}
+          >
             <Accordion type="single" collapsible>
               {platformFaqs.map((faq, index) => (
-                <AccordionItem key={faq.question} value={`faq-${index}`} className="border-border/70">
-                  <AccordionTrigger>{faq.question}</AccordionTrigger>
-                  <AccordionContent>{faq.answer}</AccordionContent>
+                <AccordionItem
+                  key={faq.question}
+                  value={`faq-${index}`}
+                  className="border-white/10"
+                >
+                  <AccordionTrigger className="text-white hover:text-[#f0b38e] data-[state=open]:text-[#f0b38e]">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-white/64">
+                    {faq.answer}
+                  </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
+          </motion.div>
         </Container>
       </section>
 
-      <section className="py-16 sm:py-20 lg:py-24">
+      <section className="relative pb-16 pt-6 sm:pb-20 lg:pb-24">
         <Container>
-          <div className="surface-card-dark animated-glow relative overflow-hidden px-5 py-8 sm:px-8 sm:py-10 md:px-12 md:py-14">
-            <div className="absolute inset-y-0 right-[-8rem] hidden w-64 rounded-full bg-terracotta/20 blur-3xl lg:block" />
+          <motion.div
+            className="relative overflow-hidden rounded-[2.2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(10,17,26,0.98)_0%,rgba(6,11,18,0.98)_100%)] px-6 py-10 shadow-[0_34px_110px_rgba(0,0,0,0.35)] sm:px-8 sm:py-12 lg:px-12 lg:py-16"
+            {...revealProps(reduceMotion, 0.04)}
+          >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.22),transparent_28rem),radial-gradient(circle_at_bottom_right,rgba(97,146,186,0.12),transparent_24rem)]" />
+            <div className="pointer-events-none absolute right-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-[#f0b38e]/15 blur-3xl" />
+            <div className="pointer-events-none absolute left-[10%] top-[18%] h-40 w-40 rounded-full bg-white/6 blur-3xl" />
 
-            <div className="relative grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+            {heroParticles.slice(0, 4).map((particle) => (
+              <motion.span
+                key={`cta-${particle.left}-${particle.top}`}
+                className="absolute rounded-full bg-[#f0b38e]/75 shadow-[0_0_24px_rgba(240,179,142,0.65)]"
+                style={{
+                  height: particle.size,
+                  left: particle.left,
+                  top: particle.top,
+                  width: particle.size,
+                }}
+                animate={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        opacity: [0.24, 0.92, 0.24],
+                        y: [0, -22, 0],
+                      }
+                }
+                transition={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        delay: particle.delay,
+                        duration: particle.duration,
+                        ease: "easeInOut",
+                        repeat: Number.POSITIVE_INFINITY,
+                      }
+                }
+              />
+            ))}
+
+            <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
               <div className="space-y-6">
-                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                  <BrandMark
-                    className="h-14 w-14 rounded-[1.2rem] border-white/10 bg-white/5 p-1.5 shadow-none"
-                    imageClassName="h-full w-full rounded-[0.95rem]"
-                  />
-                  <div className="section-eyebrow border-white/10 bg-white/5 text-terracotta">
-                    Final call to action
-                  </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                  Final cinematic CTA
                 </div>
-
-                <div className="space-y-5">
-                  <h2 className={cn("section-title text-white", displayFont.className)}>
-                    Design Your Outbound Intelligence Program.
-                  </h2>
-                  <p className="max-w-2xl text-base leading-8 text-white/72 md:text-lg">
-                    Every Frithly program is shaped around your ICP, delivery cadence, geography,
-                    review depth, and the level of outbound support your team actually needs.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    "Reviewed weekly delivery",
-                    "Founder-aware targeting",
-                    "SMTP-safe prioritization",
-                  ].map((point) => (
-                    <div
-                      key={point}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/75"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-terracotta" aria-hidden="true" />
-                      <span>{point}</span>
-                    </div>
-                  ))}
-                </div>
+                <h2 className={`${displayFont.className} max-w-4xl text-4xl leading-[0.92] text-white sm:text-5xl lg:text-6xl`}>
+                  Design Your Outbound Intelligence Program.
+                </h2>
+                <p className="max-w-2xl text-base leading-8 text-white/72 md:text-[1.08rem] md:leading-9">
+                  Every Frithly delivery is tailored around your ICP, targeting depth, opportunity
+                  quality, and weekly outbound goals.
+                </p>
               </div>
 
-              <div className="flex flex-col gap-4 lg:min-w-[18rem]">
-                <Button asChild size="lg" className="w-full">
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+                <Button asChild size="lg" className="shadow-[0_18px_48px_rgba(212,98,58,0.28)]">
                   <Link href={ROUTES.APPLY}>
                     <span className="inline-flex items-center gap-2">
                       Apply for a Campaign
@@ -899,15 +1684,17 @@ export function PlatformHomepage() {
                     </span>
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="secondary" className="w-full">
-                  <Link href="#icp-demo">Explore the demo first</Link>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="secondary"
+                  className="border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
+                >
+                  <Link href="#living-engine">Watch the Intelligence Flow</Link>
                 </Button>
-                <p className="text-sm text-white/60">
-                  Best for teams that want stronger weekly output, not another tool to manage.
-                </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </Container>
       </section>
     </div>

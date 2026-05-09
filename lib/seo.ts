@@ -130,9 +130,9 @@ export function buildServiceSchema() {
       "@type": "Audience",
       audienceType: "Agencies, founders, SDR teams, and outbound operators",
     },
-    category: "B2B outbound intelligence service",
+    category: "Premium outbound intelligence service",
     description:
-      "Curated outbound intelligence for teams that want reviewed weekly opportunities, founder-aware targeting, SMTP-safe prioritization, and stronger delivery discipline.",
+      "Confidence-aware outbound intelligence for teams that want reviewed weekly opportunities, founder-aware targeting, SMTP-aware routing, and stronger delivery discipline.",
     name: `${APP_NAME} curated outbound intelligence service`,
     offers: {
       "@type": "Offer",
@@ -153,7 +153,7 @@ export function buildServiceSchema() {
     },
     serviceOutput:
       "Reviewed weekly opportunity cohorts with founder context, routing notes, recommendation reasoning, and outreach-ready delivery context.",
-    serviceType: "Curated outbound intelligence delivery",
+    serviceType: "Curated weekly outbound opportunity delivery",
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };

@@ -15,12 +15,12 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Frithly is a premium curated outbound intelligence service that delivers reviewed, founder-aware, SMTP-conscious opportunities in weekly outbound cohorts.",
+    "Frithly is a premium curated outbound intelligence service that delivers reviewed, founder-aware, SMTP-aware opportunities in weekly outbound cohorts.",
   keywords: [
     "curated outbound intelligence service",
     "weekly outbound opportunity delivery",
     "founder-aware outbound targeting",
-    "SMTP-safe opportunity routing",
+    "SMTP-aware opportunity routing",
     "premium outbound intelligence",
     "curated lead research service",
   ],
