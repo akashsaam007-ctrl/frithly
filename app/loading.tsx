@@ -7,9 +7,7 @@ export default function Loading() {
         <Spinner className="text-terracotta" />
         <div className="space-y-2">
           <h1 className="text-3xl md:text-4xl">Loading Frithly</h1>
-          <p className="text-muted">
-            Pulling in your opportunities, cohort signals, and workspace details.
-          </p>
+          <p className="text-muted">Preparing the next Frithly view.</p>
         </div>
       </div>
     </main>

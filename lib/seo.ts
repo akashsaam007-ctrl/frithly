@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { APP_DOMAIN, APP_NAME, APP_TAGLINE, META, PLANS, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, APP_TAGLINE, META, SUPPORT_EMAIL } from "@/lib/constants";
 import { publicEnv } from "@/lib/utils/public-env";
 
 const SITE_URL = publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`;
@@ -93,11 +93,11 @@ export function buildOrganizationSchema() {
     description: META.DESCRIPTION,
     email: SUPPORT_EMAIL,
     knowsAbout: [
-      "B2B lead generation",
-      "sales intelligence",
-      "outbound prospecting",
-      "lead research",
-      "personalized outreach",
+      "curated outbound intelligence",
+      "B2B prospect research",
+      "founder-aware targeting",
+      "SMTP-safe outreach planning",
+      "weekly outbound delivery",
     ],
     logo: absoluteUrl("/icon-512.png"),
     name: APP_NAME,
@@ -125,31 +125,35 @@ export function buildServiceSchema() {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": absoluteUrl("/#service"),
-    areaServed: "Worldwide",
+    areaServed: ["United Kingdom", "Europe", "United States"],
     audience: {
       "@type": "Audience",
-      audienceType: "B2B sales teams, founders, SDR teams, and GTM operators",
+      audienceType: "Agencies, founders, SDR teams, and outbound operators",
     },
-    category: "Outbound intelligence platform",
+    category: "B2B outbound intelligence service",
     description:
-      "Confidence-aware outbound intelligence for turning client ICPs into selective campaigns, ranked recommendations, source-backed drafts, SMTP-safe cohorts, and outcome-driven learning.",
-    name: `${APP_NAME} outbound intelligence platform`,
-    offers: [PLANS.STARTER, PLANS.GROWTH, PLANS.SCALE].map((plan) => ({
+      "Curated outbound intelligence for teams that want reviewed weekly opportunities, founder-aware targeting, SMTP-safe prioritization, and stronger delivery discipline.",
+    name: `${APP_NAME} curated outbound intelligence service`,
+    offers: {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
-      category: "Recurring subscription",
-      description: `${plan.name} plan for ${APP_NAME} outbound intelligence`,
-      name: plan.name,
-      price: plan.price,
-      priceCurrency: plan.currency,
-      url: absoluteUrl("/#pricing"),
-    })),
+      category: "Consultative service",
+      description:
+        "Custom outbound intelligence programs tailored around ICP, geography, targeting depth, and weekly delivery cadence.",
+      priceCurrency: "EUR",
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        minPrice: 499,
+        priceCurrency: "EUR",
+      },
+      url: absoluteUrl("/apply"),
+    },
     provider: {
       "@id": absoluteUrl("/#organization"),
     },
     serviceOutput:
-      "A ranked set of outbound opportunities with recommendation reasoning, verified contact paths, drafts, readiness states, and exportable execution context.",
-    serviceType: "Outbound intelligence platform",
+      "Reviewed weekly opportunity cohorts with founder context, routing notes, recommendation reasoning, and outreach-ready delivery context.",
+    serviceType: "Curated outbound intelligence delivery",
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };

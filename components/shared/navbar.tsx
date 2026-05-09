@@ -7,7 +7,6 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import { cn } from "@/lib/utils";
 import { CALCOM_URL, ROUTES } from "@/lib/constants";
 
 const defaultNavLinks = [
@@ -21,10 +20,10 @@ const defaultNavLinks = [
 ];
 
 const homeNavLinks = [
-  { href: ROUTES.HOW_IT_WORKS, label: "Flow" },
-  { href: "/#why-outbound-fails", label: "Why Quality Wins" },
+  { href: ROUTES.HOW_IT_WORKS, label: "Workflow" },
+  { href: "/#why-outbound-fails", label: "Why Frithly" },
   { href: "/#icp-demo", label: "Demo" },
-  { href: ROUTES.PRICING, label: "Program" },
+  { href: ROUTES.PRICING, label: "Programs" },
   { href: "/#roi-experience", label: "ROI" },
   { href: ROUTES.FAQ, label: "FAQ" },
 ];
@@ -32,31 +31,12 @@ const homeNavLinks = [
 export function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const isHome = pathname === ROUTES.HOME;
   const navLinks = isHome ? homeNavLinks : defaultNavLinks;
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
-
-  useEffect(() => {
-    if (!isHome) {
-      setHasScrolled(false);
-      return;
-    }
-
-    const handleScroll = () => {
-      setHasScrolled(window.scrollY > 20);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isHome]);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -71,39 +51,16 @@ export function Navbar() {
   }, [isMenuOpen]);
 
   return (
-    <nav
-      className={cn(
-        "sticky top-0 z-50 transition-colors duration-300",
-        isHome
-          ? cn(
-              "border-b border-white/10 backdrop-blur-2xl",
-              hasScrolled
-                ? "bg-[#08111bec] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
-                : "bg-[#08111bb0]",
-            )
-          : "border-b border-border/70 bg-white/84 shadow-[0_8px_26px_rgba(26,26,26,0.05)] backdrop-blur-xl",
-      )}
-    >
+    <nav className="sticky top-0 z-50 border-b border-border/70 bg-white/84 shadow-[0_8px_26px_rgba(26,26,26,0.05)] backdrop-blur-xl">
       <Container className="relative flex h-16 items-center justify-between">
-        <Logo
-          className={cn(
-            "rounded-2xl px-3 py-2",
-            isHome && "bg-white shadow-[0_12px_26px_rgba(0,0,0,0.16)]",
-          )}
-          priority
-        />
+        <Logo priority />
 
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors",
-                isHome
-                  ? "text-white/66 hover:text-white"
-                  : "text-muted hover:text-ink",
-              )}
+              className="text-sm font-medium text-muted transition-colors hover:text-ink"
             >
               {link.label}
             </Link>
@@ -113,22 +70,11 @@ export function Navbar() {
         <div className="hidden items-center gap-4 md:flex">
           <Link
             href={ROUTES.LOGIN}
-            className={cn(
-              "text-sm font-medium transition-colors",
-              isHome
-                ? "text-white/66 hover:text-white"
-                : "text-muted hover:text-ink",
-            )}
+            className="text-sm font-medium text-muted transition-colors hover:text-ink"
           >
             Login
           </Link>
-          <Button
-            asChild
-            size="md"
-            className={cn(
-              isHome && "shadow-[0_18px_42px_rgba(212,98,58,0.22)]",
-            )}
-          >
+          <Button asChild size="md">
             <Link href={ROUTES.APPLY}>
               Apply
             </Link>
@@ -138,12 +84,7 @@ export function Navbar() {
         <button
           aria-expanded={isMenuOpen}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className={cn(
-            "inline-flex items-center justify-center rounded-lg p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta md:hidden",
-            isHome
-              ? "text-white hover:bg-white/10"
-              : "text-ink hover:bg-cream",
-          )}
+          className="inline-flex items-center justify-center rounded-lg p-2 text-ink transition-colors hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta md:hidden"
           onClick={() => setIsMenuOpen((current) => !current)}
           type="button"
         >

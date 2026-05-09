@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
-  category: "B2B SaaS",
+  category: "B2B sales intelligence service",
   creator: APP_NAME,
   description: META.DESCRIPTION,
   manifest: "/manifest.webmanifest",
