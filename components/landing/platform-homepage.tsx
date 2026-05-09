@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { BrandMark } from "@/components/ui/logo";
 import { IcpDemoExperience } from "@/components/landing/icp-demo-experience";
 import { platformFaqs } from "@/components/landing/platform-homepage-data";
 import { RoiCalculatorExperience } from "@/components/landing/roi-calculator-experience";
@@ -39,117 +38,72 @@ const displayFont = Fraunces({
   weight: ["500", "600"],
 });
 
-const heroParticles = [
-  { delay: 0.2, duration: 10, left: "10%", size: 8, top: "18%" },
-  { delay: 1.0, duration: 13, left: "18%", size: 10, top: "70%" },
-  { delay: 0.6, duration: 11, left: "35%", size: 7, top: "42%" },
-  { delay: 1.3, duration: 12, left: "52%", size: 12, top: "16%" },
-  { delay: 0.4, duration: 9, left: "74%", size: 9, top: "57%" },
-  { delay: 1.6, duration: 14, left: "87%", size: 11, top: "30%" },
-] as const;
-
-const heroSignals = [
-  "Reviewed intelligence",
-  "Founder-aware targeting",
-  "SMTP-aware routing",
-  "Weekly cohort delivery",
-] as const;
-
-const failureSignals = [
-  "Noisy lead lists create activity, not conviction.",
-  "Generic scraping pushes weak-fit accounts into the funnel.",
-  "Poor routing increases bounce risk before outreach even starts.",
-  "Weak personalization usually means weak account understanding.",
-] as const;
-
 const engineStages = [
   {
-    body: "Frithly starts by translating the ICP into a real operating brief: geography, exclusion logic, commercial fit, and where confidence should matter most.",
+    body: "Frithly starts by translating the ICP into a real outbound brief so the system knows where precision matters most.",
     confidence: 22,
     id: "icp",
     incoming: 184,
-    label: "ICP brief",
+    label: "ICP alignment",
     narrowed: 184,
-    signal: "Signal intake aligned",
-    title: "Translate the ICP into an outbound operating brief.",
+    signal: "Brief locked",
+    title: "Translate the ICP into a selective operating brief.",
     traits: ["Market shape", "Geo focus", "Commercial exclusions"],
   },
   {
-    body: "Discovery expands through intent-aware search patterns so the system can widen coverage without rewarding volume for its own sake.",
+    body: "Discovery expands through directed search patterns so coverage can widen without turning noise into progress.",
     confidence: 34,
     id: "discovery",
     incoming: 268,
-    label: "Discovery",
+    label: "Discovery expansion",
     narrowed: 138,
-    signal: "Coverage expands",
-    title: "Expand the field without turning noise into progress.",
+    signal: "Coverage opens",
+    title: "Expand the field without rewarding volume for its own sake.",
     traits: ["Source expansion", "Signal-first coverage", "Research pathways"],
   },
   {
-    body: "Enrichment adds service fit, website context, and delivery clues so accounts start behaving like opportunities instead of raw company records.",
+    body: "Enrichment adds market context, service fit, and route clues so accounts start behaving like opportunities instead of raw records.",
     confidence: 48,
     id: "enrichment",
     incoming: 268,
-    label: "Enrichment",
+    label: "Signal enrichment",
     narrowed: 92,
     signal: "Context accumulates",
     title: "Turn raw company records into believable outbound context.",
     traits: ["Service fit", "Website cues", "Contact routes"],
   },
   {
-    body: "Recommendation scoring narrows attention toward opportunities with fresher movement, better context, and stronger commercial relevance.",
+    body: "Confidence ranking narrows attention toward accounts that are safer to route, easier to trust, and more commercially relevant.",
     confidence: 62,
     id: "scoring",
     incoming: 268,
-    label: "Recommendation scoring",
+    label: "Confidence ranking",
     narrowed: 46,
-    signal: "Priority queue tightening",
-    title: "Strengthen the queue with confidence-aware ranking.",
-    traits: ["Recommendation weight", "Freshness", "Outcome bias"],
+    signal: "Priority tightens",
+    title: "Strengthen the queue before the team ever sees it.",
+    traits: ["Delivery posture", "Freshness", "Commercial relevance"],
   },
   {
-    body: "SMTP-aware routing sits inside the workflow so delivery quality is considered before the cohort is released, not after the campaign struggles.",
-    confidence: 74,
-    id: "smtp",
-    incoming: 268,
-    label: "SMTP-safe filtering",
-    narrowed: 29,
-    signal: "Routing discipline engaged",
-    title: "Reduce wasted outreach before the team ever touches the list.",
-    traits: ["MX posture", "Syntax confidence", "Route safety"],
-  },
-  {
-    body: "Founder intelligence makes the system more selective by increasing clarity around who actually matters inside the account.",
+    body: "Founder intelligence adds clearer decision-maker relevance so the strongest accounts feel more obvious before release.",
     confidence: 81,
     id: "founders",
     incoming: 268,
     label: "Founder intelligence",
     narrowed: 21,
-    signal: "Decision-maker clarity rising",
-    title: "Layer founder-aware targeting into the final shortlist.",
+    signal: "Decision-maker clarity rises",
+    title: "Layer founder relevance into the final shortlist.",
     traits: ["Founder confidence", "Role fit", "Decision-maker context"],
   },
   {
-    body: "Only the strongest reviewed opportunities survive into the release queue, where scarcity is intentional and priority is obvious.",
+    body: "The final weekly release keeps only the accounts worth carrying forward, with routing notes and review context already attached.",
     confidence: 89,
-    id: "ranking",
+    id: "release",
     incoming: 268,
-    label: "Opportunity ranking",
+    label: "Weekly release",
     narrowed: 15,
-    signal: "Scarcity by design",
-    title: "Package quality into a deliberately small set of strong options.",
-    traits: ["Reviewed shortlist", "Priority ordering", "Release notes"],
-  },
-  {
-    body: "The output is not a bulk export. It is a weekly cohort: reviewed, founder-aware, SMTP-safe, and ready for calm operational delivery.",
-    confidence: 94,
-    id: "cohort",
-    incoming: 268,
-    label: "Weekly cohort assembly",
-    narrowed: 11,
     signal: "Monday cohort prepared",
-    title: "Finalize the weekly outbound intelligence cohort.",
-    traits: ["Weekly release", "Delivery handoff", "Outreach readiness"],
+    title: "Package intelligence into a calm weekly delivery.",
+    traits: ["Reviewed shortlist", "SMTP-aware notes", "Outreach readiness"],
   },
 ] as const;
 
@@ -440,7 +394,6 @@ function SliderControl({
 export function PlatformHomepage() {
   const reduceMotion = useReducedMotion() ?? false;
   const [hasMounted, setHasMounted] = useState(false);
-  const [activeHeroSignal, setActiveHeroSignal] = useState(0);
   const [activeEngineStep, setActiveEngineStep] = useState(0);
   const [activeEvolutionStage, setActiveEvolutionStage] = useState(0);
   const [weeklyOpportunityTarget, setWeeklyOpportunityTarget] = useState(45);
@@ -454,18 +407,6 @@ export function PlatformHomepage() {
   useEffect(() => {
     setHasMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (reduceMotion) {
-      return undefined;
-    }
-
-    const heroTimer = window.setInterval(() => {
-      setActiveHeroSignal((current) => (current + 1) % heroSignals.length);
-    }, 2600);
-
-    return () => window.clearInterval(heroTimer);
-  }, [reduceMotion]);
 
   useEffect(() => {
     if (reduceMotion) {
@@ -547,7 +488,7 @@ export function PlatformHomepage() {
   return (
     <div className="relative overflow-hidden bg-[#050c14] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.18),transparent_26rem),radial-gradient(circle_at_72%_18%,rgba(98,130,164,0.16),transparent_30rem),linear-gradient(180deg,#050c14_0%,#07101a_42%,#050b13_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.022)_1px,transparent_1px)] bg-[size:88px_88px] opacity-[0.22]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.022)_1px,transparent_1px)] bg-[size:88px_88px] opacity-[0.08]" />
       <div className="pointer-events-none absolute left-[-7rem] top-[12rem] h-72 w-72 rounded-full bg-[#f0b38e]/10 blur-3xl" />
       <div className="pointer-events-none absolute right-[-9rem] top-[26rem] h-96 w-96 rounded-full bg-[#4a6580]/10 blur-3xl" />
       <div className="pointer-events-none absolute left-1/2 top-[26rem] hidden h-[calc(100%-34rem)] w-px -translate-x-1/2 bg-[linear-gradient(180deg,rgba(240,179,142,0),rgba(240,179,142,0.24),rgba(255,255,255,0.04),rgba(240,179,142,0))] lg:block" />
@@ -591,99 +532,37 @@ export function PlatformHomepage() {
               </Button>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              {heroSignals.map((signal, index) => (
-                <motion.div
-                  key={signal}
-                  className={cn(
-                    "rounded-[1.25rem] border px-4 py-4 text-sm transition-colors",
-                    activeHeroSignal === index
-                      ? "border-[#f0b38e]/30 bg-[#f0b38e]/10 text-white"
-                      : "border-white/10 bg-white/[0.03] text-white/62",
-                  )}
-                  animate={
-                    reduceMotion
-                      ? undefined
-                      : activeHeroSignal === index
-                        ? { y: [0, -2, 0] }
-                        : { y: 0 }
-                  }
-                  transition={
-                    reduceMotion
-                      ? undefined
-                      : { duration: 1.8, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }
-                  }
-                >
-                  {signal}
-                </motion.div>
-              ))}
-            </div>
           </motion.div>
 
           <motion.div
-            className="relative min-h-[34rem] overflow-hidden rounded-[2.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_36px_120px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-8"
+            className="relative min-h-[34rem] overflow-hidden rounded-[2.6rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_36px_120px_rgba(0,0,0,0.32)] backdrop-blur-2xl sm:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.22),transparent_16rem),radial-gradient(circle_at_bottom_right,rgba(89,130,167,0.18),transparent_18rem)]" />
-            <div className="pointer-events-none absolute inset-x-8 top-8 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent" />
-
-            {heroParticles.map((particle) => (
-              <motion.span
-                key={`${particle.left}-${particle.top}`}
-                className="absolute rounded-full bg-[#f0b38e]/80 shadow-[0_0_24px_rgba(240,179,142,0.65)]"
-                style={{
-                  height: particle.size,
-                  left: particle.left,
-                  top: particle.top,
-                  width: particle.size,
-                }}
-                animate={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        opacity: [0.28, 1, 0.28],
-                        y: [0, -24, 0],
-                      }
-                }
-                transition={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        delay: particle.delay,
-                        duration: particle.duration,
-                        ease: "easeInOut",
-                        repeat: Number.POSITIVE_INFINITY,
-                      }
-                }
-              />
-            ))}
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(240,179,142,0.24),transparent_16rem),radial-gradient(circle_at_72%_68%,rgba(97,146,186,0.14),transparent_20rem)]" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f0b38e]/8 blur-3xl" />
 
             <div className="relative flex h-full flex-col justify-between gap-6">
               <div className="flex items-start justify-between gap-5">
-                <div className="space-y-4">
-                  <BrandMark
-                    className="h-14 w-14 rounded-[1.1rem] border-white/10 bg-white/[0.06] p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
-                    imageClassName="h-full w-full rounded-[0.95rem]"
-                    priority
-                  />
-                  <div className="max-w-xs rounded-[1.25rem] border border-white/10 bg-[#07111b]/80 px-4 py-4 text-sm leading-7 text-white/68">
-                    The Frithly system is designed to feel less like software and more like a
-                    disciplined weekly operating rhythm.
+                <div className="max-w-xs">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
+                    Weekly release posture
                   </div>
+                  <p className="mt-4 text-sm leading-7 text-white/62">
+                    A smaller field, stronger conviction, and a calmer handoff every Monday.
+                  </p>
                 </div>
 
-                <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-right">
+                <div className="rounded-full bg-white/[0.05] px-4 py-2.5 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
-                    Cohort release state
+                    Reviewed now
                   </div>
-                  <div className="mt-2 text-lg font-semibold text-white">Assembling</div>
-                  <div className="mt-1 text-sm text-white/58">11 reviewed opportunities</div>
+                  <div className="mt-1 text-lg font-semibold text-white">11 opportunities</div>
                 </div>
               </div>
 
               <div className="relative mx-auto flex h-[17rem] w-full max-w-[30rem] items-center justify-center">
                 <motion.div
-                  className="absolute h-[15rem] w-[15rem] rounded-full border border-[#f0b38e]/18 bg-[radial-gradient(circle,rgba(240,179,142,0.12),transparent_60%)]"
+                  className="absolute h-[16rem] w-[16rem] rounded-full bg-[radial-gradient(circle,rgba(240,179,142,0.16),transparent_64%)]"
                   animate={reduceMotion ? undefined : { scale: [1, 1.03, 1] }}
                   transition={
                     reduceMotion
@@ -692,63 +571,32 @@ export function PlatformHomepage() {
                   }
                 />
                 <motion.div
-                  className="absolute h-[11rem] w-[11rem] rounded-full border border-white/10"
-                  animate={reduceMotion ? undefined : { rotate: 360 }}
+                  className="absolute h-[10rem] w-[10rem] rounded-full border border-white/8"
+                  animate={reduceMotion ? undefined : { scale: [1, 1.04, 1] }}
                   transition={
                     reduceMotion
                       ? undefined
-                      : { duration: 28, ease: "linear", repeat: Number.POSITIVE_INFINITY }
+                      : { duration: 5.5, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }
                   }
-                >
-                  <span className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f0b38e] shadow-[0_0_18px_rgba(240,179,142,0.7)]" />
-                </motion.div>
-                <motion.div
-                  className="absolute h-[8.4rem] w-[8.4rem] rounded-full border border-white/12"
-                  animate={reduceMotion ? undefined : { rotate: -360 }}
-                  transition={
-                    reduceMotion
-                      ? undefined
-                      : { duration: 20, ease: "linear", repeat: Number.POSITIVE_INFINITY }
-                  }
-                >
-                  <span className="absolute bottom-0 left-1/2 h-2.5 w-2.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-[#90b6d9] shadow-[0_0_18px_rgba(144,182,217,0.7)]" />
-                </motion.div>
+                />
 
-                <div className="relative z-10 rounded-full border border-white/12 bg-[#09131d]/90 px-8 py-7 text-center shadow-[0_26px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+                <div className="relative z-10 rounded-full bg-[#09131d]/90 px-10 py-9 text-center shadow-[0_26px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
                     Confidence index
                   </div>
                   <div className="mt-3 text-5xl font-semibold text-[#fff7f1]">94</div>
-                  <div className="mt-2 text-sm text-white/64">Signal strength rising</div>
-                </div>
-
-                <div className="absolute left-2 top-10 rounded-[1.15rem] border border-white/10 bg-[#07111b]/84 px-4 py-3 text-sm text-white/70">
-                  Founder confidence
-                  <div className="mt-1 text-lg font-semibold text-white">0.87</div>
-                </div>
-                <div className="absolute right-2 top-16 rounded-[1.15rem] border border-white/10 bg-[#07111b]/84 px-4 py-3 text-sm text-white/70">
-                  SMTP-aware route
-                  <div className="mt-1 text-lg font-semibold text-white">Safe</div>
-                </div>
-                <div className="absolute bottom-5 left-5 rounded-[1.15rem] border border-white/10 bg-[#07111b]/84 px-4 py-3 text-sm text-white/70">
-                  Recommendation lift
-                  <div className="mt-1 text-lg font-semibold text-white">4.8x focus</div>
+                  <div className="mt-2 text-sm text-white/60">Prepared for weekly release</div>
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                {[
-                  "Noise filtered before release",
-                  "Routing checked before outreach",
-                  "Cohort packaged for Monday delivery",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-[1.15rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66"
-                  >
-                    {item}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/42">
+                    One supporting signal
                   </div>
-                ))}
+                  <div className="mt-2 text-xl font-semibold text-white">SMTP-safe routes preserved before handoff</div>
+                </div>
+                <div className="text-sm text-white/58">Founder confidence stays inside the release logic, not outside it.</div>
               </div>
             </div>
           </motion.div>
@@ -761,49 +609,37 @@ export function PlatformHomepage() {
             <SectionIntro
               eyebrow="Outbound failure narrative"
               title="Mass outbound creates activity. It rarely creates conviction."
-              copy="Traditional outbound usually fails because too much of the workflow is optimized for volume. Frithly flips the logic by making route quality, founder relevance, and review discipline part of the operating system itself."
+              copy="Traditional outbound usually fails because it is optimized to keep the list moving. Frithly changes the logic by making quality, route safety, and review discipline part of the release itself."
             />
 
-            <div className="space-y-3">
-              {failureSignals.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-7 text-white/66"
-                >
-                  {item}
-                </div>
-              ))}
+            <div className="space-y-5 text-base leading-8 text-white/64">
+              <p>
+                Mass outbound optimizes for volume, not targeting quality. That usually means more
+                records, weaker route confidence, and more outreach pointed at accounts that were
+                never especially likely to convert.
+              </p>
+              <p>
+                Frithly is built to make the list smaller before it becomes expensive. Reviewed
+                opportunity quality is the product.
+              </p>
             </div>
           </motion.div>
 
           <motion.div
-            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-6"
+            className="overflow-hidden rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.02)_100%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:p-6"
             {...revealProps(enableReveal, 0.12)}
           >
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-rose-300/18 bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-5">
+              <div className="rounded-[1.6rem] bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-6">
                 <div className="flex items-center gap-3 text-sm font-semibold text-rose-200">
                   <Filter className="h-4 w-4" aria-hidden="true" />
                   Traditional outbound
                 </div>
-                <div className="mt-5 space-y-3">
-                  {[
-                    "Noisy lead lists",
-                    "Generic scraping",
-                    "Poor targeting",
-                    "High bounce risk",
-                    "Weak personalization",
-                    "Wasted outreach",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-[1rem] border border-white/8 bg-[#0a131d]/84 px-4 py-3 text-sm text-white/68"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 rounded-[1.15rem] border border-white/8 bg-white/[0.04] p-4">
+                <p className="mt-5 text-base leading-8 text-white/66">
+                  More accounts, weaker fit, rising bounce risk, and too little context for the
+                  team to trust what lands in front of them.
+                </p>
+                <div className="mt-6 rounded-[1.2rem] bg-white/[0.04] p-4">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/46">
                     Outcome
                   </div>
@@ -815,29 +651,16 @@ export function PlatformHomepage() {
                 </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-[#f0b38e]/18 bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-5">
+              <div className="rounded-[1.6rem] bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-6">
                 <div className="flex items-center gap-3 text-sm font-semibold text-[#f0b38e]">
                   <Sparkles className="h-4 w-4" aria-hidden="true" />
                   Frithly intelligence
                 </div>
-                <div className="mt-5 space-y-3">
-                  {[
-                    "Reviewed opportunities",
-                    "Founder-aware targeting",
-                    "SMTP-aware routing",
-                    "Confidence-ranked recommendations",
-                    "Curated weekly delivery",
-                    "Outreach-ready context",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-[1rem] border border-white/8 bg-[#0a131d]/84 px-4 py-3 text-sm text-white/72"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 rounded-[1.15rem] border border-white/8 bg-white/[0.04] p-4">
+                <p className="mt-5 text-base leading-8 text-white/68">
+                  Reviewed opportunities, clearer founder relevance, safer routing, and a weekly
+                  release that arrives with enough conviction to be useful immediately.
+                </p>
+                <div className="mt-6 rounded-[1.2rem] bg-white/[0.04] p-4">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/46">
                     Outcome
                   </div>
@@ -852,7 +675,7 @@ export function PlatformHomepage() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-[#08111a]/88 px-5 py-5 text-center text-sm leading-7 text-white/66">
+            <div className="mt-4 px-3 text-center text-sm leading-7 text-white/62">
               Better opportunities outperform bigger lists.
             </div>
           </motion.div>
@@ -865,66 +688,50 @@ export function PlatformHomepage() {
             <SectionIntro
               eyebrow="Living intelligence engine"
               title="As the system moves, the opportunity field narrows and confidence rises."
-              copy="This is the part of the experience that should feel like watching Frithly think. Each stage reduces noise, increases operational clarity, and prepares the eventual weekly cohort."
+              copy="This should feel like watching the system think. Each stage removes noise, clarifies fit, and strengthens the eventual weekly release."
             />
 
-            <div className="space-y-3">
+            <div className="relative space-y-2 pl-8">
+              <div className="absolute bottom-2 left-3 top-2 w-px bg-white/10" />
               {engineStages.map((stage, index) => (
                 <button
                   key={stage.id}
                   className={cn(
-                    "flex w-full items-start gap-4 rounded-[1.25rem] border px-4 py-4 text-left transition-colors",
+                    "relative w-full py-4 text-left transition-opacity",
                     activeEngineStep === index
-                      ? "border-[#f0b38e]/30 bg-[#f0b38e]/10"
-                      : "border-white/10 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.05]",
+                      ? "opacity-100"
+                      : "opacity-62 hover:opacity-85",
                   )}
                   onClick={() => setActiveEngineStep(index)}
                   type="button"
                 >
-                  <div
+                  <span
                     className={cn(
-                      "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold",
+                      "absolute left-[-1.55rem] top-6 h-3 w-3 rounded-full transition-colors",
                       activeEngineStep === index
-                        ? "border-[#f0b38e]/35 bg-[#f0b38e]/14 text-[#f0b38e]"
-                        : "border-white/12 bg-white/[0.04] text-white/54",
+                        ? "bg-[#f0b38e] shadow-[0_0_18px_rgba(240,179,142,0.5)]"
+                        : "bg-white/18",
                     )}
-                  >
+                  />
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/40">
                     {String(index + 1).padStart(2, "0")}
                   </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white">{stage.label}</div>
-                    <p className="mt-1 text-sm leading-7 text-white/58">{stage.signal}</p>
-                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-white">{stage.label}</div>
+                  <p className="mt-2 max-w-md text-sm leading-7 text-white/56">{stage.signal}</p>
                 </button>
               ))}
             </div>
           </motion.div>
 
           <motion.div
-            className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-7"
+            className="overflow-hidden rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_100%)] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:p-7"
             {...revealProps(enableReveal, 0.12)}
           >
             <div className="grid gap-6">
-              <div className="flex flex-wrap gap-2">
-                {engineStages.map((stage, index) => (
-                  <div
-                    key={stage.id}
-                    className={cn(
-                      "rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em]",
-                      activeEngineStep === index
-                        ? "border-[#f0b38e]/30 bg-[#f0b38e]/10 text-[#f0b38e]"
-                        : "border-white/10 bg-white/[0.03] text-white/42",
-                    )}
-                  >
-                    {stage.label}
-                  </div>
-                ))}
-              </div>
-
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStage.id}
-                  className="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]"
+                  className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]"
                   initial={reduceMotion ? undefined : { opacity: 0, y: 18 }}
                   animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                   exit={reduceMotion ? undefined : { opacity: 0, y: -18 }}
@@ -941,8 +748,8 @@ export function PlatformHomepage() {
                       <p className="mt-4 text-base leading-8 text-white/66">{activeStage.body}</p>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="rounded-[1.2rem] border border-white/10 bg-[#09131c]/88 px-4 py-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="rounded-[1.35rem] bg-[#09131c]/82 px-5 py-5">
                         <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
                           Accounts in play
                         </div>
@@ -950,15 +757,7 @@ export function PlatformHomepage() {
                           {activeStage.incoming}
                         </div>
                       </div>
-                      <div className="rounded-[1.2rem] border border-white/10 bg-[#09131c]/88 px-4 py-4">
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                          Still worth review
-                        </div>
-                        <div className="mt-2 text-2xl font-semibold text-white">
-                          {activeStage.narrowed}
-                        </div>
-                      </div>
-                      <div className="rounded-[1.2rem] border border-white/10 bg-[#09131c]/88 px-4 py-4">
+                      <div className="rounded-[1.35rem] bg-[#09131c]/82 px-5 py-5">
                         <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
                           Confidence
                         </div>
@@ -968,29 +767,24 @@ export function PlatformHomepage() {
                       </div>
                     </div>
 
-                    <div className="grid gap-3">
+                    <div className="space-y-3 text-sm leading-7 text-white/62">
                       {activeStage.traits.map((trait) => (
-                        <div
-                          key={trait}
-                          className="rounded-[1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/68"
-                        >
-                          {trait}
-                        </div>
+                        <div key={trait}>{trait}</div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="space-y-5 rounded-[1.7rem] border border-white/10 bg-[#07111a]/86 p-5">
+                  <div className="space-y-6 rounded-[1.8rem] bg-[#07111a]/82 p-6">
                     <div className="flex items-center justify-between gap-4">
                       <div>
                         <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
-                          Quality compression
+                          Selective compression
                         </div>
                         <div className="mt-2 text-lg font-semibold text-white">
-                          The system keeps fewer accounts and better reasons.
+                          Better evidence keeps the queue small.
                         </div>
                       </div>
-                      <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white/68">
+                      <div className="rounded-full bg-white/[0.05] px-3 py-1.5 text-sm text-white/68">
                         Stage {activeEngineStep + 1} / {engineStages.length}
                       </div>
                     </div>
@@ -1024,7 +818,7 @@ export function PlatformHomepage() {
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-sm text-white/64">
-                          <span>Confidence lift</span>
+                          <span>Release confidence</span>
                           <span>{activeStage.confidence}/100</span>
                         </div>
                         <div className="h-2 rounded-full bg-white/8">
@@ -1037,12 +831,11 @@ export function PlatformHomepage() {
                       </div>
                     </div>
 
-                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.03] p-4">
+                    <div className="p-1">
                       <div className="text-sm font-semibold text-white">What changes here</div>
                       <p className="mt-3 text-sm leading-7 text-white/62">
-                        Frithly is intentionally opinionated at this stage. The workflow narrows
-                        accounts faster as soon as the confidence signals become clear enough to act
-                        on.
+                        The system is allowed to remove accounts as soon as the evidence becomes
+                        clear enough. That is why the release feels selective instead of inflated.
                       </p>
                     </div>
                   </div>
@@ -1434,27 +1227,31 @@ export function PlatformHomepage() {
             <SectionIntro
               align="center"
               eyebrow="ROI intelligence experience"
-              title="Outbound inefficiency is expensive. Better targeting changes the conversation quality."
-              copy="This should not feel like a spreadsheet. It should feel like an opportunity simulator that shows how noisy outbound leaks money, time, and attention."
+              title="Outbound inefficiency is expensive. Better targeting protects time, pipeline, and deliverability."
+              copy="This should feel like a commercial consequence, not a spreadsheet. The goal is to show where weak targeting wastes outreach before the team ever sees the damage."
             />
           </motion.div>
 
           <div className="grid gap-5 lg:grid-cols-2">
             <motion.div
-              className="rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-6"
+              className="rounded-[1.85rem] bg-[linear-gradient(180deg,rgba(255,125,125,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-6"
               {...revealProps(enableReveal, 0.08)}
             >
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-rose-200">
                 Traditional outbound
               </div>
               <div className="mt-4 space-y-4">
-                {["1000 noisy contacts", "Generic outreach", "Low-quality conversations"].map(
+                {[
+                  "Too many accounts that should never have made it into the queue.",
+                  "Too much rep time spent on low-conviction outreach.",
+                  "Too much deliverability risk before campaigns scale.",
+                ].map(
                   (item, index) => (
                     <div key={item} className="flex items-center gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-300/10 text-sm font-semibold text-rose-200">
                         {index + 1}
                       </div>
-                      <div className="rounded-[1rem] border border-white/10 bg-[#0a131d]/90 px-4 py-3 text-sm text-white/70">
+                      <div className="rounded-[1rem] bg-[#0a131d]/82 px-4 py-3 text-sm text-white/70">
                         {item}
                       </div>
                     </div>
@@ -1464,7 +1261,7 @@ export function PlatformHomepage() {
             </motion.div>
 
             <motion.div
-              className="rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-6"
+              className="rounded-[1.85rem] bg-[linear-gradient(180deg,rgba(240,179,142,0.1)_0%,rgba(255,255,255,0.03)_100%)] p-6"
               {...revealProps(enableReveal, 0.12)}
             >
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b38e]">
@@ -1472,16 +1269,15 @@ export function PlatformHomepage() {
               </div>
               <div className="mt-4 space-y-4">
                 {[
-                  "100 reviewed opportunities",
-                  "SMTP-aware routing",
-                  "Founder-aware targeting",
-                  "Higher-quality conversations",
+                  "Reduce wasted outreach before campaigns scale.",
+                  "Focus reps on accounts more likely to convert.",
+                  "Protect deliverability before volume becomes expensive.",
                 ].map((item, index) => (
                   <div key={item} className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0b38e]/12 text-sm font-semibold text-[#f0b38e]">
                       {index + 1}
                     </div>
-                    <div className="rounded-[1rem] border border-white/10 bg-[#0a131d]/90 px-4 py-3 text-sm text-white/72">
+                    <div className="rounded-[1rem] bg-[#0a131d]/82 px-4 py-3 text-sm text-white/72">
                       {item}
                     </div>
                   </div>
@@ -1491,11 +1287,11 @@ export function PlatformHomepage() {
           </div>
 
           <motion.div
-            className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] px-5 py-5 text-center text-sm leading-7 text-white/66"
+            className="rounded-[1.6rem] bg-white/[0.03] px-5 py-5 text-center text-sm leading-7 text-white/66"
             {...revealProps(enableReveal, 0.14)}
           >
-            With better targeting, you could get more replies and better meetings without increasing
-            outreach volume.
+            With better targeting, you could generate better meetings without increasing outreach
+            volume.
           </motion.div>
 
           <motion.div
@@ -1635,37 +1431,6 @@ export function PlatformHomepage() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,179,142,0.22),transparent_28rem),radial-gradient(circle_at_bottom_right,rgba(97,146,186,0.12),transparent_24rem)]" />
             <div className="pointer-events-none absolute right-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-[#f0b38e]/15 blur-3xl" />
             <div className="pointer-events-none absolute left-[10%] top-[18%] h-40 w-40 rounded-full bg-white/6 blur-3xl" />
-
-            {heroParticles.slice(0, 4).map((particle) => (
-              <motion.span
-                key={`cta-${particle.left}-${particle.top}`}
-                className="absolute rounded-full bg-[#f0b38e]/75 shadow-[0_0_24px_rgba(240,179,142,0.65)]"
-                style={{
-                  height: particle.size,
-                  left: particle.left,
-                  top: particle.top,
-                  width: particle.size,
-                }}
-                animate={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        opacity: [0.24, 0.92, 0.24],
-                        y: [0, -22, 0],
-                      }
-                }
-                transition={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        delay: particle.delay,
-                        duration: particle.duration,
-                        ease: "easeInOut",
-                        repeat: Number.POSITIVE_INFINITY,
-                      }
-                }
-              />
-            ))}
 
             <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
               <div className="space-y-6">
