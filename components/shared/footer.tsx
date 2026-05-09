@@ -5,73 +5,68 @@ import { APP_NAME, BUSINESS_ADDRESS, ROUTES, SUPPORT_EMAIL } from "@/lib/constan
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-ink py-12 text-white sm:py-14">
+    <footer className="border-t border-white/10 bg-[linear-gradient(180deg,#07111b_0%,#050d15_100%)] py-12 text-white sm:py-14">
       <Container className="space-y-12">
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_2fr]">
-          <div className="space-y-4">
+        <div className="grid gap-10 lg:grid-cols-[1.05fr_1.95fr]">
+          <div className="space-y-5">
             <Logo
               className="w-fit rounded-[1.35rem] bg-white px-4 py-3 shadow-sm hover:opacity-100"
               imageClassName="h-8 md:h-9"
             />
             <p className="max-w-sm text-base leading-8 text-white/70">
-              Confidence-aware outbound intelligence for teams that want fewer, stronger, and safer
-              opportunities to pursue.
+              Curated outbound intelligence delivered weekly for teams that would rather work a
+              smaller, stronger opportunity flow than chase noisy volume.
             </p>
+            <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66">
+              Reviewed opportunities. Founder-aware targeting. SMTP-safe prioritization. Calm,
+              confidence-aware delivery.
+            </div>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-3">
             <div className="space-y-4">
-              <h3 className="text-base font-semibold text-white">Product</h3>
+              <h3 className="text-base font-semibold text-white">Experience</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <Link className="block transition-colors hover:text-white" href={ROUTES.ABOUT}>
-                  About
+                <Link className="block transition-colors hover:text-white" href={ROUTES.HOW_IT_WORKS}>
+                  Intelligence flow
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRICING}>
-                  Pricing
+                  Program builder
                 </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.DEMO}>
-                  Demo
+                <Link className="block transition-colors hover:text-white" href="/#icp-demo">
+                  ICP demo
                 </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.APPLY}>
-                  Apply
-                </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.ROI}>
-                  ROI Calculator
-                </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.LOGIN}>
-                  Login
-                </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.SAMPLE}>
-                  Sample
-                </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.GUIDES}>
-                  Guides
-                </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.PROOF}>
-                  Proof
+                <Link className="block transition-colors hover:text-white" href="/#roi-experience">
+                  ROI simulator
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ
                 </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.APPLY}>
+                  Apply for a campaign
+                </Link>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-base font-semibold text-white">Company</h3>
+              <h3 className="text-base font-semibold text-white">Program</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <span className="block">Selective outbound intelligence for premium pipeline teams</span>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.ABOUT}>
-                  Our story
+                <span className="block">Premium outbound intelligence for selective pipeline teams</span>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.APPLY}>
+                  Campaign application
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.LOGIN}>
+                  Client login
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT}>
                   Contact
                 </Link>
-                <span className="block">Serving B2B teams globally</span>
+                <span className="block">Serving outbound teams across the UK, EU, and beyond</span>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-base font-semibold text-white">Resources</h3>
+              <h3 className="text-base font-semibold text-white">Legal</h3>
               <div className="space-y-3 text-sm text-white/70">
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRIVACY}>
                   Privacy Policy
