@@ -496,6 +496,10 @@ const initialFormState: DemoFormState = {
   leadGoal: 50,
 };
 
+function clampLeadGoal(value: number) {
+  return Math.min(Math.max(value, 10), 200);
+}
+
 function findScenario(formState: DemoFormState) {
   return (
     demoScenarios.find(
@@ -510,6 +514,7 @@ function findScenario(formState: DemoFormState) {
 export function IcpDemoExperience() {
   const pathname = usePathname();
   const [formState, setFormState] = useState(initialFormState);
+  const [leadGoalInput, setLeadGoalInput] = useState(String(initialFormState.leadGoal));
   const [activeStage, setActiveStage] = useState(-1);
   const [logCount, setLogCount] = useState(0);
   const [opportunityCount, setOpportunityCount] = useState(0);
@@ -610,7 +615,19 @@ export function IcpDemoExperience() {
     });
   }
 
+  function commitLeadGoalInput() {
+    const trimmedValue = leadGoalInput.trim();
+    const nextLeadGoal = clampLeadGoal(
+      trimmedValue ? Number.parseInt(trimmedValue, 10) || formState.leadGoal : formState.leadGoal,
+    );
+
+    updateFormState("leadGoal", nextLeadGoal);
+    setLeadGoalInput(String(nextLeadGoal));
+  }
+
   function runDemo(source: "manual" | "preset") {
+    commitLeadGoalInput();
+
     captureEvent("icp_demo_started", {
       city: scenario.city,
       country: scenario.country,
@@ -634,6 +651,7 @@ export function IcpDemoExperience() {
     startTransition(() => {
       setFormState(preset.state);
     });
+    setLeadGoalInput(String(preset.state.leadGoal));
 
     window.setTimeout(() => {
       runDemo("preset");
@@ -752,10 +770,9 @@ export function IcpDemoExperience() {
                   min={10}
                   max={200}
                   type="number"
-                  value={formState.leadGoal}
-                  onChange={(event) =>
-                    updateFormState("leadGoal", Math.max(10, Math.min(200, Number(event.target.value) || 10)))
-                  }
+                  value={leadGoalInput}
+                  onBlur={commitLeadGoalInput}
+                  onChange={(event) => setLeadGoalInput(event.target.value)}
                 />
               </div>
 

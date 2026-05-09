@@ -40,6 +40,9 @@ type RoiFormState = {
   outboundVolume: number;
 };
 
+type RoiNumericField = Exclude<keyof RoiFormState, "currency">;
+type RoiInputState = Record<RoiNumericField, string>;
+
 const QUALIFIED_REPLY_TO_MEETING_RATE = 0.4;
 
 const presets: Array<{
@@ -96,6 +99,56 @@ const initialFormState: RoiFormState = presets[0].state;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function formatRoiInputState(formState: RoiFormState): RoiInputState {
+  return {
+    averageClientValue: String(formState.averageClientValue),
+    closeRate: String(formState.closeRate),
+    currentReplyRate: String(formState.currentReplyRate),
+    improvedReplyRate: String(formState.improvedReplyRate),
+    meetingsNeeded: String(formState.meetingsNeeded),
+    outboundVolume: String(formState.outboundVolume),
+  };
+}
+
+function normalizeRoiFormState<K extends keyof RoiFormState>(
+  current: RoiFormState,
+  field: K,
+  nextValue: RoiFormState[K],
+) {
+  const nextState = { ...current, [field]: nextValue };
+
+  if (field === "averageClientValue") {
+    nextState.averageClientValue = clamp(Number(nextValue), 1000, 100000);
+  }
+
+  if (field === "closeRate") {
+    nextState.closeRate = clamp(Number(nextValue), 5, 80);
+  }
+
+  if (field === "currentReplyRate") {
+    nextState.currentReplyRate = clamp(Number(nextValue), 1, 30);
+    nextState.improvedReplyRate = Math.max(nextState.improvedReplyRate, nextState.currentReplyRate);
+  }
+
+  if (field === "improvedReplyRate") {
+    nextState.improvedReplyRate = clamp(
+      Math.max(Number(nextValue), nextState.currentReplyRate),
+      nextState.currentReplyRate,
+      35,
+    );
+  }
+
+  if (field === "meetingsNeeded") {
+    nextState.meetingsNeeded = clamp(Number(nextValue), 1, 12);
+  }
+
+  if (field === "outboundVolume") {
+    nextState.outboundVolume = clamp(Number(nextValue), 25, 2000);
+  }
+
+  return nextState;
 }
 
 function formatCompactMoney(value: number, currency: CurrencyOption) {
@@ -197,6 +250,7 @@ function MetricInput({
   label,
   max,
   min,
+  onBlur,
   onChange,
   suffix,
   value,
@@ -205,9 +259,10 @@ function MetricInput({
   label: string;
   max: number;
   min: number;
-  onChange: (value: number) => void;
+  onBlur: () => void;
+  onChange: (value: string) => void;
   suffix?: string;
-  value: number;
+  value: string;
 }) {
   return (
     <div className="space-y-2">
@@ -218,7 +273,8 @@ function MetricInput({
       <Input
         max={max}
         min={min}
-        onChange={(event) => onChange(Number(event.target.value))}
+        onBlur={onBlur}
+        onChange={(event) => onChange(event.target.value)}
         type="number"
         value={value}
       />
@@ -229,6 +285,7 @@ function MetricInput({
 
 export function RoiCalculatorExperience() {
   const [formState, setFormState] = useState<RoiFormState>(initialFormState);
+  const [inputState, setInputState] = useState<RoiInputState>(() => formatRoiInputState(initialFormState));
   const hasTrackedInitialUpdateRef = useRef(false);
 
   const model = useMemo(() => calculateModel(formState), [formState]);
@@ -271,41 +328,25 @@ export function RoiCalculatorExperience() {
   }, [formState]);
 
   const updateFormState = <K extends keyof RoiFormState>(field: K, nextValue: RoiFormState[K]) => {
-    setFormState((current) => {
-      const nextState = { ...current, [field]: nextValue };
-
-      if (field === "averageClientValue") {
-        nextState.averageClientValue = clamp(Number(nextValue), 1000, 100000);
-      }
-
-      if (field === "closeRate") {
-        nextState.closeRate = clamp(Number(nextValue), 5, 80);
-      }
-
-      if (field === "currentReplyRate") {
-        nextState.currentReplyRate = clamp(Number(nextValue), 1, 30);
-        nextState.improvedReplyRate = Math.max(nextState.improvedReplyRate, nextState.currentReplyRate);
-      }
-
-      if (field === "improvedReplyRate") {
-        nextState.improvedReplyRate = clamp(
-          Math.max(Number(nextValue), nextState.currentReplyRate),
-          nextState.currentReplyRate,
-          35,
-        );
-      }
-
-      if (field === "meetingsNeeded") {
-        nextState.meetingsNeeded = clamp(Number(nextValue), 1, 12);
-      }
-
-      if (field === "outboundVolume") {
-        nextState.outboundVolume = clamp(Number(nextValue), 25, 2000);
-      }
-
-      return nextState;
-    });
+    setFormState((current) => normalizeRoiFormState(current, field, nextValue));
   };
+
+  function updateNumericInput(field: RoiNumericField, value: string) {
+    setInputState((current) => ({ ...current, [field]: value }));
+  }
+
+  function commitNumericInput(field: RoiNumericField) {
+    const trimmedValue = inputState[field].trim();
+    const parsedValue = trimmedValue ? Number(trimmedValue) : formState[field];
+    const nextState = normalizeRoiFormState(
+      formState,
+      field,
+      Number.isFinite(parsedValue) ? parsedValue : formState[field],
+    );
+
+    setFormState(nextState);
+    setInputState(formatRoiInputState(nextState));
+  }
 
   const waterfallSteps = [
     {
@@ -372,7 +413,10 @@ export function RoiCalculatorExperience() {
                         ? "border-terracotta bg-terracotta/10 text-terracotta"
                         : "border-border bg-white text-ink hover:border-ink"
                     }`}
-                    onClick={() => setFormState(preset.state)}
+                    onClick={() => {
+                      setFormState(preset.state);
+                      setInputState(formatRoiInputState(preset.state));
+                    }}
                     type="button"
                   >
                     {preset.label}
@@ -412,9 +456,10 @@ export function RoiCalculatorExperience() {
                 <Input
                   max={100000}
                   min={1000}
-                  onChange={(event) => updateFormState("averageClientValue", Number(event.target.value))}
+                  onBlur={() => commitNumericInput("averageClientValue")}
+                  onChange={(event) => updateNumericInput("averageClientValue", event.target.value)}
                   type="number"
-                  value={formState.averageClientValue}
+                  value={inputState.averageClientValue}
                 />
                 <p className="text-xs leading-6 text-muted">
                   Use your typical first-year client value, not a best-case upside number.
@@ -426,8 +471,9 @@ export function RoiCalculatorExperience() {
                 label="Meetings needed per client"
                 max={12}
                 min={1}
-                onChange={(value) => updateFormState("meetingsNeeded", value)}
-                value={formState.meetingsNeeded}
+                onBlur={() => commitNumericInput("meetingsNeeded")}
+                onChange={(value) => updateNumericInput("meetingsNeeded", value)}
+                value={inputState.meetingsNeeded}
               />
 
               <MetricInput
@@ -435,9 +481,10 @@ export function RoiCalculatorExperience() {
                 label="Close rate"
                 max={80}
                 min={5}
-                onChange={(value) => updateFormState("closeRate", value)}
+                onBlur={() => commitNumericInput("closeRate")}
+                onChange={(value) => updateNumericInput("closeRate", value)}
                 suffix="%"
-                value={formState.closeRate}
+                value={inputState.closeRate}
               />
 
               <MetricInput
@@ -445,8 +492,9 @@ export function RoiCalculatorExperience() {
                 label="Outbound volume / month"
                 max={2000}
                 min={25}
-                onChange={(value) => updateFormState("outboundVolume", value)}
-                value={formState.outboundVolume}
+                onBlur={() => commitNumericInput("outboundVolume")}
+                onChange={(value) => updateNumericInput("outboundVolume", value)}
+                value={inputState.outboundVolume}
               />
 
               <MetricInput
@@ -454,9 +502,10 @@ export function RoiCalculatorExperience() {
                 label="Current reply rate"
                 max={30}
                 min={1}
-                onChange={(value) => updateFormState("currentReplyRate", value)}
+                onBlur={() => commitNumericInput("currentReplyRate")}
+                onChange={(value) => updateNumericInput("currentReplyRate", value)}
                 suffix="%"
-                value={formState.currentReplyRate}
+                value={inputState.currentReplyRate}
               />
 
               <MetricInput
@@ -464,9 +513,10 @@ export function RoiCalculatorExperience() {
                 label="Improved reply rate"
                 max={35}
                 min={formState.currentReplyRate}
-                onChange={(value) => updateFormState("improvedReplyRate", value)}
+                onBlur={() => commitNumericInput("improvedReplyRate")}
+                onChange={(value) => updateNumericInput("improvedReplyRate", value)}
                 suffix="%"
-                value={formState.improvedReplyRate}
+                value={inputState.improvedReplyRate}
               />
             </div>
 
