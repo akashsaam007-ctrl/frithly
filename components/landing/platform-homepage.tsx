@@ -202,6 +202,16 @@ const coverageOptions = [
   { description: "Expanded transatlantic coverage for larger programs.", id: "global", label: "UK + EU + US" },
 ] as const;
 
+const baseProgramItems = [
+  "Reviewed weekly opportunity delivery",
+  "SMTP-aware prioritization",
+  "Outbound-ready exports",
+  "Recommendation intelligence",
+  "Founder-aware targeting",
+  "Quality-controlled cohort packaging",
+  "Curated delivery cadence",
+] as const;
+
 const supportOptions = [
   { description: "Reviewed intelligence with ranking logic and release context.", id: "core", label: "Core intelligence" },
   { description: "Adds curated draft refinement for stronger handoffs.", id: "drafts", label: "Draft support" },
@@ -1047,7 +1057,7 @@ export function PlatformHomepage() {
         <Container className="space-y-12">
           <motion.div className="max-w-3xl" {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
-              copy="There is no standard SaaS plan here. Start with the Frithly Core Intelligence Program from €499/month, then shape the release around coverage, depth, support, and weekly operating goals."
+              copy="There is no standard SaaS plan here. Start with the Frithly Core Intelligence Program from EUR 499/month, then shape the release around coverage, depth, support, and weekly operating goals."
               eyebrow="Custom program builder"
             >
               Frithly is configured like a <ItalicAccent>program, not software.</ItalicAccent>
@@ -1055,10 +1065,49 @@ export function PlatformHomepage() {
           </motion.div>
 
           <motion.div
+            className="grid gap-8 rounded-[1.8rem] bg-black/16 p-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] xl:items-start xl:p-8"
+            {...revealProps(enableReveal, 0.09)}
+          >
+            <div className="space-y-4">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Included in the core package
+              </div>
+              <h3 className="text-[2rem] font-medium leading-[1.06] text-white sm:text-[2.35rem]">
+                The EUR 499 foundation already includes the weekly operating layer.
+              </h3>
+              <p className="max-w-2xl text-base leading-8 text-white/58">
+                The builder below is only for expansion. It changes market scope, depth, support,
+                and cadence above the Frithly Core Intelligence baseline.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {baseProgramItems.map((item) => (
+                <div
+                  className="flex items-start gap-3 rounded-[1.2rem] bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66"
+                  key={item}
+                >
+                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[#efba90]" aria-hidden="true" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
             className="grid gap-10 rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] xl:items-start xl:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
             <div className="min-w-0 space-y-8">
+              <div className="space-y-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                  Then customize the expansion
+                </div>
+                <p className="max-w-2xl text-sm leading-7 text-white/56">
+                  Adjust only the layers that go beyond the base program.
+                </p>
+              </div>
+
               <div className="grid gap-6 md:grid-cols-2">
                 <SliderControl
                   label="Weekly opportunity target"
