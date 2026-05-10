@@ -422,14 +422,15 @@ export function PlatformHomepage() {
       const firstRect = firstStage.getBoundingClientRect();
       const activeRect = activeStage.getBoundingClientRect();
       const lastRect = lastStage.getBoundingClientRect();
-      const verticalRange = Math.max(lastRect.top - firstRect.top, 1);
-      const progress = (activeRect.top - firstRect.top) / verticalRange;
-      const maxTravel = Math.max(
-        0,
-        Math.min(timeline.scrollHeight - panel.offsetHeight, 320),
-      );
+      const firstAnchor = firstRect.top + 8;
+      const activeAnchor = activeRect.top + 8;
+      const lastAnchor = lastRect.top + 8;
+      const stageTravel = Math.max(0, activeAnchor - firstAnchor);
+      const maxTravel = Math.max(0, lastAnchor - firstAnchor);
+      const availablePanelTravel = Math.max(0, timeline.scrollHeight - panel.offsetHeight);
+      const clampedTravel = Math.min(stageTravel, maxTravel, availablePanelTravel);
 
-      setEnginePanelOffset(progress * maxTravel);
+      setEnginePanelOffset(clampedTravel);
     }
 
     const frame = window.requestAnimationFrame(measureEnginePanelOffset);
