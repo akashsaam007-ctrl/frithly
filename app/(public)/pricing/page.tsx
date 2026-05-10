@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FinalCta } from "@/components/landing/final-cta";
-import { Guarantees } from "@/components/landing/guarantees";
 import { PricingSection } from "@/components/landing/pricing";
 import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
@@ -16,18 +14,18 @@ import {
 } from "@/lib/seo";
 
 const pricingDescription =
-  "Frithly pricing for B2B teams that want reviewed outbound opportunities, verified contacts, and personalized outreach angles instead of raw lead lists.";
+  "Design a Frithly outbound intelligence program around opportunity coverage, targeting depth, market scope, and curated weekly delivery.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: pricingDescription,
   keywords: [
     "Frithly pricing",
-    "B2B lead generation pricing",
-    "sales intelligence pricing",
-    "outbound research service pricing",
+    "outbound intelligence program",
+    "curated outbound service pricing",
+    "weekly outbound intelligence",
   ],
   path: "/pricing",
-  title: "Pricing | Frithly",
+  title: "Design Your Intelligence Program | Frithly",
 });
 
 type PricingPageProps = {
@@ -61,21 +59,25 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
         data={buildWebPageSchema({
           description: pricingDescription,
           path: "/pricing",
-          title: "Pricing | Frithly",
+          title: "Design Your Intelligence Program | Frithly",
         })}
       />
       <StructuredData data={buildServiceSchema()} />
-      <section className="py-20 md:py-24">
+      <section className="pb-10 pt-20 md:pb-12 md:pt-24">
         <Container width="narrow" className="space-y-6 text-center">
-          <h1>Choose the right Frithly plan for your team.</h1>
-          <p className="mt-6 text-muted">
-            Weekly opportunity delivery, personalized openers, and zero annual contracts.
+          <div className="section-eyebrow mx-auto">Program configuration</div>
+          <h1>Design your Frithly intelligence program.</h1>
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-muted">
+            Every program starts with the Frithly Core Intelligence foundation, then expands
+            around opportunity coverage, market scope, qualification depth, and weekly delivery
+            support.
           </p>
           {checkoutState ? (
             <Card className="mx-auto max-w-[680px] text-left">
               <CardContent className="p-5 text-sm text-muted">
-                Online checkout is no longer active. We&apos;re routing all new plans through a
-                short sales call so we can confirm fit, onboarding, and rollout details first.
+                Direct checkout is no longer active. New programs now begin with application,
+                qualification, and configuration so we can shape the right weekly operating model
+                before onboarding begins.
                 {subscriptionReference ? (
                   <span className="mt-3 block">Previous reference: {subscriptionReference}</span>
                 ) : null}
@@ -85,11 +87,11 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Button asChild size="sm">
                     <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
-                      Book intro call
+                      Book qualification call
                     </Link>
                   </Button>
                   <Button asChild size="sm" variant="secondary">
-                    <Link href={ROUTES.SAMPLE}>Get free sample</Link>
+                    <Link href={ROUTES.APPLY}>Apply for your program</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -98,8 +100,6 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
         </Container>
       </section>
       <PricingSection />
-      <Guarantees />
-      <FinalCta />
     </main>
   );
 }
