@@ -197,12 +197,13 @@ const goals = [
 ] as const;
 
 const coverageOptions = [
-  { description: "Focused market coverage with denser signal quality.", id: "uk", label: "UK" },
-  { description: "Balanced coverage for broader weekly cohorts.", id: "uk-eu", label: "UK + EU" },
-  { description: "Expanded transatlantic coverage for larger programs.", id: "global", label: "UK + EU + US" },
+  { description: "Focused coverage inside one market with denser signal quality.", id: "single", label: "Single market" },
+  { description: "Balanced coverage across two coordinated markets.", id: "double", label: "Double market" },
+  { description: "Expanded coverage across multiple active markets.", id: "multiple", label: "Multi-market" },
 ] as const;
 
 const baseProgramItems = [
+  "Minimum 20 reviewed opportunities / week included",
   "Reviewed weekly opportunity delivery",
   "SMTP-aware prioritization",
   "Outbound-ready exports",
@@ -384,7 +385,7 @@ export function PlatformHomepage() {
   const [goal, setGoal] = useState<GoalId>("quality");
   const [weeklyOpportunityTarget, setWeeklyOpportunityTarget] = useState(45);
   const [targetingDepth, setTargetingDepth] = useState(3);
-  const [coverage, setCoverage] = useState<CoverageOption>("uk-eu");
+  const [coverage, setCoverage] = useState<CoverageOption>("double");
   const [support, setSupport] = useState<SupportOption>("delivery");
   const [cadence, setCadence] = useState<CadenceOption>("weekly");
   const [founderPriority, setFounderPriority] = useState(true);
@@ -476,7 +477,7 @@ export function PlatformHomepage() {
 
   const programPreview = useMemo(() => {
     const monthlyReviewed = weeklyOpportunityTarget * (cadence === "weekly" ? 4 : 2);
-    const coverageCost = coverage === "uk" ? 0 : coverage === "uk-eu" ? 260 : 460;
+    const coverageCost = coverage === "single" ? 0 : coverage === "double" ? 260 : 460;
     const supportCost = support === "core" ? 0 : support === "drafts" ? 180 : 340;
     const founderCost = founderPriority ? 140 : 0;
     const smtpCost = smtpPriority ? 95 : 0;
@@ -496,7 +497,7 @@ export function PlatformHomepage() {
 
     return {
       coverageLabel:
-        coverageOptions.find((item) => item.id === coverage)?.label ?? "UK + EU",
+        coverageOptions.find((item) => item.id === coverage)?.label ?? "Double market",
       monthlyReviewed,
       rangeHigh: high,
       rangeLow: low,
@@ -1129,7 +1130,7 @@ export function PlatformHomepage() {
               </div>
 
               <div className="space-y-4">
-                <div className="text-sm font-medium text-white">Geography coverage</div>
+                <div className="text-sm font-medium text-white">Market coverage</div>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {coverageOptions.map((option) => (
                     <button

@@ -22,6 +22,7 @@ const accentSerif = Instrument_Serif({
 });
 
 const foundationItems = [
+  "Minimum 80 reviewed opportunities / month included",
   "Reviewed weekly opportunity delivery",
   "SMTP-aware prioritization",
   "Outbound-ready exports",
@@ -33,27 +34,21 @@ const foundationItems = [
 
 const marketOptions = [
   {
-    description: "Tighter concentration for teams focused on one market.",
-    id: "uk",
-    label: "UK",
+    description: "Tighter concentration inside one market.",
+    id: "single",
+    label: "Single market",
     modifier: 0,
   },
   {
-    description: "Balanced multi-country coverage for a broader weekly release.",
-    id: "europe",
-    label: "Europe",
+    description: "Balanced coverage across two coordinated markets.",
+    id: "double",
+    label: "Double market",
     modifier: 240,
   },
   {
-    description: "Expanded coverage for teams building a North American motion.",
-    id: "us",
-    label: "United States",
-    modifier: 380,
-  },
-  {
-    description: "Wider intelligence mapping for teams working across regions.",
-    id: "multi",
-    label: "Multi-region",
+    description: "Wider intelligence mapping across multiple active markets.",
+    id: "multiple",
+    label: "Multi-market",
     modifier: 520,
   },
 ] as const;
@@ -258,7 +253,7 @@ function ChoiceCard({
 
 export function PricingSection() {
   const [monthlyCoverage, setMonthlyCoverage] = useState(180);
-  const [markets, setMarkets] = useState<MarketId>("europe");
+  const [markets, setMarkets] = useState<MarketId>("double");
   const [sophistication, setSophistication] = useState<SophisticationId>("founder");
   const [support, setSupport] = useState<SupportId>("consultative");
   const [cadence, setCadence] = useState<CadenceId>("weekly");
@@ -272,7 +267,7 @@ export function PricingSection() {
     const cadenceLevel =
       cadenceOptions.find((item) => item.id === cadence) ?? cadenceOptions[0];
 
-    const coverageModifier = Math.round(Math.max(monthlyCoverage - 50, 0) * 2.4);
+    const coverageModifier = Math.round(Math.max(monthlyCoverage - 80, 0) * 2.4);
     const low =
       499 +
       market.modifier +
@@ -370,7 +365,7 @@ export function PricingSection() {
               <SliderControl
                 label="Monthly opportunity coverage"
                 max={400}
-                min={50}
+                min={80}
                 onChange={setMonthlyCoverage}
                 step={10}
                 value={monthlyCoverage}
@@ -378,7 +373,7 @@ export function PricingSection() {
               />
 
               <div className="space-y-4 border-t border-white/8 pt-8">
-                <div className="text-sm font-medium text-white">Target markets</div>
+                <div className="text-sm font-medium text-white">Market coverage</div>
                 <div className="grid gap-3">
                   {marketOptions.map((option) => (
                     <ChoiceCard
