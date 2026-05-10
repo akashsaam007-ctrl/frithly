@@ -702,7 +702,7 @@ export function PlatformHomepage() {
             </SectionIntro>
           </motion.div>
 
-          <div className="mt-14 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div className="mt-14 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
             <motion.div className="space-y-8" {...revealProps(enableReveal, 0.1)}>
               {engineStages.map((stage, index) => {
                 const active = index === activeStageIndex;
@@ -745,7 +745,7 @@ export function PlatformHomepage() {
             </motion.div>
 
             <motion.div
-              className="rounded-[2rem] bg-white/[0.04] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.22)]"
+              className="self-start rounded-[2rem] bg-white/[0.04] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:sticky lg:top-28"
               {...revealProps(enableReveal, 0.16)}
             >
               <motion.div
