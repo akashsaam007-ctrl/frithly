@@ -1355,158 +1355,158 @@ export function PlatformHomepage() {
       </section>
 
       <section className="relative py-24 sm:py-28" id="roi">
-        <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-start">
-          <motion.div {...revealProps(enableReveal, 0.05)}>
+        <Container className="space-y-14">
+          <motion.div className="mx-auto max-w-4xl" {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
+              align="center"
               copy="The point is not to email more businesses. The point is to waste fewer touches, protect deliverability earlier, and let the team spend time where a real conversation is more plausible."
               eyebrow="Opportunity impact"
             >
               Weak targeting has a <ItalicAccent>monthly cost.</ItalicAccent>
             </SectionIntro>
-            <div className="mt-8 space-y-3">
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
                 "Reduce wasted outreach before campaigns scale.",
                 "Protect route quality instead of repairing it later.",
                 "Focus reps on accounts more likely to convert.",
               ].map((line) => (
-                <div className="flex items-start gap-3 text-sm leading-7 text-white/56" key={line}>
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#efba90]" />
-                  <span>{line}</span>
+                <div className="rounded-[1.2rem] bg-white/[0.03] p-4 text-sm leading-7 text-white/60" key={line}>
+                  <div className="mb-3 h-1.5 w-1.5 rounded-full bg-[#efba90]" />
+                  {line}
                 </div>
               ))}
             </div>
           </motion.div>
 
           <motion.div
-            className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8"
+            className="mx-auto max-w-6xl rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
-            <div className="space-y-8">
-              <div className="max-w-3xl">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
-                  Opportunity simulator
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] xl:items-start">
+              <div className="min-w-0 rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/34">
+                  Adjust the working assumptions
                 </div>
-                <h3 className="mt-4 max-w-4xl text-[2.35rem] font-medium leading-[1.04] text-white lg:text-[2.9rem]">
-                  You could be leaving {formatMoney(roiModel.extraRevenue)} / month on the table.
-                </h3>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                  Better targeting does not ask the team to send more. It helps the same outreach motion
-                  create more credible replies and more plausible meetings.
-                </p>
+                <div className="mt-6 space-y-6">
+                  <SliderControl
+                    label="Monthly businesses contacted"
+                    max={500}
+                    min={50}
+                    onChange={setOutreachVolume}
+                    step={10}
+                    value={outreachVolume}
+                    valueLabel={`${outreachVolume} / month`}
+                  />
+                  <SliderControl
+                    label="Current reply rate"
+                    max={10}
+                    min={1}
+                    onChange={setReplyRate}
+                    step={0.5}
+                    value={replyRate}
+                    valueLabel={`${replyRate.toFixed(replyRate % 1 === 0 ? 0 : 1)}%`}
+                  />
+                  <SliderControl
+                    label="Average client value"
+                    max={20000}
+                    min={2000}
+                    onChange={setClientValue}
+                    step={500}
+                    value={clientValue}
+                    valueLabel={formatMoney(clientValue)}
+                  />
+                </div>
+
+                <div className="mt-8 space-y-3">
+                  <div className="text-sm font-medium text-white">Quick scenarios</div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      [100, 2, 5000, "Lean agency"],
+                      [180, 4, 9000, "Growth team"],
+                      [150, 3, 12000, "Higher-ticket services"],
+                    ].map(([volume, rate, value, label]) => (
+                      <button
+                        className="rounded-full bg-white/[0.05] px-4 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/[0.09]"
+                        key={label}
+                        onClick={() => {
+                          setOutreachVolume(volume as number);
+                          setReplyRate(rate as number);
+                          setClientValue(value as number);
+                        }}
+                        type="button"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-[1.25rem] bg-black/16 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra replies / month</div>
-                  <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraReplies.toFixed(0)}</div>
-                </div>
-                <div className="rounded-[1.25rem] bg-black/16 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra meetings / month</div>
-                  <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraMeetings.toFixed(1)}</div>
-                </div>
-                <div className="rounded-[1.25rem] bg-black/16 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Potential reply rate</div>
-                  <div className="mt-2 text-3xl font-medium text-white">{roiModel.improvedReplies}%</div>
-                </div>
-              </div>
-
-              <div className="grid gap-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] xl:items-start">
-                <div className="min-w-0 rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">
-                    Adjust the working assumptions
+              <div className="min-w-0 space-y-6">
+                <div className="rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                    Opportunity simulator
                   </div>
-                  <div className="mt-6 space-y-6">
-                    <SliderControl
-                      label="Monthly businesses contacted"
-                      max={500}
-                      min={50}
-                      onChange={setOutreachVolume}
-                      step={10}
-                      value={outreachVolume}
-                      valueLabel={`${outreachVolume} / month`}
-                    />
-                    <SliderControl
-                      label="Current reply rate"
-                      max={10}
-                      min={1}
-                      onChange={setReplyRate}
-                      step={0.5}
-                      value={replyRate}
-                      valueLabel={`${replyRate.toFixed(replyRate % 1 === 0 ? 0 : 1)}%`}
-                    />
-                    <SliderControl
-                      label="Average client value"
-                      max={20000}
-                      min={2000}
-                      onChange={setClientValue}
-                      step={500}
-                      value={clientValue}
-                      valueLabel={formatMoney(clientValue)}
-                    />
-                  </div>
+                  <h3 className="mt-4 max-w-4xl text-[2.2rem] font-medium leading-[1.04] text-white lg:text-[2.8rem]">
+                    You could be leaving {formatMoney(roiModel.extraRevenue)} / month on the table.
+                  </h3>
+                  <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                    Better targeting does not ask the team to send more. It helps the same outreach motion
+                    create more credible replies and more plausible meetings.
+                  </p>
 
-                  <div className="mt-8 space-y-3">
-                    <div className="text-sm font-medium text-white">Quick scenarios</div>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        [100, 2, 5000, "Lean agency"],
-                        [180, 4, 9000, "Growth team"],
-                        [150, 3, 12000, "Higher-ticket services"],
-                      ].map(([volume, rate, value, label]) => (
-                        <button
-                          className="rounded-full bg-white/[0.05] px-4 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/[0.09]"
-                          key={label}
-                          onClick={() => {
-                            setOutreachVolume(volume as number);
-                            setReplyRate(rate as number);
-                            setClientValue(value as number);
-                          }}
-                          type="button"
-                        >
-                          {label}
-                        </button>
-                      ))}
+                  <div className="mt-8 grid gap-4 md:grid-cols-3">
+                    <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
+                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra replies / month</div>
+                      <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraReplies.toFixed(0)}</div>
+                    </div>
+                    <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
+                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra meetings / month</div>
+                      <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraMeetings.toFixed(1)}</div>
+                    </div>
+                    <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
+                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">Potential reply rate</div>
+                      <div className="mt-2 text-3xl font-medium text-white">{roiModel.improvedReplies}%</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="min-w-0 space-y-4">
-                  <div className="rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <div>
-                        <div className="text-xs uppercase tracking-[0.18em] text-white/34">
-                          At the same outreach volume
-                        </div>
-                        <div className="mt-2 text-lg font-medium text-white">
-                          {outreachVolume} businesses contacted each month
-                        </div>
+                <div className="rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">
+                        At the same outreach volume
                       </div>
-                      <div className="rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white/70">
-                        Focus on quality, not more activity
+                      <div className="mt-2 text-lg font-medium text-white">
+                        {outreachVolume} businesses contacted each month
                       </div>
                     </div>
-
-                    <div className="mt-6 space-y-4">
-                      <RoiOutcomeLane
-                        accentClassName="bg-[#efba90]"
-                        description="More of the monthly effort gets absorbed by low-signal accounts before a serious conversation ever begins."
-                        ignored={roiModel.ignoredCurrent}
-                        meetings={roiModel.currentMeetings}
-                        replies={Math.round(replyRate)}
-                        title="Today"
-                      />
-                      <RoiOutcomeLane
-                        accentClassName="bg-[#79e2cb]"
-                        description="Tighter targeting protects the route earlier, so the same outreach volume produces a cleaner working set."
-                        ignored={roiModel.ignoredImproved}
-                        meetings={roiModel.improvedMeetings}
-                        replies={roiModel.improvedReplies}
-                        title="With stronger targeting"
-                      />
+                    <div className="rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white/70">
+                      Focus on quality, not more activity
                     </div>
                   </div>
 
-                  <div className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-5">
+                  <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                    <RoiOutcomeLane
+                      accentClassName="bg-[#efba90]"
+                      description="Low-signal accounts absorb the effort before a serious conversation can begin."
+                      ignored={roiModel.ignoredCurrent}
+                      meetings={roiModel.currentMeetings}
+                      replies={Math.round(replyRate)}
+                      title="Today"
+                    />
+                    <RoiOutcomeLane
+                      accentClassName="bg-[#79e2cb]"
+                      description="Better targeting protects the route earlier and produces a cleaner working set."
+                      ignored={roiModel.ignoredImproved}
+                      meetings={roiModel.improvedMeetings}
+                      replies={roiModel.improvedReplies}
+                      title="With stronger targeting"
+                    />
+                  </div>
+
+                  <div className="mt-6 rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-5">
                     <div className="text-xs uppercase tracking-[0.18em] text-white/34">What changes</div>
                     <p className="mt-3 text-base leading-8 text-white/60">
                       The team keeps volume flat, but creates roughly {roiModel.extraReplies.toFixed(0)} more
