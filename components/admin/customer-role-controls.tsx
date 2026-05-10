@@ -60,7 +60,7 @@ export function CustomerRoleControls({
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-white p-4">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
       <div className="space-y-1">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
           Access role
@@ -85,7 +85,7 @@ export function CustomerRoleControls({
         >
           Admin
         </Button>
-        <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+        <span className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
           Current: {role}
         </span>
       </div>

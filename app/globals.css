@@ -113,6 +113,17 @@
     background-color: rgba(255, 255, 255, 0.06);
   }
 
+  .field-dark-select {
+    @apply h-11 w-full rounded-lg border border-white/10 px-4 py-3 text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-cream disabled:cursor-not-allowed disabled:opacity-50;
+    background-color: rgba(11, 21, 32, 0.92);
+    color-scheme: dark;
+  }
+
+  .field-dark-select option {
+    background-color: #07111b;
+    color: #fff7f1;
+  }
+
   .animated-fade-up {
     animation: fade-up 0.8s ease both;
   }

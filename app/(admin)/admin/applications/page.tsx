@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ApplicationReviewControls } from "@/components/admin/application-review-controls";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/lib/constants";
 import {
   type AdminApplicationRecord,
@@ -45,31 +47,31 @@ function buildApplicationsHref(params: { id?: string; q?: string; status?: strin
 function getStatusBadgeClass(status: AdminApplicationRecord["status"]) {
   switch (status) {
     case "active":
-      return "bg-emerald-50 text-emerald-700";
+      return "bg-emerald-500/12 text-emerald-300";
     case "accepted":
     case "onboarding":
-      return "bg-blue-50 text-blue-700";
+      return "bg-sky-500/12 text-sky-300";
     case "qualified":
-      return "bg-amber-50 text-amber-700";
+      return "bg-amber-500/12 text-amber-200";
     case "reviewing":
-      return "bg-violet-50 text-violet-700";
+      return "bg-violet-500/12 text-violet-300";
     case "rejected":
-      return "bg-rose-50 text-rose-700";
+      return "bg-rose-500/12 text-rose-300";
     case "pending":
     default:
-      return "bg-cream text-ink";
+      return "bg-white/[0.07] text-ink";
   }
 }
 
 function getRiskBadgeClass(level: AdminApplicationRisk["level"]) {
   switch (level) {
     case "high":
-      return "bg-rose-50 text-rose-700";
+      return "bg-rose-500/12 text-rose-300";
     case "medium":
-      return "bg-amber-50 text-amber-700";
+      return "bg-amber-500/12 text-amber-200";
     case "low":
     default:
-      return "bg-emerald-50 text-emerald-700";
+      return "bg-emerald-500/12 text-emerald-300";
   }
 }
 
@@ -122,7 +124,7 @@ export default async function AdminApplicationsPage({
       ) : null}
 
       {data.hasFallbackApplications ? (
-        <Card className="border-border/80 bg-white">
+        <Card className="border-white/10 bg-white/[0.03]">
           <CardContent className="p-6">
             <p className="text-sm text-muted">
               Some older submissions are still being read from the fallback application flow. The
@@ -176,15 +178,14 @@ export default async function AdminApplicationsPage({
         </CardHeader>
         <CardContent className="space-y-6">
           <form className="grid gap-4 md:grid-cols-[1.5fr_1fr_auto]" method="get">
-            <input
-              className="h-11 rounded-lg border border-border bg-white px-4 py-3 text-sm text-ink outline-none"
+            <Input
               defaultValue={search}
               name="q"
               placeholder="Search by company, founder, email, niche, or region"
               type="search"
             />
             <select
-              className="h-11 rounded-lg border border-border bg-white px-4 py-3 text-sm text-ink outline-none"
+              className="field-dark-select"
               defaultValue={status}
               name="status"
             >
@@ -197,9 +198,9 @@ export default async function AdminApplicationsPage({
               <option value="onboarding">Onboarding</option>
               <option value="active">Active</option>
             </select>
-            <button className="btn-secondary" type="submit">
+            <Button type="submit" variant="secondary">
               Apply
-            </button>
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -217,7 +218,7 @@ export default async function AdminApplicationsPage({
                         {group.count} application{group.count === 1 ? "" : "s"} in this stage
                       </CardDescription>
                     </div>
-                    <span className="rounded-full bg-cream px-3 py-1 text-sm font-semibold text-ink">
+                    <span className="rounded-full bg-white/[0.07] px-3 py-1 text-sm font-semibold text-ink">
                       {group.count}
                     </span>
                   </div>
@@ -239,8 +240,8 @@ export default async function AdminApplicationsPage({
                           className={cn(
                             "block rounded-2xl border p-4 transition-colors",
                             isSelected
-                              ? "border-terracotta bg-terracotta/5"
-                              : "border-border hover:border-terracotta/40 hover:bg-cream/50",
+                              ? "border-terracotta bg-terracotta/10"
+                              : "border-border hover:border-terracotta/40 hover:bg-white/[0.04]",
                           )}
                           href={href}
                           scroll={false}
@@ -257,7 +258,7 @@ export default async function AdminApplicationsPage({
                                 >
                                   {application.status}
                                 </span>
-                                <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+                                <span className="rounded-full bg-white/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
                                   {application.feasibilityBand}
                                 </span>
                               </div>
@@ -328,10 +329,10 @@ export default async function AdminApplicationsPage({
                         >
                           {data.selectedApplication.status}
                         </span>
-                        <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+                        <span className="rounded-full bg-white/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
                           {data.selectedApplication.sourceLabel}
                         </span>
-                        <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+                        <span className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
                           {data.selectedApplication.planRecommendation.label}
                         </span>
                       </div>
@@ -348,7 +349,7 @@ export default async function AdminApplicationsPage({
                       {data.selectedApplication.summary}
                     </p>
                     <div className="grid gap-3 text-sm text-muted sm:grid-cols-2">
-                      <div className="rounded-2xl bg-cream p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-terracotta">
                           Feasibility
                         </p>
@@ -357,7 +358,7 @@ export default async function AdminApplicationsPage({
                         </p>
                         <p className="mt-1">{data.selectedApplication.feasibilityLabel}</p>
                       </div>
-                      <div className="rounded-2xl bg-cream p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-terracotta">
                           Recommendation density
                         </p>
@@ -499,25 +500,25 @@ export default async function AdminApplicationsPage({
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="rounded-2xl bg-cream p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="font-semibold text-ink">Feasibility notes</p>
                         <p className="mt-2">
                           {data.selectedApplication.feasibilityNotes || "No feasibility notes captured yet."}
                         </p>
                       </div>
-                      <div className="rounded-2xl bg-cream p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="font-semibold text-ink">Risk notes</p>
                         <p className="mt-2">
                           {data.selectedApplication.riskNotes || "No operator risk notes captured yet."}
                         </p>
                       </div>
-                      <div className="rounded-2xl bg-cream p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="font-semibold text-ink">Qualification notes</p>
                         <p className="mt-2">
                           {data.selectedApplication.qualificationNotes || "No qualification notes captured yet."}
                         </p>
                       </div>
-                      <div className="rounded-2xl bg-cream p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="font-semibold text-ink">Onboarding notes</p>
                         <p className="mt-2">
                           {data.selectedApplication.onboardingNotes || "No onboarding notes captured yet."}

@@ -172,7 +172,7 @@ export function ApplicationReviewControls({
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-white p-5">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <div className="space-y-2">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
           Qualification controls
@@ -187,7 +187,7 @@ export function ApplicationReviewControls({
         <label className="space-y-2">
           <span className="text-sm font-semibold text-ink">Workflow stage</span>
           <select
-            className="h-11 w-full rounded-lg border border-border bg-white px-4 text-sm text-ink outline-none transition-colors focus:border-terracotta"
+            className="field-dark-select"
             disabled={isPending}
             onChange={(event) => setStatus(event.target.value as AdminApplicationStatus)}
             value={status}
@@ -203,7 +203,7 @@ export function ApplicationReviewControls({
         <label className="space-y-2">
           <span className="text-sm font-semibold text-ink">Recommended plan</span>
           <select
-            className="h-11 w-full rounded-lg border border-border bg-white px-4 text-sm text-ink outline-none transition-colors focus:border-terracotta"
+            className="field-dark-select"
             disabled={isPending}
             onChange={(event) => setRecommendedPlan(event.target.value as PlanOption)}
             value={recommendedPlan}
@@ -217,7 +217,7 @@ export function ApplicationReviewControls({
         </label>
       </div>
 
-      <div className="mt-3 rounded-2xl bg-cream px-4 py-3 text-sm text-muted">
+      <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-muted">
         <span className="font-semibold text-ink">System recommendation:</span>{" "}
         {humanizePlanRecommendation(application.planRecommendation)}
       </div>
@@ -272,11 +272,11 @@ export function ApplicationReviewControls({
         <Button disabled={isPending || !hasChanges} onClick={() => persistChanges()}>
           {isPending ? "Saving..." : "Save assessment"}
         </Button>
-        <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+        <span className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
           Current: {humanizeStatus(status)}
         </span>
         {application.linkedCustomerId ? (
-          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+          <span className="rounded-full bg-white/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
             Customer: {application.linkedCustomerPlan ?? "unassigned"} / {application.linkedCustomerStatus ?? "pending"}
           </span>
         ) : null}

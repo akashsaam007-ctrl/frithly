@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
@@ -51,15 +52,15 @@ export default async function AdminOverviewPage() {
             <CardTitle>Quick actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Link href={ROUTES.ADMIN_BATCHES_NEW} className="btn-primary w-full justify-center">
-              Create batch
-            </Link>
-            <Link href={ROUTES.ADMIN_CUSTOMERS} className="btn-secondary w-full justify-center">
-              View customers
-            </Link>
-            <Link href={ROUTES.ADMIN_FEEDBACK} className="btn-secondary w-full justify-center">
-              View feedback
-            </Link>
+            <Button asChild className="w-full justify-center">
+              <Link href={ROUTES.ADMIN_BATCHES_NEW}>Create batch</Link>
+            </Button>
+            <Button asChild className="w-full justify-center" variant="secondary">
+              <Link href={ROUTES.ADMIN_CUSTOMERS}>View customers</Link>
+            </Button>
+            <Button asChild className="w-full justify-center" variant="secondary">
+              <Link href={ROUTES.ADMIN_FEEDBACK}>View feedback</Link>
+            </Button>
           </CardContent>
         </Card>
       </section>

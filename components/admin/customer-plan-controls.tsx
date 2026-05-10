@@ -84,7 +84,7 @@ export function CustomerPlanControls({
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-white p-4">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
       <div className="space-y-1">
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
           Plan access
@@ -98,7 +98,7 @@ export function CustomerPlanControls({
         <label className="space-y-2">
           <span className="text-sm font-semibold text-ink">Plan</span>
           <select
-            className="h-11 w-full rounded-lg border border-border bg-white px-4 text-sm text-ink outline-none transition-colors focus:border-terracotta"
+            className="field-dark-select"
             disabled={isPending}
             onChange={(event) => setPlan(event.target.value as CustomerPlan)}
             value={plan}
@@ -114,7 +114,7 @@ export function CustomerPlanControls({
         <label className="space-y-2">
           <span className="text-sm font-semibold text-ink">Status</span>
           <select
-            className="h-11 w-full rounded-lg border border-border bg-white px-4 text-sm text-ink outline-none transition-colors focus:border-terracotta"
+            className="field-dark-select"
             disabled={isPending}
             onChange={(event) => setStatus(event.target.value as CustomerStatus)}
             value={status}
@@ -132,7 +132,7 @@ export function CustomerPlanControls({
         <Button disabled={isPending || !hasChanges} onClick={saveChanges}>
           {isPending ? "Saving..." : "Save plan access"}
         </Button>
-        <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
+        <span className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink">
           Current: {humanizePlan(plan)} / {status}
         </span>
       </div>

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/lib/constants";
 import { getAdminCustomersData } from "@/lib/supabase/admin-data";
 
@@ -35,15 +37,14 @@ export default async function AdminCustomersPage({ searchParams }: AdminCustomer
         </CardHeader>
         <CardContent className="space-y-6">
           <form className="grid gap-4 md:grid-cols-[1.5fr_1fr_auto]" method="get">
-            <input
-              className="h-11 rounded-lg border border-border bg-white px-4 py-3 text-sm text-ink outline-none"
+            <Input
               defaultValue={search}
               name="q"
               placeholder="Search by name or email"
               type="search"
             />
             <select
-              className="h-11 rounded-lg border border-border bg-white px-4 py-3 text-sm text-ink outline-none"
+              className="field-dark-select"
               defaultValue={status}
               name="status"
             >
@@ -54,14 +55,14 @@ export default async function AdminCustomersPage({ searchParams }: AdminCustomer
               <option value="churned">Churned</option>
               <option value="pending">Pending</option>
             </select>
-            <button className="btn-secondary" type="submit">
+            <Button type="submit" variant="secondary">
               Apply
-            </button>
+            </Button>
           </form>
 
           {customers.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
+              <table className="min-w-[1180px] text-left text-sm">
                 <thead className="text-muted">
                   <tr>
                     <th className="pb-4 pr-6 font-medium">Name</th>
@@ -86,12 +87,12 @@ export default async function AdminCustomersPage({ searchParams }: AdminCustomer
                       <td className="py-4 pr-6 text-ink">{customer.mrrLabel}</td>
                       <td className="py-4 pr-6 text-ink">{customer.signupDateLabel}</td>
                       <td className="py-4 pr-6 text-ink">{customer.lastBatchLabel}</td>
-                      <td className="py-4">
+                      <td className="py-4 whitespace-nowrap">
                         <Link
                           href={`${ROUTES.ADMIN_CUSTOMERS}/${customer.id}`}
-                          className="font-semibold text-terracotta underline underline-offset-4"
+                          className="inline-flex items-center gap-1 font-semibold text-terracotta underline underline-offset-4 whitespace-nowrap"
                         >
-                          Open -&gt;
+                          Open record -&gt;
                         </Link>
                       </td>
                     </tr>

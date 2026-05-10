@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/lib/constants";
 import { getAdminFeedbackData } from "@/lib/supabase/admin-data";
 
@@ -35,15 +37,14 @@ export default async function AdminFeedbackPage({ searchParams }: AdminFeedbackP
         </CardHeader>
         <CardContent className="space-y-6">
           <form className="grid gap-4 md:grid-cols-[1.5fr_1fr_auto]" method="get">
-            <input
-              className="h-11 rounded-lg border border-border bg-white px-4 py-3 text-sm text-ink outline-none"
+            <Input
               defaultValue={customer}
               name="customer"
               placeholder="Filter by customer"
               type="search"
             />
             <select
-              className="h-11 rounded-lg border border-border bg-white px-4 py-3 text-sm text-ink outline-none"
+              className="field-dark-select"
               defaultValue={rating}
               name="rating"
             >
@@ -51,9 +52,9 @@ export default async function AdminFeedbackPage({ searchParams }: AdminFeedbackP
               <option value="positive">Positive</option>
               <option value="negative">Negative</option>
             </select>
-            <button className="btn-secondary" type="submit">
+            <Button type="submit" variant="secondary">
               Apply
-            </button>
+            </Button>
           </form>
 
           {feedbackData.entries.length > 0 ? (
@@ -68,13 +69,13 @@ export default async function AdminFeedbackPage({ searchParams }: AdminFeedbackP
                       >
                         {entry.customerName}
                       </Link>{" "}
-                      | {entry.leadName}
+                      • {entry.leadName}
                     </p>
                     <p className="mt-1 text-sm text-muted">
                       {entry.batchDateLabel ?? "No batch date available"}
                     </p>
                   </div>
-                  <span className="rounded-full bg-cream px-3 py-1 text-sm font-semibold text-ink capitalize">
+                  <span className="rounded-full bg-white/[0.08] px-3 py-1 text-sm font-semibold text-ink capitalize">
                     {entry.rating}
                   </span>
                 </div>

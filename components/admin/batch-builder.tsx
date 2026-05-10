@@ -409,7 +409,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
 
           <div className="space-y-2">
             <Label htmlFor="batch-leads">Leads (JSON or CSV)</Label>
-            <div className="rounded-2xl border border-border bg-cream p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
@@ -480,7 +480,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
               Required fields per lead: full name, title, and company. JSON gives you the cleanest import for opener text and signal arrays.
             </p>
             {generationSummary ? (
-              <div className="rounded-2xl border border-border bg-white p-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <h3 className="text-lg text-ink">Generation diagnostics</h3>
                   <Badge variant="outline">
@@ -519,7 +519,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
                     <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
                       Pipeline log
                     </p>
-                    <div className="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-border bg-cream p-3 text-sm text-muted">
+                    <div className="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-[#09131f] p-3 text-sm text-muted">
                       {generationSummary.logs.map((entry, index) => (
                         <p key={`${index}-${entry}`}>- {entry}</p>
                       ))}
@@ -594,10 +594,10 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
               </div>
 
               {savedBatch ? (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
                   <p className="font-semibold text-ink">Latest saved batch</p>
                   <p className="mt-2 text-sm text-muted">
-                    {savedBatch.customerName} · {savedBatch.batchId}
+                    {savedBatch.customerName} | {savedBatch.batchId}
                   </p>
                   {savedBatch.warning ? (
                     <p className="mt-2 text-sm text-terracotta">{savedBatch.warning}</p>
@@ -624,27 +624,27 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
 
               {preview ? (
                 <div className="space-y-5">
-                  <div className="rounded-2xl border border-border bg-cream p-4">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                     <p className="font-semibold text-ink">
                       Brief delivered {preview.deliveryDateLabel}
                     </p>
                     <p className="mt-2 text-sm text-muted">
-                      {preview.leadCount} leads · {preview.verifiedEmails} verified emails
+                      {preview.leadCount} leads | {preview.verifiedEmails} verified emails
                     </p>
                   </div>
 
                   {preview.previewLeads.map((lead) => (
-                    <div key={`${lead.name}-${lead.company}`} className="rounded-2xl border border-border bg-white p-5">
+                    <div key={`${lead.name}-${lead.company}`} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <h3 className="text-xl text-ink">{lead.name}</h3>
                           <Badge variant="outline">{lead.recommendedAngle} recommended</Badge>
                         </div>
                         <p className="text-sm text-muted">
-                          {lead.role} · {lead.company}
+                          {lead.role} | {lead.company}
                         </p>
                         <p className="text-sm text-muted">
-                          {lead.email ?? "No email supplied"} · {lead.emailStatus ?? "unknown"}
+                          {lead.email ?? "No email supplied"} | {lead.emailStatus ?? "unknown"}
                         </p>
                       </div>
 
@@ -676,7 +676,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
                               lead.openers.map((opener, index) => (
                                 <div
                                   key={`${lead.name}-${index}`}
-                                  className="rounded-xl border border-border bg-cream px-4 py-3 text-sm text-muted"
+                                  className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-muted"
                                 >
                                   <p className="mb-1 font-semibold text-ink">
                                     Option {String.fromCharCode(65 + index)}
@@ -685,7 +685,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
                                 </div>
                               ))
                             ) : (
-                              <div className="rounded-xl border border-border bg-cream px-4 py-3 text-sm text-muted">
+                              <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-muted">
                                 No openers supplied for this lead yet.
                               </div>
                             )}
@@ -704,7 +704,7 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
               ) : (
                 <EmptyState
                   className="border-0 px-0 py-2 shadow-none"
-                  description="Run Preview Batch once your leads are pasted and we’ll render the customer-facing brief summary here."
+                  description="Run Preview Batch once your leads are pasted and we'll render the customer-facing brief summary here."
                   title="Preview not generated yet"
                 />
               )}
@@ -715,3 +715,4 @@ export function BatchBuilder({ customers, defaultDeliveryDate }: BatchBuilderPro
     </div>
   );
 }
+

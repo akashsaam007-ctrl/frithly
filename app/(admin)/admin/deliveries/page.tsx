@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   AlertTriangle,
   ArrowRight,
@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { backendApi } from "@/lib/backend-api/client";
 import type { BackendCohort } from "@/lib/backend-api/types";
 import { ROUTES } from "@/lib/constants";
@@ -25,6 +27,8 @@ import {
   updateDeliveryStateAction,
   updateDeliveryWorkflowAction,
 } from "./actions";
+
+export const dynamic = "force-dynamic";
 
 type DeliveryState = BackendCohort["delivery_state"];
 
@@ -105,15 +109,15 @@ function formatDeliveryStateLabel(state: DeliveryState) {
 function stateBadgeClasses(state: DeliveryState) {
   switch (state) {
     case "delivered":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+      return "border-emerald-500/30 bg-emerald-500/12 text-emerald-200";
     case "scheduled":
-      return "border-sky-200 bg-sky-50 text-sky-700";
+      return "border-sky-500/30 bg-sky-500/12 text-sky-200";
     case "approved":
-      return "border-violet-200 bg-violet-50 text-violet-700";
+      return "border-violet-500/30 bg-violet-500/12 text-violet-200";
     case "reviewing":
-      return "border-amber-200 bg-amber-50 text-amber-700";
+      return "border-amber-500/30 bg-amber-500/12 text-amber-200";
     default:
-      return "border-border bg-stone-100 text-muted";
+      return "border-white/10 bg-white/[0.05] text-muted";
   }
 }
 
@@ -242,8 +246,8 @@ function ChecklistPill({ active, label }: { active: boolean; label: string }) {
     <div
       className={
         active
-          ? "rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
-          : "rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted"
+          ? "rounded-full border border-emerald-500/30 bg-emerald-500/12 px-3 py-1 text-xs font-semibold text-emerald-200"
+          : "rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted"
       }
     >
       {label}
@@ -259,7 +263,7 @@ function InlineStat({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-stone-50 p-4">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</p>
       <p className="mt-2 text-xl font-semibold text-ink">{value}</p>
     </div>
@@ -267,10 +271,20 @@ function InlineStat({
 }
 
 export default async function AdminDeliveriesPage() {
-  const [deliveries, customers] = await Promise.all([
-    backendApi.cohorts.list(),
-    getAdminCustomersData(),
-  ]);
+  let deliveries: BackendCohort[] = [];
+  let customers: Awaited<ReturnType<typeof getAdminCustomersData>> = [];
+  let deliveryLoadError: string | null = null;
+
+  try {
+    [deliveries, customers] = await Promise.all([
+      backendApi.cohorts.list(),
+      getAdminCustomersData(),
+    ]);
+  } catch (error) {
+    console.error("Failed to load admin deliveries page", error);
+    deliveryLoadError =
+      "Delivery data could not be loaded right now. The ops workflow is still safe, but the delivery board needs the backend sync restored before it can render live packages.";
+  }
 
   const customerById = new Map(customers.map((customer) => [customer.id, customer]));
   const items = deliveries
@@ -365,7 +379,7 @@ export default async function AdminDeliveriesPage() {
 
   return (
     <Container className="space-y-8 px-0">
-      <section className="rounded-2xl border border-border bg-white p-8">
+      <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
@@ -382,13 +396,33 @@ export default async function AdminDeliveriesPage() {
           </div>
 
           <form action={releaseDueDeliveriesAction}>
-            <Button size="lg" type="submit">
+            <Button disabled={Boolean(deliveryLoadError)} size="lg" type="submit">
               Release due deliveries
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Button>
           </form>
         </div>
       </section>
+
+      {deliveryLoadError ? (
+        <Card className="border-amber-500/20 bg-amber-500/10">
+          <CardContent className="flex items-start gap-3 p-6 text-sm leading-7 text-amber-100">
+            <AlertTriangle className="mt-1 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
+            <div>
+              <p className="font-semibold text-ink">Delivery board is temporarily offline</p>
+              <p className="mt-1">{deliveryLoadError}</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button asChild size="sm" variant="secondary">
+                  <Link href={ROUTES.ADMIN_BATCHES_NEW}>Open batch builder</Link>
+                </Button>
+                <Button asChild size="sm" variant="ghost">
+                  <Link href={ROUTES.ADMIN_APPLICATIONS}>Review applications</Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
         <MetricCard
@@ -447,7 +481,7 @@ export default async function AdminDeliveriesPage() {
                 <a
                   key={item.name}
                   href={`#delivery-${toDomId(item.name)}`}
-                  className="block rounded-2xl border border-border p-4 transition hover:border-terracotta/40 hover:bg-cream/40"
+                  className="block rounded-2xl border border-border p-4 transition hover:border-terracotta/40 hover:bg-white/[0.04]"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-2">
@@ -455,11 +489,11 @@ export default async function AdminDeliveriesPage() {
                         <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${stateBadgeClasses(item.delivery_state)}`}>
                           {formatDeliveryStateLabel(item.delivery_state)}
                         </span>
-                        <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted">
+                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted">
                           Priority {item.priority_score}
                         </span>
                         {item.review_owner ? (
-                          <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted">
+                          <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted">
                             Owner {item.review_owner}
                           </span>
                         ) : null}
@@ -481,20 +515,20 @@ export default async function AdminDeliveriesPage() {
                       item.blockers.slice(0, 2).map((blocker) => (
                         <span
                           key={blocker}
-                          className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700"
+                          className="rounded-full border border-amber-500/30 bg-amber-500/12 px-3 py-1 text-xs font-semibold text-amber-200"
                         >
                           {blocker}
                         </span>
                       ))
                     ) : (
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/12 px-3 py-1 text-xs font-semibold text-emerald-200">
                         No active blockers
                       </span>
                     )}
                     {item.blocker_tags.slice(0, 2).map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted"
+                        className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted"
                       >
                         {tag}
                       </span>
@@ -549,14 +583,14 @@ export default async function AdminDeliveriesPage() {
                         <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${stateBadgeClasses(item.delivery_state)}`}>
                           {formatDeliveryStateLabel(item.delivery_state)}
                         </span>
-                        <span className="rounded-full border border-border bg-stone-100 px-3 py-1 text-xs font-semibold text-muted">
+                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted">
                           {item.delivery_week_label ?? "Unscheduled"}
                         </span>
-                        <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted">
+                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted">
                           Priority {item.priority_score}
                         </span>
                         {item.delivery_email_status ? (
-                          <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted">
+                          <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted">
                             Email {item.delivery_email_status}
                           </span>
                         ) : null}
@@ -579,7 +613,7 @@ export default async function AdminDeliveriesPage() {
 
                   <CardContent className="space-y-5">
                     <div className="grid gap-4 md:grid-cols-2">
-                      <div className="rounded-2xl border border-border bg-stone-50 p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="text-sm font-semibold text-ink">Delivery summary</p>
                         <ul className="mt-3 space-y-2 text-sm leading-6 text-muted">
                           <li>{`${item.total_members} reviewed opportunities in package`}</li>
@@ -589,7 +623,7 @@ export default async function AdminDeliveriesPage() {
                         </ul>
                       </div>
 
-                      <div className="rounded-2xl border border-border bg-stone-50 p-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <p className="text-sm font-semibold text-ink">Operational posture</p>
                         <ul className="mt-3 space-y-2 text-sm leading-6 text-muted">
                           <li>{`Premium density ${formatPercent(deliveryDensity)}`}</li>
@@ -638,7 +672,7 @@ export default async function AdminDeliveriesPage() {
                     </div>
 
                     <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-                      <div className="space-y-3 rounded-2xl border border-border bg-stone-50 p-4">
+                      <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-amber-600" aria-hidden="true" />
                           <p className="text-sm font-semibold text-ink">Delivery blockers</p>
@@ -657,7 +691,7 @@ export default async function AdminDeliveriesPage() {
                                 {item.blocker_tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted"
+                                    className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted"
                                   >
                                     {tag}
                                   </span>
@@ -672,7 +706,7 @@ export default async function AdminDeliveriesPage() {
                         )}
                       </div>
 
-                      <div className="space-y-3 rounded-2xl border border-border bg-stone-50 p-4">
+                      <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                         <div className="flex items-center gap-2">
                           <ShieldCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                           <p className="text-sm font-semibold text-ink">QA and ownership</p>
@@ -686,13 +720,12 @@ export default async function AdminDeliveriesPage() {
                       </div>
                     </div>
 
-                    <form action={updateDeliveryWorkflowAction} className="space-y-4 rounded-2xl border border-border bg-white p-4">
+                    <form action={updateDeliveryWorkflowAction} className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                       <input name="cohortName" type="hidden" value={item.name} />
                       <div className="grid gap-4 md:grid-cols-2">
                         <label className="space-y-2 text-sm text-muted">
                           <span className="font-semibold text-ink">Review owner</span>
-                          <input
-                            className="h-11 w-full rounded-lg border border-border bg-white px-3 text-sm text-ink outline-none"
+                          <Input
                             defaultValue={item.review_owner ?? ""}
                             name="reviewOwner"
                             placeholder="Assign operator"
@@ -702,8 +735,7 @@ export default async function AdminDeliveriesPage() {
 
                         <label className="space-y-2 text-sm text-muted">
                           <span className="font-semibold text-ink">Blocker tags</span>
-                          <input
-                            className="h-11 w-full rounded-lg border border-border bg-white px-3 text-sm text-ink outline-none"
+                          <Input
                             defaultValue={item.blocker_tags.join(", ")}
                             name="blockerTags"
                             placeholder="smtp, draft, customer, qa"
@@ -714,8 +746,8 @@ export default async function AdminDeliveriesPage() {
 
                       <label className="block space-y-2 text-sm text-muted">
                         <span className="font-semibold text-ink">Ops notes</span>
-                        <textarea
-                          className="min-h-24 w-full rounded-2xl border border-border bg-white px-3 py-3 text-sm text-ink outline-none"
+                        <Textarea
+                          className="min-h-24"
                           defaultValue={item.ops_notes ?? ""}
                           name="opsNotes"
                           placeholder="Capture review context, escalation notes, or delivery-specific guidance."
@@ -724,15 +756,15 @@ export default async function AdminDeliveriesPage() {
 
                       <label className="block space-y-2 text-sm text-muted">
                         <span className="font-semibold text-ink">Final QA notes</span>
-                        <textarea
-                          className="min-h-20 w-full rounded-2xl border border-border bg-white px-3 py-3 text-sm text-ink outline-none"
+                        <Textarea
+                          className="min-h-20"
                           defaultValue={item.qa_notes ?? ""}
                           name="qaNotes"
                           placeholder="Document final QA checks before Monday release."
                         />
                       </label>
 
-                      <label className="flex items-center gap-3 rounded-2xl border border-border bg-stone-50 px-4 py-3 text-sm text-ink">
+                      <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-ink">
                         <input
                           defaultChecked={item.qa_confirmed}
                           name="qaConfirmed"
@@ -813,7 +845,7 @@ export default async function AdminDeliveriesPage() {
                       ) : null}
                     </div>
 
-                    <div className="rounded-2xl border border-border bg-stone-50 p-4 text-sm leading-6 text-muted">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-muted">
                       <div className="flex items-start gap-3">
                         {item.release_ready ? (
                           <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
@@ -852,7 +884,7 @@ export default async function AdminDeliveriesPage() {
             customerProfiles.map((profile) => (
               <Card key={profile.label}>
                 <CardHeader className="space-y-3">
-                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-stone-100 px-3 py-1 text-xs font-semibold text-muted">
+                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-muted">
                     <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
                     Pilot profile
                   </div>
@@ -871,7 +903,7 @@ export default async function AdminDeliveriesPage() {
                     <InlineStat label="Meetings" value={formatPercent(profile.meetingRate)} />
                   </div>
 
-                  <div className="space-y-3 rounded-2xl border border-border bg-stone-50 p-4 text-sm leading-6 text-muted">
+                  <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-muted">
                     <div className="flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                       <p className="font-semibold text-ink">ICP quality</p>
@@ -919,3 +951,5 @@ export default async function AdminDeliveriesPage() {
     </Container>
   );
 }
+
+
