@@ -923,7 +923,7 @@ export function PlatformHomepage() {
             className="mt-14 grid gap-10 rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
-            <div className="space-y-8">
+            <div className="min-w-0 space-y-8">
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
                   Industry
@@ -1044,8 +1044,8 @@ export function PlatformHomepage() {
       </section>
 
       <section className="relative py-24 sm:py-28" id="builder">
-        <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:items-start">
-          <motion.div {...revealProps(enableReveal, 0.05)}>
+        <Container className="space-y-12">
+          <motion.div className="max-w-3xl" {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
               copy="There is no standard SaaS plan here. Start with the Frithly Core Intelligence Program from €499/month, then shape the release around coverage, depth, support, and weekly operating goals."
               eyebrow="Custom program builder"
@@ -1055,70 +1055,86 @@ export function PlatformHomepage() {
           </motion.div>
 
           <motion.div
-            className="grid gap-10 rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:p-8"
+            className="grid gap-10 rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] xl:items-start xl:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
-            <div className="space-y-8">
-              <SliderControl
-                label="Weekly opportunity target"
-                max={70}
-                min={20}
-                onChange={setWeeklyOpportunityTarget}
-                step={5}
-                value={weeklyOpportunityTarget}
-                valueLabel={`${weeklyOpportunityTarget} / week`}
-              />
-              <SliderControl
-                label="Targeting depth"
-                max={5}
-                min={1}
-                onChange={setTargetingDepth}
-                value={targetingDepth}
-                valueLabel={programPreview.targetingLabel}
-              />
+            <div className="min-w-0 space-y-8">
+              <div className="grid gap-6 md:grid-cols-2">
+                <SliderControl
+                  label="Weekly opportunity target"
+                  max={70}
+                  min={20}
+                  onChange={setWeeklyOpportunityTarget}
+                  step={5}
+                  value={weeklyOpportunityTarget}
+                  valueLabel={`${weeklyOpportunityTarget} / week`}
+                />
+                <SliderControl
+                  label="Targeting depth"
+                  max={5}
+                  min={1}
+                  onChange={setTargetingDepth}
+                  value={targetingDepth}
+                  valueLabel={programPreview.targetingLabel}
+                />
+              </div>
 
               <div className="space-y-4">
                 <div className="text-sm font-medium text-white">Geography coverage</div>
-                {coverageOptions.map((option) => (
-                  <button
-                    className={cn(
-                      "block w-full rounded-[1.2rem] px-4 py-4 text-left transition-colors",
-                      coverage === option.id
-                        ? "bg-white text-[#08111d]"
-                        : "bg-white/[0.05] text-white/72 hover:bg-white/[0.09]",
-                    )}
-                    key={option.id}
-                    onClick={() => setCoverage(option.id)}
-                    type="button"
-                  >
-                    <div className="font-medium">{option.label}</div>
-                    <div className={cn("mt-2 text-sm", coverage === option.id ? "text-[#08111d]/70" : "text-white/50")}>
-                      {option.description}
-                    </div>
-                  </button>
-                ))}
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {coverageOptions.map((option) => (
+                    <button
+                      className={cn(
+                        "block rounded-[1.2rem] px-4 py-4 text-left transition-colors",
+                        coverage === option.id
+                          ? "bg-white text-[#08111d]"
+                          : "bg-white/[0.05] text-white/72 hover:bg-white/[0.09]",
+                      )}
+                      key={option.id}
+                      onClick={() => setCoverage(option.id)}
+                      type="button"
+                    >
+                      <div className="font-medium">{option.label}</div>
+                      <div
+                        className={cn(
+                          "mt-2 text-sm leading-6",
+                          coverage === option.id ? "text-[#08111d]/70" : "text-white/50",
+                        )}
+                      >
+                        {option.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-4">
                 <div className="text-sm font-medium text-white">Support level</div>
-                {supportOptions.map((option) => (
-                  <button
-                    className={cn(
-                      "block w-full rounded-[1.2rem] px-4 py-4 text-left transition-colors",
-                      support === option.id
-                        ? "bg-white text-[#08111d]"
-                        : "bg-white/[0.05] text-white/72 hover:bg-white/[0.09]",
-                    )}
-                    key={option.id}
-                    onClick={() => setSupport(option.id)}
-                    type="button"
-                  >
-                    <div className="font-medium">{option.label}</div>
-                    <div className={cn("mt-2 text-sm", support === option.id ? "text-[#08111d]/70" : "text-white/50")}>
-                      {option.description}
-                    </div>
-                  </button>
-                ))}
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {supportOptions.map((option) => (
+                    <button
+                      className={cn(
+                        "block rounded-[1.2rem] px-4 py-4 text-left transition-colors",
+                        support === option.id
+                          ? "bg-white text-[#08111d]"
+                          : "bg-white/[0.05] text-white/72 hover:bg-white/[0.09]",
+                      )}
+                      key={option.id}
+                      onClick={() => setSupport(option.id)}
+                      type="button"
+                    >
+                      <div className="font-medium">{option.label}</div>
+                      <div
+                        className={cn(
+                          "mt-2 text-sm leading-6",
+                          support === option.id ? "text-[#08111d]/70" : "text-white/50",
+                        )}
+                      >
+                        {option.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -1142,7 +1158,7 @@ export function PlatformHomepage() {
                   type="button"
                 >
                   <div className="font-medium">Founder-priority targeting</div>
-                  <div className="mt-2 text-sm text-white/54">
+                  <div className="mt-2 text-sm leading-6 text-white/54">
                     Raise decision-maker confidence inside the final queue.
                   </div>
                 </button>
@@ -1155,20 +1171,20 @@ export function PlatformHomepage() {
                   type="button"
                 >
                   <div className="font-medium">SMTP-aware prioritization</div>
-                  <div className="mt-2 text-sm text-white/54">
+                  <div className="mt-2 text-sm leading-6 text-white/54">
                     Keep deliverability posture higher inside the release workflow.
                   </div>
                 </button>
               </div>
             </div>
 
-            <div className="rounded-[1.5rem] bg-black/16 p-6">
+            <div className="min-w-0 rounded-[1.5rem] bg-black/16 p-6 xl:sticky xl:top-24">
               <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
+                <div className="min-w-0">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
                     Your intelligence program
                   </div>
-                  <div className="mt-4 text-[2.8rem] font-medium leading-none text-white">
+                  <div className="mt-4 text-[2.35rem] font-medium leading-[1.02] text-white lg:text-[2.8rem]">
                     {formatEuroRange(programPreview.rangeLow, programPreview.rangeHigh)}
                   </div>
                 </div>
@@ -1177,38 +1193,51 @@ export function PlatformHomepage() {
                 </div>
               </div>
 
-              <div className="mt-8 grid gap-5 sm:grid-cols-2">
-                <div>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
                   <div className="text-xs uppercase tracking-[0.18em] text-white/34">Monthly reviewed volume</div>
                   <div className="mt-2 text-3xl font-medium text-white">{programPreview.monthlyReviewed}</div>
                 </div>
-                <div>
+                <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
                   <div className="text-xs uppercase tracking-[0.18em] text-white/34">Coverage</div>
-                  <div className="mt-2 text-3xl font-medium text-white">{programPreview.coverageLabel}</div>
+                  <div className="mt-2 text-2xl font-medium text-white">{programPreview.coverageLabel}</div>
                 </div>
-                <div>
+                <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
                   <div className="text-xs uppercase tracking-[0.18em] text-white/34">Support level</div>
-                  <div className="mt-2 text-3xl font-medium text-white">{programPreview.supportLabel}</div>
+                  <div className="mt-2 text-2xl font-medium text-white">{programPreview.supportLabel}</div>
                 </div>
-                <div>
+                <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
                   <div className="text-xs uppercase tracking-[0.18em] text-white/34">Cadence</div>
-                  <div className="mt-2 text-3xl font-medium text-white">
+                  <div className="mt-2 text-2xl font-medium text-white">
                     {cadence === "weekly" ? "Weekly" : "Bi-weekly"}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 space-y-3 border-t border-white/8 pt-6">
+              <div className="mt-8 rounded-[1.3rem] bg-white/[0.03] p-5">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/34">Program outline</div>
+                <div className="mt-4 space-y-3">
                 {[
-                  founderPriority ? "Founder-priority targeting remains active." : "Founder weighting stays balanced.",
-                  smtpPriority ? "SMTP-aware release posture remains strict." : "SMTP-safe routing remains baseline.",
-                  `Targeting depth: ${programPreview.targetingLabel}.`,
+                  `${programPreview.monthlyReviewed} reviewed opportunities / month`,
+                  `${programPreview.coverageLabel} market coverage`,
+                  `${programPreview.supportLabel} remains active`,
+                  founderPriority ? "Founder-priority targeting stays weighted higher" : "Founder weighting stays balanced",
+                  smtpPriority ? "SMTP-aware release posture remains strict" : "SMTP-safe routing remains baseline",
+                  `Targeting depth: ${programPreview.targetingLabel}`,
                 ].map((line) => (
                   <div className="flex items-start gap-3 text-sm leading-7 text-white/56" key={line}>
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#79e2cb]" />
                     <span>{line}</span>
                   </div>
                 ))}
+                </div>
+              </div>
+
+              <div className="mt-8 border-t border-white/8 pt-6">
+                <p className="text-sm leading-7 text-white/56">
+                  This is a program estimate, not a checkout flow. The next step is application,
+                  qualification, and a release configuration built around your outbound motion.
+                </p>
               </div>
             </div>
           </motion.div>
