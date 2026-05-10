@@ -352,7 +352,7 @@ function SliderControl({
   );
 }
 
-function RoiOutcomeLane({
+function RoiOutcomePanel({
   accentClassName,
   description,
   ignored,
@@ -368,27 +368,27 @@ function RoiOutcomeLane({
   title: string;
 }) {
   return (
-    <div className="rounded-[1.3rem] bg-white/[0.04] p-5">
+    <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-sm font-medium text-white">{title}</div>
+          <div className="text-[1.15rem] font-medium text-white">{title}</div>
           <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/36">
             Out of every 100 businesses contacted
           </div>
         </div>
         <div className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-white/70">
-          {replies} reply
+          {replies} reply-ready
         </div>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-full bg-white/8">
+      <div className="overflow-hidden rounded-full bg-white/8">
         <div className="flex h-3 w-full">
           <div className={cn("h-full rounded-full", accentClassName)} style={{ width: `${replies}%` }} />
           <div className="h-full bg-white/10" style={{ width: `${Math.max(100 - replies, 0)}%` }} />
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-[1rem] bg-black/18 p-3">
           <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Ignored</div>
           <div className="mt-2 text-2xl font-medium text-white">{ignored}</div>
@@ -403,7 +403,7 @@ function RoiOutcomeLane({
         </div>
       </div>
 
-      <p className="mt-4 text-sm leading-7 text-white/54">{description}</p>
+      <p className="text-sm leading-7 text-white/54">{description}</p>
     </div>
   );
 }
@@ -1383,7 +1383,7 @@ export function PlatformHomepage() {
             className="mx-auto max-w-6xl rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] xl:items-start">
+            <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.28fr)] xl:items-start">
               <div className="min-w-0 rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
                 <div className="text-xs uppercase tracking-[0.18em] text-white/34">
                   Adjust the working assumptions
@@ -1448,7 +1448,7 @@ export function PlatformHomepage() {
                   <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
                     Opportunity simulator
                   </div>
-                  <h3 className="mt-4 max-w-4xl text-[2.2rem] font-medium leading-[1.04] text-white lg:text-[2.8rem]">
+                  <h3 className="mt-4 max-w-4xl text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.5rem]">
                     You could be leaving {formatMoney(roiModel.extraRevenue)} / month on the table.
                   </h3>
                   <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
@@ -1487,23 +1487,29 @@ export function PlatformHomepage() {
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                    <RoiOutcomeLane
-                      accentClassName="bg-[#efba90]"
-                      description="Low-signal accounts absorb the effort before a serious conversation can begin."
-                      ignored={roiModel.ignoredCurrent}
-                      meetings={roiModel.currentMeetings}
-                      replies={Math.round(replyRate)}
-                      title="Today"
-                    />
-                    <RoiOutcomeLane
-                      accentClassName="bg-[#79e2cb]"
-                      description="Better targeting protects the route earlier and produces a cleaner working set."
-                      ignored={roiModel.ignoredImproved}
-                      meetings={roiModel.improvedMeetings}
-                      replies={roiModel.improvedReplies}
-                      title="With stronger targeting"
-                    />
+                  <div className="mt-6 overflow-hidden rounded-[1.5rem] border border-white/8 bg-white/[0.03]">
+                    <div className="grid gap-0 lg:grid-cols-2">
+                      <div className="p-5 sm:p-6 lg:border-r lg:border-white/8">
+                        <RoiOutcomePanel
+                          accentClassName="bg-[#efba90]"
+                          description="Low-signal accounts absorb the effort before a serious conversation can begin."
+                          ignored={roiModel.ignoredCurrent}
+                          meetings={roiModel.currentMeetings}
+                          replies={Math.round(replyRate)}
+                          title="Today"
+                        />
+                      </div>
+                      <div className="border-t border-white/8 p-5 sm:p-6 lg:border-l-0 lg:border-t-0">
+                        <RoiOutcomePanel
+                          accentClassName="bg-[#79e2cb]"
+                          description="Better targeting protects the route earlier and produces a cleaner working set."
+                          ignored={roiModel.ignoredImproved}
+                          meetings={roiModel.improvedMeetings}
+                          replies={roiModel.improvedReplies}
+                          title="With stronger targeting"
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   <div className="mt-6 rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-5">
