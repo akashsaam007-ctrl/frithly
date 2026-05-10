@@ -352,6 +352,62 @@ function SliderControl({
   );
 }
 
+function RoiOutcomeLane({
+  accentClassName,
+  description,
+  ignored,
+  meetings,
+  replies,
+  title,
+}: {
+  accentClassName: string;
+  description: string;
+  ignored: number;
+  meetings: number;
+  replies: number;
+  title: string;
+}) {
+  return (
+    <div className="rounded-[1.3rem] bg-white/[0.04] p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div className="text-sm font-medium text-white">{title}</div>
+          <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/36">
+            Out of every 100 businesses contacted
+          </div>
+        </div>
+        <div className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-white/70">
+          {replies} reply
+        </div>
+      </div>
+
+      <div className="mt-5 overflow-hidden rounded-full bg-white/8">
+        <div className="flex h-3 w-full">
+          <div className={cn("h-full rounded-full", accentClassName)} style={{ width: `${replies}%` }} />
+          <div className="h-full bg-white/10" style={{ width: `${Math.max(100 - replies, 0)}%` }} />
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-[1rem] bg-black/18 p-3">
+          <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Ignored</div>
+          <div className="mt-2 text-2xl font-medium text-white">{ignored}</div>
+        </div>
+        <div className="rounded-[1rem] bg-black/18 p-3">
+          <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Reply-ready</div>
+          <div className="mt-2 text-2xl font-medium text-white">{replies}</div>
+        </div>
+        <div className="rounded-[1rem] bg-black/18 p-3">
+          <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Meetings / month</div>
+          <div className="mt-2 text-2xl font-medium text-white">{meetings.toFixed(1)}</div>
+        </div>
+      </div>
+
+      <p className="mt-4 text-sm leading-7 text-white/54">{description}</p>
+    </div>
+  );
+}
+
 function ChoiceButton({
   active,
   label,
@@ -528,16 +584,20 @@ export function PlatformHomepage() {
     const improvedReplyRate = Math.min(Math.max(replyRate * 2.5, replyRate + 3), 15);
     const currentReplies = outreachVolume * (replyRate / 100);
     const improvedReplies = outreachVolume * (improvedReplyRate / 100);
+    const currentMeetings = currentReplies * 0.4;
+    const improvedMeetings = improvedReplies * 0.4;
     const extraReplies = improvedReplies - currentReplies;
-    const extraMeetings = extraReplies * 0.4;
+    const extraMeetings = improvedMeetings - currentMeetings;
     const extraRevenue = (extraMeetings / 5) * clientValue;
 
     return {
+      currentMeetings,
       extraMeetings,
       extraReplies,
       extraRevenue,
       ignoredCurrent: 100 - Math.round(replyRate),
       ignoredImproved: 100 - Math.round(improvedReplyRate),
+      improvedMeetings,
       improvedReplies: Math.round(improvedReplyRate),
       improvedReplyRate,
       replyMultiplier: improvedReplies / Math.max(currentReplies, 1),
@@ -1318,144 +1378,141 @@ export function PlatformHomepage() {
           </motion.div>
 
           <motion.div
-            className="grid gap-8 rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:p-8"
+            className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8"
             {...revealProps(enableReveal, 0.12)}
           >
             <div className="space-y-8">
-              <SliderControl
-                label="Monthly businesses contacted"
-                max={500}
-                min={50}
-                onChange={setOutreachVolume}
-                step={10}
-                value={outreachVolume}
-                valueLabel={`${outreachVolume} / month`}
-              />
-              <SliderControl
-                label="Current reply rate"
-                max={10}
-                min={1}
-                onChange={setReplyRate}
-                step={0.5}
-                value={replyRate}
-                valueLabel={`${replyRate.toFixed(replyRate % 1 === 0 ? 0 : 1)}%`}
-              />
-              <SliderControl
-                label="Average client value"
-                max={20000}
-                min={2000}
-                onChange={setClientValue}
-                step={500}
-                value={clientValue}
-                valueLabel={formatMoney(clientValue)}
-              />
-
-              <div className="space-y-3">
-                <div className="text-sm font-medium text-white">Quick scenarios</div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    [100, 2, 5000, "Lean agency"],
-                    [180, 4, 9000, "Growth team"],
-                    [150, 3, 12000, "Higher-ticket services"],
-                  ].map(([volume, rate, value, label]) => (
-                    <button
-                      className="rounded-full bg-white/[0.05] px-4 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/[0.09]"
-                      key={label}
-                      onClick={() => {
-                        setOutreachVolume(volume as number);
-                        setReplyRate(rate as number);
-                        setClientValue(value as number);
-                      }}
-                      type="button"
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-7">
-              <div>
+              <div className="max-w-3xl">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
-                  Estimated opportunity leakage
+                  Opportunity simulator
                 </div>
-                <h3 className="mt-4 max-w-xl text-[2.5rem] font-medium leading-[1.02] text-white">
+                <h3 className="mt-4 max-w-4xl text-[2.35rem] font-medium leading-[1.04] text-white lg:text-[2.9rem]">
                   You could be leaving {formatMoney(roiModel.extraRevenue)} / month on the table.
                 </h3>
                 <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                  With stronger targeting, the same team could create more replies and more meetings
-                  without increasing outreach volume.
+                  Better targeting does not ask the team to send more. It helps the same outreach motion
+                  create more credible replies and more plausible meetings.
                 </p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra replies</div>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="rounded-[1.25rem] bg-black/16 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra replies / month</div>
                   <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraReplies.toFixed(0)}</div>
                 </div>
-                <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra meetings</div>
+                <div className="rounded-[1.25rem] bg-black/16 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra meetings / month</div>
                   <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraMeetings.toFixed(1)}</div>
                 </div>
-                <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Reply uplift</div>
-                  <div className="mt-2 text-3xl font-medium text-white">
-                    {roiModel.replyMultiplier.toFixed(1)}×
-                  </div>
+                <div className="rounded-[1.25rem] bg-black/16 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Potential reply rate</div>
+                  <div className="mt-2 text-3xl font-medium text-white">{roiModel.improvedReplies}%</div>
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.3rem] bg-black/16 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-white">Today</div>
-                      <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/36">
-                        Out of 100 leads
-                      </div>
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] xl:items-start">
+                <div className="min-w-0 rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">
+                    Adjust the working assumptions
+                  </div>
+                  <div className="mt-6 space-y-6">
+                    <SliderControl
+                      label="Monthly businesses contacted"
+                      max={500}
+                      min={50}
+                      onChange={setOutreachVolume}
+                      step={10}
+                      value={outreachVolume}
+                      valueLabel={`${outreachVolume} / month`}
+                    />
+                    <SliderControl
+                      label="Current reply rate"
+                      max={10}
+                      min={1}
+                      onChange={setReplyRate}
+                      step={0.5}
+                      value={replyRate}
+                      valueLabel={`${replyRate.toFixed(replyRate % 1 === 0 ? 0 : 1)}%`}
+                    />
+                    <SliderControl
+                      label="Average client value"
+                      max={20000}
+                      min={2000}
+                      onChange={setClientValue}
+                      step={500}
+                      value={clientValue}
+                      valueLabel={formatMoney(clientValue)}
+                    />
+                  </div>
+
+                  <div className="mt-8 space-y-3">
+                    <div className="text-sm font-medium text-white">Quick scenarios</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        [100, 2, 5000, "Lean agency"],
+                        [180, 4, 9000, "Growth team"],
+                        [150, 3, 12000, "Higher-ticket services"],
+                      ].map(([volume, rate, value, label]) => (
+                        <button
+                          className="rounded-full bg-white/[0.05] px-4 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/[0.09]"
+                          key={label}
+                          onClick={() => {
+                            setOutreachVolume(volume as number);
+                            setReplyRate(rate as number);
+                            setClientValue(value as number);
+                          }}
+                          type="button"
+                        >
+                          {label}
+                        </button>
+                      ))}
                     </div>
-                    <div className="text-sm text-white/70">{Math.round(replyRate)} reply</div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-10 gap-1.5">
-                    {Array.from({ length: 100 }, (_, index) => (
-                      <div
-                        className={cn(
-                          "h-3 rounded-[0.28rem]",
-                          index < Math.round(replyRate) ? "bg-[#efba90]" : "bg-white/10",
-                        )}
-                        key={`current-${index}`}
-                      />
-                    ))}
-                  </div>
-                  <div className="mt-4 text-sm text-white/54">
-                    {roiModel.ignoredCurrent} ignore · {Math.round(replyRate)} reply
                   </div>
                 </div>
 
-                <div className="rounded-[1.3rem] bg-black/16 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-white">With better targeting</div>
-                      <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/36">
-                        Out of 100 leads
+                <div className="min-w-0 space-y-4">
+                  <div className="rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <div className="text-xs uppercase tracking-[0.18em] text-white/34">
+                          At the same outreach volume
+                        </div>
+                        <div className="mt-2 text-lg font-medium text-white">
+                          {outreachVolume} businesses contacted each month
+                        </div>
+                      </div>
+                      <div className="rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white/70">
+                        Focus on quality, not more activity
                       </div>
                     </div>
-                    <div className="text-sm text-white/70">{roiModel.improvedReplies} reply</div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-10 gap-1.5">
-                    {Array.from({ length: 100 }, (_, index) => (
-                      <div
-                        className={cn(
-                          "h-3 rounded-[0.28rem]",
-                          index < roiModel.improvedReplies ? "bg-[#79e2cb]" : "bg-white/10",
-                        )}
-                        key={`improved-${index}`}
+
+                    <div className="mt-6 space-y-4">
+                      <RoiOutcomeLane
+                        accentClassName="bg-[#efba90]"
+                        description="More of the monthly effort gets absorbed by low-signal accounts before a serious conversation ever begins."
+                        ignored={roiModel.ignoredCurrent}
+                        meetings={roiModel.currentMeetings}
+                        replies={Math.round(replyRate)}
+                        title="Today"
                       />
-                    ))}
+                      <RoiOutcomeLane
+                        accentClassName="bg-[#79e2cb]"
+                        description="Tighter targeting protects the route earlier, so the same outreach volume produces a cleaner working set."
+                        ignored={roiModel.ignoredImproved}
+                        meetings={roiModel.improvedMeetings}
+                        replies={roiModel.improvedReplies}
+                        title="With stronger targeting"
+                      />
+                    </div>
                   </div>
-                  <div className="mt-4 text-sm text-white/54">
-                    {roiModel.ignoredImproved} ignore · {roiModel.improvedReplies} reply
+
+                  <div className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-5">
+                    <div className="text-xs uppercase tracking-[0.18em] text-white/34">What changes</div>
+                    <p className="mt-3 text-base leading-8 text-white/60">
+                      The team keeps volume flat, but creates roughly {roiModel.extraReplies.toFixed(0)} more
+                      likely replies, {roiModel.extraMeetings.toFixed(1)} more meetings, and
+                      {` ${formatMoney(roiModel.extraRevenue)}`} more revenue opportunity each month.
+                    </p>
                   </div>
                 </div>
               </div>
