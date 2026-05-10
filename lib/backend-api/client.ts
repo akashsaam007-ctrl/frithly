@@ -93,6 +93,7 @@ async function backendRequest<T>(pathname: string, options: RequestOptions = {})
     cache: "no-store",
     headers: {
       Accept: "application/json",
+      "ngrok-skip-browser-warning": "true",
       ...(body ? { "Content-Type": "application/json" } : {}),
       ...buildTenantHeaders(tenant),
       ...headers,
@@ -134,6 +135,7 @@ async function backendDownload(
     cache: "no-store",
     headers: {
       Accept: "*/*",
+      "ngrok-skip-browser-warning": "true",
       ...buildTenantHeaders(tenant),
     },
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
