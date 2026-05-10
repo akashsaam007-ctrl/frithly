@@ -470,9 +470,9 @@ export function PlatformHomepage() {
     const supportCost = support === "core" ? 0 : support === "drafts" ? 180 : 340;
     const founderCost = founderPriority ? 140 : 0;
     const smtpCost = smtpPriority ? 95 : 0;
-    const depthCost = targetingDepth * 120;
-    const volumeCost = weeklyOpportunityTarget * 4;
-    const cadenceCost = cadence === "weekly" ? 170 : 0;
+    const depthCost = Math.max(targetingDepth - 1, 0) * 120;
+    const volumeCost = Math.max(weeklyOpportunityTarget - 20, 0) * 4;
+    const cadenceCost = 0;
     const low =
       499 +
       coverageCost +

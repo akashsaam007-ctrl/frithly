@@ -272,7 +272,7 @@ export function PricingSection() {
     const cadenceLevel =
       cadenceOptions.find((item) => item.id === cadence) ?? cadenceOptions[0];
 
-    const coverageModifier = Math.round(monthlyCoverage * 2.4);
+    const coverageModifier = Math.round(Math.max(monthlyCoverage - 50, 0) * 2.4);
     const low =
       499 +
       market.modifier +
