@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Fraunces, Instrument_Serif } from "next/font/google";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -368,6 +368,7 @@ export function PlatformHomepage() {
   const reduceMotion = useReducedMotion() ?? false;
   const [hasMounted, setHasMounted] = useState(false);
   const [activeStageIndex, setActiveStageIndex] = useState(0);
+  const [enginePanelOffset, setEnginePanelOffset] = useState(0);
   const [industry, setIndustry] = useState<IndustryId>("agencies");
   const [geography, setGeography] = useState<GeographyId>("uk-eu");
   const [goal, setGoal] = useState<GoalId>("quality");
@@ -381,6 +382,9 @@ export function PlatformHomepage() {
   const [outreachVolume, setOutreachVolume] = useState(120);
   const [replyRate, setReplyRate] = useState(3);
   const [clientValue, setClientValue] = useState(8000);
+  const engineTimelineRef = useRef<HTMLDivElement | null>(null);
+  const enginePanelRef = useRef<HTMLDivElement | null>(null);
+  const engineStageRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     setHasMounted(true);
@@ -397,6 +401,45 @@ export function PlatformHomepage() {
 
     return () => window.clearInterval(timer);
   }, [reduceMotion]);
+
+  useEffect(() => {
+    function measureEnginePanelOffset() {
+      if (typeof window === "undefined" || window.innerWidth < 1024) {
+        setEnginePanelOffset(0);
+        return;
+      }
+
+      const firstStage = engineStageRefs.current[0];
+      const activeStage = engineStageRefs.current[activeStageIndex];
+      const lastStage = engineStageRefs.current[engineStages.length - 1];
+      const timeline = engineTimelineRef.current;
+      const panel = enginePanelRef.current;
+
+      if (!firstStage || !activeStage || !lastStage || !timeline || !panel) {
+        return;
+      }
+
+      const firstRect = firstStage.getBoundingClientRect();
+      const activeRect = activeStage.getBoundingClientRect();
+      const lastRect = lastStage.getBoundingClientRect();
+      const verticalRange = Math.max(lastRect.top - firstRect.top, 1);
+      const progress = (activeRect.top - firstRect.top) / verticalRange;
+      const maxTravel = Math.max(
+        0,
+        Math.min(timeline.scrollHeight - panel.offsetHeight, 320),
+      );
+
+      setEnginePanelOffset(progress * maxTravel);
+    }
+
+    const frame = window.requestAnimationFrame(measureEnginePanelOffset);
+    window.addEventListener("resize", measureEnginePanelOffset);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", measureEnginePanelOffset);
+    };
+  }, [activeStageIndex]);
 
   const enableReveal = hasMounted && !reduceMotion;
   const activeStage = engineStages[activeStageIndex];
@@ -703,7 +746,11 @@ export function PlatformHomepage() {
           </motion.div>
 
           <div className="mt-14 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
-            <motion.div className="space-y-8" {...revealProps(enableReveal, 0.1)}>
+            <motion.div
+              className="space-y-8"
+              ref={engineTimelineRef}
+              {...revealProps(enableReveal, 0.1)}
+            >
               {engineStages.map((stage, index) => {
                 const active = index === activeStageIndex;
 
@@ -711,7 +758,12 @@ export function PlatformHomepage() {
                   <button
                     className="group flex w-full items-start gap-5 text-left"
                     key={stage.id}
+                    onFocus={() => setActiveStageIndex(index)}
                     onClick={() => setActiveStageIndex(index)}
+                    onMouseEnter={() => setActiveStageIndex(index)}
+                    ref={(element) => {
+                      engineStageRefs.current[index] = element;
+                    }}
                     type="button"
                   >
                     <div className="flex flex-col items-center pt-1">
@@ -745,51 +797,59 @@ export function PlatformHomepage() {
             </motion.div>
 
             <motion.div
-              className="self-start rounded-[2rem] bg-white/[0.04] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:sticky lg:top-28"
+              className="self-start lg:sticky lg:top-28"
               {...revealProps(enableReveal, 0.16)}
             >
               <motion.div
-                key={activeStage.id}
-                initial={enableReveal ? { opacity: 0.5, y: 18 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease: "easeOut" }}
+                animate={{ y: reduceMotion ? 0 : enginePanelOffset }}
+                ref={enginePanelRef}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
-                      Active pass
-                    </div>
-                    <h3 className="mt-3 text-3xl font-medium text-white">{activeStage.label}</h3>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">confidence</div>
-                    <div className="mt-1 text-4xl font-medium text-white">{activeStage.confidence}%</div>
-                  </div>
-                </div>
-
-                <div className="mt-8 h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="rounded-[2rem] bg-white/[0.04] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.22)]">
                   <motion.div
-                    className="h-full rounded-full bg-[linear-gradient(90deg,#79e2cb,#8fbef6,#efba90)]"
-                    initial={false}
-                    animate={{ width: `${activeStage.confidence}%` }}
-                    transition={{ duration: 0.55, ease: "easeOut" }}
-                  />
-                </div>
+                    key={activeStage.id}
+                    initial={enableReveal ? { opacity: 0.5, y: 18 } : false}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: "easeOut" }}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                          Active pass
+                        </div>
+                        <h3 className="mt-3 text-3xl font-medium text-white">{activeStage.label}</h3>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">confidence</div>
+                        <div className="mt-1 text-4xl font-medium text-white">{activeStage.confidence}%</div>
+                      </div>
+                    </div>
 
-                <div className="mt-9 grid gap-6 sm:grid-cols-2">
-                  <div>
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">incoming pool</div>
-                    <div className="mt-2 text-4xl font-medium text-white">{activeStage.incoming}</div>
-                  </div>
-                  <div>
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">retained here</div>
-                    <div className="mt-2 text-4xl font-medium text-white">{activeStage.kept}</div>
-                  </div>
-                </div>
+                    <div className="mt-8 h-2 overflow-hidden rounded-full bg-white/10">
+                      <motion.div
+                        className="h-full rounded-full bg-[linear-gradient(90deg,#79e2cb,#8fbef6,#efba90)]"
+                        initial={false}
+                        animate={{ width: `${activeStage.confidence}%` }}
+                        transition={{ duration: 0.55, ease: "easeOut" }}
+                      />
+                    </div>
 
-                <p className="mt-8 max-w-2xl text-base leading-8 text-white/58">
-                  {activeStage.summary}
-                </p>
+                    <div className="mt-9 grid gap-6 sm:grid-cols-2">
+                      <div>
+                        <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">incoming pool</div>
+                        <div className="mt-2 text-4xl font-medium text-white">{activeStage.incoming}</div>
+                      </div>
+                      <div>
+                        <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">retained here</div>
+                        <div className="mt-2 text-4xl font-medium text-white">{activeStage.kept}</div>
+                      </div>
+                    </div>
+
+                    <p className="mt-8 max-w-2xl text-base leading-8 text-white/58">
+                      {activeStage.summary}
+                    </p>
+                  </motion.div>
+                </div>
               </motion.div>
             </motion.div>
           </div>
