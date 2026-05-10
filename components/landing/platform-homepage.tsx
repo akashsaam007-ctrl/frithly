@@ -1488,9 +1488,9 @@ export function PlatformHomepage() {
                   </div>
                 </div>
 
-                <div className="mt-6 overflow-hidden rounded-[1.5rem] border border-white/8 bg-white/[0.03]">
+                <div className="mt-6 overflow-hidden rounded-[1.5rem] bg-white/[0.03]">
                   <div className="grid gap-0 lg:grid-cols-2">
-                    <div className="p-5 sm:p-6 lg:border-r lg:border-white/8">
+                    <div className="p-5 sm:p-6">
                       <RoiOutcomePanel
                         accentClassName="bg-[#efba90]"
                         description="Low-signal accounts absorb the effort before a serious conversation can begin."
@@ -1500,7 +1500,7 @@ export function PlatformHomepage() {
                         title="Today"
                       />
                     </div>
-                    <div className="border-t border-white/8 p-5 sm:p-6 lg:border-l-0 lg:border-t-0">
+                    <div className="p-5 sm:p-6">
                       <RoiOutcomePanel
                         accentClassName="bg-[#79e2cb]"
                         description="Better targeting protects the route earlier and produces a cleaner working set."
@@ -1513,7 +1513,7 @@ export function PlatformHomepage() {
                   </div>
                 </div>
 
-                <div className="mt-6 rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-5">
+                <div className="mt-6 rounded-[1.35rem] bg-white/[0.03] p-5">
                   <div className="text-xs uppercase tracking-[0.18em] text-white/34">What changes</div>
                   <p className="mt-3 text-base leading-8 text-white/60">
                     The team keeps volume flat, but creates roughly {roiModel.extraReplies.toFixed(0)} more
