@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
 import { CampaignStatusBadge } from "@/components/campaigns/campaign-status-badge";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import {
   getRecommendationAssets,
   listRecommendationsForCustomer,
@@ -228,10 +230,10 @@ export default async function RecommendationsPage({ searchParams }: Recommendati
 
   let errorMessage: string | null = null;
   const workspace = await listRecommendationsForCustomer(customerContext.companyName, 50).catch((error) => {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't load recommendations from the intelligence backend.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't load recommendations from the intelligence backend.",
+    );
 
     return {
       campaigns: [],
@@ -278,23 +280,22 @@ export default async function RecommendationsPage({ searchParams }: Recommendati
         />
       ) : null}
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              This week&apos;s curated opportunities
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">A guided opportunity feed for this week</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                This feed only surfaces companies Frithly believes are worth attention right now.
-                The goal isn&apos;t a giant database. It&apos;s a smaller set of stronger outbound
-                opportunities with visible reasoning, confidence, and readiness.
-              </p>
-            </div>
-          </div>
-
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            This week&apos;s curated opportunities
+          </>
+        }
+        title={<>A guided opportunity feed for this week</>}
+        description={
+          <>
+            This feed only surfaces companies Frithly believes are worth attention right now. The
+            goal isn&apos;t a giant database. It&apos;s a smaller set of stronger outbound
+            opportunities with visible reasoning, confidence, and readiness.
+          </>
+        }
+        actions={
           <form action={refreshRecommendationsAction}>
             <input name="returnTo" type="hidden" value={ROUTES.RECOMMENDATIONS} />
             <Button size="lg" type="submit" variant="secondary">
@@ -302,8 +303,8 @@ export default async function RecommendationsPage({ searchParams }: Recommendati
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Button>
           </form>
-        </div>
-      </section>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState

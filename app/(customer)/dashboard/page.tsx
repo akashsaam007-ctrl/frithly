@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import { listCohortsForCustomer } from "@/lib/backend-api/customer-cohorts";
 import {
   getExportWorkspaceForCustomer,
@@ -78,7 +81,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         />
 
         {accessReason === "plan-required" ? (
-          <div className="rounded-2xl border border-border bg-white px-5 py-4 text-sm text-muted">
+          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/8 px-5 py-4 text-sm text-[#f0d8ac]">
             Talk to sales below to unlock the rest of your customer workspace.
           </div>
         ) : null}
@@ -120,6 +123,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     recommendedRouting: "Review queue",
     smtpSafeCount: 0,
   };
+  let workspaceWarning: string | null = null;
 
   try {
     const recommendationWorkspace = await listRecommendationsForCustomer(
@@ -127,7 +131,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       50,
     );
     recommendationStats = recommendationWorkspace.stats;
-  } catch {}
+  } catch (error) {
+    workspaceWarning ??= getCustomerWorkspaceErrorMessage(
+      error,
+      "The recommendation workspace is temporarily unavailable.",
+    );
+  }
 
   try {
     const cohortWorkspace = await listCohortsForCustomer(customerContext.companyName);
@@ -146,7 +155,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         smtpSafeCount: focus.smtp_safe_count,
       };
     }
-  } catch {}
+  } catch (error) {
+    workspaceWarning ??= getCustomerWorkspaceErrorMessage(
+      error,
+      "The cohort workspace is temporarily unavailable.",
+    );
+  }
 
   try {
     const workspace = await getExportWorkspaceForCustomer(
@@ -154,7 +168,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       parseExportFilterState(new URLSearchParams()),
     );
     exportSummary = workspace.summary;
-  } catch {}
+  } catch (error) {
+    workspaceWarning ??= getCustomerWorkspaceErrorMessage(
+      error,
+      "The export workspace is temporarily unavailable.",
+    );
+  }
 
   return (
     <Container className="space-y-8 px-0">
@@ -164,16 +183,27 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         properties={{ location: ROUTES.DASHBOARD }}
       />
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
-          Weekly intelligence delivery center
-        </p>
-        <h1 className="mt-3 text-4xl md:text-5xl">Welcome back, {firstName}.</h1>
-        <p className="mt-3 max-w-3xl text-muted">
-          This workspace keeps the focus on what matters this week: premium opportunities,
-          SMTP-safe contacts, current cohort readiness, and what&apos;s ready to move into outbound.
-        </p>
-      </section>
+      <CustomerPageHero
+        eyebrow="Weekly intelligence delivery center"
+        title={<>Welcome back, {firstName}.</>}
+        description={
+          <>
+            This workspace keeps the focus on what matters this week: premium opportunities,
+            SMTP-safe contacts, current cohort readiness, and what&apos;s ready to move into
+            outbound.
+          </>
+        }
+      />
+
+      {workspaceWarning ? (
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/8 px-5 py-4 text-sm leading-7 text-[#f0d8ac]">
+          <AlertTriangle className="mt-1 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
+          <div>
+            <p className="font-semibold text-[#fff3d8]">Live workspace sync is temporarily limited.</p>
+            <p className="mt-1">{workspaceWarning}</p>
+          </div>
+        </div>
+      ) : null}
 
       <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
         <MetricCard

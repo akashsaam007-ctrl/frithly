@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
 import { CampaignStatusBadge } from "@/components/campaigns/campaign-status-badge";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import {
   getDraftGenerationType,
   isHumanPolishedDraft,
@@ -247,10 +249,10 @@ export default async function DraftsPage({ searchParams }: DraftsPageProps) {
 
   let errorMessage: string | null = null;
   const workspace = await listDraftsForCustomer(customerContext.companyName, 100).catch((error) => {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't load drafts from the intelligence backend.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't load drafts from the intelligence backend.",
+    );
 
     return {
       groups: [],
@@ -296,23 +298,22 @@ export default async function DraftsPage({ searchParams }: DraftsPageProps) {
         />
       ) : null}
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <FilePenLine className="h-4 w-4" aria-hidden="true" />
-              This week&apos;s draft package
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">Drafts that make the opportunity feed actionable</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                Opportunities are where the service proves selectivity. Drafts are where that
-                selectivity turns into outreach-ready work. This queue keeps copy grounded,
-                editable, and visibly tied to real source observations.
-              </p>
-            </div>
-          </div>
-
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <FilePenLine className="h-4 w-4" aria-hidden="true" />
+            This week&apos;s draft package
+          </>
+        }
+        title={<>Drafts that make the opportunity feed actionable</>}
+        description={
+          <>
+            Opportunities are where the service proves selectivity. Drafts are where that
+            selectivity turns into outreach-ready work. This queue keeps copy grounded, editable,
+            and visibly tied to real source observations.
+          </>
+        }
+        actions={
           <form action={refreshDraftQueueAction}>
             <input name="returnTo" type="hidden" value={ROUTES.DRAFTS} />
             <Button size="lg" type="submit" variant="secondary">
@@ -320,8 +321,8 @@ export default async function DraftsPage({ searchParams }: DraftsPageProps) {
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Button>
           </form>
-        </div>
-      </section>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState description={errorMessage} title="Draft workspace is temporarily unavailable" />

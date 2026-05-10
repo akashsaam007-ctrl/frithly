@@ -8,6 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import {
   listCohortsForCustomer,
   type CohortReadinessFunnel,
@@ -332,10 +334,10 @@ export default async function CohortsPage({ searchParams }: CohortsPageProps) {
 
   let errorMessage: string | null = null;
   const workspace = await listCohortsForCustomer(customerContext.companyName).catch((error) => {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't load cohorts from the intelligence backend.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't load cohorts from the intelligence backend.",
+    );
 
     return {
       campaigns: [],
@@ -397,24 +399,23 @@ export default async function CohortsPage({ searchParams }: CohortsPageProps) {
         />
       ) : null}
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <Layers3 className="h-4 w-4" aria-hidden="true" />
-              This week&apos;s outbound package
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">Cohorts that feel selective and easy to act on</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                Frithly turns approved opportunities into compact outbound packages. This workspace
-                is where you review what is ready now, what already looks safe, and what is most
-                likely to deserve your attention this week.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <Layers3 className="h-4 w-4" aria-hidden="true" />
+            This week&apos;s outbound package
+          </>
+        }
+        title={<>Cohorts that feel selective and easy to act on</>}
+        description={
+          <>
+            Frithly turns approved opportunities into compact outbound packages. This workspace is
+            where you review what is ready now, what already looks safe, and what is most likely
+            to deserve your attention this week.
+          </>
+        }
+        actions={
+          <>
             <Button asChild size="lg" variant="secondary">
               <Link href={ROUTES.DRAFTS}>
                 Review prepared drafts
@@ -427,9 +428,9 @@ export default async function CohortsPage({ searchParams }: CohortsPageProps) {
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState

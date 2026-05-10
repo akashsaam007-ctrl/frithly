@@ -7,6 +7,7 @@ import {
   TimerReset,
 } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import { getRecommendationAssets } from "@/lib/backend-api/customer-recommendations";
 import {
   getSmtpWorkspaceForCustomer,
@@ -324,10 +326,10 @@ export default async function SmtpPage({ searchParams }: SmtpPageProps) {
 
   let errorMessage: string | null = null;
   const workspace = await getSmtpWorkspaceForCustomer(customerContext.companyName, filters).catch((error) => {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't load SMTP safety intelligence from the backend.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't load SMTP safety intelligence from the backend.",
+    );
 
     return {
       filters,
@@ -383,24 +385,23 @@ export default async function SmtpPage({ searchParams }: SmtpPageProps) {
         />
       ) : null}
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-              Outbound safety control center
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">SMTP that feels selective, not technical</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                This workspace keeps verification human-gated and confidence-aware. Instead of
-                exposing protocol noise, it shows which routes are safe, which ones are merely
-                strong, and which ones should stay out of outbound entirely.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+            Outbound safety control center
+          </>
+        }
+        title={<>SMTP that feels selective, not technical</>}
+        description={
+          <>
+            This workspace keeps verification human-gated and confidence-aware. Instead of
+            exposing protocol noise, it shows which routes are safe, which ones are merely strong,
+            and which ones should stay out of outbound entirely.
+          </>
+        }
+        actions={
+          <>
             <Button asChild size="lg" variant="secondary">
               <Link href={ROUTES.RECOMMENDATIONS}>
                 Review recommendations
@@ -413,9 +414,9 @@ export default async function SmtpPage({ searchParams }: SmtpPageProps) {
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState

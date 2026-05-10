@@ -9,6 +9,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import {
   getExportWorkspaceForCustomer,
   parseExportFilterState,
@@ -106,10 +108,10 @@ export default async function ExportsPage({ searchParams }: ExportsPageProps) {
 
   let errorMessage: string | null = null;
   const workspace = await getExportWorkspaceForCustomer(customerContext.companyName, filters).catch((error) => {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't prepare exports from the intelligence backend.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't prepare exports from the intelligence backend.",
+    );
 
     return {
       activeProfile: {
@@ -150,24 +152,23 @@ export default async function ExportsPage({ searchParams }: ExportsPageProps) {
         properties={{ location: ROUTES.EXPORTS, workspace_access: "active" }}
       />
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <PackageOpen className="h-4 w-4" aria-hidden="true" />
-              Outbound deployment packaging
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">Exports that package intelligence for execution</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                This workspace is the bridge between intelligence and operational tooling. Instead
-                of dumping rows, it lets you package approved opportunities, draft context, confidence, and
-                recommendation reasoning into the right handoff format for the next tool.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <PackageOpen className="h-4 w-4" aria-hidden="true" />
+            Outbound deployment packaging
+          </>
+        }
+        title={<>Exports that package intelligence for execution</>}
+        description={
+          <>
+            This workspace is the bridge between intelligence and operational tooling. Instead of
+            dumping rows, it lets you package approved opportunities, draft context, confidence,
+            and recommendation reasoning into the right handoff format for the next tool.
+          </>
+        }
+        actions={
+          <>
             <Button asChild size="lg" variant="secondary">
               <Link href={ROUTES.COHORTS}>
                 Review cohorts
@@ -180,9 +181,9 @@ export default async function ExportsPage({ searchParams }: ExportsPageProps) {
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState

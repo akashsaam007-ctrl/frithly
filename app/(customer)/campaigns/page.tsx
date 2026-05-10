@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Radar, Sparkles, Target, TrendingUp } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
 import { CampaignStatusBadge } from "@/components/campaigns/campaign-status-badge";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import {
   buildCampaignWorkspaceSummary,
   getFeaturedCampaigns,
@@ -84,10 +86,10 @@ export default async function CampaignsPage() {
   try {
     campaigns = await listCampaignsForCustomer(customerContext.companyName, 50);
   } catch (error) {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't reach the intelligence backend right now.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't reach the intelligence backend right now.",
+    );
   }
 
   const summary = buildCampaignWorkspaceSummary(campaigns);
@@ -101,23 +103,22 @@ export default async function CampaignsPage() {
         properties={{ location: ROUTES.CAMPAIGNS, workspace_access: "active" }}
       />
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <Radar className="h-4 w-4" aria-hidden="true" />
-              Delivery pipeline
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">How your outbound delivery is performing</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                This workspace shows how Frithly is translating your ICP into reviewed
-                opportunities: where expansion is working, where quality is breaking down, and
-                where genuinely outbound-ready companies are emerging.
-              </p>
-            </div>
-          </div>
-
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <Radar className="h-4 w-4" aria-hidden="true" />
+            Delivery pipeline
+          </>
+        }
+        title={<>How your outbound delivery is performing</>}
+        description={
+          <>
+            This workspace shows how Frithly is translating your ICP into reviewed opportunities:
+            where expansion is working, where quality is breaking down, and where genuinely
+            outbound-ready companies are emerging.
+          </>
+        }
+        actions={
           <Card className="w-full max-w-sm border-terracotta/20 bg-terracotta/5 shadow-none">
             <CardHeader className="pb-4">
               <CardTitle className="text-xl">How to read this</CardTitle>
@@ -140,8 +141,8 @@ export default async function CampaignsPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </section>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState

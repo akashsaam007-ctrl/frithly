@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageEvent } from "@/components/analytics/page-event";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,15 +50,13 @@ export default async function AccountPage() {
         properties={{ location: ROUTES.ACCOUNT }}
       />
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-terracotta">
-          Account settings
-        </p>
-        <h1 className="mt-3 text-4xl md:text-5xl">Manage your account, {firstName}.</h1>
-        <p className="mt-3 max-w-3xl text-muted">
-          Review your account details, check your current plan status, and sign out securely.
-        </p>
-      </section>
+      <CustomerPageHero
+        eyebrow="Account settings"
+        title={<>Manage your account, {firstName}.</>}
+        description={
+          <>Review your account details, check your current plan status, and sign out securely.</>
+        }
+      />
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <Card>

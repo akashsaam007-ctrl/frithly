@@ -26,7 +26,7 @@ export function ErrorState({
   return (
     <Card className={cn("rounded-2xl", className)}>
       <CardContent className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center">
-        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-red-500/12 text-red-200">
           <AlertCircle className="h-6 w-6" aria-hidden="true" />
         </span>
         <div className="space-y-2">

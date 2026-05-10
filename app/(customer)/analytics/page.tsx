@@ -9,12 +9,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { PageEvent } from "@/components/analytics/page-event";
+import { CustomerPageHero } from "@/components/customer/page-hero";
 import { PlanGate } from "@/components/customer/plan-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { getCustomerWorkspaceErrorMessage } from "@/lib/backend-api/customer-workspace-error";
 import {
   getAnalyticsForCustomer,
   type AnalyticsInsight,
@@ -192,10 +194,10 @@ export default async function AnalyticsPage() {
 
   let errorMessage: string | null = null;
   const workspace = await getAnalyticsForCustomer(customerContext.companyName).catch((error) => {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "We couldn't load outbound analytics from the intelligence backend.";
+    errorMessage = getCustomerWorkspaceErrorMessage(
+      error,
+      "We couldn't load outbound analytics from the intelligence backend.",
+    );
 
     return {
       campaignPerformance: [],
@@ -257,33 +259,30 @@ export default async function AnalyticsPage() {
         properties={{ location: ROUTES.ANALYTICS, workspace_access: "active" }}
       />
 
-      <section className="rounded-2xl border border-border bg-white p-8">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-terracotta/20 bg-terracotta/5 px-4 py-2 text-sm font-semibold text-terracotta">
-              <TrendingUp className="h-4 w-4" aria-hidden="true" />
-              This week&apos;s delivery results
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl">Are this week&apos;s opportunities working?</h1>
-              <p className="max-w-3xl text-lg leading-8 text-muted">
-                This page keeps the focus on business outcomes: replies, positive replies,
-                meetings, and which opportunity patterns are earning attention. It is meant to
-                explain performance, not expose internal mechanics.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg" variant="secondary">
-              <Link href={ROUTES.COHORTS}>
-                Review this week&apos;s cohort
-                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <CustomerPageHero
+        eyebrow={
+          <>
+            <TrendingUp className="h-4 w-4" aria-hidden="true" />
+            This week&apos;s delivery results
+          </>
+        }
+        title={<>Are this week&apos;s opportunities working?</>}
+        description={
+          <>
+            This page keeps the focus on business outcomes: replies, positive replies, meetings,
+            and which opportunity patterns are earning attention. It is meant to explain
+            performance, not expose internal mechanics.
+          </>
+        }
+        actions={
+          <Button asChild size="lg" variant="secondary">
+            <Link href={ROUTES.COHORTS}>
+              Review this week&apos;s cohort
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        }
+      />
 
       {errorMessage ? (
         <ErrorState
