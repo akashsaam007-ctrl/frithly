@@ -129,7 +129,7 @@ export default function AboutPage() {
           ))}
         </section>
 
-        <section className="grid gap-8 rounded-[2rem] border border-border/80 bg-ink px-6 py-8 text-white shadow-[0_24px_70px_rgba(26,26,26,0.14)] sm:px-8 sm:py-10 lg:grid-cols-[1fr_1fr]">
+        <section className="grid gap-8 rounded-[2rem] border border-white/10 bg-[#0b1520]/90 px-6 py-8 text-white shadow-[0_24px_70px_rgba(0,0,0,0.24)] sm:px-8 sm:py-10 lg:grid-cols-[1fr_1fr]">
           <div className="space-y-4">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta-200">
               Who it is for
