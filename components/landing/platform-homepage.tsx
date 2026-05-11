@@ -118,7 +118,7 @@ const deliveryTimeline = [
     time: "14:00 GMT",
   },
   {
-    copy: "Outcome signals inform how the next week’s shortlist gets tighter.",
+    copy: "Outcome signals inform how the next week's shortlist gets tighter.",
     day: "Friday",
     icon: Radar,
     time: "16:00 GMT",

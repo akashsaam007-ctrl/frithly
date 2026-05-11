@@ -9,22 +9,13 @@ import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import { CALCOM_URL, ROUTES } from "@/lib/constants";
 
-const defaultNavLinks = [
+const marketingNavLinks = [
   { href: ROUTES.ABOUT, label: "About" },
-  { href: ROUTES.CONTACT, label: "Contact" },
-  { href: ROUTES.DEMO, label: "Demo" },
-  { href: ROUTES.ROI, label: "ROI" },
-  { href: ROUTES.HOW_IT_WORKS, label: "How It Works" },
-  { href: ROUTES.PRICING, label: "Program" },
-  { href: ROUTES.FAQ, label: "FAQ" },
-];
-
-const homeNavLinks = [
   { href: "/#why-outbound-fails", label: "Why Quality Wins" },
   { href: ROUTES.HOW_IT_WORKS, label: "Intelligence Flow" },
   { href: "/#icp-demo", label: "Demo" },
   { href: ROUTES.PRICING, label: "Program Builder" },
-  { href: "/#roi-intelligence", label: "ROI" },
+  { href: "/#roi", label: "ROI" },
   { href: ROUTES.FAQ, label: "FAQ" },
 ];
 
@@ -33,7 +24,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isHome = pathname === ROUTES.HOME;
-  const navLinks = isHome ? homeNavLinks : defaultNavLinks;
+  const navLinks = marketingNavLinks;
 
   useEffect(() => {
     setIsMenuOpen(false);
