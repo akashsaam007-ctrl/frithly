@@ -10,19 +10,19 @@ import {
 } from "@/lib/seo";
 
 const roiDescription =
-  "Answer three quick questions and estimate how much revenue better targeting could unlock from the same outbound volume.";
+  "Model how much revenue stronger outbound targeting could unlock from the same outreach volume.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: roiDescription,
   keywords: [
-    "outbound ROI calculator",
-    "lead generation ROI calculator",
-    "pipeline opportunity calculator",
-    "outbound revenue model",
-    "Frithly ROI calculator",
+    "outbound opportunity simulator",
+    "outbound targeting revenue model",
+    "pipeline opportunity model",
+    "outbound revenue simulator",
+    "Frithly opportunity simulator",
   ],
   path: "/roi",
-  title: "ROI Calculator | Frithly",
+  title: "Outbound Opportunity Simulator | Frithly",
 });
 
 export default function RoiPage() {
@@ -31,14 +31,14 @@ export default function RoiPage() {
       <StructuredData
         data={buildBreadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "ROI Calculator", path: "/roi" },
+          { name: "Opportunity Simulator", path: "/roi" },
         ])}
       />
       <StructuredData
         data={buildWebPageSchema({
           description: roiDescription,
           path: "/roi",
-          title: "ROI Calculator | Frithly",
+          title: "Outbound Opportunity Simulator | Frithly",
         })}
       />
       <PageEvent

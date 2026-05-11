@@ -1,6 +1,19 @@
+import type { Metadata } from "next";
 import { IdentifyUser } from "@/components/analytics/identify-user";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  robots: {
+    follow: false,
+    googleBot: {
+      follow: false,
+      index: false,
+      noimageindex: true,
+    },
+    index: false,
+  },
+};
 
 export default async function AdminLayout({
   children,

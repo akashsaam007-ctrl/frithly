@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { APP_NAME, CALCOM_URL, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
+  buildContactPageSchema,
   buildPublicMetadata,
   buildWebPageSchema,
 } from "@/lib/seo";
@@ -41,6 +42,7 @@ export default function ContactPage() {
           { name: "Contact", path: "/contact" },
         ])}
       />
+      <StructuredData data={buildContactPageSchema()} />
       <PageEvent
         name="landing_page_viewed"
         oncePerSessionKey="contact-page-viewed"

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { Toaster } from "@/components/ui/toast";
-import { APP_NAME, META } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, META } from "@/lib/constants";
 import { publicEnv } from "@/lib/utils/public-env";
 import "@/app/globals.css";
 
@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   category: "B2B sales intelligence service",
   creator: APP_NAME,
   description: META.DESCRIPTION,
+  formatDetection: {
+    address: false,
+    email: false,
+    telephone: false,
+  },
   manifest: "/manifest.webmanifest",
   icons: {
     apple: [{ sizes: "180x180", type: "image/png", url: "/apple-touch-icon.png" }],
@@ -29,8 +34,40 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   keywords: META.KEYWORDS.split(", "),
-  metadataBase: new URL(publicEnv.NEXT_PUBLIC_APP_URL),
+  metadataBase: new URL(publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`),
+  openGraph: {
+    description: META.DESCRIPTION,
+    images: [
+      {
+        height: 630,
+        url: "/og-image.png",
+        width: 1200,
+      },
+    ],
+    locale: "en_GB",
+    siteName: APP_NAME,
+    title: META.TITLE,
+    type: "website",
+    url: "/",
+  },
   publisher: APP_NAME,
+  robots: {
+    follow: true,
+    googleBot: {
+      follow: true,
+      index: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+    index: true,
+  },
+  twitter: {
+    card: "summary_large_image",
+    description: META.DESCRIPTION,
+    images: ["/og-image.png"],
+    title: META.TITLE,
+  },
   title: META.TITLE,
 };
 

@@ -15,7 +15,7 @@ import {
 } from "@/lib/seo";
 
 const applyDescription =
-  "Apply for a Frithly campaign with your ICP, geography, lead goals, contactability thresholds, and current outbound challenges.";
+  "Apply for a Frithly outbound intelligence program with your ICP, geography, targeting constraints, and current outbound goals.";
 
 const nextSteps = [
   "We review fit, campaign complexity, and likely recommendation density manually.",
@@ -33,14 +33,14 @@ const qualificationSignals = [
 export const metadata: Metadata = buildPublicMetadata({
   description: applyDescription,
   keywords: [
-    "apply for outbound campaign",
-    "campaign application",
+    "apply for outbound intelligence program",
+    "outbound program application",
     "ICP onboarding form",
-    "outbound onboarding",
-    "Frithly apply",
+    "curated outbound onboarding",
+    "Frithly application",
   ],
   path: "/apply",
-  title: "Apply for a Campaign | Frithly",
+  title: "Apply for an Intelligence Program | Frithly",
 });
 
 export default function ApplyPage() {
@@ -49,14 +49,14 @@ export default function ApplyPage() {
       <StructuredData
         data={buildBreadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "Apply for a Campaign", path: "/apply" },
+          { name: "Apply for an Intelligence Program", path: "/apply" },
         ])}
       />
       <StructuredData
         data={buildWebPageSchema({
           description: applyDescription,
           path: "/apply",
-          title: "Apply for a Campaign | Frithly",
+          title: "Apply for an Intelligence Program | Frithly",
         })}
       />
       <PageEvent

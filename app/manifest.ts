@@ -3,7 +3,7 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    background_color: "#FAF8F5",
+    background_color: "#050c14",
     description: APP_TAGLINE,
     display: "standalone",
     icons: [
@@ -21,6 +21,6 @@ export default function manifest(): MetadataRoute.Manifest {
     name: APP_NAME,
     short_name: APP_NAME,
     start_url: "/",
-    theme_color: "#FAF8F5",
+    theme_color: "#050c14",
   };
 }

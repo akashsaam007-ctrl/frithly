@@ -10,18 +10,18 @@ import {
 } from "@/lib/seo";
 
 const sampleDescription =
-  "Request a free 5-lead Frithly sample researched against your ICP within 48 hours and see exactly how your weekly brief would look before you subscribe.";
+  "Request a Frithly sample cohort researched against your ICP and see how reviewed opportunities, outreach context, and weekly delivery would look before onboarding.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: sampleDescription,
   keywords: [
-    "free B2B lead sample",
-    "sales intelligence sample",
-    "free lead research sample",
+    "outbound intelligence sample",
+    "sample opportunity cohort",
+    "curated outbound sample",
     "Frithly sample",
   ],
   path: "/sample",
-  title: "Free Sample | Frithly",
+  title: "Request a Sample Cohort | Frithly",
 });
 
 export default function SamplePage() {
@@ -30,14 +30,14 @@ export default function SamplePage() {
       <StructuredData
         data={buildBreadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "Free Sample", path: "/sample" },
+          { name: "Sample Cohort", path: "/sample" },
         ])}
       />
       <StructuredData
         data={buildWebPageSchema({
           description: sampleDescription,
           path: "/sample",
-          title: "Free Sample | Frithly",
+          title: "Request a Sample Cohort | Frithly",
         })}
       />
 

@@ -14,16 +14,17 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Learn what Frithly is, who it is built for, and why we focus on curated opportunities, verified contacts, and ready-to-use outbound context for serious B2B teams.",
+    "Learn why Frithly focuses on curated outbound intelligence, verified contacts, and ready-to-use prospect context for serious B2B teams.",
   keywords: [
-    "about Frithly",
-    "Frithly company",
+    "curated outbound intelligence",
+    "outbound research service",
+    "verified prospect intelligence",
     "B2B outbound intelligence service",
     "weekly outbound research",
     "sales prospect research service",
   ],
   path: "/about",
-  title: "About Frithly | Outbound Intelligence Built for Real Teams",
+  title: "Why Better Outbound Starts Before the First Email | Frithly",
 });
 
 const principles = [
@@ -54,9 +55,9 @@ export default function AboutPage() {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Learn what Frithly is, who it is built for, and why we focus on curated opportunities, verified contacts, and ready-to-use outbound context for serious B2B teams.",
+            "Learn why Frithly focuses on curated outbound intelligence, verified contacts, and ready-to-use prospect context for serious B2B teams.",
           path: "/about",
-          title: "About Frithly | Outbound Intelligence Built for Real Teams",
+          title: "Why Better Outbound Starts Before the First Email | Frithly",
         })}
       />
       <StructuredData

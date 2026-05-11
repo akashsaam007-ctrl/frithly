@@ -5,6 +5,8 @@ import { publicEnv } from "@/lib/utils/public-env";
 const SITE_URL = publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`;
 const DEFAULT_LOCALE = "en_GB";
 const DEFAULT_IMAGE = "/og-image.png";
+const ORG_ID = absoluteUrl("/#organization");
+const WEBSITE_ID = absoluteUrl("/#website");
 
 type PublicMetadataOptions = {
   description: string;
@@ -46,11 +48,21 @@ export function buildPublicMetadata({
   const canonical = absoluteUrl(path);
 
   return {
+    applicationName: APP_NAME,
     alternates: {
       canonical,
     },
+    authors: [{ name: APP_NAME }],
+    category: "B2B outbound intelligence service",
+    creator: APP_NAME,
     description,
+    formatDetection: {
+      address: false,
+      email: false,
+      telephone: false,
+    },
     keywords,
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       description,
       images: [
@@ -66,13 +78,27 @@ export function buildPublicMetadata({
       type: "website",
       url: canonical,
     },
+    publisher: APP_NAME,
+    referrer: "origin-when-cross-origin",
     robots: noIndex
       ? {
           follow: false,
+          googleBot: {
+            follow: false,
+            index: false,
+            noimageindex: true,
+          },
           index: false,
         }
       : {
           follow: true,
+          googleBot: {
+            follow: true,
+            index: true,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+            "max-video-preview": -1,
+          },
           index: true,
         },
     title,
@@ -89,7 +115,38 @@ export function buildOrganizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": absoluteUrl("/#organization"),
+    "@id": ORG_ID,
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "IN",
+      addressLocality: "Dharapuram",
+      addressRegion: "Tamil Nadu",
+      postalCode: "638106",
+      streetAddress: "55, Peranayakanvalasu, Mulanur",
+    },
+    areaServed: ["United Kingdom", "Europe", "United States"],
+    brand: {
+      "@type": "Brand",
+      logo: absoluteUrl("/icon-512.png"),
+      name: APP_NAME,
+      slogan: APP_TAGLINE,
+    },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "sales",
+        email: SUPPORT_EMAIL,
+        availableLanguage: ["en"],
+        url: absoluteUrl("/contact"),
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: SUPPORT_EMAIL,
+        availableLanguage: ["en"],
+        url: absoluteUrl("/contact"),
+      },
+    ],
     description: META.DESCRIPTION,
     email: SUPPORT_EMAIL,
     knowsAbout: [
@@ -101,6 +158,8 @@ export function buildOrganizationSchema() {
     ],
     logo: absoluteUrl("/icon-512.png"),
     name: APP_NAME,
+    sameAs: [absoluteUrl("/")],
+    slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };
 }
@@ -109,12 +168,20 @@ export function buildWebSiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": absoluteUrl("/#website"),
+    "@id": WEBSITE_ID,
+    about: [
+      "Curated outbound intelligence",
+      "Weekly opportunity delivery",
+      "Founder-aware targeting",
+      "SMTP-safe routing",
+    ],
+    alternateName: "Frithly outbound intelligence",
     description: META.DESCRIPTION,
     inLanguage: "en-GB",
+    keywords: META.KEYWORDS,
     name: APP_NAME,
     publisher: {
-      "@id": absoluteUrl("/#organization"),
+      "@id": ORG_ID,
     },
     url: absoluteUrl("/"),
   };
@@ -149,7 +216,7 @@ export function buildServiceSchema() {
       url: absoluteUrl("/apply"),
     },
     provider: {
-      "@id": absoluteUrl("/#organization"),
+      "@id": ORG_ID,
     },
     serviceOutput:
       "Reviewed weekly opportunity cohorts with founder context, routing notes, recommendation reasoning, and outreach-ready delivery context.",
@@ -202,10 +269,25 @@ export function buildWebPageSchema({
     description,
     inLanguage: "en-GB",
     isPartOf: {
-      "@id": absoluteUrl("/#website"),
+      "@id": WEBSITE_ID,
     },
     name: title,
     url: absoluteUrl(path),
+  };
+}
+
+export function buildContactPageSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    about: {
+      "@id": ORG_ID,
+    },
+    description:
+      "Contact Frithly for curated outbound intelligence programs, sample requests, onboarding, and support.",
+    inLanguage: "en-GB",
+    name: "Contact Frithly",
+    url: absoluteUrl("/contact"),
   };
 }
 
@@ -222,13 +304,13 @@ export function buildArticleSchema({
     "@context": "https://schema.org",
     "@type": "Article",
     author: {
-      "@id": absoluteUrl("/#organization"),
+      "@id": ORG_ID,
     },
     description,
     headline: title,
     mainEntityOfPage: absoluteUrl(path),
     publisher: {
-      "@id": absoluteUrl("/#organization"),
+      "@id": ORG_ID,
     },
   };
 }

@@ -6,7 +6,6 @@ export default function robots(): MetadataRoute.Robots {
     host: absoluteUrl("/"),
     rules: [
       {
-        allow: ["/", "/pricing", "/sample", "/privacy", "/terms", "/refund-policy"],
         disallow: [
           "/admin",
           "/api",
