@@ -141,6 +141,41 @@ export type AdminBatchBuilderCustomer = {
   status: string;
 };
 
+export type AdminLeadStudioCustomer = {
+  activeIcp: {
+    companySizeLabel: string;
+    exclusions: string[];
+    geographies: string[];
+    id: string;
+    industries: string[];
+    name: string | null;
+    productDescription: string;
+    targetTitles: string[];
+  } | null;
+  email: string;
+  id: string;
+  label: string;
+  planId: CustomerRow["plan"];
+  planLabel: string;
+  status: string;
+};
+
+function formatIcpCompanySizeLabel(icp: Pick<IcpRow, "company_size_max" | "company_size_min">) {
+  if (icp.company_size_min && icp.company_size_max) {
+    return `${icp.company_size_min}-${icp.company_size_max} employees`;
+  }
+
+  if (icp.company_size_min) {
+    return `${icp.company_size_min}+ employees`;
+  }
+
+  if (icp.company_size_max) {
+    return `Up to ${icp.company_size_max} employees`;
+  }
+
+  return "Open company size";
+}
+
 export async function getAdminOverviewData(): Promise<AdminOverviewData> {
   const { adminClient } = await getAdminBase();
   const [{ data: customers }, { data: batches }, { data: feedback }] =
@@ -309,6 +344,66 @@ export async function getAdminBatchBuilderData() {
       status: customer.status ?? "pending",
     }))
     .sort((left, right) => left.label.localeCompare(right.label)) satisfies AdminBatchBuilderCustomer[];
+}
+
+export async function getAdminLeadStudioData(): Promise<AdminLeadStudioCustomer[]> {
+  const { adminClient } = await getAdminBase();
+  const [{ data: customers }, { data: icps }] = await Promise.all([
+    adminClient
+      .from("customers")
+      .select("id, email, full_name, company_name, plan, status")
+      .order("company_name", { ascending: true }),
+    adminClient
+      .from("icps")
+      .select("*")
+      .order("updated_at", { ascending: false }),
+  ]);
+
+  const activeIcpByCustomer = new Map<string, IcpRow>();
+
+  for (const icp of icps ?? []) {
+    if (!icp.customer_id) {
+      continue;
+    }
+
+    const current = activeIcpByCustomer.get(icp.customer_id);
+
+    if (icp.is_active && !current) {
+      activeIcpByCustomer.set(icp.customer_id, icp);
+      continue;
+    }
+
+    if (!current) {
+      activeIcpByCustomer.set(icp.customer_id, icp);
+    }
+  }
+
+  return (customers ?? [])
+    .map((customer) => {
+      const activeIcp = activeIcpByCustomer.get(customer.id) ?? null;
+
+      return {
+        activeIcp: activeIcp
+          ? {
+              companySizeLabel: formatIcpCompanySizeLabel(activeIcp),
+              exclusions: activeIcp.exclusions ?? [],
+              geographies: activeIcp.geographies ?? [],
+              id: activeIcp.id,
+              industries: activeIcp.target_industries ?? [],
+              name: activeIcp.name,
+              productDescription: activeIcp.product_description,
+              targetTitles: activeIcp.target_titles ?? [],
+            }
+          : null,
+        email: customer.email,
+        id: customer.id,
+        label: `${getCustomerDisplayName(customer)} - ${customer.email}`,
+        planId: customer.plan,
+        planLabel: getPlanName(customer.plan),
+        status: customer.status ?? "pending",
+      } satisfies AdminLeadStudioCustomer;
+    })
+    .sort((left, right) => left.label.localeCompare(right.label));
 }
 
 export type AdminCustomerDetail = {

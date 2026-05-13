@@ -59,6 +59,11 @@ type GenerateFromBackendCampaignResult = {
   preview: ParsedBatchPreview;
 };
 
+export type BackendCampaignRequestBuildResult = {
+  notes: string[];
+  payload: BackendCampaignCreateRequest;
+};
+
 const SERVICE_KEYWORDS = [
   "seo",
   "ppc",
@@ -220,13 +225,13 @@ function inferTechnologies(icp: IcpRow) {
   );
 }
 
-function buildCampaignRequest(
+export function buildBackendCampaignRequestFromIcp(
   customer: GenerateFromBackendCampaignParams["customer"],
   icp: IcpRow,
   deliveryDate: string,
   minMatchPercent: number,
   requestedLeadCount: number,
-) {
+): BackendCampaignRequestBuildResult {
   const industries = splitCsv(icp.target_industries);
   const geographies = splitCsv(icp.geographies);
 
@@ -504,7 +509,7 @@ function buildLogs(
 export async function generateLeadBatchFromBackendCampaign(
   params: GenerateFromBackendCampaignParams,
 ): Promise<GenerateFromBackendCampaignResult> {
-  const { notes, payload } = buildCampaignRequest(
+  const { notes, payload } = buildBackendCampaignRequestFromIcp(
     params.customer,
     params.icp,
     params.deliveryDate,

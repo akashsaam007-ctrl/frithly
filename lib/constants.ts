@@ -97,6 +97,7 @@ export const ROUTES = {
   ADMIN_CUSTOMERS: "/admin/customers",
   ADMIN_DELIVERIES: "/admin/deliveries",
   ADMIN_FEEDBACK: "/admin/feedback",
+  ADMIN_LEAD_STUDIO: "/admin/lead-studio",
   ANALYTICS: "/analytics",
   APPLY: "/apply",
   BILLING: "/billing",

@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { CustomerPlanControls } from "@/components/admin/customer-plan-controls";
 import { CustomerRoleControls } from "@/components/admin/customer-role-controls";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ROUTES } from "@/lib/constants";
 import { formatLongDate } from "@/lib/utils";
 import { getAdminCustomerDetail } from "@/lib/supabase/admin-data";
 
@@ -18,6 +20,8 @@ export default async function AdminCustomerDetailPage({
   const detail = await getAdminCustomerDetail(id);
   const { activeIcp, approvalRateLabel, batches, customer, feedback, lifetimeLeadCount, viewerEmail } =
     detail;
+  const customerIcpHref = `${ROUTES.ADMIN_CUSTOMERS}/${customer.id}/icp`;
+  const leadStudioHref = `${ROUTES.ADMIN_LEAD_STUDIO}?customer=${customer.id}`;
 
   return (
     <Container className="space-y-8 px-0">
@@ -37,7 +41,7 @@ export default async function AdminCustomerDetailPage({
           </span>
         </div>
         <p className="text-muted">
-          {customer.email} • MRR {customer.plan ? `${customer.plan}` : "not assigned"}
+          {customer.email} | MRR {customer.plan ? `${customer.plan}` : "not assigned"}
         </p>
         <div className="flex flex-wrap gap-3">
           <Button type="button" variant="secondary">
@@ -49,13 +53,16 @@ export default async function AdminCustomerDetailPage({
           <Button type="button" variant="secondary">
             Billing details
           </Button>
-          <Button type="button">
-            Edit ICP
+          <Button asChild type="button" variant="secondary">
+            <Link href={customerIcpHref}>Manage ICP</Link>
+          </Button>
+          <Button asChild type="button">
+            <Link href={leadStudioHref}>Open lead studio</Link>
           </Button>
         </div>
         {customer.billing_customer_id || customer.billing_subscription_id ? (
           <p className="text-sm text-muted">
-            Billing provider reference: {customer.billing_customer_id ?? "Not linked"} • Billing
+            Billing provider reference: {customer.billing_customer_id ?? "Not linked"} | Billing
             subscription ID: {customer.billing_subscription_id ?? "Not linked"}
           </p>
         ) : null}
@@ -113,6 +120,17 @@ export default async function AdminCustomerDetailPage({
         <TabsContent value="icp">
           <Card>
             <CardContent className="space-y-4 p-6 text-muted">
+              <p className="text-sm leading-7">
+                This ICP is admin-managed and powers lead generation from the lead studio.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild size="sm" variant="secondary">
+                  <Link href={customerIcpHref}>Manage ICP</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href={leadStudioHref}>Generate leads</Link>
+                </Button>
+              </div>
               {activeIcp ? (
                 <>
                   <p>
@@ -151,7 +169,7 @@ export default async function AdminCustomerDetailPage({
                   <div key={batch.id} className="rounded-xl border border-border p-4">
                     <p className="font-semibold text-ink">{formatLongDate(batch.delivery_date)}</p>
                     <p className="text-sm text-muted">
-                      {batch.total_leads ?? 0} leads • {batch.verified_emails ?? 0} verified •{" "}
+                      {batch.total_leads ?? 0} leads | {batch.verified_emails ?? 0} verified |{" "}
                       {batch.status ?? "pending"}
                     </p>
                   </div>
@@ -170,7 +188,7 @@ export default async function AdminCustomerDetailPage({
                 feedback.map((entry) => (
                   <div key={entry.id} className="rounded-xl border border-border p-4">
                     <p className="font-semibold text-ink">
-                      {entry.leadName} • {entry.rating ?? "unrated"}
+                      {entry.leadName} | {entry.rating ?? "unrated"}
                     </p>
                     <p className="mt-1 text-sm text-muted">
                       {entry.batchDateLabel ?? "No batch date available"}

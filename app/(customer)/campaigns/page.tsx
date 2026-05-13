@@ -153,10 +153,10 @@ export default async function CampaignsPage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link href={ROUTES.ICP}>Review delivery brief</Link>
+              <Link href={ROUTES.ICP}>View targeting brief</Link>
             </Button>
           }
-          description="No customer-scoped delivery pipelines have been launched yet. Once a pipeline is created from your ICP, this view will show live progress, expansion coverage, and the strongest opportunities rising through the system."
+          description="No customer-scoped delivery pipelines have been launched yet. Once admin launches a pipeline from your active ICP, this view will show live progress, expansion coverage, and the strongest opportunities rising through the system."
           title="No delivery pipelines yet"
         />
       ) : (

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Activity, Boxes, ClipboardCheck, LayoutDashboard, Menu, MessageSquare, Send, Users, X } from "lucide-react";
+import { Activity, Boxes, ClipboardCheck, LayoutDashboard, Menu, MessageSquare, Send, Sparkles, Users, X } from "lucide-react";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
@@ -14,6 +14,7 @@ const navItems = [
   { href: ROUTES.ADMIN, icon: LayoutDashboard, label: "Overview" },
   { href: ROUTES.ADMIN_APPLICATIONS, icon: ClipboardCheck, label: "Applications" },
   { href: ROUTES.ADMIN_DELIVERIES, icon: Send, label: "Deliveries" },
+  { href: ROUTES.ADMIN_LEAD_STUDIO, icon: Sparkles, label: "Lead Studio" },
   { href: ROUTES.ADMIN_CUSTOMERS, icon: Users, label: "Customers" },
   { href: ROUTES.ADMIN_BATCHES_NEW, icon: Boxes, label: "Batches" },
   { href: ROUTES.ADMIN_FEEDBACK, icon: MessageSquare, label: "Feedback" },

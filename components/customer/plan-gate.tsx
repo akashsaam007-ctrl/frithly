@@ -15,7 +15,7 @@ const lockedFeatureLabels: Record<string, string> = {
   cohorts: "Cohorts",
   drafts: "Draft workspace",
   exports: "Exports",
-  icp: "ICP profile",
+  icp: "Targeting brief",
   recommendations: "Opportunities",
   smtp: "Safety review",
 };
@@ -33,10 +33,10 @@ function getPlanGateCopy(customer: Pick<CustomerRow, "plan" | "status">) {
   }
 
   if ((customer.status === "cancelled" || customer.status === "churned") && currentPlan) {
-    return `Your ${currentPlan.name} access is no longer active. Talk to sales to regain access to your delivery center, ICP profile, and weekly opportunity flow.`;
+    return `Your ${currentPlan.name} access is no longer active. Talk to sales to regain access to your delivery center, admin-managed targeting brief, and weekly opportunity flow.`;
   }
 
-  return "Talk to sales to activate your delivery center, ICP profile, and weekly Frithly opportunity workflow.";
+  return "Talk to sales to activate your delivery center, admin-managed targeting brief, and weekly Frithly opportunity workflow.";
 }
 
 type PlanGateProps = {
@@ -123,7 +123,7 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
         <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
             "Curated opportunity delivery with reviewed contacts and visible reasoning.",
-            "ICP profile refinement so Frithly can keep improving what gets delivered.",
+            "Admin-managed targeting brief setup so Frithly can keep improving what gets delivered.",
             "Rollout guidance tailored to your outbound workflow and quality bar.",
             "Direct support during onboarding, delivery, and early cohort execution.",
           ].map((item) => (

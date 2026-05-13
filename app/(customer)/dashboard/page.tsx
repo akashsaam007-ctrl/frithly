@@ -336,7 +336,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             href={ROUTES.ICP}
             className="font-semibold text-terracotta underline underline-offset-4"
           >
-            Review delivery brief -&gt;
+            View admin-managed brief -&gt;
           </Link>
         </CardContent>
       </Card>

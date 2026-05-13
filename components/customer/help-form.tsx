@@ -49,7 +49,7 @@ export function HelpForm() {
         <Input
           required
           id="help-subject"
-          placeholder="Need help refining our ICP"
+          placeholder="Need help updating our targeting brief"
           value={subject}
           onChange={(event) => setSubject(event.target.value)}
         />
