@@ -8,7 +8,7 @@ import { ROUTES } from "@/lib/constants";
 import { buildPublicMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPublicMetadata({
-  description: "Apply for a Frithly campaign or review pricing to see if the fit is right.",
+  description: "Book a Frithly meeting or review pricing to see if the fit is right.",
   noIndex: true,
   path: "/signup",
   title: "Sign Up | Frithly",
@@ -29,7 +29,7 @@ export default function SignupPage() {
           </span>
           <h1>Choose how you want to get started with Frithly.</h1>
           <p className="text-muted">
-            Apply for a campaign if you want proper qualification, or review pricing if you already
+            Book a meeting if you want to talk through fit now, or review pricing if you already
             know the service level your team needs.
           </p>
         </div>
@@ -37,17 +37,17 @@ export default function SignupPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl">Apply for a campaign</h2>
+              <h2 className="text-2xl">Book a meeting</h2>
               <p className="text-muted">
-                Best if you want qualification-driven onboarding instead of a generic self-serve path.
+                Best if you want to talk through qualification, rollout fit, and next steps live.
               </p>
               <Button asChild className="w-full" size="lg">
                 <TrackedLink
                   eventName="cta_clicked"
-                  eventProperties={{ destination: ROUTES.APPLY, location: "signup_apply" }}
-                  href={ROUTES.APPLY}
+                  eventProperties={{ destination: ROUTES.BOOK_MEETING, location: "signup_book_meeting" }}
+                  href={ROUTES.BOOK_MEETING}
                 >
-                  Apply Now
+                  Book now
                 </TrackedLink>
               </Button>
             </CardContent>

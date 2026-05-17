@@ -75,9 +75,9 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
           {checkoutState ? (
             <Card className="mx-auto max-w-[680px] text-left">
               <CardContent className="p-5 text-sm text-muted">
-                Direct checkout is no longer active. New programs now begin with application,
-                qualification, and configuration so we can shape the right weekly operating model
-                before onboarding begins.
+                Direct checkout is no longer active. New programs now begin with qualification,
+                planning, and a short booking flow so we can shape the right weekly operating
+                model before onboarding begins.
                 {subscriptionReference ? (
                   <span className="mt-3 block">Previous reference: {subscriptionReference}</span>
                 ) : null}
@@ -91,7 +91,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                     </Link>
                   </Button>
                   <Button asChild size="sm" variant="secondary">
-                    <Link href={ROUTES.APPLY}>Apply for your program</Link>
+                    <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                   </Button>
                 </div>
               </CardContent>

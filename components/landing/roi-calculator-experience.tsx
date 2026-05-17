@@ -821,16 +821,16 @@ export function RoiCalculatorExperience() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg">
                   <Link
-                    href={ROUTES.APPLY}
+                    href={ROUTES.BOOK_MEETING}
                     onClick={() =>
                       captureEvent("cta_clicked", {
                         location: "roi_page",
-                        target: "apply_for_campaign",
+                        target: "book_meeting",
                       })
                     }
                   >
                     <span className="inline-flex items-center gap-2">
-                      Apply for a custom campaign
+                      Book a meeting
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </span>
                   </Link>

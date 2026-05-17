@@ -515,9 +515,9 @@ export function PricingSection() {
               </div>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="sm:flex-1">
-                  <Link href={ROUTES.APPLY}>
+                  <Link href={ROUTES.BOOK_MEETING}>
                     <span className="inline-flex items-center gap-2">
-                      Apply for Your Intelligence Program
+                      Book a meeting
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </span>
                   </Link>

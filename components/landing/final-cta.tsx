@@ -28,12 +28,12 @@ export function FinalCta() {
               </div>
               <div className="space-y-5">
                 <h2 className="section-title text-white">
-                  Apply for a campaign or book a meeting when you want to talk it through.
+                  Book a meeting when you want to map the right rollout clearly.
                 </h2>
                 <p className="max-w-2xl text-base leading-8 text-white/70 md:text-lg">
                   Frithly works best when the targeting, delivery rhythm, and decision-maker logic
-                  are shaped around your actual motion. Apply if you want us to review fit first,
-                  or book a short call if you already want to talk through the rollout.
+                  are shaped around your actual motion. Book a short call if you want to talk
+                  through the rollout, or send us your brief if you want us to review fit first.
                 </p>
               </div>
 
@@ -52,17 +52,15 @@ export function FinalCta() {
 
             <div className="flex flex-col gap-4 lg:min-w-[18rem]">
               <Button asChild size="lg" className="w-full">
-                <Link href={ROUTES.APPLY}>
+                <Link href={ROUTES.BOOK_MEETING}>
                   <span className="inline-flex items-center gap-2">
-                    Apply for a campaign
+                    Book a meeting
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="w-full">
-                <Link href={ROUTES.BOOK_MEETING}>
-                  Book a meeting
-                </Link>
+                <Link href={ROUTES.CONTACT_SALES}>Talk through your brief</Link>
               </Button>
               <p className="text-sm text-white/60">
                 Best for teams that want to buy finished weekly output, not manage another tool.

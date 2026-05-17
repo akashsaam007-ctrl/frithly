@@ -42,8 +42,8 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ
                 </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.APPLY}>
-                  Apply for a campaign
+                <Link className="block transition-colors hover:text-white" href={ROUTES.BOOK_MEETING}>
+                  Book a meeting
                 </Link>
               </div>
             </div>
@@ -52,8 +52,8 @@ export function Footer() {
               <h3 className="text-base font-semibold text-white">Program</h3>
               <div className="space-y-3 text-sm text-white/70">
                 <span className="block">Premium outbound intelligence for selective pipeline teams</span>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.APPLY}>
-                  Campaign application
+                <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT_SALES}>
+                  Talk to sales
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.LOGIN}>
                   Client login

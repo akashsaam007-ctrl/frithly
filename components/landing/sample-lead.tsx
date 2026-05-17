@@ -141,15 +141,15 @@ export function SampleLead() {
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="w-full sm:w-auto">
-                  <Link href={ROUTES.APPLY}>
+                  <Link href={ROUTES.BOOK_MEETING}>
                     <span className="inline-flex items-center gap-2">
-                      Apply for a campaign
+                      Book a meeting
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </span>
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
-                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
+                  <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
                 </Button>
               </div>
             </div>

@@ -83,8 +83,9 @@ export default function ProofHubPage() {
                 Want a proof page tailored to your actual ICP instead of a representative one?
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70 md:text-base">
-                Apply if you want us to review your ICP and target market first, or book a meeting
-                if you want to talk through the fit before you submit.
+                Book a meeting if you want to talk through the fit live, or send us your ICP and
+                target market first if you want us to review the motion before we schedule
+                anything.
               </p>
             </div>
             <Button asChild size="lg" variant="secondary">

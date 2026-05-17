@@ -213,7 +213,7 @@ export function buildServiceSchema() {
         minPrice: 499,
         priceCurrency: "EUR",
       },
-      url: absoluteUrl("/apply"),
+      url: absoluteUrl("/contact"),
     },
     provider: {
       "@id": ORG_ID,

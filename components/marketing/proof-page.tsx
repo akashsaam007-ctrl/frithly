@@ -59,9 +59,9 @@ export function ProofPageView({ page }: ProofPageViewProps) {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link href={ROUTES.APPLY}>
+                <Link href={ROUTES.BOOK_MEETING}>
                   <span className="inline-flex items-center gap-2">
-                    Apply for a campaign
+                    Book a meeting
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -163,15 +163,15 @@ export function ProofPageView({ page }: ProofPageViewProps) {
                 Want to compare this proof page to your actual ICP?
               </h2>
               <p className="mt-4 text-sm leading-7 text-muted md:text-base">
-                The cleanest next step is to send us your ICP and target market. We will review the
-                fit, then point you to the right rollout path or strategy call.
+                The cleanest next step is to book a meeting if you want a live walkthrough, or
+                send us your ICP and target market if you want us to review fit first.
               </p>
               <div className="mt-6 flex flex-col gap-3">
                 <Button asChild size="lg">
-                  <Link href={ROUTES.APPLY}>Apply for a campaign</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
+                  <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
                 </Button>
               </div>
             </div>

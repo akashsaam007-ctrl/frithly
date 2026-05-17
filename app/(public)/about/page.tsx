@@ -92,10 +92,10 @@ export default function AboutPage() {
 
             <div className="flex flex-wrap gap-4">
               <Button asChild size="lg">
-                <Link href={ROUTES.APPLY}>Apply for a campaign</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
+                <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
               </Button>
             </div>
           </div>
@@ -166,17 +166,17 @@ export default function AboutPage() {
                 Want to see what Frithly would look like for your team?
               </h2>
               <p className="max-w-2xl text-base leading-8 text-muted">
-                Apply if you want us to review your targeting and rollout fit first, or book a
-                conversation if you already know you need a stronger outbound intelligence engine.
+                Book a conversation if you already know you need a stronger outbound intelligence
+                engine, or send us your brief if you want us to review rollout fit first.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-4">
               <Button asChild size="lg">
-                <Link href={ROUTES.APPLY}>Apply for a campaign</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
+                <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
               </Button>
             </div>
           </div>

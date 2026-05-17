@@ -101,20 +101,10 @@ export function Navbar() {
           <Button
             asChild
             size="md"
-            variant="secondary"
-            className="border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
+            className={isHome ? "shadow-[0_18px_48px_rgba(212,98,58,0.22)]" : undefined}
           >
             <Link href={ROUTES.BOOK_MEETING}>
               Book a meeting
-            </Link>
-          </Button>
-          <Button
-            asChild
-            size="md"
-            className={isHome ? "shadow-[0_18px_48px_rgba(212,98,58,0.22)]" : undefined}
-          >
-            <Link href={ROUTES.APPLY}>
-              Apply
             </Link>
           </Button>
         </div>
@@ -178,16 +168,6 @@ export function Navbar() {
 
               <div className="flex flex-col gap-3">
                 <Button asChild size="lg" className="w-full">
-                  <Link href={ROUTES.APPLY}>
-                    Apply for a campaign
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="secondary"
-                  className="w-full border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
-                >
                   <Link href={ROUTES.BOOK_MEETING}>
                     Book a meeting
                   </Link>

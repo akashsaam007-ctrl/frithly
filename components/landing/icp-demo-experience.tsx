@@ -815,8 +815,8 @@ export function IcpDemoExperience() {
                 </span>
               </Button>
               <Button asChild className="sm:flex-1" size="lg" variant="secondary">
-                <Link href={ROUTES.APPLY}>
-                  Apply for a custom campaign
+                <Link href={ROUTES.BOOK_MEETING}>
+                  Book a meeting
                 </Link>
               </Button>
             </div>
@@ -1177,9 +1177,9 @@ export function IcpDemoExperience() {
               </p>
               <div className="mt-5 flex flex-col gap-3">
                 <Button asChild size="lg" className="w-full">
-                  <Link href={ROUTES.APPLY}>
+                  <Link href={ROUTES.BOOK_MEETING}>
                     <span className="inline-flex items-center gap-2">
-                      Apply for a custom campaign
+                      Book a meeting
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </span>
                   </Link>

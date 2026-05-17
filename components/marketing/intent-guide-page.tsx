@@ -46,9 +46,9 @@ export function IntentGuidePage({ guide }: IntentGuidePageProps) {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link href={ROUTES.APPLY}>
+                <Link href={ROUTES.BOOK_MEETING}>
                   <span className="inline-flex items-center gap-2">
-                    Apply for a campaign
+                    Book a meeting
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -126,15 +126,15 @@ export function IntentGuidePage({ guide }: IntentGuidePageProps) {
                 Take the next step when you are ready for real rollout feedback.
               </h2>
               <p className="mt-4 text-sm leading-7 text-muted md:text-base">
-                Apply if you want us to review your ICP and outbound motion first, or book a
-                meeting if you want to talk through fit before you submit details.
+                Book a meeting if you want to talk through fit live, or send us your brief first
+                if you want us to review the motion before we schedule anything.
               </p>
               <div className="mt-6 flex flex-col gap-3">
                 <Button asChild size="lg">
-                  <Link href={ROUTES.APPLY}>Apply for a campaign</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
+                  <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
                 </Button>
               </div>
             </div>

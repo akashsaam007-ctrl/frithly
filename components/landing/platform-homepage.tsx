@@ -632,9 +632,9 @@ export function PlatformHomepage() {
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="shadow-[0_20px_60px_rgba(239,186,144,0.16)]">
-                <Link href={ROUTES.APPLY}>
+                <Link href={ROUTES.BOOK_MEETING}>
                   <span className="inline-flex items-center gap-2">
-                    Apply for a Campaign
+                    Book a meeting
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -1101,9 +1101,9 @@ export function PlatformHomepage() {
 
               <div className="pt-2">
                 <Button asChild size="lg">
-                  <Link href={ROUTES.APPLY}>
+                  <Link href={ROUTES.BOOK_MEETING}>
                     <span className="inline-flex items-center gap-2">
-                      Apply with this brief
+                      Book a meeting about this brief
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </span>
                   </Link>
@@ -1619,9 +1619,9 @@ export function PlatformHomepage() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link href={ROUTES.APPLY}>
+                <Link href={ROUTES.BOOK_MEETING}>
                   <span className="inline-flex items-center gap-2">
-                    Apply for a Campaign
+                    Book a meeting
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
