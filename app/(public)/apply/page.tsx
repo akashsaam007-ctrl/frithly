@@ -100,7 +100,7 @@ export default function ApplyPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-ink text-white">
+          <Card className="border-border bg-[#07111b] text-white shadow-[0_24px_70px_rgba(16,16,16,0.4)]">
             <CardContent className="space-y-6 p-6 md:p-7">
               <div>
                 <h2 className="text-2xl text-white">Best fit signals</h2>

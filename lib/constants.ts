@@ -5,7 +5,7 @@ export const APP_TAGLINE =
   "Curated outbound intelligence delivered weekly for teams that want better-fit opportunities, founder-aware targeting, and SMTP-safe execution.";
 export const APP_DOMAIN = "frithly.com";
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
-export const SUPPORT_EMAIL = "support@frithly.com";
+export const SUPPORT_EMAIL = "hello@frithly.com";
 export const BUSINESS_ADDRESS =
   "55, Peranayakanvalasu, Dharapuram, Tiruppur, Mulanur, Tamil Nadu, India - 638106";
 

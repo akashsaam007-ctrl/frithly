@@ -32,7 +32,7 @@ export function HelpForm() {
 
       setSubject("");
       setMessage("");
-      toast.success("Support request queued. We'll reply from support@frithly.com.");
+      toast.success("Support request queued. We'll reply from hello@frithly.com.");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "We couldn't send your support request.",
