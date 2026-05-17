@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import { CALCOM_URL, ROUTES } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 
 const marketingNavLinks = [
   { href: ROUTES.ABOUT, label: "About" },
@@ -178,8 +178,8 @@ export function Navbar() {
                   variant="secondary"
                   className="w-full border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
                 >
-                  <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
-                    Request walkthrough
+                  <Link href={ROUTES.CONTACT_SALES}>
+                    Talk to sales
                   </Link>
                 </Button>
               </div>

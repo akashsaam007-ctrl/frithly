@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Globe2, Layers3, MailCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { CALCOM_URL, ROUTES } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const displayFont = Fraunces({
@@ -528,8 +528,8 @@ export function PricingSection() {
                   variant="secondary"
                   className="border-white/10 bg-white/[0.05] text-white hover:border-white/18 hover:bg-white/[0.08] hover:text-white sm:flex-1"
                 >
-                  <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
-                    Book a qualification call
+                  <Link href={ROUTES.CONTACT_SALES}>
+                    Talk to sales
                   </Link>
                 </Button>
               </div>

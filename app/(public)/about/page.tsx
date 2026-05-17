@@ -4,7 +4,7 @@ import { PageEvent } from "@/components/analytics/page-event";
 import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { APP_NAME, CALCOM_URL, ROUTES } from "@/lib/constants";
+import { APP_NAME, ROUTES } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
   buildOrganizationSchema,
@@ -176,7 +176,7 @@ export default function AboutPage() {
                 <Link href={ROUTES.SAMPLE}>Get free sample</Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link href={CALCOM_URL}>Book intro call</Link>
+                <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
               </Button>
             </div>
           </div>

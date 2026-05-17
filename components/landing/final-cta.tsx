@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { BrandMark } from "@/components/ui/logo";
-import { CALCOM_URL, ROUTES } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 
 const ctaPoints = [
   "Tailored sample against your ICP",
@@ -60,8 +60,8 @@ export function FinalCta() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="w-full">
-                <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
-                  Book a 15-minute demo
+                <Link href={ROUTES.CONTACT_SALES}>
+                  Talk to sales
                 </Link>
               </Button>
               <p className="text-sm text-white/60">

@@ -7,7 +7,7 @@ import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { CALCOM_URL } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
   buildPublicMetadata,
@@ -128,9 +128,9 @@ export default function ApplyPage() {
                   short live walkthrough.
                 </p>
                 <Button asChild size="lg" variant="secondary" className="mt-5 w-full">
-                  <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+                  <Link href={ROUTES.CONTACT_SALES}>
                     <span className="inline-flex items-center gap-2">
-                      Request a live walkthrough
+                      Talk to sales first
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </span>
                   </Link>

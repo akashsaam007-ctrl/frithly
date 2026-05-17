@@ -5,7 +5,7 @@ import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { CALCOM_URL, ROUTES } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
   buildPublicMetadata,
@@ -86,8 +86,8 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                 ) : null}
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Button asChild size="sm">
-                    <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
-                      Book qualification call
+                    <Link href={ROUTES.CONTACT_SALES}>
+                      Talk to sales
                     </Link>
                   </Button>
                   <Button asChild size="sm" variant="secondary">
