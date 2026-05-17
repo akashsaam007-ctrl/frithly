@@ -260,6 +260,64 @@ export async function sendSupportRequestEmail(props: SupportRequestEmailProps) {
   });
 }
 
+export async function sendSalesInquiryReceivedEmail(props: {
+  firstName: string;
+  recipientEmail: string;
+}) {
+  const text = [
+    `Hi ${props.firstName},`,
+    "",
+    "Thanks for reaching out to Frithly.",
+    "",
+    "We received your sales inquiry and will review your details before replying from hello@frithly.com with the right next step.",
+    "",
+    "If we need anything else, we'll ask by email.",
+    "",
+    "Frithly",
+  ].join("\n");
+
+  return sendFrithlyEmail({
+    react: <></>,
+    subject: "We received your Frithly inquiry",
+    text,
+    to: props.recipientEmail,
+  });
+}
+
+export async function sendSalesInquiryAlertEmail(props: {
+  company: string;
+  companySize?: string | null;
+  email: string;
+  fullName: string;
+  message: string;
+  primaryNeed: string;
+  recipientEmail: string;
+  role?: string | null;
+  website?: string | null;
+}) {
+  const text = [
+    "New sales inquiry",
+    "",
+    `Name: ${props.fullName}`,
+    `Email: ${props.email}`,
+    `Company: ${props.company}`,
+    `Role: ${props.role ?? "Not provided"}`,
+    `Website: ${props.website ?? "Not provided"}`,
+    `Company size: ${props.companySize ?? "Not provided"}`,
+    `Primary need: ${props.primaryNeed}`,
+    "",
+    props.message,
+  ].join("\n");
+
+  return sendFrithlyEmail({
+    react: <></>,
+    replyTo: props.email,
+    subject: `Sales inquiry: ${props.fullName}`,
+    text,
+    to: props.recipientEmail,
+  });
+}
+
 export async function sendSampleRequestAlertEmail(props: SampleRequestAlertEmailProps) {
   const text = [
     "New sample request",

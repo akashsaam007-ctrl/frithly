@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Check, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CALCOM_URL, PLANS, SUPPORT_EMAIL } from "@/lib/constants";
+import { PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 
@@ -103,7 +103,7 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
                   size="lg"
                   variant={plan.id === PLANS.GROWTH.id ? "primary" : "secondary"}
                 >
-                  <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+                  <Link href={ROUTES.CONTACT_SALES}>
                     <span className="inline-flex items-center gap-2">
                       Talk to sales
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -146,7 +146,7 @@ export function PlanGate({ customer, lockedFeature }: PlanGateProps) {
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link href={CALCOM_URL} rel="noreferrer" target="_blank">
+              <Link href={ROUTES.CONTACT_SALES}>
                 Book intro call
               </Link>
             </Button>

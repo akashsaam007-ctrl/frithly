@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { CALCOM_URL, PLANS, SUPPORT_EMAIL } from "@/lib/constants";
+import { PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import { getCurrentCustomerContext } from "@/lib/supabase/customer-data";
 import { formatCurrency, formatLongDate } from "@/lib/utils";
 
@@ -50,7 +50,7 @@ export default async function BillingPage() {
           )}
 
           <div className="flex flex-wrap gap-3">
-            <Link className="btn-primary inline-flex" href={CALCOM_URL} rel="noreferrer" target="_blank">
+            <Link className="btn-primary inline-flex" href={ROUTES.CONTACT_SALES}>
               <span className="inline-flex items-center gap-2">
                 Talk to sales
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -99,7 +99,7 @@ export default async function BillingPage() {
                 ))}
               </ul>
 
-              <Link className="btn-primary inline-flex w-full justify-center" href={CALCOM_URL} rel="noreferrer" target="_blank">
+              <Link className="btn-primary inline-flex w-full justify-center" href={ROUTES.CONTACT_SALES}>
                 <span className="inline-flex items-center gap-2">
                   Talk to sales
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />

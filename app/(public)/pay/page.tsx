@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { CALCOM_URL } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import { buildPublicMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -11,5 +11,5 @@ export const metadata: Metadata = buildPublicMetadata({
 });
 
 export default function PayPage() {
-  redirect(CALCOM_URL);
+  redirect(ROUTES.CONTACT_SALES);
 }

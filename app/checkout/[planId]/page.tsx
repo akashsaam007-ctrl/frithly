@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { CALCOM_URL } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import type { PlanId } from "@/types";
 
 export const metadata: Metadata = {
@@ -21,5 +21,5 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     notFound();
   }
 
-  redirect(CALCOM_URL);
+  redirect(ROUTES.CONTACT_SALES);
 }

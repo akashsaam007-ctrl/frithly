@@ -95,7 +95,7 @@ export default function AboutPage() {
                 <Link href={ROUTES.SAMPLE}>Get a free sample</Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link href={CALCOM_URL}>Talk to sales</Link>
+                <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
               </Button>
             </div>
           </div>

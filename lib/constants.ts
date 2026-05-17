@@ -105,6 +105,7 @@ export const ROUTES = {
   CAMPAIGNS: "/campaigns",
   COHORTS: "/cohorts",
   CONTACT: "/contact",
+  CONTACT_SALES: "/contact#sales-form",
   DASHBOARD: "/dashboard",
   DEMO: "/demo",
   DRAFTS: "/drafts",

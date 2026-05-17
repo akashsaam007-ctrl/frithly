@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageEvent } from "@/components/analytics/page-event";
+import { SalesInquiryForm } from "@/components/landing/sales-inquiry-form";
 import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { APP_NAME, CALCOM_URL, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
   buildContactPageSchema,
@@ -14,7 +15,7 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Contact Frithly for plan discussions, sample requests, and support. Use our support email or book a sales conversation.",
+    "Contact Frithly for plan discussions, sample requests, and support. Use our support email or share your sales details for a guided reply.",
   keywords: [
     "Frithly contact",
     "contact Frithly",
@@ -31,7 +32,7 @@ export default function ContactPage() {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Contact Frithly for plan discussions, sample requests, and support. Use our support email or book a sales conversation.",
+            "Contact Frithly for plan discussions, sample requests, and support. Use our support email or share your sales details for a guided reply.",
           path: "/contact",
           title: "Contact Frithly | Support and Sales",
         })}
@@ -115,14 +116,14 @@ export default function ContactPage() {
                   Sales conversations
                 </h2>
                 <p className="mt-2 text-base leading-8 text-muted">
-                  Book a short conversation if you want to discuss plans, onboarding, or whether
-                  Frithly fits your outbound workflow.
+                  Share your details and we&apos;ll come back with the right next step for plans,
+                  onboarding, or fit questions.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-4 pt-2">
                 <Button asChild size="lg">
-                  <Link href={CALCOM_URL}>Talk to sales</Link>
+                  <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
                   <Link href={ROUTES.SAMPLE}>Get a free sample</Link>
@@ -130,6 +131,26 @@ export default function ContactPage() {
               </div>
             </div>
           </article>
+        </section>
+
+        <section
+          id="sales-form"
+          className="rounded-[1.9rem] border border-white/10 bg-[#0b1520]/90 p-7 shadow-[0_18px_50px_rgba(0,0,0,0.24)] sm:p-8"
+        >
+          <div className="mb-8 space-y-3">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-terracotta">
+              Sales details
+            </p>
+            <h2 className="text-3xl font-semibold tracking-[-0.03em] text-ink">
+              Tell us about your team before we reply.
+            </h2>
+            <p className="max-w-3xl text-base leading-8 text-muted">
+              This gives us enough context to recommend the right plan, sample path, or onboarding
+              next step without sending you straight into a calendar page.
+            </p>
+          </div>
+
+          <SalesInquiryForm />
         </section>
       </Container>
     </main>
