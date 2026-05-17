@@ -12,7 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { changeFrequency: "weekly" as const, path: "/proof", priority: 0.8 },
     { changeFrequency: "weekly" as const, path: "/pricing", priority: 0.9 },
     { changeFrequency: "weekly" as const, path: "/roi", priority: 0.8 },
-    { changeFrequency: "weekly" as const, path: "/sample", priority: 0.9 },
     { changeFrequency: "weekly" as const, path: "/b2b-lead-intelligence", priority: 0.8 },
     { changeFrequency: "weekly" as const, path: "/apollo-alternative-for-founders", priority: 0.8 },
     {

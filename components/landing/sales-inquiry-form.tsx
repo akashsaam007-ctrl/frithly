@@ -19,9 +19,13 @@ type SalesInquiryFormState = {
   companySize: string;
   email: string;
   fullName: string;
+  linkedinProfile: string;
   message: string;
   primaryNeed: string;
+  preferredContactMethod: string;
   role: string;
+  telegramHandle: string;
+  whatsappNumber: string;
   website: string;
 };
 
@@ -30,9 +34,13 @@ const initialState: SalesInquiryFormState = {
   companySize: "",
   email: "",
   fullName: "",
+  linkedinProfile: "",
   message: "",
   primaryNeed: "",
+  preferredContactMethod: "",
   role: "",
+  telegramHandle: "",
+  whatsappNumber: "",
   website: "",
 };
 
@@ -103,6 +111,18 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="sales-whatsapp">WhatsApp</Label>
+          <Input
+            required
+            id="sales-whatsapp"
+            placeholder="+91 98765 43210"
+            value={formState.whatsappNumber}
+            onChange={(event) => updateField("whatsappNumber", event.target.value)}
+          />
+          <p className="text-xs leading-6 text-muted">Include country code so we can confirm quickly.</p>
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="sales-company">Company</Label>
           <Input
             required
@@ -124,8 +144,20 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="sales-linkedin">LinkedIn profile</Label>
+          <Input
+            required
+            id="sales-linkedin"
+            placeholder="linkedin.com/in/alexmorgan"
+            value={formState.linkedinProfile}
+            onChange={(event) => updateField("linkedinProfile", event.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="sales-website">Website</Label>
           <Input
+            required
             id="sales-website"
             placeholder="https://yourcompany.com"
             value={formState.website}
@@ -152,6 +184,34 @@ export function SalesInquiryForm() {
           </Select>
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="sales-contact-method">Preferred contact method</Label>
+          <Select
+            onValueChange={(value) => updateField("preferredContactMethod", value)}
+            value={formState.preferredContactMethod}
+          >
+            <SelectTrigger id="sales-contact-method">
+              <SelectValue placeholder="How should we follow up?" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+              <SelectItem value="linkedin">LinkedIn</SelectItem>
+              <SelectItem value="telegram">Telegram</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="sales-telegram">Telegram (optional)</Label>
+          <Input
+            id="sales-telegram"
+            placeholder="@alexmorgan"
+            value={formState.telegramHandle}
+            onChange={(event) => updateField("telegramHandle", event.target.value)}
+          />
+        </div>
+
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="sales-primary-need">What do you want to discuss?</Label>
           <Select
@@ -165,7 +225,7 @@ export function SalesInquiryForm() {
               <SelectItem value="plan-fit">Plan fit and pricing</SelectItem>
               <SelectItem value="outbound-goals">Outbound goals and ICP fit</SelectItem>
               <SelectItem value="onboarding">Onboarding and rollout questions</SelectItem>
-              <SelectItem value="sample">Whether to start with a sample</SelectItem>
+              <SelectItem value="application">Whether to apply or book a meeting first</SelectItem>
               <SelectItem value="reactivation">Reactivation or workspace access</SelectItem>
             </SelectContent>
           </Select>
@@ -186,8 +246,9 @@ export function SalesInquiryForm() {
 
       <div className="flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-2xl text-sm leading-7 text-muted">
-          We&apos;ll review the details and reply from hello@frithly.com with the right next step,
-          whether that&apos;s a plan recommendation, sample path, or a live conversation.
+          We&apos;ll review the details first and reply from hello@frithly.com with the best next
+          step. If there&apos;s a fit, we&apos;ll send the right scheduling link instead of pushing
+          you straight into a calendar.
         </p>
         <Button className="w-full sm:w-auto" disabled={isSubmitting} size="lg" type="submit">
           {isSubmitting ? "Submitting..." : "Send to sales"}

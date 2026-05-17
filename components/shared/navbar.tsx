@@ -101,6 +101,16 @@ export function Navbar() {
           <Button
             asChild
             size="md"
+            variant="secondary"
+            className="border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
+          >
+            <Link href={ROUTES.BOOK_MEETING}>
+              Book a meeting
+            </Link>
+          </Button>
+          <Button
+            asChild
+            size="md"
             className={isHome ? "shadow-[0_18px_48px_rgba(212,98,58,0.22)]" : undefined}
           >
             <Link href={ROUTES.APPLY}>
@@ -178,8 +188,8 @@ export function Navbar() {
                   variant="secondary"
                   className="w-full border-white/12 bg-white/[0.06] text-white hover:border-white/24 hover:bg-white/[0.1] hover:text-white"
                 >
-                  <Link href={ROUTES.CONTACT_SALES}>
-                    Talk to sales
+                  <Link href={ROUTES.BOOK_MEETING}>
+                    Book a meeting
                   </Link>
                 </Button>
               </div>

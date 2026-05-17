@@ -6,7 +6,7 @@ import { BrandMark } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 
 const ctaPoints = [
-  "Tailored sample against your ICP",
+  "Tailored rollout against your ICP",
   "First brief within 7 days",
   "No annual contract",
 ];
@@ -23,17 +23,17 @@ export function FinalCta() {
               <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <BrandMark className="h-14 w-14 rounded-[1.2rem] border-white/10 bg-white/5 p-1.5 shadow-none" imageClassName="h-full w-full rounded-[0.95rem]" />
                 <div className="section-eyebrow border-white/10 bg-white/5 text-terracotta">
-                  Want to see the brief first?
+                  Ready to map the rollout?
                 </div>
               </div>
               <div className="space-y-5">
                 <h2 className="section-title text-white">
-                  Start with a sample. Move to a plan when the output feels right.
+                  Apply for a campaign or book a meeting when you want to talk it through.
                 </h2>
                 <p className="max-w-2xl text-base leading-8 text-white/70 md:text-lg">
-                  The fastest way to evaluate Frithly is to see one brief take shape against your
-                  market. Request the sample if you want proof first, or book a short call if you
-                  already know your team needs a better weekly outbound rhythm.
+                  Frithly works best when the targeting, delivery rhythm, and decision-maker logic
+                  are shaped around your actual motion. Apply if you want us to review fit first,
+                  or book a short call if you already want to talk through the rollout.
                 </p>
               </div>
 
@@ -52,16 +52,16 @@ export function FinalCta() {
 
             <div className="flex flex-col gap-4 lg:min-w-[18rem]">
               <Button asChild size="lg" className="w-full">
-                <Link href={ROUTES.SAMPLE}>
+                <Link href={ROUTES.APPLY}>
                   <span className="inline-flex items-center gap-2">
-                    Get a free 5-lead sample
+                    Apply for a campaign
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="w-full">
-                <Link href={ROUTES.CONTACT_SALES}>
-                  Talk to sales
+                <Link href={ROUTES.BOOK_MEETING}>
+                  Book a meeting
                 </Link>
               </Button>
               <p className="text-sm text-white/60">

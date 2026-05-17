@@ -80,15 +80,15 @@ export default function GuidesPage() {
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <h2 className="text-3xl font-semibold text-white">
-                Ready to compare the guides against a real sample?
+                Ready to turn the guide into a real outbound plan?
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70 md:text-base">
-                The cleanest way to evaluate Frithly is to request a brief tailored to your ICP,
-                then compare it to the quality your team gets today.
+                Apply if you want us to review your ICP and weekly outbound motion first, or book a
+                meeting if you want to talk through the fit before you submit.
               </p>
             </div>
             <Button asChild size="lg" variant="secondary">
-              <Link href={ROUTES.SAMPLE}>Get a free 5-lead sample</Link>
+              <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
             </Button>
           </div>
         </div>

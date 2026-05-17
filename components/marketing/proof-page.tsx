@@ -59,9 +59,9 @@ export function ProofPageView({ page }: ProofPageViewProps) {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link href={ROUTES.SAMPLE}>
+                <Link href={ROUTES.APPLY}>
                   <span className="inline-flex items-center gap-2">
-                    Request a free sample
+                    Apply for a campaign
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -163,15 +163,15 @@ export function ProofPageView({ page }: ProofPageViewProps) {
                 Want to compare this proof page to your actual ICP?
               </h2>
               <p className="mt-4 text-sm leading-7 text-muted md:text-base">
-                The cleanest next step is to request a Frithly sample. You will see the same motion
-                applied to your market, buyer, and targeting constraints.
+                The cleanest next step is to send us your ICP and target market. We will review the
+                fit, then point you to the right rollout path or strategy call.
               </p>
               <div className="mt-6 flex flex-col gap-3">
                 <Button asChild size="lg">
-                  <Link href={ROUTES.SAMPLE}>Get a free 5-lead sample</Link>
+                  <Link href={ROUTES.APPLY}>Apply for a campaign</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/pricing">Review plans</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                 </Button>
               </div>
             </div>

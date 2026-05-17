@@ -83,12 +83,12 @@ export default function ProofHubPage() {
                 Want a proof page tailored to your actual ICP instead of a representative one?
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70 md:text-base">
-                Request a sample and compare Frithly against the quality, timing context, and
-                first-touch direction your team gets today.
+                Apply if you want us to review your ICP and target market first, or book a meeting
+                if you want to talk through the fit before you submit.
               </p>
             </div>
             <Button asChild size="lg" variant="secondary">
-              <Link href={ROUTES.SAMPLE}>Get a free 5-lead sample</Link>
+              <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
             </Button>
           </div>
         </div>

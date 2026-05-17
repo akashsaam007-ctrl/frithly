@@ -66,17 +66,24 @@ export function Faq() {
 
           <details className="group py-1">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-6 text-left text-base font-semibold text-ink marker:hidden md:text-lg">
-              Can I see a sample first?
+              Should we apply first or book a meeting first?
               <ChevronDown className="h-5 w-5 shrink-0 text-muted transition-transform duration-300 group-open:rotate-180" />
             </summary>
             <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 group-open:grid-rows-[1fr]">
               <div className="overflow-hidden pb-6 text-sm leading-7 text-muted md:text-base">
-                Yes. Request a tailored five-lead sample against your ICP on{" "}
+                If you already know your outbound motion and want us to review fit,{" "}
                 <Link
-                  href={ROUTES.SAMPLE}
+                  href={ROUTES.APPLY}
                   className="font-semibold text-terracotta underline underline-offset-4"
                 >
-                  the sample page
+                  apply for a campaign
+                </Link>
+                . If you want to talk through the workflow before you apply,{" "}
+                <Link
+                  href={ROUTES.BOOK_MEETING}
+                  className="font-semibold text-terracotta underline underline-offset-4"
+                >
+                  book a meeting
                 </Link>
                 .
               </div>

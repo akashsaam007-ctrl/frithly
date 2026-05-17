@@ -284,7 +284,7 @@ export function buildContactPageSchema() {
       "@id": ORG_ID,
     },
     description:
-      "Contact Frithly for curated outbound intelligence programs, sample requests, onboarding, and support.",
+      "Contact Frithly for curated outbound intelligence programs, onboarding, scheduling, and support.",
     inLanguage: "en-GB",
     name: "Contact Frithly",
     url: absoluteUrl("/contact"),

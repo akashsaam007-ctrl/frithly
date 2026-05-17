@@ -15,7 +15,7 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Contact Frithly for plan discussions, sample requests, and support. Use our support email or share your sales details for a guided reply.",
+    "Contact Frithly for plan discussions, onboarding questions, and support. Share your details for a guided reply before any strategy call is scheduled.",
   keywords: [
     "Frithly contact",
     "contact Frithly",
@@ -32,7 +32,7 @@ export default function ContactPage() {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Contact Frithly for plan discussions, sample requests, and support. Use our support email or share your sales details for a guided reply.",
+            "Contact Frithly for plan discussions, onboarding questions, and support. Share your details for a guided reply before any strategy call is scheduled.",
           path: "/contact",
           title: "Contact Frithly | Support and Sales",
         })}
@@ -60,8 +60,8 @@ export default function ContactPage() {
               Contact {APP_NAME} for sales, support, and company details.
             </h1>
             <p className="max-w-3xl text-lg leading-8 text-muted sm:text-xl">
-              If you want to discuss plans, request a sample, or need help with Frithly, use the
-              options below and we will point you in the right direction.
+              If you want to discuss rollout fit, onboarding, or need help with Frithly, use the
+              options below and we will guide you to the right next step.
             </p>
           </div>
         </section>
@@ -84,10 +84,10 @@ export default function ContactPage() {
 
               <div>
                 <h2 className="text-xl font-semibold tracking-[-0.03em] text-ink">
-                  Samples and support
+                  Support and account help
                 </h2>
                 <p className="mt-2 max-w-xl text-base leading-8 text-muted">
-                  If you want a free sample, help with your account, or a fast support response,
+                  If you need account help, rollout clarification, or a fast support response,
                   email us directly and we will take it from there.
                 </p>
               </div>
@@ -116,8 +116,8 @@ export default function ContactPage() {
                   Sales conversations
                 </h2>
                 <p className="mt-2 text-base leading-8 text-muted">
-                  Share your details and we&apos;ll come back with the right next step for plans,
-                  onboarding, or fit questions.
+                  Share your details first. We&apos;ll review the fit and then reply with the right
+                  next step for plans, onboarding, or a strategy call.
                 </p>
               </div>
 
@@ -126,7 +126,7 @@ export default function ContactPage() {
                   <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href={ROUTES.SAMPLE}>Get a free sample</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                 </Button>
               </div>
             </div>
@@ -145,8 +145,8 @@ export default function ContactPage() {
               Tell us about your team before we reply.
             </h2>
             <p className="max-w-3xl text-base leading-8 text-muted">
-              This gives us enough context to recommend the right plan, sample path, or onboarding
-              next step without sending you straight into a calendar page.
+              This gives us enough context to recommend the right plan, campaign path, or
+              onboarding next step without sending you straight into a calendar page.
             </p>
           </div>
 

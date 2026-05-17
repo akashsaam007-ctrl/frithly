@@ -104,6 +104,7 @@ export const ROUTES = {
   BRIEFS: "/briefs",
   CAMPAIGNS: "/campaigns",
   COHORTS: "/cohorts",
+  BOOK_MEETING: CALCOM_URL,
   CONTACT: "/contact",
   CONTACT_SALES: "/contact#sales-form",
   DASHBOARD: "/dashboard",

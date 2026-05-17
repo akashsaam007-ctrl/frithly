@@ -46,9 +46,9 @@ export function IntentGuidePage({ guide }: IntentGuidePageProps) {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link href={ROUTES.SAMPLE}>
+                <Link href={ROUTES.APPLY}>
                   <span className="inline-flex items-center gap-2">
-                    Get a free 5-lead sample
+                    Apply for a campaign
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -123,18 +123,18 @@ export function IntentGuidePage({ guide }: IntentGuidePageProps) {
             <div className="surface-card p-6 sm:p-7">
               <div className="section-eyebrow">Best next step</div>
               <h2 className="mt-5 text-3xl font-semibold text-ink">
-                See the output before you commit to a plan.
+                Take the next step when you are ready for real rollout feedback.
               </h2>
               <p className="mt-4 text-sm leading-7 text-muted md:text-base">
-                The easiest way to judge fit is to request a tailored sample against your ICP and
-                compare the quality to what your team is producing today.
+                Apply if you want us to review your ICP and outbound motion first, or book a
+                meeting if you want to talk through fit before you submit details.
               </p>
               <div className="mt-6 flex flex-col gap-3">
                 <Button asChild size="lg">
-                  <Link href={ROUTES.SAMPLE}>Request a free sample</Link>
+                  <Link href={ROUTES.APPLY}>Apply for a campaign</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/pricing">Review plans</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                 </Button>
               </div>
             </div>

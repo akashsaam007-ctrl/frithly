@@ -20,7 +20,7 @@ export default function NotFound() {
             <Link href={ROUTES.HOME}>Back to home</Link>
           </Button>
           <Button asChild size="lg" variant="secondary">
-            <Link href={ROUTES.SAMPLE}>Request a free sample</Link>
+            <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
           </Button>
         </div>
       </Container>
