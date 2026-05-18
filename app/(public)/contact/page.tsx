@@ -116,14 +116,14 @@ export default function ContactPage() {
                   Sales conversations
                 </h2>
                 <p className="mt-2 text-base leading-8 text-muted">
-                  Share your details first. We&apos;ll review the fit and then reply with the right
-                  next step for plans, onboarding, or a strategy call.
+                  Apply with your details first, or book a meeting directly if you already know you
+                  want to talk live about plans, onboarding, or rollout fit.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-4 pt-2">
                 <Button asChild size="lg">
-                  <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
+                  <Link href={ROUTES.APPLY}>Apply</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
                   <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
@@ -146,7 +146,7 @@ export default function ContactPage() {
             </h2>
             <p className="max-w-3xl text-base leading-8 text-muted">
               This gives us enough context to recommend the right plan, campaign path, or
-              onboarding next step without sending you straight into a calendar page.
+              onboarding next step without guesswork.
             </p>
           </div>
 

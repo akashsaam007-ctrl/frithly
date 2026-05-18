@@ -632,9 +632,9 @@ export function PlatformHomepage() {
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="shadow-[0_20px_60px_rgba(239,186,144,0.16)]">
-                <Link href={ROUTES.BOOK_MEETING}>
+                <Link href={ROUTES.APPLY}>
                   <span className="inline-flex items-center gap-2">
-                    Book a meeting
+                    Apply
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -645,7 +645,7 @@ export function PlatformHomepage() {
                 variant="secondary"
                 className="border-white/10 bg-white/[0.05] text-white hover:border-white/18 hover:bg-white/[0.08] hover:text-white"
               >
-                <Link href="#engine">Explore the workflow</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
               </Button>
             </div>
 
@@ -1619,9 +1619,9 @@ export function PlatformHomepage() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link href={ROUTES.BOOK_MEETING}>
+                <Link href={ROUTES.APPLY}>
                   <span className="inline-flex items-center gap-2">
-                    Book a meeting
+                    Apply
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -1632,7 +1632,7 @@ export function PlatformHomepage() {
                 variant="secondary"
                 className="border-white/10 bg-white/[0.05] text-white hover:border-white/18 hover:bg-white/[0.08] hover:text-white"
               >
-                <Link href={ROUTES.CONTACT}>Talk through your brief</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
               </Button>
             </div>
           </motion.div>

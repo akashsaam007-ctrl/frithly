@@ -99,6 +99,7 @@ export const ROUTES = {
   ADMIN_FEEDBACK: "/admin/feedback",
   ADMIN_LEAD_STUDIO: "/admin/lead-studio",
   ANALYTICS: "/analytics",
+  APPLY: "/apply",
   BILLING: "/billing",
   BRIEFS: "/briefs",
   CAMPAIGNS: "/campaigns",
