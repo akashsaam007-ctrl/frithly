@@ -116,8 +116,9 @@ export default function ContactPage() {
                   Sales conversations
                 </h2>
                 <p className="mt-2 text-base leading-8 text-muted">
-                  Apply with your details first, or book a meeting directly if you already know you
-                  want to talk live about plans, onboarding, or rollout fit.
+                  Use Apply when you want Frithly to review your brief first, or book a meeting
+                  directly if you already know you want to talk live about plans, onboarding, or
+                  rollout fit.
                 </p>
               </div>
 

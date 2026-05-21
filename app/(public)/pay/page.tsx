@@ -4,10 +4,10 @@ import { ROUTES } from "@/lib/constants";
 import { buildPublicMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPublicMetadata({
-  description: "Talk to sales to activate a Frithly plan.",
+  description: "Apply or book a meeting to activate a Frithly plan.",
   noIndex: true,
   path: "/pay",
-  title: "Talk to sales | Frithly",
+  title: "Apply or book a meeting | Frithly",
 });
 
 export default function PayPage() {

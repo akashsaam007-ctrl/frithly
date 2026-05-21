@@ -134,7 +134,7 @@ export function IntentGuidePage({ guide }: IntentGuidePageProps) {
                   <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
+                  <Link href={ROUTES.APPLY}>Apply</Link>
                 </Button>
               </div>
             </div>

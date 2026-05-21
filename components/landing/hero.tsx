@@ -75,7 +75,7 @@ export function Hero() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
-                <Link href={ROUTES.CONTACT_SALES}>Talk to sales</Link>
+                <Link href={ROUTES.APPLY}>Apply</Link>
               </Button>
             </div>
 

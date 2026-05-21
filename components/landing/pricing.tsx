@@ -528,9 +528,7 @@ export function PricingSection() {
                   variant="secondary"
                   className="border-white/10 bg-white/[0.05] text-white hover:border-white/18 hover:bg-white/[0.08] hover:text-white sm:flex-1"
                 >
-                  <Link href={ROUTES.CONTACT_SALES}>
-                    Talk to sales
-                  </Link>
+                  <Link href={ROUTES.APPLY}>Apply</Link>
                 </Button>
               </div>
             </div>

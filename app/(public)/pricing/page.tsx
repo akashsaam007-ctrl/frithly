@@ -86,9 +86,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                 ) : null}
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Button asChild size="sm">
-                    <Link href={ROUTES.CONTACT_SALES}>
-                      Talk to sales
-                    </Link>
+                    <Link href={ROUTES.APPLY}>Apply</Link>
                   </Button>
                   <Button asChild size="sm" variant="secondary">
                     <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>

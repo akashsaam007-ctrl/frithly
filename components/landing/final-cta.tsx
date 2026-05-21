@@ -60,7 +60,7 @@ export function FinalCta() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="w-full">
-                <Link href={ROUTES.CONTACT_SALES}>Talk through your brief</Link>
+                <Link href={ROUTES.APPLY}>Apply</Link>
               </Button>
               <p className="text-sm text-white/60">
                 Best for teams that want to buy finished weekly output, not manage another tool.
