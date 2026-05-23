@@ -1370,15 +1370,16 @@ export function PlatformHomepage() {
                 Strategic outbound assessment
               </div>
               <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
-                A quick read on where outbound quality is leaking.
+                See what poor outbound targeting could be costing you.
               </h3>
               <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                Three inputs. Instant insight. No fantasy revenue projection.
+                Most teams waste time reaching the wrong accounts at the wrong time. Estimate how much
+                pipeline your current outbound process may be missing.
               </p>
 
               <div className="mt-8 space-y-6">
                 <SliderControl
-                  label="Monthly outbound contacts"
+                  label="How many cold emails does your team send each month?"
                   max={400}
                   min={50}
                   onChange={setAssessmentVolume}
@@ -1387,7 +1388,7 @@ export function PlatformHomepage() {
                   valueLabel={`${assessmentVolume} / month`}
                 />
                 <SliderControl
-                  label="Current reply rate"
+                  label="What's your average reply rate?"
                   max={10}
                   min={1}
                   onChange={setAssessmentReplyRate}
@@ -1396,7 +1397,7 @@ export function PlatformHomepage() {
                   valueLabel={`${assessmentReplyRate.toFixed(assessmentReplyRate % 1 === 0 ? 0 : 1)}%`}
                 />
                 <SliderControl
-                  label="Average deal value"
+                  label="What's the average value of a new client?"
                   max={20000}
                   min={2000}
                   onChange={setAssessmentDealValue}
@@ -1433,41 +1434,44 @@ export function PlatformHomepage() {
                 Assessment insights
               </div>
               <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
-                Fast signals a buyer can act on.
+                Fast, believable signals a buyer can act on.
               </h3>
               <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
                 This is a strategic outbound assessment, not a promise of booked revenue. It is built
-                to surface waste, timing loss, and prioritization gaps quickly.
+                to highlight wasted outreach effort, missed sales opportunities, and where better contact
+                quality could improve the brief.
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.2rem] bg-black/18 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Estimated low-fit outreach waste</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Time spent on leads unlikely to reply</div>
                   <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.lowFitWaste}</div>
-                  <div className="mt-2 text-sm leading-7 text-white/56">contacts/month likely spent on low-confidence accounts</div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">emails each month likely spent on low-confidence accounts</div>
                 </div>
                 <div className="rounded-[1.2rem] bg-black/18 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Missed high-intent opportunities</div>
-                  <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.missedIntent}</div>
-                  <div className="mt-2 text-sm leading-7 text-white/56">accounts/month that may be getting buried inside broad prospecting</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Missed sales opportunities</div>
+                  <div className="mt-2 text-3xl font-medium text-white">
+                    {Math.max(assessmentModel.missedIntent - 6, 5)}-{assessmentModel.missedIntent + 10}
+                  </div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">potential conversations each month that may be hidden inside broad targeting</div>
                 </div>
                 <div className="rounded-[1.2rem] bg-black/18 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Pipeline inefficiency</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Wasted outreach effort</div>
                   <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.pipelineInefficiency}%</div>
                   <div className="mt-2 text-sm leading-7 text-white/56">of outbound effort likely being lost to weak fit, bad timing, or missing context</div>
                 </div>
                 <div className="rounded-[1.2rem] bg-black/18 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Routing quality impact</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Better contact quality</div>
                   <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.routingLabel}</div>
-                  <div className="mt-2 text-sm leading-7 text-white/56">{assessmentModel.routingImpact}% likelihood that route quality is dragging performance</div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">{assessmentModel.routingImpact}% likelihood that contact quality is dragging performance</div>
                 </div>
               </div>
 
               <div className="mt-6 rounded-[1.3rem] bg-white/[0.03] p-5">
-                <div className="text-xs uppercase tracking-[0.18em] text-white/34">Prioritization gain</div>
+                <div className="text-xs uppercase tracking-[0.18em] text-white/34">Potential pipeline impact</div>
                 <p className="mt-3 text-base leading-8 text-white/60">
-                  Frithly could likely help your team focus on roughly {assessmentModel.prioritizationGain} stronger first-priority
-                  accounts per month before outbound volume needs to increase.
+                  Better timing and targeting could help your team focus on roughly {assessmentModel.prioritizationGain}
+                  stronger first-priority accounts each month before outbound volume needs to increase.
                 </p>
               </div>
             </div>
