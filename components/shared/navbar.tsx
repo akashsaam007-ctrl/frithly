@@ -11,11 +11,8 @@ import { ROUTES } from "@/lib/constants";
 
 const marketingNavLinks = [
   { href: ROUTES.ABOUT, label: "About" },
-  { href: "/#why-outbound-fails", label: "Why Quality Wins" },
-  { href: ROUTES.HOW_IT_WORKS, label: "Intelligence Flow" },
-  { href: "/#icp-demo", label: "Demo" },
   { href: ROUTES.PRICING, label: "Program Builder" },
-  { href: "/#roi", label: "ROI" },
+  { href: "/#evidence", label: "ROI" },
   { href: ROUTES.FAQ, label: "FAQ" },
 ];
 

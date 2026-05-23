@@ -27,17 +27,8 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Experience</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <Link className="block transition-colors hover:text-white" href={ROUTES.HOW_IT_WORKS}>
-                  Intelligence flow
-                </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRICING}>
                   Program builder
-                </Link>
-                <Link className="block transition-colors hover:text-white" href="/#icp-demo">
-                  ICP demo
-                </Link>
-                <Link className="block transition-colors hover:text-white" href="/#roi-intelligence">
-                  ROI simulator
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ
