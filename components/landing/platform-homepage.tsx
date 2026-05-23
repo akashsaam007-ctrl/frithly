@@ -1482,11 +1482,10 @@ export function PlatformHomepage() {
                 Opportunity breakdown
               </div>
               <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
-                Exactly why this account makes the brief.
+                Why this account made the brief.
               </h3>
               <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                This is the kind of artifact a buyer can trust before case-study proof exists:
-                the signal, the reasoning, the recommended angle, and the route quality all in one place.
+                The signal, reasoning, recommended angle, and route quality - all in one reviewed opportunity.
               </p>
 
               <div className="mt-8 space-y-4">
@@ -1512,8 +1511,7 @@ export function PlatformHomepage() {
                 What a serious buyer can inspect before trusting the system.
               </h3>
               <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                Frithly should make its reasoning visible. The best early proof is not a promise.
-                It is a clear explanation of why this account, why now, and why this angle.
+                Good outbound should explain why this account, why now, and why this angle.
               </p>
 
               <div className="mt-8 space-y-4">
@@ -1541,11 +1539,10 @@ export function PlatformHomepage() {
                 Before vs after lead quality
               </div>
               <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
-                Show the difference between a raw lead and a Frithly lead.
+                The difference between a raw lead and a Frithly lead.
               </h3>
               <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                Buyers do not need fantasy metrics to understand the value. They need to see how much
-                stronger the account looks before the rep sends the first message.
+                Better targeting becomes obvious before outreach even begins.
               </p>
 
               <div className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -1584,11 +1581,10 @@ export function PlatformHomepage() {
                 Public build journey
               </div>
               <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
-                Show how the system keeps getting smarter.
+                How the system gets smarter over time.
               </h3>
               <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                Transparent builders earn trust faster. Frithly can prove rigor by showing what
-                changed in the product, what improved in filtering, and what the team learned from each release.
+                Every release improves filtering, routing quality, and signal precision.
               </p>
 
               <div className="mt-8 space-y-3">
