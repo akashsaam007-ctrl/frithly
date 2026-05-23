@@ -15,17 +15,17 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Frithly is a premium curated outbound intelligence service that delivers reviewed, founder-aware, SMTP-aware opportunities in weekly outbound cohorts.",
+    "Frithly helps agencies, founders, and outbound teams get more meetings from smaller, higher-intent prospect lists with live signals, verified contacts, and weekly ready-to-send briefs.",
   keywords: [
-    "curated outbound intelligence service",
-    "weekly outbound opportunity delivery",
-    "founder-aware outbound targeting",
-    "SMTP-aware opportunity routing",
-    "premium outbound intelligence",
-    "curated lead research service",
+    "higher reply rate outbound",
+    "weekly outbound brief",
+    "signal based prospecting",
+    "better fit outbound leads",
+    "outbound research service",
+    "lead intelligence for SDR teams",
   ],
   path: "/",
-  title: "Frithly | Curated Outbound Intelligence Delivered Weekly",
+  title: "Frithly | Smaller Lists. Better Timing. Stronger Replies.",
 });
 
 type HomePageProps = {
@@ -87,9 +87,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Frithly helps agencies and outbound teams discover higher-confidence opportunities through reviewed intelligence, SMTP-aware routing, founder targeting, and curated weekly delivery.",
+            "Frithly gives agencies, founders, and outbound teams a weekly brief of higher-intent prospects, verified contacts, live signals, and outreach angles built for better reply rates.",
           path: "/",
-          title: "Frithly | Curated Outbound Intelligence Delivered Weekly",
+          title: "Frithly | Smaller Lists. Better Timing. Stronger Replies.",
         })}
       />
       <StructuredData data={buildServiceSchema()} />

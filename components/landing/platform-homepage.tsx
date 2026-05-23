@@ -45,80 +45,80 @@ const engineStages = [
     id: "brief",
     incoming: "14,200",
     kept: "14,200",
-    label: "ICP alignment",
-    note: "The brief becomes selective before the search begins.",
+    label: "ICP fit",
+    note: "The brief gets specific before search starts.",
     summary:
-      "Industry shape, geography, commercial exclusions, and route discipline are locked before discovery expands.",
+      "Industry, geography, exclusions, and buyer roles are locked first so wide collection can still stay commercially relevant.",
   },
   {
     confidence: 41,
     id: "discovery",
     incoming: "14,200",
     kept: "3,840",
-    label: "Discovery expansion",
-    note: "Coverage opens, but volume stops being the goal.",
+    label: "Wide collection",
+    note: "Coverage expands before filtering gets strict.",
     summary:
-      "Search patterns widen carefully so the field grows only where the quality logic can still hold.",
+      "Search, directories, and website discovery collect far more companies than the final brief ever needs.",
   },
   {
     confidence: 58,
     id: "enrichment",
     incoming: "3,840",
     kept: "920",
-    label: "Signal enrichment",
-    note: "Context starts to separate relevance from coincidence.",
+    label: "Business context",
+    note: "Each company gets timing, fit, and contact context.",
     summary:
-      "Website signals, service fit, firmographic shape, and route clues turn records into credible opportunities.",
+      "Website signals, service fit, team pages, and contact paths turn raw domains into workable outbound opportunities.",
   },
   {
     confidence: 73,
     id: "ranking",
     incoming: "920",
     kept: "340",
-    label: "Confidence ranking",
-    note: "The queue tightens before a human ever sees it.",
+    label: "Opportunity ranking",
+    note: "The shortlist gets smaller while confidence goes up.",
     summary:
-      "Deliverability posture, freshness, founder relevance, and recommendation quality narrow the working shortlist.",
+      "Buying intent, ICP fit, deliverability, and messaging context decide which accounts deserve rep time.",
   },
   {
     confidence: 91,
     id: "release",
     incoming: "340",
     kept: "187",
-    label: "Weekly release",
-    note: "What survives behaves like outbound intelligence, not a list.",
+    label: "Weekly brief",
+    note: "Your team gets a smaller list with better timing.",
     summary:
-      "The final cohort is reviewed, ordered, SMTP-aware, and delivered with context that makes action easier.",
+      "The final brief is reviewed, prioritized, and shipped with context your reps can use immediately.",
   },
 ] as const;
 
 const deliveryTimeline = [
   {
-    copy: "The reviewed cohort is finalized against the live outbound brief.",
+    copy: "The raw pool is narrowed into the first high-fit shortlist.",
     day: "Monday",
     icon: CalendarDays,
     time: "09:00 GMT",
   },
   {
-    copy: "Founder notes and draft direction sharpen around the strongest accounts.",
+    copy: "Why-now signals and decision-maker context are added to the strongest accounts.",
     day: "Tuesday",
     icon: Sparkles,
     time: "12:00 GMT",
   },
   {
-    copy: "Exports, route context, and release packaging are assembled.",
+    copy: "Contacts, deliverability notes, and outreach angles are tightened.",
     day: "Wednesday",
     icon: Send,
     time: "10:00 GMT",
   },
   {
-    copy: "QA removes anything that no longer deserves a place in the release.",
+    copy: "Human review removes weak fits and stale accounts before release.",
     day: "Thursday",
     icon: CheckCircle2,
     time: "14:00 GMT",
   },
   {
-    copy: "Outcome signals inform how the next week's shortlist gets tighter.",
+    copy: "Reply feedback and outbound learning shape what gets prioritized next.",
     day: "Friday",
     icon: Radar,
     time: "16:00 GMT",
@@ -127,96 +127,135 @@ const deliveryTimeline = [
 
 const trustPoints = [
   {
-    body: "Every cohort is reviewed before delivery, so the product includes judgment, not just collection.",
+    body: "Every brief is checked before delivery, so your team works a vetted shortlist instead of raw exported data.",
     icon: ShieldCheck,
-    title: "Reviewed opportunities",
+    title: "Human-reviewed before release",
   },
   {
-    body: "Deliverability is part of the release logic itself, not a cleanup step after the list exists.",
+    body: "Deliverability risk is filtered earlier, so scaling outbound does not create unnecessary domain damage.",
     icon: MailCheck,
-    title: "SMTP-aware release",
+    title: "Protect deliverability",
   },
   {
-    body: "Founder confidence and decision-maker clarity influence what rises, not just what gets displayed.",
+    body: "Signal strength, decision-maker fit, and timing help the best opportunities rise to the top first.",
     icon: Users,
-    title: "Founder intelligence",
+    title: "Prioritized by buying intent",
   },
   {
-    body: "Ordering, notes, and release context make execution calmer once the cohort reaches the team.",
+    body: "Each release is packaged so reps can move faster with clearer accounts, better angles, and less prep work.",
     icon: Target,
-    title: "Operational readiness",
+    title: "Ready for reps",
   },
+] as const;
+
+const opportunityBreakdown = [
+  { label: "Signal detected", value: "Posted 4 SDR roles in the last 10 days" },
+  { label: "Why it matters", value: "Outbound capacity is growing, so pipeline quality pressure usually shows up next" },
+  { label: "Recommended angle", value: "Help a growing SDR team reach qualified accounts faster" },
+  { label: "Route quality", value: "Deliverability-safe contact path available" },
+  { label: "Decision-maker confidence", value: "Founder and Head of Sales both visible" },
+] as const;
+
+const traditionalLeadQuality = [
+  "Generic SaaS company",
+  "No current trigger",
+  "Unknown buyer urgency",
+  "Unclear contact path",
+  "Rep still has to research the angle",
+] as const;
+
+const frithlyLeadQuality = [
+  "Hiring SDRs this month",
+  "Founder active around GTM",
+  "Recent pricing or launch movement",
+  "Deliverability-safe route surfaced",
+  "Recommended opener included",
+] as const;
+
+const sampleIntelligenceReport = [
+  { label: "ICP fit", value: "Sales software - 25 to 150 employees - North America" },
+  { label: "Reasoning", value: "High outbound maturity, active hiring signal, and clear commercial fit" },
+  { label: "Priority reason", value: "Strong timing plus a buyer the team can credibly approach now" },
+  { label: "Recommended angle", value: "Pipeline quality scaling pain during outbound expansion" },
+  { label: "Release tier", value: "Tier A - ready for the weekly brief" },
+] as const;
+
+const buildJourneyArtifacts = [
+  "Signal experiments and what changed in scoring",
+  "Contact enrichment upgrades and route quality checks",
+  "Filtering improvements that remove weak-fit accounts",
+  "Weekly learnings that tighten the next release",
 ] as const;
 
 const industries = [
   {
-    headline: "Founder-led agencies with clear positioning and reachable decision-makers.",
+    headline: "Founder-led agencies that need higher-quality targets, not more prospecting noise.",
     id: "agencies",
     label: "Agencies",
-    query: "SEO agencies · performance agencies · niche service firms",
+    query: "SEO agencies - performance agencies - niche service firms",
     opportunities: [
-      { company: "Northline Studio", note: "Founder-owned growth agency · clear route", score: 94 },
-      { company: "Harbour Search", note: "Selective positioning · high service fit", score: 91 },
-      { company: "Signal Foundry", note: "Premium contactability · strong outbound angle", score: 88 },
+      { company: "Northline Studio", note: "Founder-owned growth agency - clear route", score: 94 },
+      { company: "Harbour Search", note: "Selective positioning - high service fit", score: 91 },
+      { company: "Signal Foundry", note: "Premium contactability - strong outbound angle", score: 88 },
     ],
   },
   {
-    headline: "Smaller B2B software teams where route quality matters more than list size.",
+    headline: "B2B software teams that care more about reply quality than list size.",
     id: "saas",
     label: "B2B SaaS",
-    query: "Vertical SaaS · workflow tools · specialist software",
+    query: "Vertical SaaS - workflow tools - specialist software",
     opportunities: [
-      { company: "Arclet Ops", note: "Growing product team · crisp ICP match", score: 93 },
-      { company: "Relay Ledger", note: "Strong founder signal · stable route posture", score: 89 },
-      { company: "Northbeam Flow", note: "Recent momentum · selective relevance", score: 86 },
+      { company: "Arclet Ops", note: "Growing product team - crisp ICP match", score: 93 },
+      { company: "Relay Ledger", note: "Strong founder signal - stable route posture", score: 89 },
+      { company: "Northbeam Flow", note: "Recent momentum - selective relevance", score: 86 },
     ],
   },
   {
-    headline: "Specialist services where a better shortlist changes who the team spends time on.",
+    headline: "Specialist service businesses where cleaner targeting changes who the team spends time on.",
     id: "services",
     label: "Specialist services",
-    query: "Industrial services · boutique consultancies · niche providers",
+    query: "Industrial services - boutique consultancies - niche providers",
     opportunities: [
-      { company: "Ridgepoint Advisory", note: "Founder visible · narrow commercial fit", score: 92 },
-      { company: "Atlas Process", note: "High-value motion · route quality intact", score: 87 },
-      { company: "Morrow Partners", note: "Selective release candidate · good timing", score: 84 },
+      { company: "Ridgepoint Advisory", note: "Founder visible - narrow commercial fit", score: 92 },
+      { company: "Atlas Process", note: "High-value motion - route quality intact", score: 87 },
+      { company: "Morrow Partners", note: "Selective release candidate - good timing", score: 84 },
     ],
   },
 ] as const;
 
 const geographies = [
-  { density: "Tighter release density", id: "uk", label: "UK" },
-  { density: "Broader weekly coverage", id: "uk-eu", label: "UK + EU" },
-  { density: "Transatlantic expansion", id: "na", label: "North America" },
+  { density: "Tighter weekly focus", id: "uk", label: "UK" },
+  { density: "Balanced weekly coverage", id: "uk-eu", label: "UK + EU" },
+  { density: "Broader market coverage", id: "na", label: "North America" },
 ] as const;
 
 const goals = [
-  { id: "founders", label: "Founder conversations", result: "Founder confidence weighted higher inside the queue." },
-  { id: "quality", label: "Pipeline quality", result: "Recommendation strength weighted over list expansion." },
-  { id: "delivery", label: "Deliverability-safe growth", result: "Route posture becomes stricter before release." },
+  { id: "founders", label: "More founder replies", result: "Founder and decision-maker accounts are weighted higher in the brief." },
+  { id: "quality", label: "Cleaner pipeline", result: "Higher-fit opportunities outrank broad volume." },
+  { id: "delivery", label: "Safer scaling", result: "Deliverability-safe routes and cleaner contacts weigh more heavily." },
 ] as const;
 
 const coverageOptions = [
-  { description: "Focused coverage inside one market with denser signal quality.", id: "single", label: "Single market" },
+  { description: "Focused coverage inside one market with tighter account quality.", id: "single", label: "Single market" },
   { description: "Balanced coverage across two coordinated markets.", id: "double", label: "Double market" },
   { description: "Expanded coverage across multiple active markets.", id: "multiple", label: "Multi-market" },
 ] as const;
 
 const baseProgramItems = [
   "Minimum 20 reviewed opportunities / week included",
-  "Reviewed weekly opportunity delivery",
-  "SMTP-aware prioritization",
-  "Outbound-ready exports",
-  "Recommendation intelligence",
-  "Founder-aware targeting",
-  "Quality-controlled cohort packaging",
-  "Curated delivery cadence",
+  "Human-reviewed weekly brief",
+  "Deliverability-safe prioritization",
+  "Ready-to-send exports",
+  "Why-now outreach angles",
+  "Decision-maker targeting",
+  "Quality control before release",
+  "Weekly delivery cadence",
 ] as const;
 
 const supportOptions = [
-  { description: "Reviewed intelligence with ranking logic and release context.", id: "core", label: "Core intelligence" },
-  { description: "Adds curated draft refinement for stronger handoffs.", id: "drafts", label: "Draft support" },
-  { description: "Higher-touch weekly support around delivery and use.", id: "delivery", label: "Delivery support" },
+  { description: "A clean weekly brief with prioritized accounts and release context.", id: "core", label: "Core brief" },
+  { description: "Adds draft refinement so reps start with stronger first touches.", id: "drafts", label: "Draft support" },
+  { description: "Higher-touch weekly support around delivery and rep handoff.", id: "delivery", label: "Delivery support" },
 ] as const;
 
 const cadenceOptions = [
@@ -258,14 +297,6 @@ function formatEuroRange(low: number, high: number) {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
-}
-
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-GB", {
-    currency: "EUR",
-    maximumFractionDigits: 0,
-    style: "currency",
-  }).format(value);
 }
 
 function SectionEyebrow({ children }: { children: string }) {
@@ -352,62 +383,6 @@ function SliderControl({
   );
 }
 
-function RoiOutcomePanel({
-  accentClassName,
-  description,
-  ignored,
-  meetings,
-  replies,
-  title,
-}: {
-  accentClassName: string;
-  description: string;
-  ignored: number;
-  meetings: number;
-  replies: number;
-  title: string;
-}) {
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="text-[1.15rem] font-medium text-white">{title}</div>
-          <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/36">
-            Out of every 100 businesses contacted
-          </div>
-        </div>
-        <div className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-white/70">
-          {replies} reply-ready
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-full bg-white/8">
-        <div className="flex h-3 w-full">
-          <div className={cn("h-full rounded-full", accentClassName)} style={{ width: `${replies}%` }} />
-          <div className="h-full bg-white/10" style={{ width: `${Math.max(100 - replies, 0)}%` }} />
-        </div>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-[1rem] bg-black/18 p-3">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Ignored</div>
-          <div className="mt-2 text-2xl font-medium text-white">{ignored}</div>
-        </div>
-        <div className="rounded-[1rem] bg-black/18 p-3">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Reply-ready</div>
-          <div className="mt-2 text-2xl font-medium text-white">{replies}</div>
-        </div>
-        <div className="rounded-[1rem] bg-black/18 p-3">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/34">Meetings / month</div>
-          <div className="mt-2 text-2xl font-medium text-white">{meetings.toFixed(1)}</div>
-        </div>
-      </div>
-
-      <p className="text-sm leading-7 text-white/54">{description}</p>
-    </div>
-  );
-}
-
 function ChoiceButton({
   active,
   label,
@@ -446,9 +421,9 @@ export function PlatformHomepage() {
   const [cadence, setCadence] = useState<CadenceOption>("weekly");
   const [founderPriority, setFounderPriority] = useState(true);
   const [smtpPriority, setSmtpPriority] = useState(true);
-  const [outreachVolume, setOutreachVolume] = useState(120);
-  const [replyRate, setReplyRate] = useState(3);
-  const [clientValue, setClientValue] = useState(8000);
+  const [assessmentVolume, setAssessmentVolume] = useState(150);
+  const [assessmentReplyRate, setAssessmentReplyRate] = useState(3);
+  const [assessmentDealValue, setAssessmentDealValue] = useState(8000);
   const engineTimelineRef = useRef<HTMLDivElement | null>(null);
   const enginePanelRef = useRef<HTMLDivElement | null>(null);
   const engineStageRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -567,7 +542,7 @@ export function PlatformHomepage() {
             : targetingDepth === 3
               ? "Founder and routing depth"
               : targetingDepth === 4
-                ? "High-touch intelligence layering"
+                ? "High-touch context layering"
                 : "Maximum review precision",
     };
   }, [
@@ -580,29 +555,34 @@ export function PlatformHomepage() {
     weeklyOpportunityTarget,
   ]);
 
-  const roiModel = useMemo(() => {
-    const improvedReplyRate = Math.min(Math.max(replyRate * 2.5, replyRate + 3), 15);
-    const currentReplies = outreachVolume * (replyRate / 100);
-    const improvedReplies = outreachVolume * (improvedReplyRate / 100);
-    const currentMeetings = currentReplies * 0.4;
-    const improvedMeetings = improvedReplies * 0.4;
-    const extraReplies = improvedReplies - currentReplies;
-    const extraMeetings = improvedMeetings - currentMeetings;
-    const extraRevenue = (extraMeetings / 5) * clientValue;
+  const assessmentModel = useMemo(() => {
+    const wasteRate = clamp(0.62 - assessmentReplyRate * 0.045 + (assessmentDealValue >= 10000 ? 0.04 : 0), 0.24, 0.68);
+    const lowFitWaste = Math.round(assessmentVolume * wasteRate);
+    const missedIntent = Math.max(
+      8,
+      Math.round(lowFitWaste * 0.18 + Math.max(0, 4 - assessmentReplyRate) * 3),
+    );
+    const pipelineInefficiency = Math.round(
+      clamp(wasteRate * 100 - 8 + (assessmentDealValue >= 10000 ? 4 : 0), 18, 63),
+    );
+    const routingImpact = Math.round(
+      clamp(14 + (5 - assessmentReplyRate) * 5 + (assessmentVolume > 200 ? 6 : 0), 8, 41),
+    );
+    const prioritizationGain = Math.max(
+      12,
+      Math.round(missedIntent * 0.6 + assessmentDealValue / 2000),
+    );
 
     return {
-      currentMeetings,
-      extraMeetings,
-      extraReplies,
-      extraRevenue,
-      ignoredCurrent: 100 - Math.round(replyRate),
-      ignoredImproved: 100 - Math.round(improvedReplyRate),
-      improvedMeetings,
-      improvedReplies: Math.round(improvedReplyRate),
-      improvedReplyRate,
-      replyMultiplier: improvedReplies / Math.max(currentReplies, 1),
+      lowFitWaste,
+      missedIntent,
+      pipelineInefficiency,
+      prioritizationGain,
+      routingImpact,
+      routingLabel:
+        routingImpact >= 30 ? "Elevated" : routingImpact >= 18 ? "Moderate" : "Controlled",
     };
-  }, [clientValue, outreachVolume, replyRate]);
+  }, [assessmentDealValue, assessmentReplyRate, assessmentVolume]);
 
   return (
     <div className="relative overflow-hidden bg-[#050915] text-[#f6f3f7]">
@@ -614,20 +594,20 @@ export function PlatformHomepage() {
       <section className="relative pb-24 pt-28 sm:pb-28 sm:pt-36">
         <Container className="grid gap-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
           <motion.div {...revealProps(enableReveal, 0.04)}>
-            <SectionEyebrow>Curated outbound intelligence</SectionEyebrow>
+            <SectionEyebrow>Smaller lists. Better timing. Stronger replies.</SectionEyebrow>
             <h1
               className={cn(
                 displayFont.className,
                 "mt-7 max-w-[12ch] text-[3.5rem] leading-[0.92] tracking-[-0.04em] text-[#f8f5f8] sm:text-[4.6rem] lg:text-[5.8rem]",
               )}
             >
-              Curated outbound intelligence{" "}
-              <ItalicAccent>delivered weekly.</ItalicAccent>
+              Better outbound starts{" "}
+              <ItalicAccent>before the first email.</ItalicAccent>
             </h1>
             <p className="mt-7 max-w-2xl text-base leading-8 text-white/62 md:text-[1.08rem] md:leading-9">
-              Frithly helps outbound teams discover higher-confidence opportunities through
-              reviewed intelligence, founder targeting, SMTP-aware routing, and a weekly release
-              rhythm designed to keep quality intact.
+              Most outbound fails because teams target too broadly and reach out too late.
+              Frithly fixes that with a weekly brief of higher-intent prospects, verified contacts,
+              live signals, and outreach angles designed to improve reply rates and reduce SDR waste.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -651,9 +631,9 @@ export function PlatformHomepage() {
 
             <div className="mt-10 grid max-w-2xl gap-5 sm:grid-cols-3">
               {[
-                ["Reviewed weekly", "187 accounts"],
-                ["Deliverability first", "SMTP-aware release"],
-                ["Delivery rhythm", "Every Monday"],
+                ["What you get", "A higher-fit weekly brief"],
+                ["Why it is better", "Live signals plus opener angles"],
+                ["Why trust it", "Human-reviewed before release"],
               ].map(([label, value]) => (
                 <div key={label}>
                   <div className="text-xs uppercase tracking-[0.2em] text-white/36">{label}</div>
@@ -672,9 +652,11 @@ export function PlatformHomepage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#efba90]">
-                    Monday release
+                    This week&apos;s outbound brief
                   </div>
-                  <div className="mt-2 text-2xl font-medium text-white">Cohort 24 / W19</div>
+                  <div className="mt-2 text-2xl font-medium text-white">
+                    Priority accounts with timing already mapped
+                  </div>
                 </div>
                 <div className="rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white/72">
                   Release ready
@@ -684,9 +666,9 @@ export function PlatformHomepage() {
               <div className="mt-10 grid gap-4 sm:grid-cols-[0.78fr_0.22fr]">
                 <div className="space-y-3">
                   {[
-                    ["Astralis Industries", "Founder route · UK · reviewed", 94],
-                    ["Northwave Robotics", "SMTP-safe path · DE · high fit", 91],
-                    ["Harbour Search", "Selective release · founder-aware", 88],
+                    ["Astralis Industries", "Hiring 3 AEs - founder-led - high fit", 94],
+                    ["Northwave Robotics", "New pricing page - clean route - strong timing", 91],
+                    ["Harbour Search", "Recent GTM push - decision-maker match", 88],
                   ].map(([company, meta, score]) => (
                     <div
                       className="flex items-center justify-between gap-4 rounded-[1.25rem] bg-black/16 px-4 py-4"
@@ -728,15 +710,15 @@ export function PlatformHomepage() {
               <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-white/58">
                 <span className="inline-flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#79e2cb]" />
-                  SMTP-aware routing
+                  Buying intent context
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#efba90]" />
-                  Founder-priority ranking
+                  Deliverability-safe contacts
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#8fbef6]" />
-                  Weekly reviewed cohort
+                  Human-reviewed weekly brief
                 </span>
               </div>
             </div>
@@ -748,10 +730,10 @@ export function PlatformHomepage() {
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-start">
           <motion.div {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
-              copy="Mass outbound optimizes for list volume. Frithly is built for the opposite: fewer accounts, stronger conviction, cleaner routes, and a release rhythm that protects quality all the way through delivery."
-              eyebrow="Why most outbound underperforms"
+              copy="Teams target too broadly, reach out too late, and ask reps to do research the market never sees. That creates more activity, lower reply rates, and pipeline the team trusts less."
+              eyebrow="Why outbound underperforms"
             >
-              Better opportunities outperform <ItalicAccent>bigger lists.</ItalicAccent>
+              Most outbound fails <ItalicAccent>before the first email.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
@@ -760,16 +742,16 @@ export function PlatformHomepage() {
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/34">
                 Traditional outbound
               </div>
-              <h3 className="text-2xl font-medium text-white">Volume creates activity, not certainty.</h3>
+              <h3 className="text-2xl font-medium text-white">More records do not fix weak targeting.</h3>
               <p className="text-base leading-8 text-white/58">
-                Generic scraping, unverified contacts, weak routing, and shallow context make the
-                whole system look busy while the team spends time on accounts that never deserved it.
+                Broad lists, weak timing, and shallow context make the whole motion look busy while
+                reps spend time on accounts that never deserved attention.
               </p>
               <div className="space-y-3 pt-2">
                 {[
-                  "Mass outbound optimizes for coverage, not fit.",
-                  "Weak contactability raises bounce and spam risk.",
-                  "The list gets bigger while confidence gets thinner.",
+                  "Broad lists create low-reply-rate outreach.",
+                  "Reps lose hours cleaning data and hunting context.",
+                  "Timing gets guessed after the lead is already in sequence.",
                 ].map((line) => (
                   <div className="flex items-start gap-3 text-sm leading-7 text-white/56" key={line}>
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#ff9c98]" />
@@ -783,16 +765,16 @@ export function PlatformHomepage() {
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#efba90]">
                 Frithly
               </div>
-              <h3 className="text-2xl font-medium text-white">The shortlist gets smaller while conviction rises.</h3>
+              <h3 className="text-2xl font-medium text-white">The shortlist gets smaller while reply potential rises.</h3>
               <p className="text-base leading-8 text-white/58">
-                Reviewed accounts, founder intelligence, SMTP-aware routing, and a weekly cohort
-                release turn the work into a system that is calm enough to trust.
+                Frithly turns wide market collection into a smaller, higher-intent brief built for
+                better replies, cleaner pipeline, and less SDR waste.
               </p>
               <div className="space-y-3 pt-2">
                 {[
-                  "Founder relevance influences what reaches the final queue.",
-                  "Deliverability is protected before release, not repaired after.",
-                  "Every Monday lands like a prepared cohort, not a dump of records.",
+                  "Higher-fit accounts outrank raw volume.",
+                  "Buying signals clarify why to reach out now.",
+                  "The brief arrives ready for reps, not more manual research.",
                 ].map((line) => (
                   <div className="flex items-start gap-3 text-sm leading-7 text-white/56" key={line}>
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#79e2cb]" />
@@ -810,10 +792,10 @@ export function PlatformHomepage() {
           <motion.div {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
               align="center"
-              copy="The system does not jump from search to delivery. It narrows quality in stages, so the final release feels selective by design."
-              eyebrow="The living intelligence engine"
+              copy="Frithly does not stop at search results. It collects broadly, adds context, ranks by fit and intent, and only then hands your team the accounts worth working."
+              eyebrow="How it works"
             >
-              A calmer process creates a <ItalicAccent>stronger release.</ItalicAccent>
+              Collect wide. Score hard. Release what <ItalicAccent>earns attention.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
@@ -851,7 +833,7 @@ export function PlatformHomepage() {
                     </div>
                     <div>
                       <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/34">
-                        Stage {String(index + 1).padStart(2, "0")} · {stage.label}
+                        Stage {String(index + 1).padStart(2, "0")} - {stage.label}
                       </div>
                       <div
                         className={cn(
@@ -932,16 +914,16 @@ export function PlatformHomepage() {
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-start">
           <motion.div {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
-              copy="Frithly is not instant SaaS automation. It is a weekly operating rhythm with review, packaging, QA, and release discipline built in."
-              eyebrow="The weekly delivery system"
+              copy="Each cycle tightens the shortlist, protects deliverability, and adds the timing context reps need before the first touch."
+              eyebrow="What you get each week"
             >
-              Every cohort arrives on a <ItalicAccent>calm cadence.</ItalicAccent>
+              A Monday-ready outbound brief, <ItalicAccent>not another CSV.</ItalicAccent>
             </SectionIntro>
             <div className="mt-8 space-y-3">
               {[
-                "Reviewed cohorts finalized before delivery.",
-                "Founder context and routing notes preserved through release.",
-                "QA holds anything that no longer belongs in the cohort.",
+                "Higher-fit accounts prioritized before delivery.",
+                "Decision-makers and contacts packaged with context.",
+                "Weak or stale accounts removed before the brief ships.",
               ].map((line) => (
                 <div className="flex items-start gap-3 text-sm leading-7 text-white/56" key={line}>
                   <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#79e2cb]" />
@@ -983,10 +965,10 @@ export function PlatformHomepage() {
           <motion.div {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
               align="center"
-              copy="Choose an industry shape, geography, and outbound goal. The preview below shows how the weekly cohort changes when the brief changes."
-              eyebrow="Interactive ICP preview"
+              copy="Pick an industry, geography, and goal. The preview shows how Frithly prioritizes better-fit opportunities instead of flooding the list."
+              eyebrow="ICP preview"
             >
-              Shape a cohort. Watch the shortlist <ItalicAccent>tighten.</ItalicAccent>
+              See how the brief changes when your market <ItalicAccent>changes.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
@@ -1074,7 +1056,7 @@ export function PlatformHomepage() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">SMTP-safe routes</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Deliverability-safe routes</div>
                   <div className="mt-2 text-3xl font-medium text-white">
                     {geography === "uk" ? "112" : geography === "uk-eu" ? "134" : "148"}
                   </div>
@@ -1118,10 +1100,10 @@ export function PlatformHomepage() {
         <Container className="space-y-12">
           <motion.div className="max-w-3xl" {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
-              copy="There is no standard SaaS plan here. Start with the Frithly Core Intelligence Program from EUR 499/month, then shape the release around coverage, depth, support, and weekly operating goals."
-              eyebrow="Custom program builder"
+              copy="Start with the core weekly brief, then adjust coverage, depth, support, and cadence around the pipeline outcome you want."
+              eyebrow="Program builder"
             >
-              Frithly is configured like a <ItalicAccent>program, not software.</ItalicAccent>
+              Frithly is built like a <ItalicAccent>weekly outbound program.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
@@ -1131,14 +1113,14 @@ export function PlatformHomepage() {
           >
             <div className="space-y-4">
               <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
-                Included in the core package
+                Included in the core weekly brief
               </div>
               <h3 className="text-[2rem] font-medium leading-[1.06] text-white sm:text-[2.35rem]">
-                The EUR 499 foundation already includes the weekly operating layer.
+                The EUR 499 foundation already covers the weekly execution layer.
               </h3>
               <p className="max-w-2xl text-base leading-8 text-white/58">
-                The builder below is only for expansion. It changes market scope, depth, support,
-                and cadence above the Frithly Core Intelligence baseline.
+                The builder below is for expanding coverage, support, and targeting depth when you
+                need more from the program.
               </p>
             </div>
 
@@ -1280,7 +1262,7 @@ export function PlatformHomepage() {
                   onClick={() => setSmtpPriority((current) => !current)}
                   type="button"
                 >
-                  <div className="font-medium">SMTP-aware prioritization</div>
+                  <div className="font-medium">Deliverability-safe prioritization</div>
                   <div className="mt-2 text-sm leading-6 text-white/54">
                     Keep deliverability posture higher inside the release workflow.
                   </div>
@@ -1292,7 +1274,7 @@ export function PlatformHomepage() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
-                    Your intelligence program
+                    Your Frithly program
                   </div>
                   <div className="mt-4 text-[2.35rem] font-medium leading-[1.02] text-white lg:text-[2.8rem]">
                     {formatEuroRange(programPreview.rangeLow, programPreview.rangeHigh)}
@@ -1331,8 +1313,8 @@ export function PlatformHomepage() {
                   `${programPreview.monthlyReviewed} reviewed opportunities / month`,
                   `${programPreview.coverageLabel} market coverage`,
                   `${programPreview.supportLabel} remains active`,
-                  founderPriority ? "Founder-priority targeting stays weighted higher" : "Founder weighting stays balanced",
-                  smtpPriority ? "SMTP-aware release posture remains strict" : "SMTP-safe routing remains baseline",
+                  founderPriority ? "Decision-maker weighting stays higher" : "Decision-maker weighting stays balanced",
+                  smtpPriority ? "Deliverability-safe release stays strict" : "Deliverability-safe routing stays baseline",
                   `Targeting depth: ${programPreview.targetingLabel}`,
                 ].map((line) => (
                   <div className="flex items-start gap-3 text-sm leading-7 text-white/56" key={line}>
@@ -1345,8 +1327,8 @@ export function PlatformHomepage() {
 
               <div className="mt-8 border-t border-white/8 pt-6">
                 <p className="text-sm leading-7 text-white/56">
-                  This is a program estimate, not a checkout flow. The next step is application,
-                  qualification, and a release configuration built around your outbound motion.
+                  This is a program estimate, not a checkout flow. The next step is a short fit
+                  review and a rollout built around your outbound motion.
                 </p>
               </div>
             </div>
@@ -1354,22 +1336,22 @@ export function PlatformHomepage() {
         </Container>
       </section>
 
-      <section className="relative py-24 sm:py-28" id="roi">
+      <section className="relative py-24 sm:py-28" id="evidence">
         <Container className="space-y-14">
           <motion.div className="mx-auto max-w-4xl" {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
               align="center"
-              copy="The point is not to email more businesses. The point is to waste fewer touches, protect deliverability earlier, and let the team spend time where a real conversation is more plausible."
-              eyebrow="Opportunity impact"
+              copy="Frithly is early, so we do not lean on padded ROI claims, fake testimonials, or borrowed logos. We show the evidence artifacts buyers can actually inspect instead: how accounts are filtered, why they matter now, and what a rep should do next."
+              eyebrow="Believable proof"
             >
-              Weak targeting has a <ItalicAccent>monthly cost.</ItalicAccent>
+              Process proof beats <ItalicAccent>inflated results proof.</ItalicAccent>
             </SectionIntro>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
-                "Reduce wasted outreach before campaigns scale.",
-                "Protect route quality instead of repairing it later.",
-                "Focus reps on accounts more likely to convert.",
+                "No fake case studies.",
+                "No inflated ROI claims.",
+                "Real reasoning artifacts instead.",
               ].map((line) => (
                 <div className="rounded-[1.2rem] bg-white/[0.03] p-4 text-sm leading-7 text-white/60" key={line}>
                   <div className="mb-3 h-1.5 w-1.5 rounded-full bg-[#efba90]" />
@@ -1380,147 +1362,242 @@ export function PlatformHomepage() {
           </motion.div>
 
           <motion.div
-            className="mx-auto max-w-6xl rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8"
-            {...revealProps(enableReveal, 0.12)}
+            className="grid gap-6 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]"
+            {...revealProps(enableReveal, 0.08)}
           >
-            <div className="space-y-6">
-              <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.28fr)] xl:items-start">
-                <div className="min-w-0 rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">
-                    Adjust the working assumptions
-                  </div>
-                  <div className="mt-6 space-y-6">
-                    <SliderControl
-                      label="Monthly businesses contacted"
-                      max={500}
-                      min={50}
-                      onChange={setOutreachVolume}
-                      step={10}
-                      value={outreachVolume}
-                      valueLabel={`${outreachVolume} / month`}
-                    />
-                    <SliderControl
-                      label="Current reply rate"
-                      max={10}
-                      min={1}
-                      onChange={setReplyRate}
-                      step={0.5}
-                      value={replyRate}
-                      valueLabel={`${replyRate.toFixed(replyRate % 1 === 0 ? 0 : 1)}%`}
-                    />
-                    <SliderControl
-                      label="Average client value"
-                      max={20000}
-                      min={2000}
-                      onChange={setClientValue}
-                      step={500}
-                      value={clientValue}
-                      valueLabel={formatMoney(clientValue)}
-                    />
-                  </div>
+            <div className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Strategic outbound assessment
+              </div>
+              <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
+                A quick read on where outbound quality is leaking.
+              </h3>
+              <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                Three inputs. Instant insight. No fantasy revenue projection.
+              </p>
 
-                  <div className="mt-8 space-y-3">
-                    <div className="text-sm font-medium text-white">Quick scenarios</div>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        [100, 2, 5000, "Lean agency"],
-                        [180, 4, 9000, "Growth team"],
-                        [150, 3, 12000, "Higher-ticket services"],
-                      ].map(([volume, rate, value, label]) => (
-                        <button
-                          className="rounded-full bg-white/[0.05] px-4 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/[0.09]"
-                          key={label}
-                          onClick={() => {
-                            setOutreachVolume(volume as number);
-                            setReplyRate(rate as number);
-                            setClientValue(value as number);
-                          }}
-                          type="button"
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              <div className="mt-8 space-y-6">
+                <SliderControl
+                  label="Monthly outbound contacts"
+                  max={400}
+                  min={50}
+                  onChange={setAssessmentVolume}
+                  step={10}
+                  value={assessmentVolume}
+                  valueLabel={`${assessmentVolume} / month`}
+                />
+                <SliderControl
+                  label="Current reply rate"
+                  max={10}
+                  min={1}
+                  onChange={setAssessmentReplyRate}
+                  step={0.5}
+                  value={assessmentReplyRate}
+                  valueLabel={`${assessmentReplyRate.toFixed(assessmentReplyRate % 1 === 0 ? 0 : 1)}%`}
+                />
+                <SliderControl
+                  label="Average deal value"
+                  max={20000}
+                  min={2000}
+                  onChange={setAssessmentDealValue}
+                  step={500}
+                  value={assessmentDealValue}
+                  valueLabel={formatEuro(assessmentDealValue)}
+                />
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-2">
+                {[
+                  [100, 2, 5000, "Lean team"],
+                  [180, 4, 9000, "Growth team"],
+                  [240, 3, 12000, "Premium services"],
+                ].map(([volume, rate, value, label]) => (
+                  <button
+                    className="rounded-full bg-white/[0.05] px-4 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/[0.09]"
+                    key={label}
+                    onClick={() => {
+                      setAssessmentVolume(volume as number);
+                      setAssessmentReplyRate(rate as number);
+                      setAssessmentDealValue(value as number);
+                    }}
+                    type="button"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Assessment insights
+              </div>
+              <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
+                Fast signals a buyer can act on.
+              </h3>
+              <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                This is a strategic outbound assessment, not a promise of booked revenue. It is built
+                to surface waste, timing loss, and prioritization gaps quickly.
+              </p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.2rem] bg-black/18 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Estimated low-fit outreach waste</div>
+                  <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.lowFitWaste}</div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">contacts/month likely spent on low-confidence accounts</div>
                 </div>
-
-                <div className="min-w-0 rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
-                    Opportunity simulator
-                  </div>
-                  <h3 className="mt-4 max-w-4xl text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.5rem]">
-                    You could be leaving {formatMoney(roiModel.extraRevenue)} / month on the table.
-                  </h3>
-                  <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
-                    Better targeting does not ask the team to send more. It helps the same outreach motion
-                    create more credible replies and more plausible meetings.
-                  </p>
-
-                  <div className="mt-8 grid gap-4 md:grid-cols-3">
-                    <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
-                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra replies / month</div>
-                      <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraReplies.toFixed(0)}</div>
-                    </div>
-                    <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
-                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">Extra meetings / month</div>
-                      <div className="mt-2 text-3xl font-medium text-white">{roiModel.extraMeetings.toFixed(1)}</div>
-                    </div>
-                    <div className="rounded-[1.2rem] bg-white/[0.04] p-4">
-                      <div className="text-xs uppercase tracking-[0.18em] text-white/34">Potential reply rate</div>
-                      <div className="mt-2 text-3xl font-medium text-white">{roiModel.improvedReplies}%</div>
-                    </div>
-                  </div>
+                <div className="rounded-[1.2rem] bg-black/18 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Missed high-intent opportunities</div>
+                  <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.missedIntent}</div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">accounts/month that may be getting buried inside broad prospecting</div>
+                </div>
+                <div className="rounded-[1.2rem] bg-black/18 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Pipeline inefficiency</div>
+                  <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.pipelineInefficiency}%</div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">of outbound effort likely being lost to weak fit, bad timing, or missing context</div>
+                </div>
+                <div className="rounded-[1.2rem] bg-black/18 p-4">
+                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">Routing quality impact</div>
+                  <div className="mt-2 text-3xl font-medium text-white">{assessmentModel.routingLabel}</div>
+                  <div className="mt-2 text-sm leading-7 text-white/56">{assessmentModel.routingImpact}% likelihood that route quality is dragging performance</div>
                 </div>
               </div>
 
-              <div className="rounded-[1.6rem] bg-black/18 p-5 sm:p-6">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <div className="text-xs uppercase tracking-[0.18em] text-white/34">
-                      At the same outreach volume
+              <div className="mt-6 rounded-[1.3rem] bg-white/[0.03] p-5">
+                <div className="text-xs uppercase tracking-[0.18em] text-white/34">Prioritization gain</div>
+                <p className="mt-3 text-base leading-8 text-white/60">
+                  Frithly could likely help your team focus on roughly {assessmentModel.prioritizationGain} stronger first-priority
+                  accounts per month before outbound volume needs to increase.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="grid gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]"
+            {...revealProps(enableReveal, 0.1)}
+          >
+            <div className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Opportunity breakdown
+              </div>
+              <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
+                Exactly why this account makes the brief.
+              </h3>
+              <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                This is the kind of artifact a buyer can trust before case-study proof exists:
+                the signal, the reasoning, the recommended angle, and the route quality all in one place.
+              </p>
+
+              <div className="mt-8 space-y-4">
+                {opportunityBreakdown.map((item) => (
+                  <div
+                    className="grid gap-2 rounded-[1.2rem] bg-black/18 px-4 py-4 md:grid-cols-[160px_minmax(0,1fr)]"
+                    key={item.label}
+                  >
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/34">
+                      {item.label}
                     </div>
-                    <div className="mt-2 text-lg font-medium text-white">
-                      {outreachVolume} businesses contacted each month
-                    </div>
+                    <div className="text-sm leading-7 text-white/74 md:text-base">{item.value}</div>
                   </div>
-                  <div className="rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white/70">
-                    Focus on quality, not more activity
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Sample intelligence report
+              </div>
+              <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
+                What a serious buyer can inspect before trusting the system.
+              </h3>
+              <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                Frithly should make its reasoning visible. The best early proof is not a promise.
+                It is a clear explanation of why this account, why now, and why this angle.
+              </p>
+
+              <div className="mt-8 space-y-4">
+                {sampleIntelligenceReport.map((item) => (
+                  <div
+                    className="rounded-[1.2rem] bg-black/18 px-4 py-4"
+                    key={item.label}
+                  >
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/34">
+                      {item.label}
+                    </div>
+                    <div className="mt-2 text-sm leading-7 text-white/74 md:text-base">{item.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]"
+            {...revealProps(enableReveal, 0.14)}
+          >
+            <div className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Before vs after lead quality
+              </div>
+              <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
+                Show the difference between a raw lead and a Frithly lead.
+              </h3>
+              <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                Buyers do not need fantasy metrics to understand the value. They need to see how much
+                stronger the account looks before the rep sends the first message.
+              </p>
+
+              <div className="mt-8 grid gap-4 lg:grid-cols-2">
+                <div className="rounded-[1.4rem] bg-black/18 p-5">
+                  <div className="text-sm font-semibold uppercase tracking-[0.16em] text-white/42">
+                    Traditional lead
+                  </div>
+                  <div className="mt-5 space-y-3">
+                    {traditionalLeadQuality.map((item) => (
+                      <div className="flex items-start gap-3 text-sm leading-7 text-white/62" key={item}>
+                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#ff9c98]" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="mt-6 overflow-hidden rounded-[1.5rem] bg-white/[0.03]">
-                  <div className="grid gap-0 lg:grid-cols-2">
-                    <div className="p-5 sm:p-6">
-                      <RoiOutcomePanel
-                        accentClassName="bg-[#efba90]"
-                        description="Low-signal accounts absorb the effort before a serious conversation can begin."
-                        ignored={roiModel.ignoredCurrent}
-                        meetings={roiModel.currentMeetings}
-                        replies={Math.round(replyRate)}
-                        title="Today"
-                      />
-                    </div>
-                    <div className="p-5 sm:p-6">
-                      <RoiOutcomePanel
-                        accentClassName="bg-[#79e2cb]"
-                        description="Better targeting protects the route earlier and produces a cleaner working set."
-                        ignored={roiModel.ignoredImproved}
-                        meetings={roiModel.improvedMeetings}
-                        replies={roiModel.improvedReplies}
-                        title="With stronger targeting"
-                      />
-                    </div>
+                <div className="rounded-[1.4rem] bg-black/18 p-5">
+                  <div className="text-sm font-semibold uppercase tracking-[0.16em] text-[#efba90]">
+                    Frithly lead
+                  </div>
+                  <div className="mt-5 space-y-3">
+                    {frithlyLeadQuality.map((item) => (
+                      <div className="flex items-start gap-3 text-sm leading-7 text-white/74" key={item}>
+                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#79e2cb]" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="mt-6 rounded-[1.35rem] bg-white/[0.03] p-5">
-                  <div className="text-xs uppercase tracking-[0.18em] text-white/34">What changes</div>
-                  <p className="mt-3 text-base leading-8 text-white/60">
-                    The team keeps volume flat, but creates roughly {roiModel.extraReplies.toFixed(0)} more
-                    likely replies, {roiModel.extraMeetings.toFixed(1)} more meetings, and
-                    {` ${formatMoney(roiModel.extraRevenue)}`} more revenue opportunity each month.
-                  </p>
-                </div>
+            <div className="rounded-[2rem] bg-white/[0.04] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.22)] lg:p-8">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#efba90]">
+                Public build journey
+              </div>
+              <h3 className="mt-4 text-[2rem] font-medium leading-[1.05] text-white lg:text-[2.35rem]">
+                Show how the system keeps getting smarter.
+              </h3>
+              <p className="mt-4 max-w-2xl text-base leading-8 text-white/60">
+                Transparent builders earn trust faster. Frithly can prove rigor by showing what
+                changed in the product, what improved in filtering, and what the team learned from each release.
+              </p>
+
+              <div className="mt-8 space-y-3">
+                {buildJourneyArtifacts.map((item) => (
+                  <div className="flex items-start gap-3 rounded-[1.2rem] bg-black/18 px-4 py-4 text-sm leading-7 text-white/68" key={item}>
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#efba90]" />
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </motion.div>
@@ -1531,10 +1608,10 @@ export function PlatformHomepage() {
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:items-start">
           <motion.div {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
-              copy="Trust comes from operational depth: reviewed opportunities, route discipline, founder clarity, and a release rhythm that feels believable before it feels impressive."
-              eyebrow="Operational trust"
+              copy="Teams trust Frithly because the brief is reviewed, timing-backed, and built to reduce wasted SDR work before the first touch goes out."
+              eyebrow="Why teams trust it"
             >
-              This is designed to feel <ItalicAccent>selective, not inflated.</ItalicAccent>
+              Premium only works when the brief feels <ItalicAccent>useful on day one.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
@@ -1565,10 +1642,10 @@ export function PlatformHomepage() {
           <motion.div className="mx-auto max-w-3xl" {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
               align="center"
-              copy="Calm answers to the most common questions about how Frithly works and why it is structured this way."
+              copy="Clear answers to the questions buyers ask when they want better outbound results without adding more list management."
               eyebrow="Frequently asked"
             >
-              Questions teams ask before they <ItalicAccent>apply.</ItalicAccent>
+              Questions teams ask before they <ItalicAccent>buy.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
@@ -1603,18 +1680,18 @@ export function PlatformHomepage() {
             {...revealProps(enableReveal, 0.05)}
           >
             <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-40 max-w-xl rounded-full bg-[#7598e8]/10 blur-3xl" />
-            <SectionEyebrow>Final call to action</SectionEyebrow>
+            <SectionEyebrow>Ready to improve replies?</SectionEyebrow>
             <h2
               className={cn(
                 displayFont.className,
                 "mx-auto mt-6 max-w-4xl text-[2.6rem] leading-[1.02] tracking-[-0.03em] text-[#f7f4f8] sm:text-[3.4rem] lg:text-[4.2rem]",
               )}
             >
-              Design your <ItalicAccent>outbound intelligence program.</ItalicAccent>
+              Want smaller lists, better timing, and <ItalicAccent>stronger replies?</ItalicAccent>
             </h2>
             <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-white/62 md:text-[1.05rem] md:leading-9">
-              Every Frithly delivery is tailored around your ICP, targeting depth, opportunity
-              quality, and weekly outbound goals.
+              We will map the right ICP, coverage, and delivery rhythm around your outbound motion
+              so the team gets a cleaner weekly brief, not more prospecting noise.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
