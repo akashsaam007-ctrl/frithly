@@ -71,11 +71,20 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href={ROUTES.TERMS}>
                   Terms of Service
                 </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.GDPR_POLICY}>
+                  GDPR Policy
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.COOKIE_POLICY}>
+                  Cookie Policy
+                </Link>
                 <Link
                   className="block transition-colors hover:text-white"
-                  href={`${ROUTES.PRIVACY}#gdpr`}
+                  href={ROUTES.ACCEPTABLE_USE_POLICY}
                 >
-                  GDPR
+                  Acceptable Use Policy
+                </Link>
+                <Link className="block transition-colors hover:text-white" href={ROUTES.DISCLAIMER}>
+                  Disclaimer
                 </Link>
               </div>
             </div>

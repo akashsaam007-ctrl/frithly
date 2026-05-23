@@ -185,6 +185,7 @@ const buildJourneyArtifacts = [
   "Contact enrichment upgrades and route quality checks",
   "Filtering improvements that remove weak-fit accounts",
   "Weekly learnings that tighten the next release",
+  "A complete legal foundation across privacy, terms, refunds, GDPR, cookies, acceptable use, and disclaimers",
 ] as const;
 
 const industries = [
@@ -730,10 +731,10 @@ export function PlatformHomepage() {
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-start">
           <motion.div {...revealProps(enableReveal, 0.05)}>
             <SectionIntro
-              copy="Teams target too broadly, reach out too late, and ask reps to do research the market never sees. That creates more activity, lower reply rates, and pipeline the team trusts less."
+              copy="Teams do not usually lose pipeline because reps work too little. They lose it because the wrong accounts enter the sequence in the first place."
               eyebrow="Why outbound underperforms"
             >
-              Most outbound fails <ItalicAccent>before the first email.</ItalicAccent>
+              Better outbound starts with <ItalicAccent>better accounts.</ItalicAccent>
             </SectionIntro>
           </motion.div>
 
