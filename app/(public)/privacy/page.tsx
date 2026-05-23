@@ -10,7 +10,7 @@ import {
 } from "@/lib/seo";
 
 const privacyDescription =
-  "Privacy policy for Frithly, including data collection, processors, retention, GDPR rights, CCPA rights, and cookie usage.";
+  "Privacy Policy for Frithly's premium outbound intelligence service, including signal-based workflows, founder-aware targeting, operational delivery, and data protection rights.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: privacyDescription,
@@ -44,14 +44,14 @@ export default function PrivacyPage() {
               sample, purchase a subscription, or interact with our team.
             </p>
             <p>
-              This page is written to be publishable for launch, but it should still be reviewed by
-              your legal advisor before you accept large-scale production traffic or regulated
-              customer contracts.
+              It is written specifically for Frithly&apos;s premium outbound intelligence
+              positioning, signal-based workflows, founder-aware targeting, and operational
+              delivery model.
             </p>
           </>
         }
         kicker="Privacy"
-        lastUpdated="28 April 2026"
+        lastUpdated="24 May 2026"
         title="Privacy Policy"
         sections={[
         {
@@ -59,9 +59,10 @@ export default function PrivacyPage() {
           body: (
             <>
               <p>
-                {APP_NAME} provides B2B lead research, signal analysis, and personalized outbound
-                briefing services. Our service helps teams receive researched lead batches with
-                context and opener suggestions instead of raw contact lists.
+                {APP_NAME} provides premium outbound intelligence for B2B teams, including
+                signal-based account research, founder-aware targeting, and personalized weekly
+                briefing delivery. Our service helps teams receive researched opportunity batches
+                with context and opener suggestions instead of raw contact lists.
               </p>
               <p>
                 For privacy requests, data-access requests, or deletion requests, contact{" "}

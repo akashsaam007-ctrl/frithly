@@ -10,7 +10,7 @@ import {
 } from "@/lib/seo";
 
 const termsDescription =
-  "Terms of Service for Frithly covering subscriptions, guarantees, acceptable use, liability, and governing law.";
+  "Terms of Service for Frithly's premium outbound intelligence service, covering subscriptions, signal-based delivery, acceptable use, guarantees, and liability.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: termsDescription,
@@ -43,13 +43,14 @@ export default function TermsPage() {
               research service, customer support, and related subscription offerings.
             </p>
             <p>
-              These terms are suitable as a launch draft but should still be reviewed with counsel
-              before enterprise contracting or large-scale production use.
+              They are written specifically for Frithly&apos;s premium outbound intelligence
+              positioning, signal-based workflows, founder-aware targeting, and operational
+              delivery model.
             </p>
           </>
         }
         kicker="Terms"
-        lastUpdated="28 April 2026"
+        lastUpdated="24 May 2026"
         title="Terms of Service"
         sections={[
         {
@@ -69,10 +70,10 @@ export default function TermsPage() {
           body: (
             <>
               <p>
-                {APP_NAME} provides B2B lead research, lead qualification support, signal analysis,
-                and personalized outreach briefing services. Deliverables may include researched
-                lead batches, verified contact details where available, trigger notes, and
-                recommended opener angles.
+                {APP_NAME} provides premium outbound intelligence, lead qualification support,
+                signal analysis, founder-aware targeting, and personalized outreach briefing
+                services. Deliverables may include researched lead batches, verified contact
+                details where available, trigger notes, and recommended opener angles.
               </p>
               <p>
                 We may evolve the service over time, including refining workflows, delivery format,

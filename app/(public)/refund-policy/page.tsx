@@ -10,7 +10,7 @@ import {
 } from "@/lib/seo";
 
 const refundDescription =
-  "Refund Policy for Frithly covering the 50% ICP match guarantee, cancellations, and billing dispute handling.";
+  "Refund Policy for Frithly's premium outbound intelligence service, covering the 50% ICP match guarantee, operational delivery review, cancellations, and billing disputes.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: refundDescription,
@@ -43,13 +43,14 @@ export default function RefundPolicyPage() {
               how customers can request a review of a delivered batch.
             </p>
             <p>
-              This page is intended to support launch and payment-provider verification. It should be
-              reviewed with legal counsel before high-volume production use.
+              It is written specifically for Frithly&apos;s premium outbound intelligence
+              positioning, signal-based workflows, founder-aware targeting, and operational
+              delivery model.
             </p>
           </>
         }
         kicker="Refunds"
-        lastUpdated="28 April 2026"
+        lastUpdated="24 May 2026"
         title="Refund Policy"
         sections={[
         {
@@ -61,9 +62,9 @@ export default function RefundPolicyPage() {
                 each billing cycle unless the subscription is cancelled before renewal.
               </p>
               <p>
-                Because the service includes ongoing research, briefing preparation, and delivery
-                work that begins shortly after onboarding, refunds are limited to the situations
-                described on this page or otherwise required by law.
+                Because the service includes ongoing research, signal review, briefing preparation,
+                and operational delivery work that begins shortly after onboarding, refunds are
+                limited to the situations described on this page or otherwise required by law.
               </p>
             </>
           ),
