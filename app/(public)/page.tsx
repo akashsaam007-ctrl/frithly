@@ -9,6 +9,7 @@ import {
   buildOrganizationSchema,
   buildPublicMetadata,
   buildServiceSchema,
+  buildSiteNavigationSchema,
   buildWebPageSchema,
   buildWebSiteSchema,
 } from "@/lib/seo";
@@ -84,6 +85,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     <main>
       <StructuredData data={buildOrganizationSchema()} />
       <StructuredData data={buildWebSiteSchema()} />
+      <StructuredData data={buildSiteNavigationSchema()} />
       <StructuredData
         data={buildWebPageSchema({
           description:

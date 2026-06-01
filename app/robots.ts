@@ -6,6 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     host: absoluteUrl("/"),
     rules: [
       {
+        allow: "/",
         disallow: [
           "/admin",
           "/api",
@@ -22,6 +23,25 @@ export default function robots(): MetadataRoute.Robots {
           "/verify",
         ],
         userAgent: "*",
+      },
+      {
+        allow: "/",
+        disallow: [
+          "/admin",
+          "/api",
+          "/auth",
+          "/billing",
+          "/briefs",
+          "/checkout",
+          "/dashboard",
+          "/help",
+          "/icp",
+          "/login",
+          "/pay",
+          "/signup",
+          "/verify",
+        ],
+        userAgent: "Googlebot",
       },
     ],
     sitemap: absoluteUrl("/sitemap.xml"),

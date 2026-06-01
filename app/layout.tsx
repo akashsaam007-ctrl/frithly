@@ -14,7 +14,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
-  category: "B2B sales intelligence service",
+  alternates: {
+    canonical: "/",
+  },
+  category: "B2B outbound intelligence infrastructure",
+  classification: "Signal-based outbound intelligence infrastructure",
   creator: APP_NAME,
   description: META.DESCRIPTION,
   formatDetection: {
@@ -51,6 +55,7 @@ export const metadata: Metadata = {
     url: "/",
   },
   publisher: APP_NAME,
+  referrer: "origin-when-cross-origin",
   robots: {
     follow: true,
     googleBot: {
@@ -62,6 +67,11 @@ export const metadata: Metadata = {
     },
     index: true,
   },
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? {
+        google: process.env.GOOGLE_SITE_VERIFICATION,
+      }
+    : undefined,
   twitter: {
     card: "summary_large_image",
     description: META.DESCRIPTION,
@@ -77,7 +87,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en-GB">
       <body className={inter.variable}>
         {children}
         <PostHogProvider />

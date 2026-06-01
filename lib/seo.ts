@@ -7,6 +7,19 @@ const DEFAULT_LOCALE = "en_GB";
 const DEFAULT_IMAGE = "/og-image.png";
 const ORG_ID = absoluteUrl("/#organization");
 const WEBSITE_ID = absoluteUrl("/#website");
+const SERVICE_ID = absoluteUrl("/#service");
+const SITE_LAST_MODIFIED = "2026-06-01T00:00:00.000Z";
+const PRIMARY_MARKETS = ["United States", "Canada", "United Kingdom", "Europe"] as const;
+const SITE_NAV_ITEMS = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Pricing", path: "/pricing" },
+  { name: "Apply", path: "/apply" },
+  { name: "Contact", path: "/contact" },
+  { name: "Guides", path: "/guides" },
+  { name: "Proof", path: "/proof" },
+  { name: "Demo", path: "/demo" },
+] as const;
 
 type PublicMetadataOptions = {
   description: string;
@@ -53,7 +66,8 @@ export function buildPublicMetadata({
       canonical,
     },
     authors: [{ name: APP_NAME }],
-    category: "B2B outbound intelligence service",
+    category: "B2B outbound intelligence infrastructure",
+    classification: "Signal-based outbound intelligence infrastructure",
     creator: APP_NAME,
     description,
     formatDetection: {
@@ -124,9 +138,11 @@ export function buildOrganizationSchema() {
       postalCode: "638106",
       streetAddress: "55, Peranayakanvalasu, Mulanur",
     },
-    areaServed: ["United Kingdom", "Europe", "United States"],
+    areaServed: [...PRIMARY_MARKETS],
     brand: {
       "@type": "Brand",
+      description: META.DESCRIPTION,
+      image: absoluteUrl(DEFAULT_IMAGE),
       logo: absoluteUrl("/icon-512.png"),
       name: APP_NAME,
       slogan: APP_TAGLINE,
@@ -134,6 +150,7 @@ export function buildOrganizationSchema() {
     contactPoint: [
       {
         "@type": "ContactPoint",
+        areaServed: [...PRIMARY_MARKETS],
         contactType: "sales",
         email: SUPPORT_EMAIL,
         availableLanguage: ["en"],
@@ -141,6 +158,7 @@ export function buildOrganizationSchema() {
       },
       {
         "@type": "ContactPoint",
+        areaServed: [...PRIMARY_MARKETS],
         contactType: "customer support",
         email: SUPPORT_EMAIL,
         availableLanguage: ["en"],
@@ -149,16 +167,45 @@ export function buildOrganizationSchema() {
     ],
     description: META.DESCRIPTION,
     email: SUPPORT_EMAIL,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Frithly outbound intelligence programs",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Starter",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Growth",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Scale",
+          },
+        },
+      ],
+    },
+    image: absoluteUrl(DEFAULT_IMAGE),
     knowsAbout: [
-      "curated outbound intelligence",
+      "signal-based outbound intelligence",
+      "outbound intelligence infrastructure",
       "B2B prospect research",
       "founder-aware targeting",
-      "SMTP-safe outreach planning",
-      "weekly outbound delivery",
+      "deliverability-safe outreach planning",
+      "weekly outbound intelligence delivery",
     ],
+    legalName: APP_NAME,
     logo: absoluteUrl("/icon-512.png"),
     name: APP_NAME,
-    sameAs: [absoluteUrl("/")],
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };
@@ -180,6 +227,11 @@ export function buildWebSiteSchema() {
     inLanguage: "en-GB",
     keywords: META.KEYWORDS,
     name: APP_NAME,
+    potentialAction: {
+      "@type": "CommunicateAction",
+      name: "Apply for outbound intelligence audit",
+      target: absoluteUrl("/apply"),
+    },
     publisher: {
       "@id": ORG_ID,
     },
@@ -191,27 +243,27 @@ export function buildServiceSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    "@id": absoluteUrl("/#service"),
-    areaServed: ["United Kingdom", "Europe", "United States"],
+    "@id": SERVICE_ID,
+    areaServed: [...PRIMARY_MARKETS],
     audience: {
       "@type": "Audience",
-      audienceType: "Agencies, founders, SDR teams, and outbound operators",
+      audienceType: "Founders, CEOs, revenue leaders, SDR teams, agencies, and GTM operators",
     },
-    category: "Premium outbound intelligence service",
+    category: "Signal-based outbound intelligence infrastructure",
     description:
-      "Confidence-aware outbound intelligence for teams that want reviewed weekly opportunities, founder-aware targeting, SMTP-aware routing, and stronger delivery discipline.",
-    name: `${APP_NAME} curated outbound intelligence service`,
+      "Signal-based outbound intelligence infrastructure for teams that want reviewed weekly opportunities, founder-aware targeting, deliverability-safe routing, and stronger commercial relevance before campaigns deploy.",
+    name: `${APP_NAME} signal-based outbound intelligence infrastructure`,
     offers: {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
-      category: "Consultative service",
+      category: "B2B service",
       description:
-        "Custom outbound intelligence programs tailored around ICP, geography, targeting depth, and weekly delivery cadence.",
-      priceCurrency: "EUR",
+        "Custom outbound intelligence programs tailored around ICP, geography, qualification depth, deliverability safety, and weekly release cadence.",
+      priceCurrency: "GBP",
       priceSpecification: {
         "@type": "PriceSpecification",
         minPrice: 499,
-        priceCurrency: "EUR",
+        priceCurrency: "GBP",
       },
       url: absoluteUrl("/contact"),
     },
@@ -219,8 +271,8 @@ export function buildServiceSchema() {
       "@id": ORG_ID,
     },
     serviceOutput:
-      "Reviewed weekly opportunity cohorts with founder context, routing notes, recommendation reasoning, and outreach-ready delivery context.",
-    serviceType: "Curated weekly outbound opportunity delivery",
+      "Reviewed weekly outbound intelligence briefs with account fit, signal context, route notes, and outreach-ready decision-maker reasoning.",
+    serviceType: "Outbound intelligence infrastructure",
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };
@@ -266,11 +318,16 @@ export function buildWebPageSchema({
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
+    "@id": `${absoluteUrl(path)}#webpage`,
+    about: {
+      "@id": SERVICE_ID,
+    },
     description,
     inLanguage: "en-GB",
     isPartOf: {
       "@id": WEBSITE_ID,
     },
+    primaryImageOfPage: absoluteUrl(DEFAULT_IMAGE),
     name: title,
     url: absoluteUrl(path),
   };
@@ -303,14 +360,62 @@ export function buildArticleSchema({
   return {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@id": `${absoluteUrl(path)}#article`,
     author: {
       "@id": ORG_ID,
     },
     description,
+    dateModified: SITE_LAST_MODIFIED,
+    datePublished: SITE_LAST_MODIFIED,
     headline: title,
+    image: absoluteUrl(DEFAULT_IMAGE),
+    inLanguage: "en-GB",
     mainEntityOfPage: absoluteUrl(path),
     publisher: {
       "@id": ORG_ID,
     },
+    about: {
+      "@id": SERVICE_ID,
+    },
+  };
+}
+
+export function buildCollectionPageSchema({
+  description,
+  path,
+  title,
+}: {
+  description: string;
+  path: string;
+  title: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${absoluteUrl(path)}#collection`,
+    about: {
+      "@id": SERVICE_ID,
+    },
+    description,
+    inLanguage: "en-GB",
+    isPartOf: {
+      "@id": WEBSITE_ID,
+    },
+    name: title,
+    primaryImageOfPage: absoluteUrl(DEFAULT_IMAGE),
+    url: absoluteUrl(path),
+  };
+}
+
+export function buildSiteNavigationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: SITE_NAV_ITEMS.map((item, index) => ({
+      "@type": "SiteNavigationElement",
+      name: item.name,
+      position: index + 1,
+      url: absoluteUrl(item.path),
+    })),
   };
 }

@@ -8,6 +8,7 @@ import { ROUTES } from "@/lib/constants";
 import { proofPages } from "@/lib/proof-pages";
 import {
   buildBreadcrumbSchema,
+  buildCollectionPageSchema,
   buildPublicMetadata,
   buildWebPageSchema,
 } from "@/lib/seo";
@@ -38,6 +39,13 @@ export default function ProofHubPage() {
       />
       <StructuredData
         data={buildWebPageSchema({
+          description: proofDescription,
+          path: ROUTES.PROOF,
+          title: "Proof | Frithly",
+        })}
+      />
+      <StructuredData
+        data={buildCollectionPageSchema({
           description: proofDescription,
           path: ROUTES.PROOF,
           title: "Proof | Frithly",

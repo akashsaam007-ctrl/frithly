@@ -8,6 +8,7 @@ import { ROUTES } from "@/lib/constants";
 import { intentGuides } from "@/lib/intent-guides";
 import {
   buildBreadcrumbSchema,
+  buildCollectionPageSchema,
   buildPublicMetadata,
   buildWebPageSchema,
 } from "@/lib/seo";
@@ -38,6 +39,13 @@ export default function GuidesPage() {
       />
       <StructuredData
         data={buildWebPageSchema({
+          description: guidesDescription,
+          path: "/guides",
+          title: "Guides | Frithly",
+        })}
+      />
+      <StructuredData
+        data={buildCollectionPageSchema({
           description: guidesDescription,
           path: "/guides",
           title: "Guides | Frithly",

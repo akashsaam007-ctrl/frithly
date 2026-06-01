@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/constants";
 import { type IntentGuide, intentGuides } from "@/lib/intent-guides";
 import {
+  buildArticleSchema,
   buildBreadcrumbSchema,
   buildFaqSchema,
   buildWebPageSchema,
@@ -29,6 +30,13 @@ export function IntentGuidePage({ guide }: IntentGuidePageProps) {
       />
       <StructuredData
         data={buildWebPageSchema({
+          description: guide.description,
+          path: `/${guide.slug}`,
+          title: guide.title,
+        })}
+      />
+      <StructuredData
+        data={buildArticleSchema({
           description: guide.description,
           path: `/${guide.slug}`,
           title: guide.title,

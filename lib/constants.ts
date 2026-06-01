@@ -2,7 +2,7 @@ import { publicEnv } from "@/lib/utils/public-env";
 
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE =
-  "Curated outbound intelligence delivered weekly for teams that want better-fit opportunities, founder-aware targeting, and SMTP-safe execution.";
+  "Signal-based outbound intelligence infrastructure for teams that care more about commercial relevance, route safety, and pipeline quality than raw list volume.";
 export const APP_DOMAIN = "frithly.com";
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
 export const SUPPORT_EMAIL = "hello@frithly.com";
@@ -136,8 +136,8 @@ export const ROUTES = {
 
 export const META = {
   DESCRIPTION:
-    "Frithly is a premium curated outbound intelligence service for agencies and outbound teams. We deliver reviewed weekly opportunity cohorts with founder-aware targeting, SMTP-safe routing, and outreach-ready context.",
+    "Frithly is signal-based outbound intelligence infrastructure for B2B teams that want better-fit accounts, safer deliverability, and stronger pipeline relevance before campaigns launch.",
   KEYWORDS:
-    "curated outbound intelligence, outbound opportunity delivery, weekly outbound cohorts, founder-aware targeting, SMTP-safe routing, reviewed B2B opportunities, outbound research service",
-  TITLE: "Frithly | Curated Outbound Intelligence Delivered Weekly",
+    "signal-based outbound intelligence, outbound intelligence infrastructure, B2B outbound intelligence, deliverability-safe targeting, founder-aware targeting, commercial relevance scoring, weekly outbound intelligence brief, outbound research service",
+  TITLE: "Frithly | Signal-Based Outbound Intelligence Infrastructure",
 } as const;
