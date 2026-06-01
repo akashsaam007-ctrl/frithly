@@ -2,7 +2,7 @@ import { publicEnv } from "@/lib/utils/public-env";
 
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE =
-  "Signal-based outbound intelligence infrastructure for teams that care more about commercial relevance, route safety, and pipeline quality than raw list volume.";
+  "Better-fit accounts, better timing, and safer outbound before the first email is sent.";
 export const APP_DOMAIN = "frithly.com";
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
 export const SUPPORT_EMAIL = "hello@frithly.com";
@@ -119,10 +119,10 @@ export const ROUTES = {
   GUIDES: "/guides",
   HELP: "/help",
   HOME: "/",
-  HOW_IT_WORKS: "/#engine",
+  HOW_IT_WORKS: "/#pipeline",
   ICP: "/icp",
   LOGIN: "/login",
-  PRICING: "/#builder",
+  PRICING: "/#application",
   PRIVACY: "/privacy",
   PROOF: "/proof",
   REFUND_POLICY: "/refund-policy",
@@ -136,8 +136,8 @@ export const ROUTES = {
 
 export const META = {
   DESCRIPTION:
-    "Frithly is signal-based outbound intelligence infrastructure for B2B teams that want better-fit accounts, safer deliverability, and stronger pipeline relevance before campaigns launch.",
+    "Frithly helps outbound teams stop wasting outreach on the wrong accounts with better-fit companies, the right contacts, and better timing before the first email.",
   KEYWORDS:
-    "signal-based outbound intelligence, outbound intelligence infrastructure, B2B outbound intelligence, deliverability-safe targeting, founder-aware targeting, commercial relevance scoring, weekly outbound intelligence brief, outbound research service",
-  TITLE: "Frithly | Signal-Based Outbound Intelligence Infrastructure",
+    "Frithly, outbound targeting service, better fit accounts, B2B prospect research, weekly outbound research brief, deliverability safe outreach, founder outbound support",
+  TITLE: "Frithly | Better Outbound Starts With Better Accounts",
 } as const;

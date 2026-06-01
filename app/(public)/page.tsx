@@ -16,17 +16,17 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Frithly is signal-based outbound intelligence infrastructure that improves targeting precision, deliverability safety, and pipeline relevance before campaigns deploy.",
+    "Frithly helps outbound teams stop wasting outreach on the wrong accounts with better-fit companies, the right contacts, and better timing before the first email.",
   keywords: [
-    "outbound intelligence infrastructure",
-    "signal based outbound intelligence",
-    "deliverability safe targeting",
-    "commercial relevance infrastructure",
-    "premium outbound intelligence",
-    "weekly intelligence brief",
+    "Frithly",
+    "outbound targeting service",
+    "better fit accounts",
+    "B2B prospect research",
+    "weekly outbound research brief",
+    "founder outbound support",
   ],
   path: "/",
-  title: "Frithly | Signal-Based Outbound Intelligence Infrastructure",
+  title: "Frithly | Better Outbound Starts With Better Accounts",
 });
 
 type HomePageProps = {
@@ -89,9 +89,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Frithly gives agencies, founders, and outbound teams signal-qualified accounts, route-safe targeting, and a weekly intelligence brief built for better commercial relevance.",
+            "Frithly gives founders, agencies, and outbound teams better-fit accounts, the right contacts, and clear reasons to reach out before outreach starts.",
           path: "/",
-          title: "Frithly | Signal-Based Outbound Intelligence Infrastructure",
+          title: "Frithly | Better Outbound Starts With Better Accounts",
         })}
       />
       <StructuredData data={buildServiceSchema()} />

@@ -5,10 +5,11 @@ import { publicEnv } from "@/lib/utils/public-env";
 const SITE_URL = publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`;
 const DEFAULT_LOCALE = "en_GB";
 const DEFAULT_IMAGE = "/og-image.png";
+const DEFAULT_LOGO = "/frithly-logo.png";
 const ORG_ID = absoluteUrl("/#organization");
 const WEBSITE_ID = absoluteUrl("/#website");
 const SERVICE_ID = absoluteUrl("/#service");
-const SITE_LAST_MODIFIED = "2026-06-01T00:00:00.000Z";
+const SITE_LAST_MODIFIED = "2026-06-02T00:00:00.000Z";
 const PRIMARY_MARKETS = ["United States", "Canada", "United Kingdom", "Europe"] as const;
 const SITE_NAV_ITEMS = [
   { name: "Home", path: "/" },
@@ -66,8 +67,8 @@ export function buildPublicMetadata({
       canonical,
     },
     authors: [{ name: APP_NAME }],
-    category: "B2B outbound intelligence infrastructure",
-    classification: "Signal-based outbound intelligence infrastructure",
+    category: "B2B outbound research service",
+    classification: "Outbound targeting and research service",
     creator: APP_NAME,
     description,
     formatDetection: {
@@ -81,6 +82,7 @@ export function buildPublicMetadata({
       description,
       images: [
         {
+          alt: `${APP_NAME} preview`,
           height: 630,
           url: absoluteUrl(DEFAULT_IMAGE),
           width: 1200,
@@ -143,7 +145,7 @@ export function buildOrganizationSchema() {
       "@type": "Brand",
       description: META.DESCRIPTION,
       image: absoluteUrl(DEFAULT_IMAGE),
-      logo: absoluteUrl("/icon-512.png"),
+      logo: absoluteUrl(DEFAULT_LOGO),
       name: APP_NAME,
       slogan: APP_TAGLINE,
     },
@@ -169,7 +171,7 @@ export function buildOrganizationSchema() {
     email: SUPPORT_EMAIL,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "Frithly outbound intelligence programs",
+      name: "Frithly outbound research programs",
       itemListElement: [
         {
           "@type": "Offer",
@@ -194,17 +196,17 @@ export function buildOrganizationSchema() {
         },
       ],
     },
-    image: absoluteUrl(DEFAULT_IMAGE),
+    image: absoluteUrl(DEFAULT_LOGO),
     knowsAbout: [
-      "signal-based outbound intelligence",
-      "outbound intelligence infrastructure",
+      "outbound targeting",
       "B2B prospect research",
-      "founder-aware targeting",
-      "deliverability-safe outreach planning",
-      "weekly outbound intelligence delivery",
+      "account research",
+      "safer outreach",
+      "sales prospect research",
+      "weekly outbound research briefs",
     ],
     legalName: APP_NAME,
-    logo: absoluteUrl("/icon-512.png"),
+    logo: absoluteUrl(DEFAULT_LOGO),
     name: APP_NAME,
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
@@ -217,19 +219,20 @@ export function buildWebSiteSchema() {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     about: [
-      "Curated outbound intelligence",
-      "Weekly opportunity delivery",
-      "Founder-aware targeting",
-      "SMTP-safe routing",
+      "Better outbound targeting",
+      "Weekly account research",
+      "Better-fit accounts",
+      "Safer outreach",
     ],
-    alternateName: "Frithly outbound intelligence",
+    alternateName: "Frithly outbound research",
     description: META.DESCRIPTION,
+    image: absoluteUrl(DEFAULT_LOGO),
     inLanguage: "en-GB",
     keywords: META.KEYWORDS,
     name: APP_NAME,
     potentialAction: {
       "@type": "CommunicateAction",
-      name: "Apply for outbound intelligence audit",
+      name: "Apply for a targeting review",
       target: absoluteUrl("/apply"),
     },
     publisher: {
@@ -249,16 +252,17 @@ export function buildServiceSchema() {
       "@type": "Audience",
       audienceType: "Founders, CEOs, revenue leaders, SDR teams, agencies, and GTM operators",
     },
-    category: "Signal-based outbound intelligence infrastructure",
+    category: "Outbound targeting and research service",
     description:
-      "Signal-based outbound intelligence infrastructure for teams that want reviewed weekly opportunities, founder-aware targeting, deliverability-safe routing, and stronger commercial relevance before campaigns deploy.",
-    name: `${APP_NAME} signal-based outbound intelligence infrastructure`,
+      "A premium outbound research service for teams that want better-fit accounts, better timing, and safer outreach before campaigns start.",
+    image: absoluteUrl(DEFAULT_LOGO),
+    name: `${APP_NAME} outbound targeting service`,
     offers: {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
       category: "B2B service",
       description:
-        "Custom outbound intelligence programs tailored around ICP, geography, qualification depth, deliverability safety, and weekly release cadence.",
+        "Custom outbound research programs built around ICP, geography, timing, deliverability, and weekly delivery.",
       priceCurrency: "GBP",
       priceSpecification: {
         "@type": "PriceSpecification",
@@ -271,8 +275,8 @@ export function buildServiceSchema() {
       "@id": ORG_ID,
     },
     serviceOutput:
-      "Reviewed weekly outbound intelligence briefs with account fit, signal context, route notes, and outreach-ready decision-maker reasoning.",
-    serviceType: "Outbound intelligence infrastructure",
+      "Weekly briefs with better-fit accounts, the right contacts, clear timing context, and stronger outreach angles.",
+    serviceType: "Outbound targeting and research service",
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };
@@ -341,7 +345,7 @@ export function buildContactPageSchema() {
       "@id": ORG_ID,
     },
     description:
-      "Contact Frithly for curated outbound intelligence programs, onboarding, scheduling, and support.",
+      "Contact Frithly for outbound research programs, onboarding, scheduling, and support.",
     inLanguage: "en-GB",
     name: "Contact Frithly",
     url: absoluteUrl("/contact"),

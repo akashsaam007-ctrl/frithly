@@ -3,7 +3,7 @@ import { intentGuides } from "@/lib/intent-guides";
 import { proofPages } from "@/lib/proof-pages";
 import { absoluteUrl } from "@/lib/seo";
 
-const SITE_LAST_MODIFIED = new Date("2026-06-01T00:00:00.000Z");
+const SITE_LAST_MODIFIED = new Date("2026-06-02T00:00:00.000Z");
 
 const staticRoutes = [
   { changeFrequency: "weekly" as const, path: "/", priority: 1 },

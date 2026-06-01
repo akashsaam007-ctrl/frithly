@@ -26,12 +26,12 @@ export function Logo({ className, href = "/", imageClassName, priority = false }
       )}
     >
       <Image
-        src="/frithly-wordmark.png"
+        src="/frithly-logo.png"
         alt="Frithly"
-        width={224}
-        height={60}
+        width={1935}
+        height={813}
         priority={priority}
-        sizes="(min-width: 1024px) 160px, (min-width: 640px) 144px, 128px"
+        sizes="(min-width: 1280px) 220px, (min-width: 1024px) 200px, (min-width: 640px) 176px, 152px"
         className={cn("h-8 w-auto sm:h-9 md:h-10", imageClassName)}
       />
     </Link>
