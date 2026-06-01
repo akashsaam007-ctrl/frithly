@@ -141,12 +141,12 @@ export function Navbar() {
               "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/[0.06] bg-[linear-gradient(180deg,rgba(3,4,6,0.98),rgba(3,4,6,0.94))] shadow-[0_24px_60px_rgba(0,0,0,0.32)]"
             }
           >
-            <Container className="flex flex-col gap-6 px-5 py-6">
+            <Container className="flex flex-col gap-5 px-4 py-5 sm:px-5 sm:py-6">
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
                   Explore Frithly
                 </p>
-                <p className="text-sm leading-6 text-white/62">
+                <p className="hidden text-sm leading-6 text-white/62 min-[460px]:block">
                   Explore how Frithly turns broad outbound targeting into smaller, higher-relevance
                   opportunities your team can actually work.
                 </p>
@@ -157,14 +157,14 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-white/72"
+                    className="px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base"
                   >
                     {link.label}
                   </Link>
                 ))}
                 <Link
                   href={ROUTES.LOGIN}
-                  className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-white/72"
+                  className="px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base"
                 >
                   Login
                 </Link>

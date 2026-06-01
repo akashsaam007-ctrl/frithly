@@ -255,7 +255,7 @@ function SectionEyebrow({ children }: { children: string }) {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-3 rounded-[0.8rem] bg-white/[0.02] px-4 py-2.5 text-[0.72rem] font-medium tracking-[0.14em] text-slate-300",
+        "inline-flex items-center gap-2.5 rounded-[0.8rem] bg-white/[0.02] px-3.5 py-2 text-[0.64rem] font-medium tracking-[0.12em] text-slate-300 sm:gap-3 sm:px-4 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]",
       )}
     >
       <span className="relative flex h-2.5 w-2.5">
@@ -292,7 +292,7 @@ function SectionIntro({
       </div>
       <p
         className={cn(
-          "max-w-2xl text-[1.03rem] leading-8 text-slate-300 md:text-[1.1rem]",
+          "max-w-2xl text-[0.98rem] leading-7 text-slate-300 sm:text-[1.03rem] sm:leading-8 md:text-[1.08rem]",
           align === "center" ? "mx-auto" : "",
         )}
       >
@@ -403,16 +403,16 @@ function MetricTile({
   value: string;
 }) {
   return (
-    <div className="rounded-[0.95rem] bg-white/[0.018] px-4 py-4">
+    <div className="rounded-[0.95rem] bg-white/[0.018] px-3 py-3 sm:px-4 sm:py-4">
       <div
         className={cn(
           monoFont.className,
-          "text-[10px] tracking-[0.16em] text-slate-500",
+          "text-[9px] tracking-[0.14em] text-slate-500 sm:text-[10px] sm:tracking-[0.16em]",
         )}
       >
         {label}
       </div>
-      <div className="mt-3 text-[1.8rem] font-semibold text-white">{value}</div>
+      <div className="mt-2 text-[1.45rem] font-semibold text-white sm:mt-3 sm:text-[1.8rem]">{value}</div>
     </div>
   );
 }
@@ -458,9 +458,9 @@ export function PlatformHomepage() {
 
   const enableMotion = !reduceMotion;
   const applicationFieldClassName =
-    "h-14 rounded-[1.05rem] border-white/[0.08] bg-white/[0.035] px-5 text-[0.98rem] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-slate-500 hover:border-white/[0.11] focus-visible:bg-white/[0.05] focus-visible:ring-[rgba(167,139,250,0.16)] focus-visible:ring-offset-0";
+    "h-13 rounded-[1.05rem] border-white/[0.08] bg-white/[0.035] px-4 text-[0.95rem] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-slate-500 hover:border-white/[0.11] focus-visible:bg-white/[0.05] focus-visible:ring-[rgba(167,139,250,0.16)] focus-visible:ring-offset-0 sm:h-14 sm:px-5 sm:text-[0.98rem]";
   const applicationTextareaClassName =
-    "min-h-[156px] rounded-[1.05rem] border-white/[0.08] bg-white/[0.035] px-5 py-4 text-[0.98rem] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-slate-500 hover:border-white/[0.11] focus-visible:bg-white/[0.05] focus-visible:ring-[rgba(167,139,250,0.16)] focus-visible:ring-offset-0";
+    "min-h-[140px] rounded-[1.05rem] border-white/[0.08] bg-white/[0.035] px-4 py-4 text-[0.95rem] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-slate-500 hover:border-white/[0.11] focus-visible:bg-white/[0.05] focus-visible:ring-[rgba(167,139,250,0.16)] focus-visible:ring-offset-0 sm:min-h-[156px] sm:px-5 sm:text-[0.98rem]";
 
   return (
     <div className="relative isolate overflow-hidden bg-[#030406] text-white">
@@ -470,8 +470,8 @@ export function PlatformHomepage() {
       <div className="pointer-events-none absolute inset-x-0 top-[18rem] h-[190rem] bg-[radial-gradient(circle_at_center,rgba(91,58,153,0.04),transparent_72%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(2,3,4,0.96),rgba(2,3,4,0))]" />
 
-      <section className="relative pt-10 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
-        <Container className="grid gap-10 py-8 sm:py-12 lg:py-16 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)] xl:items-start xl:py-20 xl:gap-20">
+      <section className="relative pt-8 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
+        <Container className="grid gap-8 py-8 sm:py-12 lg:py-16 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)] xl:items-start xl:py-20 xl:gap-20">
           <motion.div className="relative space-y-8 xl:pt-8" {...revealProps(enableMotion, 0.03, "drift")}>
             <motion.div
               animate={enableMotion ? { opacity: [0.28, 0.42, 0.28], x: [-6, 0, -6], y: [-4, 2, -4] } : undefined}
@@ -483,7 +483,7 @@ export function PlatformHomepage() {
             <div
               className={cn(
                 headlineFont.className,
-                "relative max-w-[7.35ch] text-[2.35rem] font-semibold leading-[0.92] tracking-[-0.08em] text-white sm:text-[3.15rem] lg:text-[3.9rem] xl:text-[4.65rem] 2xl:text-[5rem]",
+                "relative max-w-[7.2ch] text-[2.05rem] font-semibold leading-[0.92] tracking-[-0.08em] text-white sm:text-[3rem] lg:text-[3.9rem] xl:text-[4.65rem] 2xl:text-[5rem]",
               )}
             >
               <span className="block text-white">Most Outbound</span>
@@ -528,8 +528,8 @@ export function PlatformHomepage() {
               </Button>
             </div>
 
-            <div className="grid gap-4 pt-2 sm:grid-cols-2">
-              <div className="space-y-4 rounded-[1rem] bg-white/[0.018] p-5">
+            <div className="grid gap-4 pt-1 min-[460px]:grid-cols-2">
+              <div className="space-y-4 rounded-[1rem] bg-white/[0.018] p-4 sm:p-5">
                 <div className="text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-500">
                   Typical outbound
                 </div>
@@ -542,7 +542,7 @@ export function PlatformHomepage() {
                 </div>
               </div>
 
-              <div className="space-y-4 rounded-[1rem] bg-white/[0.026] p-5">
+              <div className="space-y-4 rounded-[1rem] bg-white/[0.026] p-4 sm:p-5">
                 <div className="text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-400">
                   Frithly
                 </div>
@@ -565,10 +565,10 @@ export function PlatformHomepage() {
               transition={enableMotion ? { duration: 13, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY } : undefined}
             />
             <SurfaceCard className="rounded-[1.25rem] p-0" tone="spotlight">
-              <div className="relative p-6 lg:p-7 xl:p-8">
+              <div className="relative p-5 sm:p-6 lg:p-7 xl:p-8">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="mt-3 max-w-[15ch] text-[1.52rem] font-semibold leading-[1.08] text-white lg:text-[1.78rem] xl:text-[1.92rem]">
+                    <div className="mt-3 max-w-[15ch] text-[1.34rem] font-semibold leading-[1.08] text-white sm:text-[1.52rem] lg:text-[1.78rem] xl:text-[1.92rem]">
                       A smaller shortlist with a better chance of replies.
                     </div>
                   </div>
@@ -578,11 +578,11 @@ export function PlatformHomepage() {
                 </div>
 
                 <div className="mt-8">
-                  <div className="rounded-[1.1rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.022),rgba(255,255,255,0.008))] p-5 lg:p-6">
-                    <div className="max-w-[13ch] text-[1.8rem] font-semibold leading-[1.06] text-white lg:text-[1.95rem] xl:text-[2.08rem]">
+                  <div className="rounded-[1.1rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.022),rgba(255,255,255,0.008))] p-4 sm:p-5 lg:p-6">
+                    <div className="max-w-[13ch] text-[1.52rem] font-semibold leading-[1.06] text-white sm:text-[1.8rem] lg:text-[1.95rem] xl:text-[2.08rem]">
                       Smaller list. Better timing. Better conversations.
                     </div>
-                    <p className="mt-4 max-w-[34rem] text-sm leading-7 text-slate-400">
+                    <p className="mt-4 max-w-[34rem] text-[0.94rem] leading-7 text-slate-400 sm:text-sm">
                       Frithly is built to cut wasted outreach. The goal is fewer bad accounts,
                       better timing, and stronger conversations once your team starts emailing.
                     </p>
@@ -638,21 +638,21 @@ export function PlatformHomepage() {
                       })}
                     </div>
 
-                    <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                    <div className="mt-5 grid grid-cols-3 gap-3 sm:gap-4">
                       <MetricTile label="Signals found" value="214" />
                       <MetricTile label="Good domains" value="87" />
                       <MetricTile label="Risk removed" value="12" />
                     </div>
 
-                    <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="mt-5 grid gap-3 min-[460px]:grid-cols-2 xl:grid-cols-3 sm:gap-4">
                       {heroSupportItems.map((item, index) => (
                         <motion.div key={item.title} {...revealProps(enableMotion, 0.12 + index * 0.05, "drift")}>
-                          <div className="h-full rounded-[0.95rem] bg-white/[0.024] p-4">
+                          <div className="h-full rounded-[0.95rem] bg-white/[0.024] p-3.5 sm:p-4">
                             <div className="flex items-center gap-3 text-white">
                               <span className="h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.24)]" />
                               <div className="text-sm font-semibold">{item.title}</div>
                             </div>
-                            <p className="mt-3 text-sm leading-7 text-slate-400">{item.body}</p>
+                            <p className="mt-2 text-[0.92rem] leading-6 text-slate-400 sm:mt-3 sm:text-sm sm:leading-7">{item.body}</p>
                           </div>
                         </motion.div>
                       ))}
@@ -677,7 +677,7 @@ export function PlatformHomepage() {
 
           <motion.div {...revealProps(enableMotion, 0.08)}>
             <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="spotlight">
-              <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-6 min-[460px]:grid-cols-2 xl:grid-cols-3 sm:gap-8">
                 {problemBlocks.map((block, index) => {
                   const Icon = block.icon;
 
@@ -969,9 +969,12 @@ export function PlatformHomepage() {
 
           <motion.div {...revealProps(enableMotion, 0.08)}>
             <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="spotlight">
-              <div className="grid gap-x-8 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
-                {signalExamples.map((example) => (
-                  <div className="space-y-4" key={example.title}>
+              <div className="grid gap-x-6 gap-y-8 min-[460px]:grid-cols-2 xl:grid-cols-3 sm:gap-x-8">
+                {signalExamples.map((example, index) => (
+                  <div
+                    className={cn(index === signalExamples.length - 1 ? "min-[460px]:col-span-2 xl:col-span-1" : "", "space-y-4")}
+                    key={example.title}
+                  >
                     <div className="text-sm text-slate-500">{example.kicker}</div>
                     <div className="text-[1.8rem] font-semibold leading-tight text-white">
                       {example.title}
@@ -997,7 +1000,7 @@ export function PlatformHomepage() {
 
           <motion.div {...revealProps(enableMotion, 0.08)}>
             <SurfaceCard className="px-7 py-8 lg:px-9 lg:py-10" tone="spotlight">
-              <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
+              <div className="grid gap-4 min-[460px]:grid-cols-2 xl:flex xl:flex-row xl:items-center">
                 {processSteps.map((step, index) => (
                   <div className="flex min-w-0 flex-1 items-center gap-4" key={step}>
                     <div className="min-w-0 flex-1 rounded-[0.98rem] bg-white/[0.02] px-5 py-5">
@@ -1029,7 +1032,7 @@ export function PlatformHomepage() {
 
       <StorySection glow="shadow" id="pilot">
         <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SurfaceCard className="px-8 py-10 lg:px-10 lg:py-12" tone="spotlight">
+            <SurfaceCard className="px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12" tone="spotlight">
             <div className="grid gap-10 xl:grid-cols-[0.95fr_1.05fr] xl:items-center">
               <div className="space-y-6">
                 <SectionEyebrow>Start small</SectionEyebrow>
@@ -1139,7 +1142,7 @@ export function PlatformHomepage() {
               className="relative overflow-hidden rounded-[1.3rem] border border-white/[0.06] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_34%),linear-gradient(180deg,rgba(11,12,16,0.98),rgba(4,5,8,1))] p-7 shadow-[0_40px_120px_rgba(0,0,0,0.24)] lg:p-9"
               onSubmit={handleAuditSubmit}
             >
-              <div className="mb-7 flex flex-col gap-4 border-b border-white/[0.06] pb-6 sm:flex-row sm:items-start sm:justify-between">
+              <div className="mb-6 flex flex-col gap-4 border-b border-white/[0.06] pb-5 sm:mb-7 sm:pb-6 min-[460px]:flex-row min-[460px]:items-start min-[460px]:justify-between">
                 <div className="max-w-2xl">
                   <div className="text-[1.3rem] font-semibold leading-tight text-white">
                     A few details so we can see if there is a fit.
@@ -1150,7 +1153,7 @@ export function PlatformHomepage() {
                   </p>
                 </div>
 
-                <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-300">
+                <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-300 sm:text-[11px] sm:tracking-[0.16em]">
                   <span className="h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.18)]" />
                   Manual review
                 </div>
@@ -1258,7 +1261,7 @@ export function PlatformHomepage() {
                 </div>
               </div>
 
-              <div className="mt-7 flex flex-col gap-4 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-6 flex flex-col gap-4 border-t border-white/[0.06] pt-5 sm:mt-7 sm:pt-6 min-[460px]:flex-row min-[460px]:items-center min-[460px]:justify-between">
                 <p className="max-w-xl text-sm leading-7 text-slate-400">
                   We review every application manually before recommending the right pilot,
                   strategy call, or next step.
@@ -1279,7 +1282,7 @@ export function PlatformHomepage() {
         </div>
       </StorySection>
 
-      <StorySection className="pt-18 pb-16 sm:pt-22 sm:pb-20" glow="shadow" id="faq">
+      <StorySection className="pt-16 pb-14 sm:pt-20 sm:pb-18" glow="shadow" id="faq">
         <div className="space-y-12">
           <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
             <SectionIntro
@@ -1293,14 +1296,14 @@ export function PlatformHomepage() {
             <Accordion className="space-y-4" collapsible type="single">
               {platformFaqs.map((faq, index) => (
                 <AccordionItem
-                  className="rounded-[1.05rem] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(12,14,20,0.9),rgba(4,5,8,0.99))] px-5 py-1 shadow-[0_16px_48px_rgba(0,0,0,0.16)]"
+                  className="rounded-[1.05rem] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(12,14,20,0.9),rgba(4,5,8,0.99))] px-4 py-1 shadow-[0_16px_48px_rgba(0,0,0,0.16)] sm:px-5"
                   key={faq.question}
                   value={`faq-${index}`}
                 >
-                  <AccordionTrigger className="text-left text-base font-medium text-white">
+                  <AccordionTrigger className="text-left text-[0.98rem] font-medium leading-7 text-white sm:text-base">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="pb-4 text-base leading-8 text-slate-300">
+                  <AccordionContent className="pb-4 text-[0.98rem] leading-7 text-slate-300 sm:text-base sm:leading-8">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>

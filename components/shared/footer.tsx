@@ -6,8 +6,8 @@ import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 export function Footer() {
   return (
     <footer className="border-t border-white/[0.06] bg-[linear-gradient(180deg,#04070c_0%,#030508_100%)] py-12 text-white sm:py-14">
-      <Container className="space-y-10">
-        <div className="grid gap-10 xl:grid-cols-[0.95fr_2.05fr]">
+      <Container className="space-y-8 sm:space-y-10">
+        <div className="grid gap-8 sm:gap-10 xl:grid-cols-[0.95fr_2.05fr]">
           <div className="space-y-4">
             <Logo
               className="w-fit rounded-[0.9rem] bg-white/[0.015] px-4 py-3 hover:opacity-100"
@@ -22,7 +22,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-8 min-[460px]:grid-cols-2 xl:grid-cols-3">
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Experience</h3>
               <div className="space-y-3 text-sm text-white/70">
@@ -67,9 +67,9 @@ export function Footer() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 min-[460px]:col-span-2 xl:col-span-1">
               <h3 className="text-base font-semibold text-white">Legal</h3>
-              <div className="space-y-3 text-sm text-white/70">
+              <div className="grid gap-x-6 gap-y-3 text-sm text-white/70 min-[460px]:grid-cols-2 xl:grid-cols-1">
                 <Link className="block transition-colors hover:text-white" href={ROUTES.PRIVACY}>
                   Privacy Policy
                 </Link>
