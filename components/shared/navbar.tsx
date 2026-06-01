@@ -10,9 +10,10 @@ import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 
 const marketingNavLinks = [
-  { href: ROUTES.ABOUT, label: "About" },
-  { href: ROUTES.PRICING, label: "Program Builder" },
-  { href: "/#evidence", label: "ROI" },
+  { href: "/#engine", label: "Intelligence Layer" },
+  { href: "/#deliverability", label: "Deliverability" },
+  { href: "/#brief", label: "Monday Brief" },
+  { href: "/#evidence", label: "Proof" },
   { href: ROUTES.FAQ, label: "FAQ" },
 ];
 
@@ -146,8 +147,8 @@ export function Navbar() {
                   Explore Frithly
                 </p>
                 <p className="text-sm leading-6 text-white/62">
-                  Step into the intelligence flow: reviewed opportunities, founder-aware targeting,
-                  SMTP-aware routing, and premium weekly delivery.
+                  Step into the infrastructure: signal-qualified acquisition, route protection,
+                  premium weekly briefs, and calmer outbound deployment.
                 </p>
               </div>
 

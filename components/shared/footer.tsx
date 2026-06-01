@@ -14,12 +14,12 @@ export function Footer() {
               imageClassName="h-8 md:h-9"
             />
             <p className="max-w-sm text-base leading-8 text-white/70">
-              Curated outbound intelligence delivered weekly for teams that would rather work a
-              smaller, stronger opportunity flow than chase noisy volume.
+              Signal-based outbound intelligence infrastructure for teams that care more about
+              commercial relevance, route safety, and pipeline quality than raw list volume.
             </p>
             <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66">
-              Reviewed opportunities. Founder-aware targeting. SMTP-safe prioritization. Calm,
-              confidence-aware delivery.
+              Signal-qualified accounts. Founder-aware targeting. Deliverability-safe deployment.
+              Human-reviewed release.
             </div>
           </div>
 
@@ -27,8 +27,20 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Experience</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <Link className="block transition-colors hover:text-white" href={ROUTES.PRICING}>
-                  Program builder
+                <Link className="block transition-colors hover:text-white" href={ROUTES.HOW_IT_WORKS}>
+                  Intelligence layer
+                </Link>
+                <Link className="block transition-colors hover:text-white" href="/#deliverability">
+                  Deliverability infrastructure
+                </Link>
+                <Link className="block transition-colors hover:text-white" href="/#brief">
+                  Monday brief
+                </Link>
+                <Link className="block transition-colors hover:text-white" href="/#evidence">
+                  Operational proof
+                </Link>
+                <Link className="block transition-colors hover:text-white" href="/#builder">
+                  Outbound intelligence audit
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ

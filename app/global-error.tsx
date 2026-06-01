@@ -1,8 +1,11 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 import { ErrorState } from "@/components/ui/error-state";
+
+const shouldCaptureErrors =
+  process.env.NEXT_PUBLIC_IS_DEV_SERVER !== "true" ||
+  process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
 
 export default function GlobalError({
   error,
@@ -12,7 +15,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    if (!shouldCaptureErrors) {
+      return;
+    }
+
+    void import("@sentry/nextjs").then((Sentry) => {
+      Sentry.captureException(error);
+    });
   }, [error]);
 
   return (

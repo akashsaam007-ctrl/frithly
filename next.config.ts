@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import { withSentryConfig } from "@sentry/nextjs";
 
 function getAllowedDevOrigins() {
@@ -21,17 +22,22 @@ function getAllowedDevOrigins() {
   }
 }
 
-const nextConfig: NextConfig = {
-  allowedDevOrigins: getAllowedDevOrigins(),
-  reactStrictMode: true,
-};
+export default function createNextConfig(phase: string): NextConfig {
+  const isDevServer = phase === PHASE_DEVELOPMENT_SERVER;
+  const sentryEnabledInDev = process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
+  const baseConfig: NextConfig = {
+    allowedDevOrigins: getAllowedDevOrigins(),
+    env: {
+      NEXT_PUBLIC_IS_DEV_SERVER: isDevServer ? "true" : "false",
+    },
+    reactStrictMode: true,
+  };
 
-const sentryEnabledInDev = process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
-const shouldEnableSentryConfig =
-  process.env.NODE_ENV === "production" || sentryEnabledInDev;
+  const shouldEnableSentryConfig = !isDevServer && (process.env.NODE_ENV === "production" || sentryEnabledInDev);
 
-export default shouldEnableSentryConfig
-  ? withSentryConfig(nextConfig, {
-      silent: true,
-    })
-  : nextConfig;
+  return shouldEnableSentryConfig
+    ? withSentryConfig(baseConfig, {
+        silent: true,
+      })
+    : baseConfig;
+}
