@@ -1,46 +1,45 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import { APP_NAME, BUSINESS_ADDRESS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[linear-gradient(180deg,#07111b_0%,#050d15_100%)] py-12 text-white sm:py-14">
-      <Container className="space-y-12">
-        <div className="grid gap-10 lg:grid-cols-[1.05fr_1.95fr]">
-          <div className="space-y-5">
+    <footer className="border-t border-white/[0.06] bg-[linear-gradient(180deg,#04070c_0%,#030508_100%)] py-12 text-white sm:py-14">
+      <Container className="space-y-10">
+        <div className="grid gap-10 xl:grid-cols-[0.95fr_2.05fr]">
+          <div className="space-y-4">
             <Logo
-              className="w-fit rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.28)] hover:opacity-100"
-              imageClassName="h-8 md:h-9"
+              className="w-fit rounded-[0.9rem] bg-white/[0.015] px-4 py-3 hover:opacity-100"
+              imageClassName="h-7 sm:h-8 md:h-9"
             />
-            <p className="max-w-sm text-base leading-8 text-white/70">
-              Signal-based outbound intelligence infrastructure for teams that care more about
-              commercial relevance, route safety, and pipeline quality than raw list volume.
+            <p className="max-w-sm text-base leading-8 text-white/68">
+              Frithly helps outbound teams start with better-fit accounts, better timing, and
+              stronger reasons to reach out before the first email is ever sent.
             </p>
-            <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66">
-              Signal-qualified accounts. Founder-aware targeting. Deliverability-safe deployment.
-              Human-reviewed release.
+            <div className="max-w-md text-sm leading-7 text-white/54">
+              Better-fit accounts. Right contacts. Human-reviewed briefs. Safer outbound.
             </div>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Experience</h3>
               <div className="space-y-3 text-sm text-white/70">
+                <Link className="block transition-colors hover:text-white" href="/#problem">
+                  Why outbound fails
+                </Link>
+                <Link className="block transition-colors hover:text-white" href="/#deliverables">
+                  What your team gets
+                </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.HOW_IT_WORKS}>
-                  Intelligence layer
+                  How it works
                 </Link>
-                <Link className="block transition-colors hover:text-white" href="/#deliverability">
-                  Deliverability infrastructure
+                <Link className="block transition-colors hover:text-white" href="/#signals">
+                  Timing examples
                 </Link>
-                <Link className="block transition-colors hover:text-white" href="/#brief">
-                  Monday brief
-                </Link>
-                <Link className="block transition-colors hover:text-white" href="/#evidence">
-                  Operational proof
-                </Link>
-                <Link className="block transition-colors hover:text-white" href="/#builder">
-                  Outbound intelligence audit
+                <Link className="block transition-colors hover:text-white" href="/#pilot">
+                  Start small
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ
@@ -54,7 +53,7 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Program</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <span className="block">Premium outbound intelligence for selective pipeline teams</span>
+                <span className="block">Better-fit accounts for teams that care about reply quality</span>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT_SALES}>
                   Talk to sales
                 </Link>
@@ -103,9 +102,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="space-y-2 border-t border-white/10 pt-6 text-sm text-white/60 md:space-y-1">
+        <div className="space-y-2 border-t border-white/10 pt-5 text-sm text-white/60 md:space-y-1">
           <p>Copyright 2026 {APP_NAME}. All rights reserved.</p>
-          <p className="leading-7">{SUPPORT_EMAIL} | {BUSINESS_ADDRESS}</p>
+          <p className="leading-7">{SUPPORT_EMAIL}</p>
         </div>
       </Container>
     </footer>

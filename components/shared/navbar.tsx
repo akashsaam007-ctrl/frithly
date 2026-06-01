@@ -10,10 +10,10 @@ import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 
 const marketingNavLinks = [
-  { href: "/#engine", label: "Intelligence Layer" },
-  { href: "/#deliverability", label: "Deliverability" },
-  { href: "/#brief", label: "Monday Brief" },
-  { href: "/#evidence", label: "Proof" },
+  { href: "/#problem", label: "Why Outbound Fails" },
+  { href: "/#deliverables", label: "What You Get" },
+  { href: "/#pipeline", label: "How It Works" },
+  { href: "/#pilot", label: "Start Small" },
   { href: ROUTES.FAQ, label: "FAQ" },
 ];
 
@@ -60,24 +60,24 @@ export function Navbar() {
 
   const navClassName = isHome
     ? isScrolled
-      ? "border-b border-white/10 bg-[#06101a]/84 shadow-[0_12px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl"
-      : "border-b border-transparent bg-transparent"
-    : "border-b border-white/10 bg-[#06101a]/88 shadow-[0_12px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl";
+      ? "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(3,4,6,0.9),rgba(3,4,6,0.74))] shadow-[0_16px_44px_rgba(0,0,0,0.28)] backdrop-blur-2xl"
+      : "border-b border-white/[0.04] bg-[linear-gradient(180deg,rgba(3,4,6,0.78),rgba(3,4,6,0.42))] backdrop-blur-xl"
+    : "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(3,4,6,0.92),rgba(3,4,6,0.78))] shadow-[0_16px_44px_rgba(0,0,0,0.28)] backdrop-blur-2xl";
 
-  const homeTextClassName = isScrolled ? "text-white/76 hover:text-white" : "text-white/78 hover:text-white";
-  const defaultTextClassName = "text-white/72 transition-colors hover:text-white";
+  const homeTextClassName = isScrolled ? "text-white/80 hover:text-white" : "text-white/82 hover:text-white";
+  const defaultTextClassName = "text-white/76 transition-colors hover:text-white";
   const linkClassName = isHome ? homeTextClassName : defaultTextClassName;
   const iconButtonClassName = isHome
-    ? "inline-flex items-center justify-center rounded-lg p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
-    : "inline-flex items-center justify-center rounded-lg p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta";
-  const loginClassName = isHome ? "text-sm font-medium text-white/76 transition-colors hover:text-white" : "text-sm font-medium text-white/72 transition-colors hover:text-white";
+    ? "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]"
+    : "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]";
+  const loginClassName = isHome ? "text-sm font-medium text-white/80 transition-colors hover:text-white" : "text-sm font-medium text-white/76 transition-colors hover:text-white";
 
   return (
     <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navClassName}`}>
       <Container className="relative flex h-16 items-center justify-between">
-        <Logo priority />
+        <Logo imageClassName="h-7 sm:h-8 lg:h-9" priority />
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -89,7 +89,7 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-4 lg:flex">
           <Link
             href={ROUTES.LOGIN}
             className={loginClassName}
@@ -100,14 +100,14 @@ export function Navbar() {
             asChild
             size="md"
             variant="secondary"
-            className="border-white/10 bg-white/[0.05] text-white hover:border-white/18 hover:bg-white/[0.08] hover:text-white"
+            className="rounded-[0.82rem] border-white/[0.08] bg-white/[0.03] text-white shadow-none hover:border-white/[0.12] hover:bg-white/[0.055] hover:text-white"
           >
             <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
           </Button>
           <Button
             asChild
             size="md"
-            className={isHome ? "shadow-[0_18px_48px_rgba(212,98,58,0.22)]" : undefined}
+            className="rounded-[0.82rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.018))] shadow-none hover:border-white/[0.12] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.028))]"
           >
             <Link href={ROUTES.APPLY}>Apply</Link>
           </Button>
@@ -116,7 +116,7 @@ export function Navbar() {
         <button
           aria-expanded={isMenuOpen}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className={`${iconButtonClassName} md:hidden`}
+          className={`${iconButtonClassName} lg:hidden`}
           onClick={() => setIsMenuOpen((current) => !current)}
           type="button"
         >
@@ -129,7 +129,7 @@ export function Navbar() {
       </Container>
 
       {isMenuOpen ? (
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button
             aria-label="Close menu overlay"
             className="fixed inset-0 top-16 z-40 bg-[rgba(4,10,17,0.68)] backdrop-blur-[3px]"
@@ -138,33 +138,33 @@ export function Navbar() {
           />
           <div
             className={
-              "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-[#06101a] shadow-[0_24px_60px_rgba(0,0,0,0.32)]"
+              "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/[0.06] bg-[linear-gradient(180deg,rgba(3,4,6,0.98),rgba(3,4,6,0.94))] shadow-[0_24px_60px_rgba(0,0,0,0.32)]"
             }
           >
             <Container className="flex flex-col gap-6 px-5 py-6">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#f0b38e]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
                   Explore Frithly
                 </p>
                 <p className="text-sm leading-6 text-white/62">
-                  Step into the infrastructure: signal-qualified acquisition, route protection,
-                  premium weekly briefs, and calmer outbound deployment.
+                  Explore how Frithly turns broad outbound targeting into smaller, higher-relevance
+                  opportunities your team can actually work.
                 </p>
               </div>
 
-              <div className="flex flex-col divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03]">
+              <div className="flex flex-col divide-y divide-white/[0.07] rounded-[1rem] border border-white/[0.06] bg-white/[0.02]">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-[#f0b38e]"
+                    className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-white/72"
                   >
                     {link.label}
                   </Link>
                 ))}
                 <Link
                   href={ROUTES.LOGIN}
-                  className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-[#f0b38e]"
+                  className="px-4 py-4 text-base font-semibold text-white transition-colors hover:text-white/72"
                 >
                   Login
                 </Link>
@@ -175,13 +175,13 @@ export function Navbar() {
                   asChild
                   size="lg"
                   variant="secondary"
-                  className="w-full border-white/10 bg-white/[0.05] text-white hover:border-white/18 hover:bg-white/[0.08] hover:text-white"
+                  className="w-full rounded-[0.88rem] border-white/[0.08] bg-white/[0.03] text-white hover:border-white/[0.12] hover:bg-white/[0.055] hover:text-white"
                 >
                   <Link href={ROUTES.BOOK_MEETING}>
                     Book a meeting
                   </Link>
                 </Button>
-                <Button asChild size="lg" className="w-full">
+                <Button asChild size="lg" className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.018))] shadow-none hover:border-white/[0.12] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.028))]">
                   <Link href={ROUTES.APPLY}>Apply</Link>
                 </Button>
               </div>
