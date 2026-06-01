@@ -57,9 +57,6 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT_SALES}>
                   Talk to sales
                 </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.LOGIN}>
-                  Client login
-                </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT}>
                   Contact
                 </Link>

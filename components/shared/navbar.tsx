@@ -70,8 +70,6 @@ export function Navbar() {
   const iconButtonClassName = isHome
     ? "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]"
     : "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]";
-  const loginClassName = isHome ? "text-sm font-medium text-white/80 transition-colors hover:text-white" : "text-sm font-medium text-white/76 transition-colors hover:text-white";
-
   return (
     <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navClassName}`}>
       <Container className="relative flex h-16 items-center justify-between">
@@ -90,12 +88,6 @@ export function Navbar() {
         </div>
 
         <div className="hidden items-center gap-4 lg:flex">
-          <Link
-            href={ROUTES.LOGIN}
-            className={loginClassName}
-          >
-            Login
-          </Link>
           <Button
             asChild
             size="md"
@@ -162,12 +154,6 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  href={ROUTES.LOGIN}
-                  className="px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base"
-                >
-                  Login
-                </Link>
               </div>
 
               <div className="flex flex-col gap-3">
