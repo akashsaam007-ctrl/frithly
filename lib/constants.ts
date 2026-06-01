@@ -4,7 +4,11 @@ export const APP_NAME = "Frithly";
 export const APP_TAGLINE =
   "Better-fit accounts, better timing, and safer outbound before the first email is sent.";
 export const APP_DOMAIN = "frithly.com";
+export const CALENDLY_URL = publicEnv.NEXT_PUBLIC_CALENDLY_URL;
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
+export const DEFAULT_CALENDLY_URL =
+  "https://calendly.com/akashmanoharan-frithly/frithly-outbound-intelligence-review";
+export const BOOKING_URL = CALENDLY_URL ?? DEFAULT_CALENDLY_URL;
 export const SUPPORT_EMAIL = "hello@frithly.com";
 export const BUSINESS_ADDRESS =
   "55, Peranayakanvalasu, Dharapuram, Tiruppur, Mulanur, Tamil Nadu, India - 638106";
@@ -105,7 +109,7 @@ export const ROUTES = {
   BRIEFS: "/briefs",
   CAMPAIGNS: "/campaigns",
   COHORTS: "/cohorts",
-  BOOK_MEETING: CALCOM_URL,
+  BOOK_MEETING: BOOKING_URL,
   CONTACT: "/contact",
   CONTACT_SALES: "/contact#sales-form",
   COOKIE_POLICY: "/cookie-policy",

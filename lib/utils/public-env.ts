@@ -2,7 +2,8 @@ import { z } from "zod";
 
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url(),
-  NEXT_PUBLIC_CALCOM_URL: z.string().url(),
+  NEXT_PUBLIC_CALCOM_URL: z.string().url().optional(),
+  NEXT_PUBLIC_CALENDLY_URL: z.string().url().optional(),
   NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV: z.enum(["true", "false"]).optional(),
   NEXT_PUBLIC_ENABLE_DEMO_MODE: z.enum(["true", "false"]).optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
@@ -21,7 +22,8 @@ function normalizeOptionalEnv(value: string | undefined) {
 
 const parsedPublicEnv = publicEnvSchema.safeParse({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  NEXT_PUBLIC_CALCOM_URL: process.env.NEXT_PUBLIC_CALCOM_URL,
+  NEXT_PUBLIC_CALCOM_URL: normalizeOptionalEnv(process.env.NEXT_PUBLIC_CALCOM_URL),
+  NEXT_PUBLIC_CALENDLY_URL: normalizeOptionalEnv(process.env.NEXT_PUBLIC_CALENDLY_URL),
   NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV: normalizeOptionalEnv(process.env.NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV),
   NEXT_PUBLIC_ENABLE_DEMO_MODE: normalizeOptionalEnv(process.env.NEXT_PUBLIC_ENABLE_DEMO_MODE),
   NEXT_PUBLIC_POSTHOG_HOST: normalizeOptionalEnv(process.env.NEXT_PUBLIC_POSTHOG_HOST),

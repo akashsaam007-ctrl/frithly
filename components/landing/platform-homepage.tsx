@@ -30,7 +30,6 @@ import {
   BriefcaseBusiness,
   Building2,
   CheckCircle2,
-  Play,
   Radar,
   ShieldCheck,
   Sparkles,
@@ -470,9 +469,9 @@ export function PlatformHomepage() {
       <div className="pointer-events-none absolute inset-x-0 top-[18rem] h-[190rem] bg-[radial-gradient(circle_at_center,rgba(91,58,153,0.04),transparent_72%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(2,3,4,0.96),rgba(2,3,4,0))]" />
 
-      <section className="relative pt-8 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
-        <Container className="grid gap-8 py-8 sm:py-12 lg:py-16 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)] xl:items-start xl:py-20 xl:gap-20">
-          <motion.div className="relative space-y-8 xl:pt-8" {...revealProps(enableMotion, 0.03, "drift")}>
+      <section className="relative pt-3 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
+        <Container className="grid gap-6 py-4 sm:gap-8 sm:py-12 lg:py-16 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)] xl:items-start xl:py-20 xl:gap-20">
+          <motion.div className="relative space-y-6 sm:space-y-8 xl:pt-8" {...revealProps(enableMotion, 0.03, "drift")}>
             <motion.div
               animate={enableMotion ? { opacity: [0.28, 0.42, 0.28], x: [-6, 0, -6], y: [-4, 2, -4] } : undefined}
               className="pointer-events-none absolute -left-16 top-10 h-60 w-60 rounded-full bg-[rgba(91,58,153,0.08)] blur-[132px]"
@@ -483,7 +482,7 @@ export function PlatformHomepage() {
             <div
               className={cn(
                 headlineFont.className,
-                "relative max-w-[7.2ch] text-[2.05rem] font-semibold leading-[0.92] tracking-[-0.08em] text-white sm:text-[3rem] lg:text-[3.9rem] xl:text-[4.65rem] 2xl:text-[5rem]",
+                "relative max-w-[9.6ch] text-[2.05rem] font-semibold leading-[0.92] tracking-[-0.08em] text-white sm:max-w-[7.2ch] sm:text-[3rem] lg:text-[3.9rem] xl:text-[4.65rem] 2xl:text-[5rem]",
               )}
             >
               <span className="block text-white">Most Outbound</span>
@@ -504,7 +503,7 @@ export function PlatformHomepage() {
               <Button
                 asChild
                 size="lg"
-                className="w-full border-white/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.022))] shadow-[0_20px_48px_rgba(0,0,0,0.28)] hover:border-white/[0.12] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.095),rgba(255,255,255,0.03))] sm:w-auto"
+                className="w-full border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_20px_48px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:w-auto"
               >
                 <Link href={ROUTES.BOOK_MEETING}>
                   <span className="inline-flex items-center gap-2">
@@ -513,22 +512,9 @@ export function PlatformHomepage() {
                   </span>
                 </Link>
               </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="secondary"
-                className="w-full border-white/12 bg-white/[0.04] text-white hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:w-auto"
-              >
-                <Link href="/#pipeline">
-                  <span className="inline-flex items-center gap-2">
-                    See How Frithly Works
-                    <Play className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                </Link>
-              </Button>
             </div>
 
-            <div className="grid gap-4 pt-1 min-[460px]:grid-cols-2">
+            <div className="grid gap-3 pt-0.5 min-[460px]:grid-cols-2 sm:gap-4 sm:pt-1">
               <div className="space-y-4 rounded-[1rem] bg-white/[0.018] p-4 sm:p-5">
                 <div className="text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-500">
                   Typical outbound
@@ -577,7 +563,7 @@ export function PlatformHomepage() {
                   </div>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                   <div className="rounded-[1.1rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.022),rgba(255,255,255,0.008))] p-4 sm:p-5 lg:p-6">
                     <div className="max-w-[13ch] text-[1.52rem] font-semibold leading-[1.06] text-white sm:text-[1.8rem] lg:text-[1.95rem] xl:text-[2.08rem]">
                       Smaller list. Better timing. Better conversations.
@@ -587,7 +573,49 @@ export function PlatformHomepage() {
                       better timing, and stronger conversations once your team starts emailing.
                     </p>
 
-                    <div className="relative mt-7 h-[13.5rem] overflow-hidden rounded-[1.06rem] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.028),transparent_42%),linear-gradient(180deg,rgba(4,5,8,0.12),rgba(5,6,10,0.52))] sm:h-[15.5rem] lg:h-[16.25rem]">
+                    <div className="relative mt-6 overflow-hidden rounded-[1.06rem] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.028),transparent_42%),linear-gradient(180deg,rgba(4,5,8,0.12),rgba(5,6,10,0.52))] sm:mt-7 sm:h-[15.5rem] lg:h-[16.25rem]">
+                      <div className="flex min-h-[15rem] flex-col justify-between gap-3 p-3 sm:hidden">
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            "Buying signals",
+                            "ICP fit",
+                          ].map((label) => (
+                            <div
+                              className="rounded-[0.8rem] bg-white/[0.04] px-3 py-2 text-center text-[0.88rem] font-medium text-slate-200"
+                              key={label}
+                            >
+                              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.35)]" />
+                              {label}
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="rounded-[0.95rem] border border-white/[0.05] bg-white/[0.03] px-4 py-5 text-center shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
+                          <div className="text-[1.45rem] font-semibold leading-[1.12] text-white">
+                            Ready-to-send brief
+                          </div>
+                          <div className="mt-2 text-[0.68rem] font-medium uppercase tracking-[0.13em] text-slate-500">
+                            Better-fit accounts
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            "Safer routes",
+                            "Right contacts",
+                          ].map((label) => (
+                            <div
+                              className="rounded-[0.8rem] bg-white/[0.04] px-3 py-2 text-center text-[0.88rem] font-medium text-slate-200"
+                              key={label}
+                            >
+                              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.35)]" />
+                              {label}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="hidden sm:block">
                       <div className="absolute inset-x-12 top-1/2 h-px -translate-y-1/2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
                       <div className="absolute left-1/2 top-1/2 h-[42%] w-px -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,transparent,rgba(255,255,255,0.12),transparent)]" />
                       <div className="absolute left-[24%] top-[28%] h-px w-[28%] origin-left rotate-[18deg] bg-[linear-gradient(90deg,rgba(255,255,255,0.06),rgba(167,139,250,0.34),transparent)]" />
@@ -611,7 +639,7 @@ export function PlatformHomepage() {
                         </div>
                       </div>
 
-                      {[
+                      {[ 
                         "Buying signals",
                         "ICP fit",
                         "Safer routes",
@@ -636,6 +664,7 @@ export function PlatformHomepage() {
                           </div>
                         );
                       })}
+                      </div>
                     </div>
 
                     <div className="mt-5 grid grid-cols-3 gap-3 sm:gap-4">
@@ -1088,7 +1117,7 @@ export function PlatformHomepage() {
                   <Button
                     asChild
                     size="lg"
-                    className="w-full border-white/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.022))] shadow-[0_20px_48px_rgba(0,0,0,0.28)] hover:border-white/[0.12] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.095),rgba(255,255,255,0.03))] sm:w-auto"
+                    className="w-full border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_20px_48px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:w-auto"
                   >
                     <Link href={ROUTES.BOOK_MEETING}>
                       <span className="inline-flex items-center gap-2">
@@ -1096,14 +1125,6 @@ export function PlatformHomepage() {
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </span>
                     </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="lg"
-                    variant="secondary"
-                    className="w-full border-white/12 bg-white/[0.04] text-white hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:w-auto"
-                  >
-                    <Link href="/#pipeline">See Example Workflow</Link>
                   </Button>
                 </div>
               </div>
@@ -1269,7 +1290,7 @@ export function PlatformHomepage() {
                 <Button
                   size="lg"
                   type="submit"
-                  className="w-full rounded-[1.05rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.085),rgba(255,255,255,0.026))] shadow-[0_22px_54px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.105),rgba(255,255,255,0.036))] sm:min-w-[16rem] sm:w-auto"
+                  className="w-full rounded-[1.05rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_22px_54px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:min-w-[16rem] sm:w-auto"
                 >
                   <span className="inline-flex items-center gap-2">
                     Apply for a targeting review

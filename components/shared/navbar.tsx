@@ -75,7 +75,7 @@ export function Navbar() {
   return (
     <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navClassName}`}>
       <Container className="relative flex h-16 items-center justify-between">
-        <Logo imageClassName="h-7 sm:h-8 lg:h-9" priority />
+        <Logo imageClassName="h-8 sm:h-9 lg:h-10" priority />
 
         <div className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
@@ -100,14 +100,14 @@ export function Navbar() {
             asChild
             size="md"
             variant="secondary"
-            className="rounded-[0.82rem] border-white/[0.08] bg-white/[0.03] text-white shadow-none hover:border-white/[0.12] hover:bg-white/[0.055] hover:text-white"
+            className="rounded-[0.82rem] border-white/[0.08] bg-[#11151c] text-white shadow-[0_16px_36px_rgba(0,0,0,0.18)] hover:border-white/[0.14] hover:bg-[#171c24] hover:text-white"
           >
             <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
           </Button>
           <Button
             asChild
             size="md"
-            className="rounded-[0.82rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.018))] shadow-none hover:border-white/[0.12] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.028))]"
+            className="rounded-[0.82rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))]"
           >
             <Link href={ROUTES.APPLY}>Apply</Link>
           </Button>
@@ -175,13 +175,13 @@ export function Navbar() {
                   asChild
                   size="lg"
                   variant="secondary"
-                  className="w-full rounded-[0.88rem] border-white/[0.08] bg-white/[0.03] text-white hover:border-white/[0.12] hover:bg-white/[0.055] hover:text-white"
+                  className="w-full rounded-[0.88rem] border-white/[0.08] bg-[#11151c] text-white hover:border-white/[0.14] hover:bg-[#171c24] hover:text-white"
                 >
                   <Link href={ROUTES.BOOK_MEETING}>
                     Book a meeting
                   </Link>
                 </Button>
-                <Button asChild size="lg" className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.018))] shadow-none hover:border-white/[0.12] hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.028))]">
+                <Button asChild size="lg" className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))]">
                   <Link href={ROUTES.APPLY}>Apply</Link>
                 </Button>
               </div>

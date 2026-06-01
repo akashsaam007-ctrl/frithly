@@ -21,7 +21,7 @@ export function Logo({ className, href = "/", imageClassName, priority = false }
       href={href}
       aria-label="Frithly home"
       className={cn(
-        "inline-flex items-center rounded-2xl transition-opacity hover:opacity-90",
+        "inline-flex shrink-0 items-center transition-opacity hover:opacity-95",
         className,
       )}
     >
@@ -31,8 +31,10 @@ export function Logo({ className, href = "/", imageClassName, priority = false }
         width={1935}
         height={813}
         priority={priority}
+        quality={100}
+        unoptimized
         sizes="(min-width: 1280px) 220px, (min-width: 1024px) 200px, (min-width: 640px) 176px, 152px"
-        className={cn("h-8 w-auto sm:h-9 md:h-10", imageClassName)}
+        className={cn("h-[2.05rem] w-auto sm:h-[2.3rem] md:h-[2.45rem]", imageClassName)}
       />
     </Link>
   );
@@ -49,11 +51,13 @@ export function BrandMark({ className, imageClassName, priority = false }: Brand
       <Image
         src="/frithly-mark.png"
         alt="Frithly mark"
-        width={112}
-        height={112}
+        width={374}
+        height={443}
         priority={priority}
+        quality={100}
+        unoptimized
         sizes="56px"
-        className={cn("h-14 w-14 object-cover", imageClassName)}
+        className={cn("h-14 w-14 object-contain", imageClassName)}
       />
     </div>
   );

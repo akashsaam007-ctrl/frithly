@@ -10,8 +10,8 @@ export function Footer() {
         <div className="grid gap-8 sm:gap-10 xl:grid-cols-[0.95fr_2.05fr]">
           <div className="space-y-4">
             <Logo
-              className="w-fit rounded-[0.9rem] bg-white/[0.015] px-4 py-3 hover:opacity-100"
-              imageClassName="h-7 sm:h-8 md:h-9"
+              className="w-fit hover:opacity-100"
+              imageClassName="h-8 sm:h-9 md:h-10"
             />
             <p className="max-w-sm text-base leading-8 text-white/68">
               Frithly helps outbound teams start with better-fit accounts, better timing, and
