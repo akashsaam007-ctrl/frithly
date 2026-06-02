@@ -94,14 +94,7 @@ export function Navbar() {
             variant="secondary"
             className="rounded-[0.82rem] border-white/[0.08] bg-[#11151c] text-white shadow-[0_16px_36px_rgba(0,0,0,0.18)] hover:border-white/[0.14] hover:bg-[#171c24] hover:text-white"
           >
-            <Link href={ROUTES.BOOK_MEETING}>Book a meeting</Link>
-          </Button>
-          <Button
-            asChild
-            size="md"
-            className="rounded-[0.82rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))]"
-          >
-            <Link href={ROUTES.APPLY}>Apply</Link>
+            <Link href={ROUTES.BOOK_MEETING}>Book strategy call</Link>
           </Button>
         </div>
 
@@ -164,11 +157,8 @@ export function Navbar() {
                   className="w-full rounded-[0.88rem] border-white/[0.08] bg-[#11151c] text-white hover:border-white/[0.14] hover:bg-[#171c24] hover:text-white"
                 >
                   <Link href={ROUTES.BOOK_MEETING}>
-                    Book a meeting
+                    Book strategy call
                   </Link>
-                </Button>
-                <Button asChild size="lg" className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))]">
-                  <Link href={ROUTES.APPLY}>Apply</Link>
                 </Button>
               </div>
             </Container>
