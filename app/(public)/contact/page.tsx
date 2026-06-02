@@ -15,12 +15,12 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Contact Frithly for plan discussions, onboarding questions, and support. Share your details for a guided reply before any strategy call is scheduled.",
+    "Contact Frithly about pricing, rollout fit, or weekly outbound research support.",
   keywords: [
     "Frithly contact",
     "contact Frithly",
+    "Frithly pricing",
     "Frithly support",
-    "Frithly sales",
   ],
   path: "/contact",
   title: "Contact Frithly | Support and Sales",
@@ -32,7 +32,7 @@ export default function ContactPage() {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Contact Frithly for plan discussions, onboarding questions, and support. Share your details for a guided reply before any strategy call is scheduled.",
+            "Contact Frithly about pricing, rollout fit, or weekly outbound research support.",
           path: "/contact",
           title: "Contact Frithly | Support and Sales",
         })}

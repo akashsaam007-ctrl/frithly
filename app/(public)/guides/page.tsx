@@ -14,14 +14,14 @@ import {
 } from "@/lib/seo";
 
 const guidesDescription =
-  "Explore Frithly buying guides on B2B lead intelligence, founder-led outbound, prospect research services, and sales intelligence for early-stage SaaS teams.";
+  "Explore Frithly guides on better-fit accounts, prospect research, safer outreach, and founder-led outbound.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: guidesDescription,
   keywords: [
-    "B2B lead intelligence guides",
+    "B2B prospect research guides",
     "Apollo alternative for founders",
-    "sales intelligence guides",
+    "founder outbound guides",
     "outbound research guides",
   ],
   path: "/guides",

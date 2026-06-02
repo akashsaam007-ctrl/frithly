@@ -3,7 +3,7 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    background_color: "#050c14",
+    background_color: "#030406",
     categories: ["business", "productivity", "sales", "marketing"],
     description: APP_TAGLINE,
     dir: "ltr",
@@ -26,6 +26,6 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: APP_NAME,
     scope: "/",
     start_url: "/",
-    theme_color: "#050c14",
+    theme_color: "#030406",
   };
 }

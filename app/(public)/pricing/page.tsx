@@ -14,18 +14,18 @@ import {
 } from "@/lib/seo";
 
 const pricingDescription =
-  "Design a Frithly outbound intelligence program around opportunity coverage, targeting depth, market scope, and curated weekly delivery.";
+  "See Frithly pricing for weekly outbound research built around better-fit accounts, the right contacts, and safer outreach.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: pricingDescription,
   keywords: [
     "Frithly pricing",
-    "outbound intelligence program",
-    "curated outbound service pricing",
-    "weekly outbound intelligence",
+    "weekly outbound research pricing",
+    "outbound research service pricing",
+    "better fit accounts service",
   ],
   path: "/pricing",
-  title: "Design Your Intelligence Program | Frithly",
+  title: "Frithly Pricing | Weekly Outbound Research",
 });
 
 type PricingPageProps = {
@@ -59,7 +59,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
         data={buildWebPageSchema({
           description: pricingDescription,
           path: "/pricing",
-          title: "Design Your Intelligence Program | Frithly",
+          title: "Frithly Pricing | Weekly Outbound Research",
         })}
       />
       <StructuredData data={buildServiceSchema()} />

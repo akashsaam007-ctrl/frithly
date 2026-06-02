@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  category: "B2B outbound research service",
-  classification: "Outbound targeting and research service",
+  category: "Outbound targeting and research service",
+  classification: "B2B outbound research and targeting service",
   creator: APP_NAME,
   description: META.DESCRIPTION,
   formatDetection: {
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description: META.DESCRIPTION,
     images: [
       {
-        alt: `${APP_NAME} preview`,
+        alt: `${APP_NAME} | Better Outbound Starts With Better Accounts`,
         height: 630,
         url: "/og-image.png",
         width: 1200,

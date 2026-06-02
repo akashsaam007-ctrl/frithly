@@ -14,15 +14,15 @@ import {
 } from "@/lib/seo";
 
 const proofDescription =
-  "Case-study style proof pages that show the representative Frithly motion for founder-led outbound teams, small SDR pods, and lean GTM operators.";
+  "See how Frithly improves targeting, timing, and outreach quality before teams send the first email.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: proofDescription,
   keywords: [
     "outbound case study",
-    "B2B lead research case study",
+    "B2B prospect research case study",
     "founder-led outbound proof",
-    "sales intelligence proof pages",
+    "better fit accounts proof",
   ],
   path: ROUTES.PROOF,
   title: "Proof | Frithly",

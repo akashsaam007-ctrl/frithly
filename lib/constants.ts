@@ -2,7 +2,7 @@ import { publicEnv } from "@/lib/utils/public-env";
 
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE =
-  "Better-fit accounts, better timing, and safer outbound before the first email is sent.";
+  "Better outbound starts with better accounts.";
 export const APP_DOMAIN = "frithly.com";
 export const CALENDLY_URL = publicEnv.NEXT_PUBLIC_CALENDLY_URL;
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
@@ -140,8 +140,8 @@ export const ROUTES = {
 
 export const META = {
   DESCRIPTION:
-    "Frithly helps outbound teams stop wasting outreach on the wrong accounts with better-fit companies, the right contacts, and better timing before the first email.",
+    "Frithly helps outbound teams find better-fit accounts, the right contacts, and better timing before outreach starts.",
   KEYWORDS:
-    "Frithly, outbound targeting service, better fit accounts, B2B prospect research, weekly outbound research brief, deliverability safe outreach, founder outbound support",
+    "Frithly, outbound research service, better fit accounts, B2B prospect research, weekly outbound brief, sales prospect research, deliverability safe outreach, founder outbound support",
   TITLE: "Frithly | Better Outbound Starts With Better Accounts",
 } as const;

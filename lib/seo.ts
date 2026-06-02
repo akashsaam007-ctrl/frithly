@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { APP_DOMAIN, APP_NAME, APP_TAGLINE, META, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, APP_TAGLINE, BOOKING_URL, META, SUPPORT_EMAIL } from "@/lib/constants";
 import { publicEnv } from "@/lib/utils/public-env";
 
 const SITE_URL = publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`;
@@ -13,10 +13,10 @@ const SITE_LAST_MODIFIED = "2026-06-02T00:00:00.000Z";
 const PRIMARY_MARKETS = ["United States", "Canada", "United Kingdom", "Europe"] as const;
 const SITE_NAV_ITEMS = [
   { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Pricing", path: "/pricing" },
   { name: "Apply", path: "/apply" },
   { name: "Contact", path: "/contact" },
+  { name: "Pricing", path: "/pricing" },
+  { name: "About", path: "/about" },
   { name: "Guides", path: "/guides" },
   { name: "Proof", path: "/proof" },
   { name: "Demo", path: "/demo" },
@@ -67,8 +67,8 @@ export function buildPublicMetadata({
       canonical,
     },
     authors: [{ name: APP_NAME }],
-    category: "B2B outbound research service",
-    classification: "Outbound targeting and research service",
+    category: "Outbound targeting and research service",
+    classification: "B2B outbound research and targeting service",
     creator: APP_NAME,
     description,
     formatDetection: {
@@ -82,7 +82,7 @@ export function buildPublicMetadata({
       description,
       images: [
         {
-          alt: `${APP_NAME} preview`,
+          alt: `${APP_NAME} | Better outbound starts with better accounts`,
           height: 630,
           url: absoluteUrl(DEFAULT_IMAGE),
           width: 1200,
@@ -132,14 +132,6 @@ export function buildOrganizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": ORG_ID,
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: "IN",
-      addressLocality: "Dharapuram",
-      addressRegion: "Tamil Nadu",
-      postalCode: "638106",
-      streetAddress: "55, Peranayakanvalasu, Mulanur",
-    },
     areaServed: [...PRIMARY_MARKETS],
     brand: {
       "@type": "Brand",
@@ -156,7 +148,7 @@ export function buildOrganizationSchema() {
         contactType: "sales",
         email: SUPPORT_EMAIL,
         availableLanguage: ["en"],
-        url: absoluteUrl("/contact"),
+        url: BOOKING_URL,
       },
       {
         "@type": "ContactPoint",
@@ -230,11 +222,18 @@ export function buildWebSiteSchema() {
     inLanguage: "en-GB",
     keywords: META.KEYWORDS,
     name: APP_NAME,
-    potentialAction: {
-      "@type": "CommunicateAction",
-      name: "Apply for a targeting review",
-      target: absoluteUrl("/apply"),
-    },
+    potentialAction: [
+      {
+        "@type": "CommunicateAction",
+        name: "Apply for a targeting review",
+        target: absoluteUrl("/apply"),
+      },
+      {
+        "@type": "ScheduleAction",
+        name: "Book an outbound intelligence review",
+        target: BOOKING_URL,
+      },
+    ],
     publisher: {
       "@id": ORG_ID,
     },
@@ -269,7 +268,7 @@ export function buildServiceSchema() {
         minPrice: 499,
         priceCurrency: "GBP",
       },
-      url: absoluteUrl("/contact"),
+      url: absoluteUrl("/apply"),
     },
     provider: {
       "@id": ORG_ID,

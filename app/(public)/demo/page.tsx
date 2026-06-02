@@ -10,19 +10,19 @@ import {
 } from "@/lib/seo";
 
 const demoDescription =
-  "Preview how Frithly turns an ICP into selective discovery, reviewed opportunity scoring, SMTP-safe cohort formation, and weekly outbound delivery.";
+  "Preview how Frithly turns an ICP into a smaller shortlist with better-fit accounts, the right contacts, and clearer timing.";
 
 export const metadata: Metadata = buildPublicMetadata({
   description: demoDescription,
   keywords: [
-    "outbound intelligence demo",
+    "outbound research demo",
     "interactive ICP demo",
-    "curated outbound demo",
-    "weekly opportunity delivery demo",
+    "better fit accounts demo",
+    "weekly outbound brief demo",
     "Frithly demo",
   ],
   path: "/demo",
-  title: "Outbound Intelligence Demo | Frithly",
+  title: "Frithly Demo | Better Outbound Starts With Better Accounts",
 });
 
 export default function DemoPage() {
@@ -31,14 +31,14 @@ export default function DemoPage() {
       <StructuredData
         data={buildBreadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "Outbound Intelligence Demo", path: "/demo" },
+          { name: "Frithly Demo", path: "/demo" },
         ])}
       />
       <StructuredData
         data={buildWebPageSchema({
           description: demoDescription,
           path: "/demo",
-          title: "Outbound Intelligence Demo | Frithly",
+          title: "Frithly Demo | Better Outbound Starts With Better Accounts",
         })}
       />
       <PageEvent
