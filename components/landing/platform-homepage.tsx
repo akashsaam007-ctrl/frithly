@@ -491,7 +491,7 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
 
     const interval = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % railItems.length);
-    }, 2200);
+    }, 2000);
 
     return () => {
       window.clearInterval(interval);
@@ -499,33 +499,48 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
   }, [enableMotion, railItems.length]);
 
   return (
-    <StorySection className="pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pt-28 lg:pb-24" glow="shadow" id="pipeline">
-      <div className="space-y-10 sm:space-y-12">
-        <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-          <SectionIntro
-            copy="Every step narrows the list, improves the contact path, and gives your team a clearer reason to reach out."
-            eyebrow="How it works"
-            title="From signal to delivery, without the messy middle."
-          />
+    <section className="relative -mt-2 pb-10 pt-3 sm:pb-12 sm:pt-4 lg:pb-14 lg:pt-5" id="pipeline">
+      <Container className="space-y-3 sm:space-y-4">
+        <motion.div
+          className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
+          {...revealProps(enableMotion, 0.04)}
+        >
+          <div className="space-y-1.5">
+            <p
+              className={cn(
+                monoFont.className,
+                "text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-[11px]",
+              )}
+            >
+              How Frithly works
+            </p>
+            <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-[0.95rem]">
+              From buying signals to outbound-ready delivery.
+            </p>
+          </div>
+          <p
+            className={cn(
+              monoFont.className,
+              "text-[10px] uppercase tracking-[0.16em] text-slate-600 sm:text-[11px]",
+            )}
+          >
+            Auto-scroll overview
+          </p>
         </motion.div>
 
         <motion.div {...revealProps(enableMotion, 0.08)}>
           <SurfaceCard className="overflow-hidden px-0 py-0" tone="spotlight">
-            <div className="relative overflow-hidden px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-[linear-gradient(90deg,#05060a,rgba(5,6,10,0))] sm:w-16" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-[linear-gradient(270deg,#05060a,rgba(5,6,10,0))] sm:w-16" />
+            <div className="relative overflow-hidden px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-5">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-[linear-gradient(90deg,#05060a,rgba(5,6,10,0))] sm:w-10" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-[linear-gradient(270deg,#05060a,rgba(5,6,10,0))] sm:w-10" />
               <motion.div
-                animate={
-                  enableMotion && loopDistance > 0
-                    ? { x: [0, -loopDistance] }
-                    : undefined
-                }
-                className="flex items-stretch gap-3 sm:gap-4"
+                animate={enableMotion && loopDistance > 0 ? { x: [0, -loopDistance] } : undefined}
+                className="flex items-stretch gap-2.5 sm:gap-3"
                 ref={trackRef}
                 transition={
                   enableMotion && loopDistance > 0
                     ? {
-                        duration: Math.max(22, loopDistance / 32),
+                        duration: Math.max(26, loopDistance / 24),
                         ease: "linear",
                         repeat: Number.POSITIVE_INFINITY,
                       }
@@ -555,10 +570,10 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
                     >
                       <SurfaceCard
                         className={cn(
-                          "flex h-full min-h-[15.5rem] w-[17rem] flex-col justify-between border border-white/[0.05] p-5 sm:min-h-[16.5rem] sm:w-[19rem] sm:p-6 lg:min-h-[17.5rem] lg:w-[21rem] lg:p-7",
-                          isFinal ? "w-[19rem] sm:w-[23rem] lg:w-[26rem]" : "",
+                          "flex h-full min-h-[9.25rem] w-[12rem] flex-col justify-between border border-white/[0.05] p-3.5 sm:min-h-[9.75rem] sm:w-[13.5rem] sm:p-4 lg:min-h-[10.25rem] lg:w-[14.5rem]",
+                          isFinal ? "w-[14rem] sm:w-[15.75rem] lg:w-[17rem]" : "",
                           isActive
-                            ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_26px_70px_rgba(0,0,0,0.28),0_0_40px_rgba(91,58,153,0.16)]"
+                            ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_20px_52px_rgba(0,0,0,0.22),0_0_28px_rgba(91,58,153,0.12)]"
                             : "",
                         )}
                         tone={isActive ? "spotlight" : "neutral"}
@@ -570,42 +585,40 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
                           )}
                         />
                         <div className="relative flex h-full flex-col justify-between">
-                          <div className="space-y-6">
+                          <div className="space-y-3">
                             <div
                               className={cn(
                                 monoFont.className,
-                                "text-[10px] tracking-[0.16em] text-slate-500 sm:text-[11px]",
+                                "text-[9px] tracking-[0.16em] text-slate-500 sm:text-[10px]",
                               )}
                             >
                               {panel.label}
                             </div>
                             {isFinal ? (
-                              <div className="space-y-4">
-                                <div className="max-w-[11ch] text-[1.95rem] font-semibold leading-[0.94] tracking-[-0.05em] text-white sm:text-[2.3rem] lg:text-[2.6rem]">
+                              <div className="space-y-2.5">
+                                <div className="max-w-[12ch] text-[1.28rem] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-[1.45rem] lg:text-[1.6rem]">
                                   <span className="block">From Signal</span>
-                                  <span className="block bg-[linear-gradient(135deg,#ffffff_0%,#ece9ff_42%,#9580d6_100%)] bg-clip-text text-transparent">
-                                    To Conversation.
-                                  </span>
+                                  <span className="block text-[#dcd3ff]">To Conversation.</span>
                                 </div>
-                                <p className="max-w-[18rem] text-[0.96rem] leading-7 text-slate-300 sm:text-[1rem] sm:leading-8">
+                                <p className="max-w-[14rem] text-[0.82rem] leading-5 text-slate-300 sm:text-[0.86rem] sm:leading-6">
                                   {panel.body}
                                 </p>
                               </div>
                             ) : (
-                              <div className="space-y-4">
-                                <div className="text-[1.7rem] font-semibold leading-[0.96] tracking-[-0.05em] text-white sm:text-[1.95rem] lg:text-[2.15rem]">
+                              <div className="space-y-2.5">
+                                <div className="text-[1.02rem] font-semibold leading-[1.02] tracking-[-0.03em] text-white sm:text-[1.1rem] lg:text-[1.18rem]">
                                   {panel.title}
                                 </div>
-                                <p className="max-w-[16rem] text-[0.95rem] leading-7 text-slate-300 sm:text-[1rem] sm:leading-8">
+                                <p className="max-w-[11.25rem] text-[0.82rem] leading-5 text-slate-300 sm:text-[0.85rem] sm:leading-6">
                                   {panel.body}
                                 </p>
                               </div>
                             )}
                           </div>
 
-                          <div className="flex items-center justify-between pt-7">
+                          <div className="flex items-center justify-between pt-4">
                             <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.12),transparent)]" />
-                            <div className="ml-4 h-2.5 w-2.5 rounded-full bg-white/75 shadow-[0_0_14px_rgba(167,139,250,0.34)]" />
+                            <div className="ml-3 h-2 w-2 rounded-full bg-white/75 shadow-[0_0_12px_rgba(167,139,250,0.34)]" />
                           </div>
                         </div>
                       </SurfaceCard>
@@ -616,8 +629,8 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
             </div>
           </SurfaceCard>
         </motion.div>
-      </div>
-    </StorySection>
+      </Container>
+    </section>
   );
 }
 
@@ -898,6 +911,8 @@ export function PlatformHomepage() {
           </motion.div>
         </Container>
       </section>
+
+      <HorizontalPipelineSection enableMotion={enableMotion} />
 
       <StorySection glow="shadow" id="problem">
         <div className="grid gap-12 xl:grid-cols-[0.84fr_1.16fr] xl:items-start">
@@ -1221,8 +1236,6 @@ export function PlatformHomepage() {
           </motion.div>
         </div>
       </StorySection>
-
-      <HorizontalPipelineSection enableMotion={enableMotion} />
 
       <StorySection glow="shadow" id="pilot">
         <motion.div {...revealProps(enableMotion, 0.04)}>

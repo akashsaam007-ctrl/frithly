@@ -32,8 +32,8 @@ export function CookieBanner() {
   }
 
   return (
-    <div className="no-print fixed inset-x-0 bottom-3 z-50 px-3 sm:bottom-4 sm:px-4 min-[460px]:left-auto min-[460px]:right-5 min-[460px]:max-w-[20.25rem] min-[460px]:px-0">
-      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.15rem] border border-white/[0.06] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_34%),linear-gradient(180deg,rgba(11,12,16,0.98),rgba(4,5,8,1))] shadow-[0_32px_90px_rgba(0,0,0,0.3)] backdrop-blur-xl min-[460px]:mx-0 min-[460px]:max-w-[20.25rem]">
+    <div className="no-print fixed inset-x-0 bottom-3 z-50 px-3 sm:bottom-4 sm:px-4 min-[460px]:left-auto min-[460px]:right-5 min-[460px]:max-w-[21.5rem] min-[460px]:px-0">
+      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.15rem] border border-white/[0.06] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_34%),linear-gradient(180deg,rgba(11,12,16,0.98),rgba(4,5,8,1))] shadow-[0_32px_90px_rgba(0,0,0,0.3)] backdrop-blur-xl min-[460px]:mx-0 min-[460px]:max-w-[21.5rem]">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,rgba(167,139,250,0.1),transparent_60%)]" />
         <div className="relative flex flex-col gap-3 p-3.5 sm:p-4">
           <div className="space-y-2">
@@ -51,9 +51,9 @@ export function CookieBanner() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <div className="grid gap-2">
             <Button
-              className="w-full rounded-[0.88rem] border-white/[0.08] bg-white/[0.035] px-4 text-center text-white hover:border-white/[0.14] hover:bg-white/[0.06] sm:w-auto"
+              className="h-auto min-h-11 w-full whitespace-normal rounded-[0.88rem] border-white/[0.08] bg-white/[0.035] px-4 py-3 text-center text-sm leading-5 text-white hover:border-white/[0.14] hover:bg-white/[0.06]"
               size="sm"
               variant="secondary"
               onClick={() => saveChoice("rejected")}
@@ -61,7 +61,7 @@ export function CookieBanner() {
               Reject optional cookies
             </Button>
             <Button
-              className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] px-4 text-center text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:w-auto"
+              className="h-auto min-h-11 w-full whitespace-normal rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] px-4 py-3 text-center text-sm leading-5 text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))]"
               size="sm"
               onClick={() => saveChoice("accepted")}
             >
