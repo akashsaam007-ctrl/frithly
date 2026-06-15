@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
-import { motion, useReducedMotion } from "framer-motion";
-import { useState, type FormEvent, type ReactNode } from "react";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -171,14 +177,37 @@ const audienceCards = [
   },
 ] as const;
 
-const processSteps = [
-  "Define ICP",
-  "Find buying signals",
-  "Filter bad accounts",
-  "Find the right people",
-  "Write better angles",
-  "Review",
-  "Delivery",
+const pipelinePanels = [
+  {
+    body: "Companies showing relevant growth and buying signals.",
+    label: "01",
+    title: "Signal Discovery",
+  },
+  {
+    body: "Matched against your ideal customer profile.",
+    label: "02",
+    title: "Qualification",
+  },
+  {
+    body: "Decision-maker and contact data verified.",
+    label: "03",
+    title: "Verification",
+  },
+  {
+    body: "Relevant context and outreach angles prepared.",
+    label: "04",
+    title: "Personalization",
+  },
+  {
+    body: "Every lead is reviewed before delivery.",
+    label: "05",
+    title: "Manual QA",
+  },
+  {
+    body: "Outbound-ready opportunities delivered to your team.",
+    label: "06",
+    title: "Delivery",
+  },
 ] as const;
 
 const signalExamples = [
@@ -413,6 +442,230 @@ function MetricTile({
       </div>
       <div className="mt-2 text-[1.45rem] font-semibold text-white sm:mt-3 sm:text-[1.8rem]">{value}</div>
     </div>
+  );
+}
+
+function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [maxTranslate, setMaxTranslate] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const panelCount = pipelinePanels.length + 1;
+
+  const { scrollYProgress } = useScroll({
+    offset: ["start start", "end end"],
+    target: sectionRef,
+  });
+
+  const x = useTransform(scrollYProgress, [0, 1], [0, -maxTranslate]);
+
+  useEffect(() => {
+    function measureTrack() {
+      if (!viewportRef.current || !trackRef.current) {
+        return;
+      }
+
+      setMaxTranslate(
+        Math.max(trackRef.current.scrollWidth - viewportRef.current.clientWidth, 0),
+      );
+    }
+
+    measureTrack();
+
+    let resizeObserver: ResizeObserver | null = null;
+
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(measureTrack);
+
+      if (viewportRef.current) {
+        resizeObserver.observe(viewportRef.current);
+      }
+
+      if (trackRef.current) {
+        resizeObserver.observe(trackRef.current);
+      }
+    }
+
+    window.addEventListener("resize", measureTrack);
+
+    return () => {
+      window.removeEventListener("resize", measureTrack);
+      resizeObserver?.disconnect();
+    };
+  }, []);
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const nextIndex = Math.min(panelCount - 1, Math.round(latest * (panelCount - 1)));
+    setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
+  });
+
+  const sectionHeight = maxTranslate > 0 ? `calc(100svh + ${maxTranslate}px)` : "320svh";
+
+  return (
+    <section
+      className="relative"
+      id="pipeline"
+      ref={sectionRef}
+      style={{ height: sectionHeight }}
+    >
+      <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
+        <Container className="flex h-full flex-col justify-center py-8 sm:py-10 lg:py-12">
+          <div className="max-w-3xl space-y-6">
+            <SectionEyebrow>How it works</SectionEyebrow>
+            <div
+              className={cn(
+                headlineFont.className,
+                "max-w-4xl text-[2.45rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.25rem] lg:text-[4.2rem] xl:text-[4.75rem]",
+              )}
+            >
+              From signal to delivery, without the messy middle.
+            </div>
+            <p className="max-w-2xl text-[0.98rem] leading-7 text-slate-300 sm:text-[1.03rem] sm:leading-8 md:text-[1.08rem]">
+              Every step narrows the list, improves the contact path, and gives your team a
+              clearer reason to reach out.
+            </p>
+          </div>
+
+          <div
+            className="relative mt-10 min-h-[26rem] flex-1 overflow-hidden sm:mt-12 sm:min-h-[30rem] lg:mt-14 lg:min-h-[34rem]"
+            ref={viewportRef}
+          >
+            <motion.div
+              className="flex h-full items-stretch gap-4 pr-[12vw] sm:gap-5 lg:gap-6"
+              ref={trackRef}
+              style={maxTranslate > 0 ? { x } : undefined}
+            >
+              {pipelinePanels.map((panel, index) => {
+                const distance = Math.abs(index - activeIndex);
+                const isActive = index === activeIndex;
+
+                return (
+                  <motion.div
+                    animate={
+                      enableMotion
+                        ? {
+                            opacity: isActive ? 1 : distance === 1 ? 0.54 : 0.24,
+                            scale: isActive ? 1 : distance === 1 ? 0.965 : 0.93,
+                            y: isActive ? 0 : 10,
+                          }
+                        : undefined
+                    }
+                    className="flex h-full shrink-0 items-stretch"
+                    key={panel.title}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <SurfaceCard
+                      className={cn(
+                        "flex h-full w-[min(84vw,22rem)] flex-col justify-between border border-white/[0.05] p-6 sm:w-[min(68vw,28rem)] sm:p-7 lg:w-[min(52vw,32rem)] lg:p-8 xl:w-[min(38vw,34rem)]",
+                        isActive
+                          ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_34px_88px_rgba(0,0,0,0.3),0_0_46px_rgba(91,58,153,0.18)]"
+                          : "",
+                      )}
+                      tone={isActive ? "spotlight" : "neutral"}
+                    >
+                      <div
+                        className={cn(
+                          "absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.08),transparent_40%)] transition-opacity duration-500",
+                          isActive ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                      <div className="relative flex h-full flex-col justify-between">
+                        <div className="space-y-8 sm:space-y-10">
+                          <div
+                            className={cn(
+                              monoFont.className,
+                              "text-[10px] tracking-[0.16em] text-slate-500 sm:text-[11px]",
+                            )}
+                          >
+                            {panel.label}
+                          </div>
+                          <div className="space-y-5">
+                            <div className="text-[2rem] font-semibold leading-[0.96] tracking-[-0.05em] text-white sm:text-[2.35rem] lg:text-[2.7rem]">
+                              {panel.title}
+                            </div>
+                            <p className="max-w-[22rem] text-[1rem] leading-7 text-slate-300 sm:text-[1.06rem] sm:leading-8">
+                              {panel.body}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-10 sm:pt-12">
+                          <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.12),transparent)]" />
+                          <div className="ml-4 h-2.5 w-2.5 rounded-full bg-white/75 shadow-[0_0_14px_rgba(167,139,250,0.34)]" />
+                        </div>
+                      </div>
+                    </SurfaceCard>
+                  </motion.div>
+                );
+              })}
+
+              <motion.div
+                animate={
+                  enableMotion
+                    ? {
+                        opacity: activeIndex === panelCount - 1 ? 1 : activeIndex === panelCount - 2 ? 0.54 : 0.24,
+                        scale: activeIndex === panelCount - 1 ? 1 : activeIndex === panelCount - 2 ? 0.97 : 0.93,
+                        y: activeIndex === panelCount - 1 ? 0 : 10,
+                      }
+                    : undefined
+                }
+                className="flex h-full shrink-0 items-stretch"
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <SurfaceCard
+                  className={cn(
+                    "flex h-full w-[min(88vw,25rem)] flex-col justify-between border border-white/[0.05] p-6 sm:w-[min(72vw,34rem)] sm:p-7 lg:w-[min(58vw,42rem)] lg:p-9 xl:w-[min(50vw,46rem)]",
+                    activeIndex === panelCount - 1
+                      ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_34px_88px_rgba(0,0,0,0.3),0_0_46px_rgba(91,58,153,0.18)]"
+                      : "",
+                  )}
+                  tone="spotlight"
+                >
+                  <div className="relative flex h-full flex-col justify-between">
+                    <div className="space-y-8 sm:space-y-10">
+                      <div
+                        className={cn(
+                          monoFont.className,
+                          "text-[10px] tracking-[0.16em] text-slate-500 sm:text-[11px]",
+                        )}
+                      >
+                        Final panel
+                      </div>
+                      <div className="max-w-[18rem] text-[2.4rem] font-semibold leading-[0.92] tracking-[-0.06em] text-white sm:max-w-[22rem] sm:text-[3rem] lg:max-w-[24rem] lg:text-[4rem]">
+                        <span className="block">From Signal</span>
+                        <span className="block bg-[linear-gradient(135deg,#ffffff_0%,#ece9ff_42%,#9580d6_100%)] bg-clip-text text-transparent">
+                          To Conversation.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <p className="max-w-[30rem] text-[1rem] leading-7 text-slate-300 sm:text-[1.08rem] sm:leading-8">
+                        Everything required to start a better outbound conversation.
+                      </p>
+                      <div className="grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-4">
+                        {[
+                          "Better-fit accounts",
+                          "Verified contacts",
+                          "Clearer opening angles",
+                        ].map((item) => (
+                          <div
+                            className="rounded-[0.95rem] bg-white/[0.024] px-4 py-4"
+                            key={item}
+                          >
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </SurfaceCard>
+              </motion.div>
+            </motion.div>
+          </div>
+        </Container>
+      </div>
+    </section>
   );
 }
 
@@ -1017,47 +1270,7 @@ export function PlatformHomepage() {
         </div>
       </StorySection>
 
-      <StorySection glow="shadow" id="pipeline">
-        <div className="space-y-12">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              copy="This is the flow: define the market, find the signs, remove weak accounts, map the right people, and hand your team a better brief."
-              eyebrow="How it works"
-              title="How Frithly builds the brief."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-7 py-8 lg:px-9 lg:py-10" tone="spotlight">
-              <div className="grid gap-4 min-[460px]:grid-cols-2 xl:flex xl:flex-row xl:items-center">
-                {processSteps.map((step, index) => (
-                  <div className="flex min-w-0 flex-1 items-center gap-4" key={step}>
-                    <div className="min-w-0 flex-1 rounded-[0.98rem] bg-white/[0.02] px-5 py-5">
-                      <div className="flex items-center justify-between gap-4">
-                        <span
-                          className={cn(
-                            monoFont.className,
-                            "text-[10px] tracking-[0.14em] text-slate-500",
-                          )}
-                        >
-                          0{index + 1}
-                        </span>
-                        <div className="h-2 w-2 rounded-full bg-white/70 shadow-[0_0_10px_rgba(167,139,250,0.24)]" />
-                      </div>
-                      <div className="mt-4 text-lg font-semibold leading-tight text-white">{step}</div>
-                    </div>
-                    {index < processSteps.length - 1 ? (
-                      <div className="hidden xl:block">
-                        <ArrowRight className="h-5 w-5 text-white/30" aria-hidden="true" />
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
+      <HorizontalPipelineSection enableMotion={enableMotion} />
 
       <StorySection glow="shadow" id="pilot">
         <motion.div {...revealProps(enableMotion, 0.04)}>
