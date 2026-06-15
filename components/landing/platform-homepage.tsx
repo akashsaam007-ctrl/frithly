@@ -453,7 +453,6 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
   const railItems = [...pipelinePanels, pipelineFinalPanel] as const;
   const marqueeItems = [...railItems, ...railItems];
   const [loopDistance, setLoopDistance] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     function measureLoop() {
@@ -484,150 +483,145 @@ function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) 
     };
   }, []);
 
-  useEffect(() => {
-    if (!enableMotion) {
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % railItems.length);
-    }, 2000);
-
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [enableMotion, railItems.length]);
-
   return (
-    <section className="relative -mt-2 pb-10 pt-3 sm:pb-12 sm:pt-4 lg:pb-14 lg:pt-5" id="pipeline">
-      <Container className="space-y-3 sm:space-y-4">
-        <motion.div
-          className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
-          {...revealProps(enableMotion, 0.04)}
-        >
-          <div className="space-y-1.5">
-            <p
-              className={cn(
-                monoFont.className,
-                "text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-[11px]",
-              )}
-            >
-              How Frithly works
-            </p>
-            <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-[0.95rem]">
-              From buying signals to outbound-ready delivery.
-            </p>
-          </div>
-          <p
-            className={cn(
-              monoFont.className,
-              "text-[10px] uppercase tracking-[0.16em] text-slate-600 sm:text-[11px]",
-            )}
-          >
-            Auto-scroll overview
-          </p>
-        </motion.div>
-
-        <motion.div {...revealProps(enableMotion, 0.08)}>
-          <SurfaceCard className="overflow-hidden px-0 py-0" tone="spotlight">
-            <div className="relative overflow-hidden px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-5">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-[linear-gradient(90deg,#05060a,rgba(5,6,10,0))] sm:w-10" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-[linear-gradient(270deg,#05060a,rgba(5,6,10,0))] sm:w-10" />
-              <motion.div
-                animate={enableMotion && loopDistance > 0 ? { x: [0, -loopDistance] } : undefined}
-                className="flex items-stretch gap-2.5 sm:gap-3"
-                ref={trackRef}
-                transition={
-                  enableMotion && loopDistance > 0
-                    ? {
-                        duration: Math.max(26, loopDistance / 24),
-                        ease: "linear",
-                        repeat: Number.POSITIVE_INFINITY,
-                      }
-                    : undefined
-                }
-              >
-                {marqueeItems.map((panel, index) => {
-                  const logicalIndex = index % railItems.length;
-                  const distance = Math.abs(logicalIndex - activeIndex);
-                  const wrappedDistance = Math.min(distance, railItems.length - distance);
-                  const isActive = logicalIndex === activeIndex;
-                  const isFinal = logicalIndex === railItems.length - 1;
-
-                  return (
-                    <motion.div
-                      animate={
-                        enableMotion
-                          ? {
-                              opacity: isActive ? 1 : wrappedDistance === 1 ? 0.68 : 0.38,
-                              scale: isActive ? 1 : wrappedDistance === 1 ? 0.975 : 0.95,
-                            }
-                          : undefined
-                      }
-                      className="flex shrink-0 items-stretch"
-                      key={`${panel.title}-${index}`}
-                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    <section className="relative -mt-1 pb-10 pt-4 sm:pb-12 sm:pt-5 lg:pb-14 lg:pt-6" id="pipeline">
+      <Container>
+        <motion.div {...revealProps(enableMotion, 0.06)}>
+          <div className="relative overflow-hidden rounded-[1.25rem] border border-white/[0.05] bg-[linear-gradient(180deg,rgba(8,9,13,0.92),rgba(3,4,6,0.985))] shadow-[0_28px_90px_rgba(0,0,0,0.26)]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.03),transparent_22%),radial-gradient(circle_at_82%_18%,rgba(167,139,250,0.07),transparent_22%)]" />
+            <div className="grid gap-4 p-4 sm:gap-5 sm:p-5 lg:grid-cols-[minmax(0,0.31fr)_minmax(0,0.69fr)] lg:items-center lg:p-6">
+              <div className="relative space-y-3 lg:pr-6">
+                <div className="pointer-events-none absolute -left-6 top-4 hidden h-24 w-24 rounded-full bg-[rgba(167,139,250,0.08)] blur-[72px] lg:block" />
+                <p
+                  className={cn(
+                    monoFont.className,
+                    "relative text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-[11px]",
+                  )}
+                >
+                  How Frithly works
+                </p>
+                <div className="relative max-w-sm space-y-2">
+                  <div className="text-[1.15rem] font-semibold leading-tight text-white sm:text-[1.32rem]">
+                    From signal to delivery, without the messy middle.
+                  </div>
+                  <p className="text-[0.9rem] leading-6 text-slate-300 sm:text-[0.95rem] sm:leading-7">
+                    Better-fit accounts, verified contacts, and cleaner starting points before your team sends anything.
+                  </p>
+                </div>
+                <div className="relative flex flex-wrap gap-2 pt-1">
+                  {["Signal-led", "Human-reviewed", "Ready for reps"].map((item) => (
+                    <span
+                      className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[0.72rem] font-medium text-slate-300"
+                      key={item}
                     >
-                      <SurfaceCard
-                        className={cn(
-                          "flex h-full min-h-[9.25rem] w-[12rem] flex-col justify-between border border-white/[0.05] p-3.5 sm:min-h-[9.75rem] sm:w-[13.5rem] sm:p-4 lg:min-h-[10.25rem] lg:w-[14.5rem]",
-                          isFinal ? "w-[14rem] sm:w-[15.75rem] lg:w-[17rem]" : "",
-                          isActive
-                            ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_20px_52px_rgba(0,0,0,0.22),0_0_28px_rgba(91,58,153,0.12)]"
-                            : "",
-                        )}
-                        tone={isActive ? "spotlight" : "neutral"}
-                      >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative overflow-hidden rounded-[1.05rem] border border-white/[0.04] bg-black/[0.2] px-3 py-3 sm:px-4 sm:py-4">
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-[linear-gradient(90deg,#07080b,rgba(7,8,11,0))] sm:w-12" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-[linear-gradient(270deg,#07080b,rgba(7,8,11,0))] sm:w-12" />
+                <motion.div
+                  animate={enableMotion && loopDistance > 0 ? { x: [0, -loopDistance] } : undefined}
+                  className="flex items-stretch gap-3"
+                  ref={trackRef}
+                  transition={
+                    enableMotion && loopDistance > 0
+                      ? {
+                          duration: Math.max(28, loopDistance / 22),
+                          ease: "linear",
+                          repeat: Number.POSITIVE_INFINITY,
+                        }
+                      : undefined
+                  }
+                >
+                  {marqueeItems.map((panel, index) => {
+                    const logicalIndex = index % railItems.length;
+                    const isFinal = logicalIndex === railItems.length - 1;
+
+                    return (
+                      <div className="flex shrink-0 items-stretch" key={`${panel.title}-${index}`}>
                         <div
                           className={cn(
-                            "absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.08),transparent_42%)] transition-opacity duration-500",
-                            isActive ? "opacity-100" : "opacity-0",
+                            "relative flex min-h-[10rem] w-[12.75rem] flex-col justify-between overflow-hidden rounded-[1rem] border border-white/[0.05] bg-[linear-gradient(180deg,rgba(15,17,22,0.82),rgba(6,7,10,0.98))] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:min-h-[10.5rem] sm:w-[13.75rem] sm:px-4.5 sm:py-4.5 lg:min-h-[11rem] lg:w-[14.5rem]",
+                            isFinal
+                              ? "w-[15rem] border-[rgba(167,139,250,0.16)] bg-[linear-gradient(180deg,rgba(16,18,26,0.92),rgba(6,7,10,0.99))] sm:w-[16.5rem] lg:w-[18rem]"
+                              : "",
                           )}
-                        />
-                        <div className="relative flex h-full flex-col justify-between">
-                          <div className="space-y-3">
-                            <div
+                        >
+                          <div
+                            className={cn(
+                              "absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]",
+                              isFinal
+                                ? "bg-[linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent)]"
+                                : "",
+                            )}
+                          />
+                          <div
+                            className={cn(
+                              "absolute inset-0 opacity-0 transition-opacity duration-500",
+                              isFinal
+                                ? "bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.12),transparent_42%)] opacity-100"
+                                : "bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.05),transparent_42%)]",
+                            )}
+                          />
+
+                          <div className="relative flex items-center justify-between">
+                            <span
                               className={cn(
                                 monoFont.className,
-                                "text-[9px] tracking-[0.16em] text-slate-500 sm:text-[10px]",
+                                "text-[10px] tracking-[0.16em] text-slate-500",
                               )}
                             >
                               {panel.label}
-                            </div>
+                            </span>
+                            <span
+                              className={cn(
+                                "h-2 w-2 rounded-full bg-white/55 shadow-[0_0_12px_rgba(255,255,255,0.08)]",
+                                isFinal ? "bg-[#cdbdff] shadow-[0_0_18px_rgba(167,139,250,0.3)]" : "",
+                              )}
+                            />
+                          </div>
+
+                          <div className="relative mt-4 space-y-3">
                             {isFinal ? (
-                              <div className="space-y-2.5">
-                                <div className="max-w-[12ch] text-[1.28rem] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-[1.45rem] lg:text-[1.6rem]">
+                              <>
+                                <div className="max-w-[13ch] text-[1.45rem] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-[1.6rem] lg:text-[1.78rem]">
                                   <span className="block">From Signal</span>
-                                  <span className="block text-[#dcd3ff]">To Conversation.</span>
+                                  <span className="block text-[#ddd4ff]">To Conversation.</span>
                                 </div>
-                                <p className="max-w-[14rem] text-[0.82rem] leading-5 text-slate-300 sm:text-[0.86rem] sm:leading-6">
+                                <p className="max-w-[14rem] text-[0.84rem] leading-6 text-slate-300 sm:text-[0.88rem]">
                                   {panel.body}
                                 </p>
-                              </div>
+                              </>
                             ) : (
-                              <div className="space-y-2.5">
-                                <div className="text-[1.02rem] font-semibold leading-[1.02] tracking-[-0.03em] text-white sm:text-[1.1rem] lg:text-[1.18rem]">
+                              <>
+                                <div className="text-[1.08rem] font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-[1.15rem] lg:text-[1.2rem]">
                                   {panel.title}
                                 </div>
-                                <p className="max-w-[11.25rem] text-[0.82rem] leading-5 text-slate-300 sm:text-[0.85rem] sm:leading-6">
+                                <p className="max-w-[11.75rem] text-[0.84rem] leading-6 text-slate-300 sm:text-[0.88rem]">
                                   {panel.body}
                                 </p>
-                              </div>
+                              </>
                             )}
                           </div>
 
-                          <div className="flex items-center justify-between pt-4">
-                            <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.12),transparent)]" />
-                            <div className="ml-3 h-2 w-2 rounded-full bg-white/75 shadow-[0_0_12px_rgba(167,139,250,0.34)]" />
+                          <div className="relative mt-5 flex items-center gap-3">
+                            <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.14),transparent)]" />
+                            <span className="text-[0.74rem] font-medium text-slate-500">
+                              {isFinal ? "Ready" : "Step"}
+                            </span>
                           </div>
                         </div>
-                      </SurfaceCard>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </div>
-          </SurfaceCard>
+          </div>
         </motion.div>
       </Container>
     </section>
@@ -1038,43 +1032,50 @@ export function PlatformHomepage() {
       </StorySection>
 
       <StorySection glow="shadow" id="deliverables">
-        <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr] xl:items-start">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              copy="This is what your team gets each week: a smaller set of accounts that are easier to work, easier to message, and more likely to become real conversations."
-              eyebrow="What Your Team Actually Receives"
-              title="Your team gets a shortlist they can actually use."
-            />
-          </motion.div>
+        <div className="space-y-8 sm:space-y-10">
+          <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr] xl:items-start">
+            <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
+              <SectionIntro
+                copy="This is what your team gets each week: a smaller set of accounts that are easier to work, easier to message, and more likely to become real conversations."
+                eyebrow="What Your Team Actually Receives"
+                title="Your team gets a shortlist they can actually use."
+              />
+            </motion.div>
 
-          <motion.div className="space-y-6" {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="neutral">
-              <div className="grid gap-x-8 gap-y-7 md:grid-cols-2">
-                {receiveItems.map((item, index) => (
-                  <div
-                    className={cn(
-                      "pb-7",
-                      index === 4 ? "md:col-span-2 md:max-w-3xl" : "",
-                    )}
-                    key={item.title}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-[0.95rem] bg-white/[0.035] p-2.5 text-slate-200">
-                        <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+            <motion.div {...revealProps(enableMotion, 0.08)}>
+              <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="neutral">
+                <div className="grid gap-x-8 gap-y-7 md:grid-cols-2">
+                  {receiveItems.map((item, index) => (
+                    <div
+                      className={cn(
+                        "pb-7",
+                        index === 4 ? "md:col-span-2 md:max-w-3xl" : "",
+                      )}
+                      key={item.title}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="rounded-[0.95rem] bg-white/[0.035] p-2.5 text-slate-200">
+                          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                        </div>
+                        <div className="text-lg font-semibold text-white">{item.title}</div>
                       </div>
-                      <div className="text-lg font-semibold text-white">{item.title}</div>
+                      <p className="mt-4 text-sm leading-7 text-slate-400">{item.copy}</p>
                     </div>
-                    <p className="mt-4 text-sm leading-7 text-slate-400">{item.copy}</p>
-                  </div>
-                ))}
-              </div>
-            </SurfaceCard>
+                  ))}
+                </div>
+              </SurfaceCard>
+            </motion.div>
+          </div>
 
-            <SurfaceCard tone="spotlight">
-              <div className="text-[2.15rem] font-semibold leading-tight text-white">
+          <motion.div
+            className="flex justify-center"
+            {...revealProps(enableMotion, 0.12)}
+          >
+            <SurfaceCard className="w-full max-w-4xl px-8 py-8 text-center lg:px-10 lg:py-10" tone="spotlight">
+              <div className="mx-auto max-w-3xl text-[2.15rem] font-semibold leading-tight text-white">
                 A weekly brief your team can work right away.
               </div>
-              <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-300">
+              <p className="mx-auto mt-5 max-w-3xl text-sm leading-7 text-slate-300">
                 That means better-fit accounts, the right contacts, better opening angles, and a
                 clear reason each company made the brief in the first place.
               </p>
