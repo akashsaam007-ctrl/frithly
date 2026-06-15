@@ -4,10 +4,7 @@ import Link from "next/link";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import {
   motion,
-  useMotionValueEvent,
   useReducedMotion,
-  useScroll,
-  useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
@@ -209,6 +206,12 @@ const pipelinePanels = [
     title: "Delivery",
   },
 ] as const;
+
+const pipelineFinalPanel = {
+  body: "Everything required to start a better outbound conversation.",
+  label: "Final panel",
+  title: "From Signal To Conversation.",
+} as const;
 
 const signalExamples = [
   {
@@ -446,226 +449,175 @@ function MetricTile({
 }
 
 function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const [maxTranslate, setMaxTranslate] = useState(0);
+  const railItems = [...pipelinePanels, pipelineFinalPanel] as const;
+  const marqueeItems = [...railItems, ...railItems];
+  const [loopDistance, setLoopDistance] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
-  const panelCount = pipelinePanels.length + 1;
-
-  const { scrollYProgress } = useScroll({
-    offset: ["start start", "end end"],
-    target: sectionRef,
-  });
-
-  const x = useTransform(scrollYProgress, [0, 1], [0, -maxTranslate]);
 
   useEffect(() => {
-    function measureTrack() {
-      if (!viewportRef.current || !trackRef.current) {
+    function measureLoop() {
+      if (!trackRef.current) {
         return;
       }
 
-      setMaxTranslate(
-        Math.max(trackRef.current.scrollWidth - viewportRef.current.clientWidth, 0),
-      );
+      setLoopDistance(Math.max(trackRef.current.scrollWidth / 2, 0));
     }
 
-    measureTrack();
+    measureLoop();
 
     let resizeObserver: ResizeObserver | null = null;
 
     if (typeof ResizeObserver !== "undefined") {
-      resizeObserver = new ResizeObserver(measureTrack);
-
-      if (viewportRef.current) {
-        resizeObserver.observe(viewportRef.current);
-      }
+      resizeObserver = new ResizeObserver(measureLoop);
 
       if (trackRef.current) {
         resizeObserver.observe(trackRef.current);
       }
     }
 
-    window.addEventListener("resize", measureTrack);
+    window.addEventListener("resize", measureLoop);
 
     return () => {
-      window.removeEventListener("resize", measureTrack);
+      window.removeEventListener("resize", measureLoop);
       resizeObserver?.disconnect();
     };
   }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const nextIndex = Math.min(panelCount - 1, Math.round(latest * (panelCount - 1)));
-    setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
-  });
+  useEffect(() => {
+    if (!enableMotion) {
+      return;
+    }
 
-  const sectionHeight = maxTranslate > 0 ? `calc(100svh + ${maxTranslate}px)` : "320svh";
+    const interval = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % railItems.length);
+    }, 2200);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [enableMotion, railItems.length]);
 
   return (
-    <section
-      className="relative"
-      id="pipeline"
-      ref={sectionRef}
-      style={{ height: sectionHeight }}
-    >
-      <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
-        <Container className="flex h-full flex-col justify-center py-8 sm:py-10 lg:py-12">
-          <div className="max-w-3xl space-y-6">
-            <SectionEyebrow>How it works</SectionEyebrow>
-            <div
-              className={cn(
-                headlineFont.className,
-                "max-w-4xl text-[2.45rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.25rem] lg:text-[4.2rem] xl:text-[4.75rem]",
-              )}
-            >
-              From signal to delivery, without the messy middle.
-            </div>
-            <p className="max-w-2xl text-[0.98rem] leading-7 text-slate-300 sm:text-[1.03rem] sm:leading-8 md:text-[1.08rem]">
-              Every step narrows the list, improves the contact path, and gives your team a
-              clearer reason to reach out.
-            </p>
-          </div>
+    <StorySection className="pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pt-28 lg:pb-24" glow="shadow" id="pipeline">
+      <div className="space-y-10 sm:space-y-12">
+        <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
+          <SectionIntro
+            copy="Every step narrows the list, improves the contact path, and gives your team a clearer reason to reach out."
+            eyebrow="How it works"
+            title="From signal to delivery, without the messy middle."
+          />
+        </motion.div>
 
-          <div
-            className="relative mt-10 min-h-[26rem] flex-1 overflow-hidden sm:mt-12 sm:min-h-[30rem] lg:mt-14 lg:min-h-[34rem]"
-            ref={viewportRef}
-          >
-            <motion.div
-              className="flex h-full items-stretch gap-4 pr-[12vw] sm:gap-5 lg:gap-6"
-              ref={trackRef}
-              style={maxTranslate > 0 ? { x } : undefined}
-            >
-              {pipelinePanels.map((panel, index) => {
-                const distance = Math.abs(index - activeIndex);
-                const isActive = index === activeIndex;
-
-                return (
-                  <motion.div
-                    animate={
-                      enableMotion
-                        ? {
-                            opacity: isActive ? 1 : distance === 1 ? 0.54 : 0.24,
-                            scale: isActive ? 1 : distance === 1 ? 0.965 : 0.93,
-                            y: isActive ? 0 : 10,
-                          }
-                        : undefined
-                    }
-                    className="flex h-full shrink-0 items-stretch"
-                    key={panel.title}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <SurfaceCard
-                      className={cn(
-                        "flex h-full w-[min(84vw,22rem)] flex-col justify-between border border-white/[0.05] p-6 sm:w-[min(68vw,28rem)] sm:p-7 lg:w-[min(52vw,32rem)] lg:p-8 xl:w-[min(38vw,34rem)]",
-                        isActive
-                          ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_34px_88px_rgba(0,0,0,0.3),0_0_46px_rgba(91,58,153,0.18)]"
-                          : "",
-                      )}
-                      tone={isActive ? "spotlight" : "neutral"}
-                    >
-                      <div
-                        className={cn(
-                          "absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.08),transparent_40%)] transition-opacity duration-500",
-                          isActive ? "opacity-100" : "opacity-0",
-                        )}
-                      />
-                      <div className="relative flex h-full flex-col justify-between">
-                        <div className="space-y-8 sm:space-y-10">
-                          <div
-                            className={cn(
-                              monoFont.className,
-                              "text-[10px] tracking-[0.16em] text-slate-500 sm:text-[11px]",
-                            )}
-                          >
-                            {panel.label}
-                          </div>
-                          <div className="space-y-5">
-                            <div className="text-[2rem] font-semibold leading-[0.96] tracking-[-0.05em] text-white sm:text-[2.35rem] lg:text-[2.7rem]">
-                              {panel.title}
-                            </div>
-                            <p className="max-w-[22rem] text-[1rem] leading-7 text-slate-300 sm:text-[1.06rem] sm:leading-8">
-                              {panel.body}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between pt-10 sm:pt-12">
-                          <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.12),transparent)]" />
-                          <div className="ml-4 h-2.5 w-2.5 rounded-full bg-white/75 shadow-[0_0_14px_rgba(167,139,250,0.34)]" />
-                        </div>
-                      </div>
-                    </SurfaceCard>
-                  </motion.div>
-                );
-              })}
-
+        <motion.div {...revealProps(enableMotion, 0.08)}>
+          <SurfaceCard className="overflow-hidden px-0 py-0" tone="spotlight">
+            <div className="relative overflow-hidden px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-[linear-gradient(90deg,#05060a,rgba(5,6,10,0))] sm:w-16" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-[linear-gradient(270deg,#05060a,rgba(5,6,10,0))] sm:w-16" />
               <motion.div
                 animate={
-                  enableMotion
+                  enableMotion && loopDistance > 0
+                    ? { x: [0, -loopDistance] }
+                    : undefined
+                }
+                className="flex items-stretch gap-3 sm:gap-4"
+                ref={trackRef}
+                transition={
+                  enableMotion && loopDistance > 0
                     ? {
-                        opacity: activeIndex === panelCount - 1 ? 1 : activeIndex === panelCount - 2 ? 0.54 : 0.24,
-                        scale: activeIndex === panelCount - 1 ? 1 : activeIndex === panelCount - 2 ? 0.97 : 0.93,
-                        y: activeIndex === panelCount - 1 ? 0 : 10,
+                        duration: Math.max(22, loopDistance / 32),
+                        ease: "linear",
+                        repeat: Number.POSITIVE_INFINITY,
                       }
                     : undefined
                 }
-                className="flex h-full shrink-0 items-stretch"
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
-                <SurfaceCard
-                  className={cn(
-                    "flex h-full w-[min(88vw,25rem)] flex-col justify-between border border-white/[0.05] p-6 sm:w-[min(72vw,34rem)] sm:p-7 lg:w-[min(58vw,42rem)] lg:p-9 xl:w-[min(50vw,46rem)]",
-                    activeIndex === panelCount - 1
-                      ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_34px_88px_rgba(0,0,0,0.3),0_0_46px_rgba(91,58,153,0.18)]"
-                      : "",
-                  )}
-                  tone="spotlight"
-                >
-                  <div className="relative flex h-full flex-col justify-between">
-                    <div className="space-y-8 sm:space-y-10">
-                      <div
-                        className={cn(
-                          monoFont.className,
-                          "text-[10px] tracking-[0.16em] text-slate-500 sm:text-[11px]",
-                        )}
-                      >
-                        Final panel
-                      </div>
-                      <div className="max-w-[18rem] text-[2.4rem] font-semibold leading-[0.92] tracking-[-0.06em] text-white sm:max-w-[22rem] sm:text-[3rem] lg:max-w-[24rem] lg:text-[4rem]">
-                        <span className="block">From Signal</span>
-                        <span className="block bg-[linear-gradient(135deg,#ffffff_0%,#ece9ff_42%,#9580d6_100%)] bg-clip-text text-transparent">
-                          To Conversation.
-                        </span>
-                      </div>
-                    </div>
+                {marqueeItems.map((panel, index) => {
+                  const logicalIndex = index % railItems.length;
+                  const distance = Math.abs(logicalIndex - activeIndex);
+                  const wrappedDistance = Math.min(distance, railItems.length - distance);
+                  const isActive = logicalIndex === activeIndex;
+                  const isFinal = logicalIndex === railItems.length - 1;
 
-                    <div className="space-y-6">
-                      <p className="max-w-[30rem] text-[1rem] leading-7 text-slate-300 sm:text-[1.08rem] sm:leading-8">
-                        Everything required to start a better outbound conversation.
-                      </p>
-                      <div className="grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-4">
-                        {[
-                          "Better-fit accounts",
-                          "Verified contacts",
-                          "Clearer opening angles",
-                        ].map((item) => (
-                          <div
-                            className="rounded-[0.95rem] bg-white/[0.024] px-4 py-4"
-                            key={item}
-                          >
-                            {item}
+                  return (
+                    <motion.div
+                      animate={
+                        enableMotion
+                          ? {
+                              opacity: isActive ? 1 : wrappedDistance === 1 ? 0.68 : 0.38,
+                              scale: isActive ? 1 : wrappedDistance === 1 ? 0.975 : 0.95,
+                            }
+                          : undefined
+                      }
+                      className="flex shrink-0 items-stretch"
+                      key={`${panel.title}-${index}`}
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <SurfaceCard
+                        className={cn(
+                          "flex h-full min-h-[15.5rem] w-[17rem] flex-col justify-between border border-white/[0.05] p-5 sm:min-h-[16.5rem] sm:w-[19rem] sm:p-6 lg:min-h-[17.5rem] lg:w-[21rem] lg:p-7",
+                          isFinal ? "w-[19rem] sm:w-[23rem] lg:w-[26rem]" : "",
+                          isActive
+                            ? "shadow-[0_0_0_1px_rgba(167,139,250,0.16),0_26px_70px_rgba(0,0,0,0.28),0_0_40px_rgba(91,58,153,0.16)]"
+                            : "",
+                        )}
+                        tone={isActive ? "spotlight" : "neutral"}
+                      >
+                        <div
+                          className={cn(
+                            "absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.08),transparent_42%)] transition-opacity duration-500",
+                            isActive ? "opacity-100" : "opacity-0",
+                          )}
+                        />
+                        <div className="relative flex h-full flex-col justify-between">
+                          <div className="space-y-6">
+                            <div
+                              className={cn(
+                                monoFont.className,
+                                "text-[10px] tracking-[0.16em] text-slate-500 sm:text-[11px]",
+                              )}
+                            >
+                              {panel.label}
+                            </div>
+                            {isFinal ? (
+                              <div className="space-y-4">
+                                <div className="max-w-[11ch] text-[1.95rem] font-semibold leading-[0.94] tracking-[-0.05em] text-white sm:text-[2.3rem] lg:text-[2.6rem]">
+                                  <span className="block">From Signal</span>
+                                  <span className="block bg-[linear-gradient(135deg,#ffffff_0%,#ece9ff_42%,#9580d6_100%)] bg-clip-text text-transparent">
+                                    To Conversation.
+                                  </span>
+                                </div>
+                                <p className="max-w-[18rem] text-[0.96rem] leading-7 text-slate-300 sm:text-[1rem] sm:leading-8">
+                                  {panel.body}
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="space-y-4">
+                                <div className="text-[1.7rem] font-semibold leading-[0.96] tracking-[-0.05em] text-white sm:text-[1.95rem] lg:text-[2.15rem]">
+                                  {panel.title}
+                                </div>
+                                <p className="max-w-[16rem] text-[0.95rem] leading-7 text-slate-300 sm:text-[1rem] sm:leading-8">
+                                  {panel.body}
+                                </p>
+                              </div>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </SurfaceCard>
+
+                          <div className="flex items-center justify-between pt-7">
+                            <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.12),transparent)]" />
+                            <div className="ml-4 h-2.5 w-2.5 rounded-full bg-white/75 shadow-[0_0_14px_rgba(167,139,250,0.34)]" />
+                          </div>
+                        </div>
+                      </SurfaceCard>
+                    </motion.div>
+                  );
+                })}
               </motion.div>
-            </motion.div>
-          </div>
-        </Container>
+            </div>
+          </SurfaceCard>
+        </motion.div>
       </div>
-    </section>
+    </StorySection>
   );
 }
 

@@ -51,9 +51,9 @@ export function CookieBanner() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 min-[460px]:flex-row min-[460px]:justify-end">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
             <Button
-              className="w-full rounded-[0.88rem] border-white/[0.08] bg-white/[0.035] text-white hover:border-white/[0.14] hover:bg-white/[0.06] min-[460px]:w-auto"
+              className="w-full rounded-[0.88rem] border-white/[0.08] bg-white/[0.035] px-4 text-center text-white hover:border-white/[0.14] hover:bg-white/[0.06] sm:w-auto"
               size="sm"
               variant="secondary"
               onClick={() => saveChoice("rejected")}
@@ -61,7 +61,7 @@ export function CookieBanner() {
               Reject optional cookies
             </Button>
             <Button
-              className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] min-[460px]:w-auto"
+              className="w-full rounded-[0.88rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] px-4 text-center text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:w-auto"
               size="sm"
               onClick={() => saveChoice("accepted")}
             >
