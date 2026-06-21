@@ -335,7 +335,6 @@ function OpportunityField({
 function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeStep = processSteps[activeIndex];
-  const progressWidth = `${((activeIndex + 1) / processSteps.length) * 100}%`;
 
   return (
     <StorySection id="process">
@@ -421,7 +420,7 @@ function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
                       </div>
 
                       <div className="space-y-4">
-                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[repeat(3,minmax(0,1fr))_minmax(19rem,1.35fr)]">
+                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                           {activeStep.details.map((detail, index) => (
                             <div
                               className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] px-4 py-5 sm:px-5"
@@ -435,44 +434,37 @@ function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
                               </div>
                             </div>
                           ))}
-                          <div className="min-w-0 rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
-                            <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/40")}>
-                              Flow state
-                            </div>
-                            <div className="mt-3 text-[1.55rem] font-semibold leading-[1.28] text-white">
-                              {activeStep.title} is active.
-                            </div>
-                            <p className="mt-3 max-w-[28ch] text-[0.95rem] leading-7 text-white/64">
-                              One step is highlighted, the rest stay visible, and the motion
-                              stays easy to read instead of taking over the page.
-                            </p>
-                          </div>
                         </div>
 
                         <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
-                          <div className="relative h-1.5 rounded-full bg-white/[0.05]">
-                            <motion.div
-                              animate={enableMotion ? { width: progressWidth } : { width: progressWidth }}
-                              className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] shadow-[0_0_18px_rgba(201,183,255,0.28)]"
-                              transition={enableMotion ? { duration: 0.45, ease: [0.22, 1, 0.36, 1] } : undefined}
-                            />
-                          </div>
-
-                          <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                          <div className="grid grid-cols-5 gap-2 sm:gap-3">
                             {processSteps.map((step, index) => {
                               const isCurrent = index === activeIndex;
                               const isPassed = index < activeIndex;
 
                               return (
-                                <div
-                                  className={cn(
-                                    monoFont.className,
-                                    "text-[0.72rem] uppercase tracking-[0.14em] transition-colors",
-                                    isCurrent || isPassed ? "text-white/62" : "text-white/34",
-                                  )}
-                                  key={step.label}
-                                >
-                                  {step.title}
+                                <div className="relative flex flex-col items-center text-center" key={step.label}>
+                                  <div
+                                    className={cn(
+                                      "relative z-[1] flex h-8 w-8 items-center justify-center rounded-full border bg-[#161616] text-[11px] font-semibold transition-all sm:h-9 sm:w-9",
+                                      isCurrent
+                                        ? "border-[rgba(201,183,255,0.34)] text-white shadow-[0_0_0_1px_rgba(201,183,255,0.12),0_0_18px_rgba(201,183,255,0.22)]"
+                                        : isPassed
+                                          ? "border-white/[0.14] text-white/78"
+                                          : "border-white/[0.08] text-white/42",
+                                    )}
+                                  >
+                                    {step.label}
+                                  </div>
+                                  <div
+                                    className={cn(
+                                      monoFont.className,
+                                      "mt-4 text-[0.62rem] uppercase tracking-[0.14em] transition-colors sm:mt-5 sm:text-[0.68rem]",
+                                      isCurrent ? "text-white/82" : isPassed ? "text-white/62" : "text-white/36",
+                                    )}
+                                  >
+                                    {step.title}
+                                  </div>
                                 </div>
                               );
                             })}
