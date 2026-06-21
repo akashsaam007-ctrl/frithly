@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
-import {
-  motion,
-  useReducedMotion,
-} from "framer-motion";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useState, type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -15,16 +12,6 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { platformFaqs } from "@/components/landing/platform-homepage-data";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -38,7 +25,6 @@ import {
   Sparkles,
   Target,
   Users2,
-  Workflow,
 } from "lucide-react";
 
 const headlineFont = Inter({
@@ -52,208 +38,158 @@ const monoFont = IBM_Plex_Mono({
   weight: ["500", "600"],
 });
 
-const heroTraditionalFlow = ["Big Lists", "Generic Messages", "Low Replies"] as const;
-const heroFrithlyFlow = [
-  "Buying Signals",
-  "Better-Fit Accounts",
-  "Better Messages",
-  "Better Conversations",
-] as const;
-const heroSupportItems = [
-  {
-    body: "We start with signs a company is growing, hiring, or changing.",
-    title: "Buying signals",
-  },
-  {
-    body: "Publishers, job boards, weak domains, and noise do not make the brief.",
-    title: "Filtering bad accounts",
-  },
-  {
-    body: "Unsafe routes and weak contact paths get filtered out before outreach.",
-    title: "Protecting deliverability",
-  },
+const gradientButtonClassName =
+  "border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#090909] shadow-[0_18px_52px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#090909]";
+
+const darkButtonClassName =
+  "border-white/[0.08] bg-white/[0.03] text-white shadow-[0_18px_46px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-white/[0.06] hover:text-white";
+
+const trustItems = ["Signal-driven", "Manual verification", "Personalized outreach"] as const;
+
+const heroOpportunityDetails = [
+  { label: "Signal", value: "Hiring SDRs" },
+  { label: "Company", value: "Acme AI" },
+  { label: "Decision maker", value: "VP Sales" },
+  { label: "Why now", value: "Sales expansion" },
+  { label: "Email", value: "Verified" },
+  { label: "Sequence", value: "4 emails included" },
 ] as const;
 
-const problemBlocks = [
+const problemCards = [
   {
-    copy: "Most outbound teams target the same recycled contact lists everyone else already has.",
-    icon: Radar,
-    title: "Bad Lists",
+    copy: "Broad sourcing fills the sequence with companies that were never likely to buy.",
+    icon: Building2,
+    title: "Wrong companies",
   },
   {
-    copy: "Even strong companies get ignored when outreach starts before the timing is right.",
-    icon: Sparkles,
-    title: "Bad Timing",
-  },
-  {
-    copy: "Automation can scale bad targeting just as fast as good targeting.",
-    icon: Workflow,
-    title: "More Sending, Same Problem",
-  },
-] as const;
-
-const whatFrithlyDoes = [
-  {
-    copy: "We look for companies showing signs that outbound is more likely to work now.",
-    icon: Radar,
-    title: "Find Better-Fit Companies",
-  },
-  {
-    copy: "Weak matches and noisy results get removed before they reach your team.",
-    icon: Target,
-    title: "Filter Out Bad Accounts",
-  },
-  {
-    copy: "We find founders, sales leaders, and GTM contacts based on the company, not a blind export.",
+    copy: "Good accounts still stall when the contact is not the person who can move the deal.",
     icon: Users2,
-    title: "Find The Right People",
+    title: "Wrong people",
   },
   {
-    copy: "Each lead comes with a clearer reason to reach out and a stronger starting point for messaging.",
+    copy: "Even strong accounts go cold when outreach starts before there is a reason to care.",
+    icon: Radar,
+    title: "Wrong timing",
+  },
+  {
+    copy: "Without context, every opener sounds generic and every follow-up starts to blur together.",
     icon: Sparkles,
-    title: "Give Reps A Better Angle",
+    title: "Generic messaging",
+  },
+] as const;
+
+const timingSignals = [
+  {
+    copy: "A new SDR team usually means pipeline goals are already rising.",
+    title: "SDR Hiring",
+  },
+  {
+    copy: "Fresh funding tends to create urgency around growth and sales execution.",
+    title: "New Funding",
+  },
+  {
+    copy: "Launching something new often creates a brief window for stronger outbound relevance.",
+    title: "Product Launches",
+  },
+  {
+    copy: "Sales expansion makes account quality matter more because rep time gets expensive fast.",
+    title: "Sales Expansion",
+  },
+  {
+    copy: "New leadership often resets priorities, tooling, and where the team needs traction.",
+    title: "Leadership Hiring",
+  },
+] as const;
+
+const processSteps = [
+  {
+    body: "Find buying signals across the market before the account ever reaches your team.",
+    details: ["Hiring and GTM motion", "Expansion signals", "Fresh buying context"],
+    label: "01",
+    result: "A live slice of the market worth qualifying, not another raw list.",
+    title: "Detect",
+  },
+  {
+    body: "Manually review the company against your ICP so weak matches stop here.",
+    details: ["ICP fit checked", "Weak accounts removed", "Priority signals kept"],
+    label: "02",
+    result: "Only accounts that actually fit your market move forward.",
+    title: "Qualify",
+  },
+  {
+    body: "Verify companies, decision-makers, and contact paths before release.",
+    details: ["Decision-maker confirmed", "Domain quality checked", "Contact path verified"],
+    label: "03",
+    result: "The company, the person, and the route are confirmed before release.",
+    title: "Verify",
+  },
+  {
+    body: "Prepare the why-now context plus an initial email and follow-ups.",
+    details: ["Why-now angle", "Initial email draft", "Three follow-ups prepared"],
+    label: "04",
+    result: "Your team gets context and copy already shaped around the signal.",
+    title: "Personalize",
+  },
+  {
+    body: "Deliver outbound-ready opportunities your team can work immediately.",
+    details: ["Weekly brief shipped", "Ready for reps", "Manual QA completed"],
+    label: "05",
+    result: "The final brief is ready to work, not ready to clean up.",
+    title: "Deliver",
   },
 ] as const;
 
 const receiveItems = [
-  {
-    copy: "Companies filtered for fit, timing, and outbound readiness.",
-    title: "Better-Fit Accounts",
-  },
-  {
-    copy: "Founders, GTM leaders, RevOps, and sales contacts matched to the account.",
-    title: "Right Contacts",
-  },
-  {
-    copy: "Simple, context-aware outreach angles instead of generic first lines.",
-    title: "Better Opening Angles",
-  },
-  {
-    copy: "Suggested follow-up direction so reps do not start from scratch.",
-    title: "Follow-Up Direction",
-  },
-  {
-    copy: "A clear explanation of why the company made the brief and why now makes sense.",
-    title: "Why This Account",
-  },
+  "Company profile",
+  "Website",
+  "Buying signal",
+  "Decision maker",
+  "LinkedIn profile",
+  "Company LinkedIn",
+  "Verified email",
+  "Verified phone",
+  "Why-now trigger",
+  "Initial email",
+  "Three follow-ups",
+  "Manual QA",
 ] as const;
 
-const differenceRows = [
-  ["Big exports", "Better-fit accounts"],
-  ["Generic first lines", "Clear outreach angles"],
-  ["More bad emails", "Safer outreach"],
-  ["Unknown timing", "Why-now context"],
-  ["Low Reply Rates", "Better Conversations"],
+const whyFrithlyRows = [
+  ["Databases", "Buying signals"],
+  ["Mass scraping", "Manual qualification"],
+  ["Generic contacts", "Decision makers"],
+  ["Templates", "Personalization"],
+  ["No context", "Why-now triggers"],
+  ["Raw records", "Outbound opportunities"],
 ] as const;
 
 const audienceCards = [
   {
-    copy: "Series A and B software teams that need better-fit accounts before outbound volume scales.",
+    copy: "Outbound-heavy software teams that need cleaner timing and better-fit accounts.",
     icon: Building2,
     title: "B2B SaaS",
   },
   {
-    copy: "High-ticket consulting and IT services firms that need sharper account selection before sales effort.",
+    copy: "Agencies that want stronger outbound opportunities instead of more research cleanup.",
     icon: BriefcaseBusiness,
-    title: "IT Services",
+    title: "AI Agencies",
   },
   {
-    copy: "Outbound agencies that want better-fit opportunities instead of more list-cleaning work.",
-    icon: Workflow,
-    title: "Agencies",
-  },
-  {
-    copy: "Founder-led teams that need a sharper outbound point of view before hiring or scaling harder.",
+    copy: "Software companies building pipeline where rep time is too expensive to waste.",
     icon: Target,
-    title: "Founder-Led Outbound Teams",
+    title: "Software Companies",
   },
   {
-    copy: "SDR, GTM, and RevOps teams where cleaner inputs directly change reply quality and meeting quality.",
-    icon: Users2,
-    title: "SDR and GTM Teams",
+    copy: "Cybersecurity teams that need sharper why-now context before outreach begins.",
+    icon: ShieldCheck,
+    title: "Cybersecurity",
+  },
+  {
+    copy: "Consulting firms where better timing and better-fit accounts improve conversation quality fast.",
+    icon: Sparkles,
+    title: "Consulting Firms",
   },
 ] as const;
-
-const pipelinePanels = [
-  {
-    body: "Companies showing relevant growth and buying signals.",
-    label: "01",
-    title: "Signal Discovery",
-  },
-  {
-    body: "Matched against your ideal customer profile.",
-    label: "02",
-    title: "Qualification",
-  },
-  {
-    body: "Decision-maker and contact data verified.",
-    label: "03",
-    title: "Verification",
-  },
-  {
-    body: "Relevant context and outreach angles prepared.",
-    label: "04",
-    title: "Personalization",
-  },
-  {
-    body: "Every lead is reviewed before delivery.",
-    label: "05",
-    title: "Manual QA",
-  },
-  {
-    body: "Outbound-ready opportunities delivered to your team.",
-    label: "06",
-    title: "Delivery",
-  },
-] as const;
-
-const pipelineFinalPanel = {
-  body: "Everything required to start a better outbound conversation.",
-  label: "Final panel",
-  title: "From Signal To Conversation.",
-} as const;
-
-const signalExamples = [
-  {
-    body: "A company is hiring sales reps and building a bigger outbound motion.",
-    kicker: "Example 01",
-    title: "Hiring For Sales",
-  },
-  {
-    body: "A recently funded software company is under pressure to build pipeline faster.",
-    kicker: "Example 02",
-    title: "Fresh Funding",
-  },
-  {
-    body: "A services firm is entering a new market and needs new conversations quickly.",
-    kicker: "Example 03",
-    title: "New Market Push",
-  },
-] as const;
-
-const pilotPoints = [
-  "See how much wasted outreach gets removed.",
-  "Check whether better timing changes reply quality.",
-  "Start with a smaller release before scaling further.",
-] as const;
-
-const auditFieldMeta = [
-  { label: "Company", name: "company", placeholder: "Northstar Systems" },
-  { label: "Website", name: "website", placeholder: "northstarsystems.com" },
-  { label: "Average Deal Size", name: "dealSize", placeholder: "$12,000 ACV" },
-  { label: "Monthly Goals", name: "monthlyGoals", placeholder: "18 qualified meetings" },
-] as const;
-
-type AuditFormState = {
-  biggestBottleneck: string;
-  company: string;
-  currentProcess: string;
-  dealSize: string;
-  geography: string;
-  industry: string;
-  monthlyGoals: string;
-  website: string;
-};
 
 function revealProps(enableMotion: boolean, delay = 0, variant: "drift" | "lift" | "soft" = "lift") {
   if (!enableMotion) {
@@ -286,12 +222,13 @@ function SectionEyebrow({ children }: { children: string }) {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-2.5 rounded-[0.8rem] bg-white/[0.02] px-3.5 py-2 text-[0.64rem] font-medium tracking-[0.12em] text-slate-300 sm:gap-3 sm:px-4 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]",
+        monoFont.className,
+        "inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-white/74",
       )}
     >
       <span className="relative flex h-2.5 w-2.5">
-        <span className="absolute inset-0 rounded-full bg-[#8b5cf6] opacity-16 blur-[6px]" />
-        <span className="relative rounded-full bg-white/80" />
+        <span className="absolute inset-0 rounded-full bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] blur-[6px]" />
+        <span className="relative rounded-full bg-white/85" />
       </span>
       {children}
     </div>
@@ -315,7 +252,7 @@ function SectionIntro({
       <div
         className={cn(
           headlineFont.className,
-          "max-w-5xl text-[2.45rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.25rem] lg:text-[4.2rem] xl:text-[5rem]",
+          "max-w-5xl text-[2.6rem] font-semibold leading-[0.92] tracking-[-0.065em] text-white sm:text-[3.8rem] lg:text-[4.7rem] xl:text-[5.4rem]",
           align === "center" ? "mx-auto" : "",
         )}
       >
@@ -323,7 +260,7 @@ function SectionIntro({
       </div>
       <p
         className={cn(
-          "max-w-2xl text-[0.98rem] leading-7 text-slate-300 sm:text-[1.03rem] sm:leading-8 md:text-[1.08rem]",
+          "max-w-3xl text-[1rem] leading-8 text-white/68 sm:text-[1.08rem] sm:leading-8",
           align === "center" ? "mx-auto" : "",
         )}
       >
@@ -336,27 +273,15 @@ function SectionIntro({
 function StorySection({
   children,
   className,
-  glow = "violet",
   id,
 }: {
   children: ReactNode;
   className?: string;
-  glow?: "shadow" | "violet";
   id: string;
 }) {
-  const glowClassName =
-    glow === "shadow"
-      ? "bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04),transparent_74%)]"
-      : "bg-[radial-gradient(circle_at_center,rgba(91,58,153,0.08),transparent_76%)]";
-
   return (
-    <section className={cn("relative py-24 sm:py-28 lg:py-32 xl:py-36", className)} id={id}>
-      <div
-        className={cn(
-          "pointer-events-none absolute inset-x-0 top-0 h-44 opacity-80 blur-3xl",
-          glowClassName,
-        )}
-      />
+    <section className={cn("relative py-24 sm:py-28 lg:py-32", className)} id={id}>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_center,rgba(201,183,255,0.07),transparent_72%)] blur-3xl" />
       <Container className="relative">{children}</Container>
     </section>
   );
@@ -369,64 +294,28 @@ function SurfaceCard({
 }: {
   children: ReactNode;
   className?: string;
-  tone?: "danger" | "neutral" | "spotlight" | "violet";
+  tone?: "neutral" | "spotlight";
 }) {
   const toneClassName =
-    tone === "danger"
-      ? "bg-[linear-gradient(180deg,rgba(14,10,12,0.76),rgba(5,6,8,0.99))] shadow-[0_24px_80px_rgba(0,0,0,0.22)]"
-      : tone === "violet"
-        ? "bg-[linear-gradient(180deg,rgba(11,11,16,0.88),rgba(4,5,8,0.995))] shadow-[0_24px_78px_rgba(0,0,0,0.22)]"
-        : tone === "spotlight"
-          ? "border border-white/[0.055] bg-[linear-gradient(180deg,rgba(10,11,15,0.94),rgba(3,4,6,0.995))] shadow-[0_30px_94px_rgba(0,0,0,0.24)]"
-          : "bg-[linear-gradient(180deg,rgba(8,9,13,0.84),rgba(4,5,8,0.995))] shadow-[0_24px_76px_rgba(0,0,0,0.2)]";
-
-  const insetClassName =
     tone === "spotlight"
-      ? "pointer-events-none absolute inset-[1px] rounded-[calc(1.05rem-1px)] border border-white/[0.02]"
-      : "";
+      ? "border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.02))] shadow-[0_28px_90px_rgba(0,0,0,0.28)]"
+      : "border-white/[0.06] bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.018))] shadow-[0_24px_70px_rgba(0,0,0,0.22)]";
 
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-[1.05rem] p-5 sm:p-6 lg:p-7",
+        "relative overflow-hidden rounded-[1.5rem] border p-6 backdrop-blur-xl sm:p-7 lg:p-8",
         toneClassName,
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.035),transparent_20%),linear-gradient(180deg,rgba(255,255,255,0.018),transparent_34%)]" />
-      {insetClassName ? <div className={insetClassName} /> : null}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.03),transparent_22%),radial-gradient(circle_at_80%_18%,rgba(201,183,255,0.06),transparent_22%)]" />
       <div className="relative">{children}</div>
     </div>
   );
 }
 
-function FlowPill({
-  children,
-  tone = "neutral",
-}: {
-  children: string;
-  tone?: "neutral" | "success" | "warning";
-}) {
-  const toneClassName =
-    tone === "success"
-      ? "bg-white/[0.045] text-white"
-      : tone === "warning"
-        ? "bg-white/[0.028] text-slate-200"
-        : "bg-white/[0.022] text-slate-200";
-
-  return (
-    <div
-      className={cn(
-        "rounded-[0.8rem] px-4 py-3 text-sm font-medium",
-        toneClassName,
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-function MetricTile({
+function OpportunityField({
   label,
   value,
 }: {
@@ -434,468 +323,293 @@ function MetricTile({
   value: string;
 }) {
   return (
-    <div className="rounded-[0.95rem] bg-white/[0.018] px-3 py-3 sm:px-4 sm:py-4">
-      <div
-        className={cn(
-          monoFont.className,
-          "text-[9px] tracking-[0.14em] text-slate-500 sm:text-[10px] sm:tracking-[0.16em]",
-        )}
-      >
+    <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.025] px-4 py-4">
+      <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/42")}>
         {label}
       </div>
-      <div className="mt-2 text-[1.45rem] font-semibold text-white sm:mt-3 sm:text-[1.8rem]">{value}</div>
+      <div className="mt-2 text-[1.02rem] font-semibold text-white">{value}</div>
     </div>
   );
 }
 
-function HorizontalPipelineSection({ enableMotion }: { enableMotion: boolean }) {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const railItems = [...pipelinePanels, pipelineFinalPanel] as const;
-  const marqueeItems = [...railItems, ...railItems];
-  const [loopDistance, setLoopDistance] = useState(0);
-
-  useEffect(() => {
-    function measureLoop() {
-      if (!trackRef.current) {
-        return;
-      }
-
-      setLoopDistance(Math.max(trackRef.current.scrollWidth / 2, 0));
-    }
-
-    measureLoop();
-
-    let resizeObserver: ResizeObserver | null = null;
-
-    if (typeof ResizeObserver !== "undefined") {
-      resizeObserver = new ResizeObserver(measureLoop);
-
-      if (trackRef.current) {
-        resizeObserver.observe(trackRef.current);
-      }
-    }
-
-    window.addEventListener("resize", measureLoop);
-
-    return () => {
-      window.removeEventListener("resize", measureLoop);
-      resizeObserver?.disconnect();
-    };
-  }, []);
+function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeStep = processSteps[activeIndex];
+  const progressWidth = `${((activeIndex + 1) / processSteps.length) * 100}%`;
 
   return (
-    <section className="relative -mt-1 pb-10 pt-4 sm:pb-12 sm:pt-5 lg:pb-14 lg:pt-6" id="pipeline">
-      <Container>
-        <motion.div {...revealProps(enableMotion, 0.06)}>
-          <div className="relative overflow-hidden rounded-[1.25rem] border border-white/[0.05] bg-[linear-gradient(180deg,rgba(8,9,13,0.92),rgba(3,4,6,0.985))] shadow-[0_28px_90px_rgba(0,0,0,0.26)]">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.03),transparent_22%),radial-gradient(circle_at_82%_18%,rgba(167,139,250,0.07),transparent_22%)]" />
-            <div className="grid gap-4 p-4 sm:gap-5 sm:p-5 lg:grid-cols-[minmax(0,0.31fr)_minmax(0,0.69fr)] lg:items-center lg:p-6">
-              <div className="relative space-y-3 lg:pr-6">
-                <div className="pointer-events-none absolute -left-6 top-4 hidden h-24 w-24 rounded-full bg-[rgba(167,139,250,0.08)] blur-[72px] lg:block" />
-                <p
-                  className={cn(
-                    monoFont.className,
-                    "relative text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-[11px]",
-                  )}
-                >
-                  How Frithly works
-                </p>
-                <div className="relative max-w-sm space-y-2">
-                  <div className="text-[1.15rem] font-semibold leading-tight text-white sm:text-[1.32rem]">
-                    From signal to delivery, without the messy middle.
-                  </div>
-                  <p className="text-[0.9rem] leading-6 text-slate-300 sm:text-[0.95rem] sm:leading-7">
-                    Better-fit accounts, verified contacts, and cleaner starting points before your team sends anything.
-                  </p>
-                </div>
-                <div className="relative flex flex-wrap gap-2 pt-1">
-                  {["Signal-led", "Human-reviewed", "Ready for reps"].map((item) => (
-                    <span
-                      className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[0.72rem] font-medium text-slate-300"
-                      key={item}
+    <StorySection id="process">
+      <div className="space-y-12">
+        <motion.div {...revealProps(enableMotion, 0.04)}>
+          <SectionIntro
+            align="center"
+            copy="Every step exists to remove wasted outreach before it reaches your sales team."
+            eyebrow="Process"
+            title="Signals become outbound-ready opportunities."
+          />
+        </motion.div>
+
+        <motion.div {...revealProps(enableMotion, 0.08)}>
+          <SurfaceCard className="overflow-hidden" tone="spotlight">
+            <div className="space-y-5 sm:space-y-6">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {processSteps.map((step, index) => {
+                  const isActive = index === activeIndex;
+
+                  return (
+                    <button
+                      key={step.title}
+                      className={cn(
+                        "group flex h-full min-h-[7.25rem] w-full flex-col justify-between rounded-[1rem] border px-4 py-4 text-left transition-all duration-300",
+                        isActive
+                          ? "border-[rgba(201,183,255,0.24)] bg-white/[0.05] shadow-[0_0_0_1px_rgba(201,183,255,0.12),0_20px_44px_rgba(0,0,0,0.24)]"
+                          : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1] hover:bg-white/[0.035]",
+                      )}
+                      onClick={() => setActiveIndex(index)}
+                      type="button"
                     >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative overflow-hidden rounded-[1.05rem] border border-white/[0.04] bg-black/[0.2] px-3 py-3 sm:px-4 sm:py-4">
-                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-[linear-gradient(90deg,#07080b,rgba(7,8,11,0))] sm:w-12" />
-                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-[linear-gradient(270deg,#07080b,rgba(7,8,11,0))] sm:w-12" />
-                <motion.div
-                  animate={enableMotion && loopDistance > 0 ? { x: [0, -loopDistance] } : undefined}
-                  className="flex items-stretch gap-3"
-                  ref={trackRef}
-                  transition={
-                    enableMotion && loopDistance > 0
-                      ? {
-                          duration: Math.max(28, loopDistance / 22),
-                          ease: "linear",
-                          repeat: Number.POSITIVE_INFINITY,
-                        }
-                      : undefined
-                  }
-                >
-                  {marqueeItems.map((panel, index) => {
-                    const logicalIndex = index % railItems.length;
-                    const isFinal = logicalIndex === railItems.length - 1;
-
-                    return (
-                      <div className="flex shrink-0 items-stretch" key={`${panel.title}-${index}`}>
-                        <div
+                      <div className="flex items-center gap-3">
+                        <span
                           className={cn(
-                            "relative flex min-h-[10rem] w-[12.75rem] flex-col justify-between overflow-hidden rounded-[1rem] border border-white/[0.05] bg-[linear-gradient(180deg,rgba(15,17,22,0.82),rgba(6,7,10,0.98))] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:min-h-[10.5rem] sm:w-[13.75rem] sm:px-4.5 sm:py-4.5 lg:min-h-[11rem] lg:w-[14.5rem]",
-                            isFinal
-                              ? "w-[15rem] border-[rgba(167,139,250,0.16)] bg-[linear-gradient(180deg,rgba(16,18,26,0.92),rgba(6,7,10,0.99))] sm:w-[16.5rem] lg:w-[18rem]"
-                              : "",
+                            monoFont.className,
+                            "text-[10px] uppercase tracking-[0.16em] text-white/38 transition-colors",
+                            isActive ? "text-white/72" : "group-hover:text-white/54",
                           )}
                         >
-                          <div
-                            className={cn(
-                              "absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]",
-                              isFinal
-                                ? "bg-[linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent)]"
-                                : "",
-                            )}
-                          />
-                          <div
-                            className={cn(
-                              "absolute inset-0 opacity-0 transition-opacity duration-500",
-                              isFinal
-                                ? "bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.12),transparent_42%)] opacity-100"
-                                : "bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.05),transparent_42%)]",
-                            )}
-                          />
+                          {step.label}
+                        </span>
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full bg-white/22 transition-all",
+                            isActive ? "bg-[#d9caff] shadow-[0_0_16px_rgba(201,183,255,0.32)]" : "",
+                          )}
+                        />
+                      </div>
+                      <div className={cn("mt-4 text-[1.02rem] font-semibold transition-colors", isActive ? "text-white" : "text-white/72")}>
+                        {step.title}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
 
-                          <div className="relative flex items-center justify-between">
-                            <span
-                              className={cn(
-                                monoFont.className,
-                                "text-[10px] tracking-[0.16em] text-slate-500",
-                              )}
+              <div className="rounded-[1.4rem] border border-white/[0.06] bg-[#090909]/84 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.22)] sm:p-6 lg:p-7">
+                <AnimatePresence initial={false} mode="wait">
+                  <motion.div
+                    key={activeStep.title}
+                    animate={enableMotion ? { opacity: 1, y: 0 } : undefined}
+                    className="space-y-5"
+                    initial={enableMotion ? { opacity: 0, y: 12 } : undefined}
+                    exit={enableMotion ? { opacity: 0, y: -12 } : undefined}
+                    transition={enableMotion ? { duration: 0.32, ease: [0.22, 1, 0.36, 1] } : undefined}
+                  >
+                    <div className="grid gap-4 lg:grid-cols-[minmax(0,0.34fr)_minmax(0,0.66fr)]">
+                      <div className="rounded-[1.25rem] border border-white/[0.05] bg-white/[0.02] p-5 sm:p-6 lg:p-7">
+                        <div className="flex items-center gap-3">
+                          <span className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/42")}>
+                            Step {activeStep.label}
+                          </span>
+                          <span className="h-px flex-1 bg-white/[0.08]" />
+                        </div>
+
+                        <div className="mt-5 text-[1.8rem] font-semibold leading-tight text-white sm:text-[2.1rem]">
+                          {activeStep.title}
+                        </div>
+                        <p className="mt-4 max-w-xl text-[0.98rem] leading-8 text-white/66 sm:text-[1.03rem]">
+                          {activeStep.body}
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[repeat(3,minmax(0,1fr))_minmax(19rem,1.35fr)]">
+                          {activeStep.details.map((detail, index) => (
+                            <div
+                              className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] px-4 py-5 sm:px-5"
+                              key={detail}
                             >
-                              {panel.label}
-                            </span>
-                            <span
-                              className={cn(
-                                "h-2 w-2 rounded-full bg-white/55 shadow-[0_0_12px_rgba(255,255,255,0.08)]",
-                                isFinal ? "bg-[#cdbdff] shadow-[0_0_18px_rgba(167,139,250,0.3)]" : "",
-                              )}
+                              <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/38")}>
+                                Layer 0{index + 1}
+                              </div>
+                              <div className="mt-4 text-base font-medium leading-7 text-white/82">
+                                {detail}
+                              </div>
+                            </div>
+                          ))}
+                          <div className="min-w-0 rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
+                            <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/40")}>
+                              Flow state
+                            </div>
+                            <div className="mt-3 text-[1.55rem] font-semibold leading-[1.28] text-white">
+                              {activeStep.title} is active.
+                            </div>
+                            <p className="mt-3 max-w-[28ch] text-[0.95rem] leading-7 text-white/64">
+                              One step is highlighted, the rest stay visible, and the motion
+                              stays easy to read instead of taking over the page.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
+                          <div className="relative h-1.5 rounded-full bg-white/[0.05]">
+                            <motion.div
+                              animate={enableMotion ? { width: progressWidth } : { width: progressWidth }}
+                              className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] shadow-[0_0_18px_rgba(201,183,255,0.28)]"
+                              transition={enableMotion ? { duration: 0.45, ease: [0.22, 1, 0.36, 1] } : undefined}
                             />
                           </div>
 
-                          <div className="relative mt-4 space-y-3">
-                            {isFinal ? (
-                              <>
-                                <div className="max-w-[13ch] text-[1.45rem] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-[1.6rem] lg:text-[1.78rem]">
-                                  <span className="block">From Signal</span>
-                                  <span className="block text-[#ddd4ff]">To Conversation.</span>
-                                </div>
-                                <p className="max-w-[14rem] text-[0.84rem] leading-6 text-slate-300 sm:text-[0.88rem]">
-                                  {panel.body}
-                                </p>
-                              </>
-                            ) : (
-                              <>
-                                <div className="text-[1.08rem] font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-[1.15rem] lg:text-[1.2rem]">
-                                  {panel.title}
-                                </div>
-                                <p className="max-w-[11.75rem] text-[0.84rem] leading-6 text-slate-300 sm:text-[0.88rem]">
-                                  {panel.body}
-                                </p>
-                              </>
-                            )}
-                          </div>
+                          <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                            {processSteps.map((step, index) => {
+                              const isCurrent = index === activeIndex;
+                              const isPassed = index < activeIndex;
 
-                          <div className="relative mt-5 flex items-center gap-3">
-                            <div className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.14),transparent)]" />
-                            <span className="text-[0.74rem] font-medium text-slate-500">
-                              {isFinal ? "Ready" : "Step"}
-                            </span>
+                              return (
+                                <div
+                                  className={cn(
+                                    monoFont.className,
+                                    "text-[0.72rem] uppercase tracking-[0.14em] transition-colors",
+                                    isCurrent || isPassed ? "text-white/62" : "text-white/34",
+                                  )}
+                                  key={step.label}
+                                >
+                                  {step.title}
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </motion.div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
-          </div>
+          </SurfaceCard>
         </motion.div>
-      </Container>
-    </section>
+      </div>
+    </StorySection>
   );
 }
 
 export function PlatformHomepage() {
   const reduceMotion = useReducedMotion() ?? false;
-  const [auditForm, setAuditForm] = useState<AuditFormState>({
-    biggestBottleneck: "",
-    company: "",
-    currentProcess: "",
-    dealSize: "",
-    geography: "",
-    industry: "",
-    monthlyGoals: "",
-    website: "",
-  });
-
-  function updateAuditField(key: keyof AuditFormState, value: string) {
-    setAuditForm((current) => ({ ...current, [key]: value }));
-  }
-
-  function handleAuditSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const params = new URLSearchParams();
-
-    Object.entries(auditForm).forEach(([key, value]) => {
-      const trimmed = value.trim();
-
-      if (trimmed) {
-        params.set(key, trimmed);
-      }
-    });
-
-    window.location.assign(
-      params.toString() ? `${ROUTES.APPLY}?${params.toString()}` : ROUTES.APPLY,
-    );
-  }
-
   const enableMotion = !reduceMotion;
-  const applicationFieldClassName =
-    "h-13 rounded-[1.05rem] border-white/[0.08] bg-white/[0.035] px-4 text-[0.95rem] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-slate-500 hover:border-white/[0.11] focus-visible:bg-white/[0.05] focus-visible:ring-[rgba(167,139,250,0.16)] focus-visible:ring-offset-0 sm:h-14 sm:px-5 sm:text-[0.98rem]";
-  const applicationTextareaClassName =
-    "min-h-[140px] rounded-[1.05rem] border-white/[0.08] bg-white/[0.035] px-4 py-4 text-[0.95rem] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-slate-500 hover:border-white/[0.11] focus-visible:bg-white/[0.05] focus-visible:ring-[rgba(167,139,250,0.16)] focus-visible:ring-offset-0 sm:min-h-[156px] sm:px-5 sm:text-[0.98rem]";
 
   return (
-    <div className="relative isolate overflow-hidden bg-[#030406] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.045),transparent_16%),radial-gradient(circle_at_80%_14%,rgba(82,57,140,0.075),transparent_18%),radial-gradient(circle_at_50%_72%,rgba(255,255,255,0.025),transparent_28%),linear-gradient(180deg,#020304_0%,#040508_22%,#06080d_54%,#030406_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.04)_1px,transparent_1px)] bg-[size:184px_184px] opacity-[0.04]" />
-      <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-[linear-gradient(180deg,transparent,rgba(167,139,250,0.06),transparent)] xl:block" />
-      <div className="pointer-events-none absolute inset-x-0 top-[18rem] h-[190rem] bg-[radial-gradient(circle_at_center,rgba(91,58,153,0.04),transparent_72%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(2,3,4,0.96),rgba(2,3,4,0))]" />
+    <div className="relative isolate overflow-hidden bg-[#050505] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,194,139,0.06),transparent_18%),radial-gradient(circle_at_78%_14%,rgba(201,183,255,0.08),transparent_18%),radial-gradient(circle_at_52%_72%,rgba(232,167,215,0.05),transparent_24%),linear-gradient(180deg,#050505_0%,#090909_42%,#111111_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:176px_176px] opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(5,5,5,0.98),rgba(5,5,5,0))]" />
 
-      <section className="relative pt-3 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
-        <Container className="grid gap-6 py-4 sm:gap-8 sm:py-12 lg:py-16 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)] xl:items-start xl:py-20 xl:gap-20">
-          <motion.div className="relative space-y-6 sm:space-y-8 xl:pt-8" {...revealProps(enableMotion, 0.03, "drift")}>
-            <motion.div
-              animate={enableMotion ? { opacity: [0.28, 0.42, 0.28], x: [-6, 0, -6], y: [-4, 2, -4] } : undefined}
-              className="pointer-events-none absolute -left-16 top-10 h-60 w-60 rounded-full bg-[rgba(91,58,153,0.08)] blur-[132px]"
-              transition={enableMotion ? { duration: 11, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY } : undefined}
-            />
+      <section className="relative pt-6 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
+        <Container className="grid gap-10 py-8 sm:py-14 lg:py-18 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.02fr)] xl:items-center xl:gap-10 xl:py-24">
+          <motion.div className="space-y-7 sm:space-y-8 xl:pr-5" {...revealProps(enableMotion, 0.04, "drift")}>
             <SectionEyebrow>Better outbound starts before the first email</SectionEyebrow>
 
             <div
               className={cn(
                 headlineFont.className,
-                "relative max-w-[9.6ch] text-[2.05rem] font-semibold leading-[0.92] tracking-[-0.08em] text-white sm:max-w-[7.2ch] sm:text-[3rem] lg:text-[3.9rem] xl:text-[4.65rem] 2xl:text-[5rem]",
+                "max-w-[9ch] text-[3.2rem] font-semibold leading-[0.9] tracking-[-0.08em] text-white sm:text-[4.8rem] lg:text-[5.35rem] xl:text-[5.95rem] 2xl:text-[6.45rem]",
               )}
             >
-              <span className="block text-white">Most Outbound</span>
-              <span className="block bg-[linear-gradient(135deg,#ffffff_0%,#ece9ff_42%,#9580d6_100%)] bg-clip-text text-transparent">
-                Fails Before
-              </span>
-              <span className="block bg-[linear-gradient(135deg,#f4f2ff_0%,#ddd8fb_44%,#8c6fd4_100%)] bg-clip-text text-transparent">
-                The First Email.
-              </span>
+              Better outbound starts before the first email.
             </div>
 
-            <p className="max-w-2xl text-[1rem] leading-7 text-slate-300 sm:text-[1.08rem] sm:leading-8">
-              Frithly helps outbound teams find better-fit companies before outreach starts, so
-              reps waste less time and get better conversations.
+            <p className="max-w-2xl text-[1.02rem] leading-8 text-white/72 sm:text-[1.1rem]">
+              Frithly identifies buying signals, manually qualifies companies, verifies
+              decision-makers, and delivers outbound-ready opportunities your team can act on
+              immediately.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="w-full border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_20px_48px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:w-auto"
-              >
-                <Link href={ROUTES.BOOK_MEETING}>
+              <Button asChild size="lg" className={cn("w-full sm:w-auto", gradientButtonClassName)}>
+                <Link href="/#sample-opportunity">
                   <span className="inline-flex items-center gap-2">
-                    Book Strategy Call
+                    See Sample Opportunity
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
               </Button>
+              <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
+                <Link href={ROUTES.BOOK_MEETING}>Book Intro Call</Link>
+              </Button>
             </div>
 
-            <div className="grid gap-3 pt-0.5 min-[460px]:grid-cols-2 sm:gap-4 sm:pt-1">
-              <div className="space-y-4 rounded-[1rem] bg-white/[0.018] p-4 sm:p-5">
-                <div className="text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-500">
-                  Typical outbound
+            <div className="flex flex-wrap gap-3 text-sm text-white/56">
+              {trustItems.map((item) => (
+                <div className="inline-flex items-center gap-3" key={item}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                  <span>{item}</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {heroTraditionalFlow.map((item) => (
-                    <FlowPill key={item} tone="warning">
-                      {item}
-                    </FlowPill>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4 rounded-[1rem] bg-white/[0.026] p-4 sm:p-5">
-                <div className="text-[0.72rem] font-medium uppercase tracking-[0.14em] text-slate-400">
-                  Frithly
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {heroFrithlyFlow.map((item) => (
-                    <FlowPill key={item} tone="success">
-                      {item}
-                    </FlowPill>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
-
           </motion.div>
 
-          <motion.div className="relative mx-auto w-full max-w-4xl xl:max-w-none" {...revealProps(enableMotion, 0.12, "soft")}>
+          <motion.div className="relative xl:max-w-[38rem] xl:justify-self-end 2xl:max-w-[39rem]" {...revealProps(enableMotion, 0.12, "soft")}>
             <motion.div
-              animate={enableMotion ? { opacity: [0.18, 0.3, 0.18], x: [4, -2, 4], y: [0, 8, 0] } : undefined}
-              className="pointer-events-none absolute -right-14 top-12 h-72 w-72 rounded-full bg-[rgba(124,92,201,0.03)] blur-[132px]"
-              transition={enableMotion ? { duration: 13, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY } : undefined}
+              animate={enableMotion ? { opacity: [0.28, 0.42, 0.28], y: [-6, 4, -6] } : undefined}
+              className="pointer-events-none absolute -right-10 top-6 h-72 w-72 rounded-full bg-[rgba(201,183,255,0.08)] blur-[132px]"
+              transition={enableMotion ? { duration: 8, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY } : undefined}
             />
-            <SurfaceCard className="rounded-[1.25rem] p-0" tone="spotlight">
-              <div className="relative p-5 sm:p-6 lg:p-7 xl:p-8">
+            <SurfaceCard className="xl:ml-auto" tone="spotlight">
+              <div className="space-y-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="mt-3 max-w-[15ch] text-[1.34rem] font-semibold leading-[1.08] text-white sm:text-[1.52rem] lg:text-[1.78rem] xl:text-[1.92rem]">
-                      A smaller shortlist with a better chance of replies.
+                    <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/42")}>
+                      Sample opportunity
+                    </div>
+                    <div className="mt-3 text-[1.7rem] font-semibold leading-tight text-white sm:text-[1.9rem]">
+                      Acme AI
                     </div>
                   </div>
-                  <div className="rounded-[0.8rem] bg-white/[0.04] px-4 py-2 text-sm text-slate-200">
-                    Ready to work
+                  <div className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/82">
+                    Ready for reps
                   </div>
                 </div>
 
-                <div className="mt-6 sm:mt-8">
-                  <div className="rounded-[1.1rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.022),rgba(255,255,255,0.008))] p-4 sm:p-5 lg:p-6">
-                    <div className="max-w-[13ch] text-[1.52rem] font-semibold leading-[1.06] text-white sm:text-[1.8rem] lg:text-[1.95rem] xl:text-[2.08rem]">
-                      Smaller list. Better timing. Better conversations.
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {heroOpportunityDetails.map((item) => (
+                    <OpportunityField key={item.label} label={item.label} value={item.value} />
+                  ))}
+                </div>
+
+                <div className="grid gap-3 lg:grid-cols-[minmax(0,0.58fr)_minmax(0,0.42fr)]">
+                  <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5">
+                    <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/42")}>
+                      Why this account
                     </div>
-                    <p className="mt-4 max-w-[34rem] text-[0.94rem] leading-7 text-slate-400 sm:text-sm">
-                      Frithly is built to cut wasted outreach. The goal is fewer bad accounts,
-                      better timing, and stronger conversations once your team starts emailing.
-                    </p>
-
-                    <div className="relative mt-6 overflow-hidden rounded-[1.06rem] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.028),transparent_42%),linear-gradient(180deg,rgba(4,5,8,0.12),rgba(5,6,10,0.52))] sm:mt-7 sm:h-[15.5rem] lg:h-[16.25rem]">
-                      <div className="flex min-h-[15rem] flex-col justify-between gap-3 p-3 sm:hidden">
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            "Buying signals",
-                            "ICP fit",
-                          ].map((label) => (
-                            <div
-                              className="rounded-[0.8rem] bg-white/[0.04] px-3 py-2 text-center text-[0.88rem] font-medium text-slate-200"
-                              key={label}
-                            >
-                              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.35)]" />
-                              {label}
-                            </div>
-                          ))}
+                    <div className="mt-4 space-y-3">
+                      {[
+                        "Hiring SDRs shows active sales expansion.",
+                        "VP Sales is the person most likely to care first.",
+                        "The why-now angle is already clear before outreach starts.",
+                      ].map((item) => (
+                        <div className="flex items-start gap-3 text-sm leading-6 text-white/70" key={item}>
+                          <span className="mt-2 h-2 w-2 rounded-full bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)]" />
+                          <span>{item}</span>
                         </div>
+                      ))}
+                    </div>
+                  </div>
 
-                        <div className="rounded-[0.95rem] border border-white/[0.05] bg-white/[0.03] px-4 py-5 text-center shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
-                          <div className="text-[1.45rem] font-semibold leading-[1.12] text-white">
-                            Ready-to-send brief
-                          </div>
-                          <div className="mt-2 text-[0.68rem] font-medium uppercase tracking-[0.13em] text-slate-500">
-                            Better-fit accounts
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            "Safer routes",
-                            "Right contacts",
-                          ].map((label) => (
-                            <div
-                              className="rounded-[0.8rem] bg-white/[0.04] px-3 py-2 text-center text-[0.88rem] font-medium text-slate-200"
-                              key={label}
-                            >
-                              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.35)]" />
-                              {label}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="hidden sm:block">
-                      <div className="absolute inset-x-12 top-1/2 h-px -translate-y-1/2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
-                      <div className="absolute left-1/2 top-1/2 h-[42%] w-px -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,transparent,rgba(255,255,255,0.12),transparent)]" />
-                      <div className="absolute left-[24%] top-[28%] h-px w-[28%] origin-left rotate-[18deg] bg-[linear-gradient(90deg,rgba(255,255,255,0.06),rgba(167,139,250,0.34),transparent)]" />
-                      <div className="absolute left-[48%] top-[38%] h-px w-[26%] origin-left -rotate-[14deg] bg-[linear-gradient(90deg,rgba(255,255,255,0.04),rgba(167,139,250,0.28),transparent)]" />
-                      <div className="absolute left-[27%] top-[56%] h-px w-[22%] origin-left -rotate-[22deg] bg-[linear-gradient(90deg,rgba(255,255,255,0.05),rgba(167,139,250,0.24),transparent)]" />
-                      <div className="absolute left-[50%] top-[56%] h-px w-[22%] origin-left rotate-[22deg] bg-[linear-gradient(90deg,rgba(255,255,255,0.05),rgba(167,139,250,0.24),transparent)]" />
-
-                      <motion.div
-                        animate={enableMotion ? { opacity: [0.48, 0.92, 0.48], scale: [0.985, 1.018, 0.985] } : undefined}
-                        className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(167,139,250,0.16),rgba(255,255,255,0.02),transparent_72%)] shadow-[0_0_60px_rgba(124,92,201,0.12)]"
-                        transition={
-                          enableMotion
-                            ? { duration: 6, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }
-                            : undefined
-                        }
-                      />
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                        <div className="text-lg font-semibold text-white">Ready-to-send brief</div>
-                        <div className="mt-1 text-[0.68rem] font-medium uppercase tracking-[0.13em] text-slate-500">
-                          Better-fit accounts
-                        </div>
-                      </div>
-
-                      {[ 
-                        "Buying signals",
-                        "ICP fit",
-                        "Safer routes",
-                        "Right contacts",
-                      ].map((label, index) => {
-                        const positions = [
-                          "left-[12%] top-[16%]",
-                          "right-[10%] top-[22%]",
-                          "left-[16%] bottom-[14%]",
-                          "right-[12%] bottom-[16%]",
-                        ] as const;
-                        return (
-                          <div
-                            className={cn(
-                              "absolute rounded-[0.8rem] bg-white/[0.038] px-4 py-2 text-sm text-slate-200",
-                              positions[index],
-                            )}
-                            key={label}
-                          >
-                            <span className="mr-2 inline-block h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.35)]" />
-                            {label}
-                          </div>
-                        );
-                      })}
+                  <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="text-sm font-semibold text-white">Included</div>
+                      <div className="inline-flex items-center gap-2 text-sm text-white/60">
+                        <CheckCircle2 className="h-4 w-4 text-white/62" aria-hidden="true" />
+                        Verified
                       </div>
                     </div>
-
-                    <div className="mt-5 grid grid-cols-3 gap-3 sm:gap-4">
-                      <MetricTile label="Signals found" value="214" />
-                      <MetricTile label="Good domains" value="87" />
-                      <MetricTile label="Risk removed" value="12" />
-                    </div>
-
-                    <div className="mt-5 grid gap-3 min-[460px]:grid-cols-2 xl:grid-cols-3 sm:gap-4">
-                      {heroSupportItems.map((item, index) => (
-                        <motion.div key={item.title} {...revealProps(enableMotion, 0.12 + index * 0.05, "drift")}>
-                          <div className="h-full rounded-[0.95rem] bg-white/[0.024] p-3.5 sm:p-4">
-                            <div className="flex items-center gap-3 text-white">
-                              <span className="h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.24)]" />
-                              <div className="text-sm font-semibold">{item.title}</div>
-                            </div>
-                            <p className="mt-2 text-[0.92rem] leading-6 text-slate-400 sm:mt-3 sm:text-sm sm:leading-7">{item.body}</p>
-                          </div>
-                        </motion.div>
+                    <div className="mt-4 space-y-3">
+                      {[
+                        "Initial email included",
+                        "Three follow-ups prepared",
+                        "Manual QA before delivery",
+                      ].map((item) => (
+                        <div className="flex items-center gap-3 text-sm text-white/72" key={item}>
+                          <CheckCircle2 className="h-4 w-4 text-white/62" aria-hidden="true" />
+                          <span>{item}</span>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -906,589 +620,233 @@ export function PlatformHomepage() {
         </Container>
       </section>
 
-      <HorizontalPipelineSection enableMotion={enableMotion} />
-
-      <StorySection glow="shadow" id="problem">
-        <div className="grid gap-12 xl:grid-cols-[0.84fr_1.16fr] xl:items-start">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              copy="Teams do not usually lose pipeline because reps work too little. They lose it because the wrong accounts enter the sequence in the first place."
-              eyebrow="Why outbound underperforms"
-              title="Better outbound starts with better accounts."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="spotlight">
-              <div className="grid gap-6 min-[460px]:grid-cols-2 xl:grid-cols-3 sm:gap-8">
-                {problemBlocks.map((block, index) => {
-                  const Icon = block.icon;
-
-                  return (
-                    <div
-                      className={cn(
-                        "space-y-5",
-                        index === problemBlocks.length - 1 ? "md:col-span-2 xl:col-span-1" : "",
-                      )}
-                      key={block.title}
-                    >
-                      <div className="flex items-center gap-3 text-slate-200">
-                        <div className="rounded-[0.95rem] bg-white/[0.035] p-3">
-                          <Icon className="h-5 w-5" aria-hidden="true" />
-                        </div>
-                        <div className="text-xl font-semibold text-white">{block.title}</div>
-                      </div>
-                      <p className="max-w-xl text-sm leading-7 text-slate-400">{block.copy}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection className="pt-10 sm:pt-14 lg:pt-16" glow="shadow" id="solution">
-        <motion.div {...revealProps(enableMotion, 0.04)}>
-          <SurfaceCard className="px-8 py-10 lg:px-12 lg:py-16" tone="spotlight">
-            <div className="mx-auto max-w-5xl text-center">
-              <SectionEyebrow>Most outbound fails before the first email</SectionEyebrow>
-              <div
-                className={cn(
-                  headlineFont.className,
-                  "mx-auto mt-7 max-w-4xl text-[2.55rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.45rem] lg:text-[4.45rem] xl:text-[5rem]",
-                )}
-              >
-                Bad targeting makes everything after it worse.
-              </div>
-              <p className="mx-auto mt-6 max-w-3xl text-[1.04rem] leading-8 text-slate-300">
-                If the wrong companies enter the sequence, better copy will not save it. Frithly
-                was built to fix targeting first, so the rest of outbound has a better chance to
-                work.
-              </p>
-            </div>
-
-            <div className="mt-12 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-slate-300">
-              {[
-                "Bad lists",
-                "Too-broad ICPs",
-                "Weak timing",
-                "Wasted outreach",
-              ].map((item, index) => (
-                <motion.div className="flex items-center gap-3" key={item} {...revealProps(enableMotion, 0.1 + index * 0.04)}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/65" />
-                  <span>{item}</span>
-                </motion.div>
-              ))}
-            </div>
-          </SurfaceCard>
-        </motion.div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="what-frithly-does">
-        <div className="grid gap-12 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              copy="This is the simple version: we help your team stop spending time on companies that were never likely to reply."
-              eyebrow="What Frithly actually does"
-              title="We help teams start with better-fit accounts."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="spotlight">
-              <div className="relative pl-7">
-                <div className="pointer-events-none absolute bottom-1 left-[11px] top-1 w-px bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(167,139,250,0.16),transparent)]" />
-                <div className="space-y-8">
-                  {whatFrithlyDoes.map((item, index) => {
-                    const Icon = item.icon;
-
-                    return (
-                      <motion.div
-                        className="relative grid gap-4 pb-8 last:pb-0 md:grid-cols-[auto_1fr]"
-                        key={item.title}
-                        {...revealProps(enableMotion, 0.1 + index * 0.05)}
-                      >
-                        <span className="absolute -left-[20px] top-2 h-2.5 w-2.5 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.26)]" />
-                        <div className="rounded-[0.95rem] bg-white/[0.035] p-3 text-slate-200">
-                          <Icon className="h-5 w-5" aria-hidden="true" />
-                        </div>
-                        <div>
-                          <div className="text-[1.45rem] font-semibold leading-tight text-white">
-                            {item.title}
-                          </div>
-                          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
-                            {item.copy}
-                          </p>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="deliverables">
-        <div className="space-y-8 sm:space-y-10">
-          <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr] xl:items-start">
-            <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-              <SectionIntro
-                copy="This is what your team gets each week: a smaller set of accounts that are easier to work, easier to message, and more likely to become real conversations."
-                eyebrow="What Your Team Actually Receives"
-                title="Your team gets a shortlist they can actually use."
-              />
-            </motion.div>
-
-            <motion.div {...revealProps(enableMotion, 0.08)}>
-              <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="neutral">
-                <div className="grid gap-x-8 gap-y-7 md:grid-cols-2">
-                  {receiveItems.map((item, index) => (
-                    <div
-                      className={cn(
-                        "pb-7",
-                        index === 4 ? "md:col-span-2 md:max-w-3xl" : "",
-                      )}
-                      key={item.title}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-[0.95rem] bg-white/[0.035] p-2.5 text-slate-200">
-                          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                        </div>
-                        <div className="text-lg font-semibold text-white">{item.title}</div>
-                      </div>
-                      <p className="mt-4 text-sm leading-7 text-slate-400">{item.copy}</p>
-                    </div>
-                  ))}
-                </div>
-              </SurfaceCard>
-            </motion.div>
-          </div>
-
-          <motion.div
-            className="flex justify-center"
-            {...revealProps(enableMotion, 0.12)}
-          >
-            <SurfaceCard className="w-full max-w-4xl px-8 py-8 text-center lg:px-10 lg:py-10" tone="spotlight">
-              <div className="mx-auto max-w-3xl text-[2.15rem] font-semibold leading-tight text-white">
-                A weekly brief your team can work right away.
-              </div>
-              <p className="mx-auto mt-5 max-w-3xl text-sm leading-7 text-slate-300">
-                That means better-fit accounts, the right contacts, better opening angles, and a
-                clear reason each company made the brief in the first place.
-              </p>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="difference">
-        <motion.div {...revealProps(enableMotion, 0.04)}>
-          <SurfaceCard className="px-8 py-10 lg:px-10 lg:py-12" tone="spotlight">
-            <div className="max-w-4xl">
-              <SectionIntro
-                copy="Most tools help teams send more. Frithly helps teams aim better."
-                eyebrow="Before vs after"
-                title="More leads do not fix bad outbound."
-              />
-            </div>
-
-            <div className="mt-10 grid gap-5 lg:grid-cols-2">
-              <div className="rounded-[1.05rem] bg-white/[0.018] p-6">
-                <div className="text-sm font-medium text-slate-400">Traditional outbound</div>
-                <div className="mt-6 space-y-3">
-                  {differenceRows.map(([traditional]) => (
-                    <div key={traditional} className="space-y-3">
-                      <FlowPill tone="warning">{traditional}</FlowPill>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[1.05rem] bg-white/[0.03] p-6">
-                <div className="text-sm font-medium text-white">Frithly</div>
-                <div className="mt-6 space-y-3">
-                  {differenceRows.map(([, frithly]) => (
-                    <div key={frithly} className="space-y-3">
-                      <FlowPill tone="success">{frithly}</FlowPill>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </SurfaceCard>
-        </motion.div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="not-saas">
-        <motion.div
-          className="grid gap-8 xl:grid-cols-[0.92fr_1.08fr] xl:items-center"
-          {...revealProps(enableMotion, 0.04)}
-        >
-          <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="neutral">
-            <div className="space-y-5">
-              {[ 
-                "Bulk lead databases",
-                "Cold-email software",
-                "Generic automation funnels",
-                "Mass outreach systems",
-              ].map((item) => (
-                <div
-                  className="pb-5 last:pb-0"
-                  key={item}
-                >
-                  <div className="text-lg font-semibold text-white">{item}</div>
-                  <p className="mt-3 text-sm leading-7 text-slate-400">
-                    Frithly is not built to sell {item.toLowerCase()}. It is built to improve who
-                    your team targets before outreach begins.
-                  </p>
-                </div>
-              ))}
-            </div>
-          </SurfaceCard>
-
-          <SurfaceCard className="px-8 py-10 lg:px-10 lg:py-12" tone="spotlight">
-            <div
-              className={cn(
-                headlineFont.className,
-                "mt-6 max-w-3xl text-[2.95rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.75rem] lg:text-[4.3rem]",
-              )}
-            >
-              This is a better starting point for outbound.
-            </div>
-            <p className="mt-6 max-w-2xl text-[1.02rem] leading-8 text-slate-300">
-              If your team already has tools to send emails, the next win is usually not more
-              software. It is better accounts, better timing, and better reasons to reach out.
-            </p>
-          </SurfaceCard>
-        </motion.div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="fit">
-        <div className="space-y-12">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              copy="Frithly works best where a small improvement in targeting quality can change replies, meetings, and pipeline confidence."
-              eyebrow="Who this is for"
-              title="Built for teams that care about who they target."
-            />
-          </motion.div>
-
-          <motion.div
-            className="max-w-2xl rounded-[0.95rem] bg-white/[0.02] px-5 py-4 text-sm leading-7 text-slate-300"
-            {...revealProps(enableMotion, 0.06)}
-          >
-            Not designed for mass cold-email blasting.
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="neutral">
-              <div className="grid gap-x-8 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
-                {audienceCards.map((card) => {
-                  const Icon = card.icon;
-
-                  return (
-                    <div className="space-y-4" key={card.title}>
-                      <div className="w-fit rounded-[0.95rem] bg-white/[0.035] p-3 text-slate-200">
-                        <Icon className="h-5 w-5" aria-hidden="true" />
-                      </div>
-                      <div className="text-[1.45rem] font-semibold leading-tight text-white">
-                        {card.title}
-                      </div>
-                      <p className="text-sm leading-7 text-slate-400">{card.copy}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="signals">
-        <div className="space-y-12">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              copy="These are the kinds of signs that make a company more worth reaching out to."
-              eyebrow="What better timing looks like"
-              title="We look for signals that make outreach easier to believe."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-7 py-7 lg:px-8 lg:py-8" tone="spotlight">
-              <div className="grid gap-x-6 gap-y-8 min-[460px]:grid-cols-2 xl:grid-cols-3 sm:gap-x-8">
-                {signalExamples.map((example, index) => (
-                  <div
-                    className={cn(index === signalExamples.length - 1 ? "min-[460px]:col-span-2 xl:col-span-1" : "", "space-y-4")}
-                    key={example.title}
-                  >
-                    <div className="text-sm text-slate-500">{example.kicker}</div>
-                    <div className="text-[1.8rem] font-semibold leading-tight text-white">
-                      {example.title}
-                    </div>
-                    <p className="text-sm leading-7 text-slate-400">{example.body}</p>
-                  </div>
-                ))}
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="pilot">
-        <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SurfaceCard className="px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12" tone="spotlight">
-            <div className="grid gap-10 xl:grid-cols-[0.95fr_1.05fr] xl:items-center">
-              <div className="space-y-6">
-                <SectionEyebrow>Start small</SectionEyebrow>
-                <div
-                  className={cn(
-                    headlineFont.className,
-                    "max-w-3xl text-[2.55rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.35rem] lg:text-[4rem] xl:text-[4.55rem]",
-                  )}
-                >
-                  Start small. See the difference.
-                </div>
-                <p className="max-w-2xl text-[1.02rem] leading-8 text-slate-300">
-                  Most teams begin with a focused pilot to see whether better targeting changes
-                  reply quality, meeting quality, and rep confidence.
-                </p>
-              </div>
-
-              <div className="space-y-5">
-                {pilotPoints.map((point, index) => (
-                  <motion.div key={point} {...revealProps(enableMotion, 0.1 + index * 0.04)}>
-                    <div className="flex items-start gap-3 pb-5 text-sm leading-7 text-slate-300 last:pb-0">
-                      <ShieldCheck className="mt-1 h-4 w-4 shrink-0 text-white/75" aria-hidden="true" />
-                      <span>{point}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </SurfaceCard>
-        </motion.div>
-      </StorySection>
-
-      <StorySection glow="shadow" id="application">
+      <StorySection id="problem">
         <div className="space-y-12">
           <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SurfaceCard className="px-8 py-10 text-center lg:px-12 lg:py-14" tone="spotlight">
-              <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-44 max-w-xl rounded-full bg-[rgba(167,139,250,0.08)] blur-3xl" />
-              <div className="relative">
-                <SectionEyebrow>Final CTA</SectionEyebrow>
-                <div
-                  className={cn(
-                    headlineFont.className,
-                    "mx-auto mt-7 max-w-4xl text-[2.55rem] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[3.45rem] lg:text-[4.5rem] xl:text-[5.1rem]",
-                  )}
-                >
-                  Stop wasting outreach on the wrong accounts.
-                </div>
-                <p className="mx-auto mt-6 max-w-3xl text-[1.03rem] leading-8 text-slate-300">
-                  If your team is still working from broad lists and weak timing, Frithly can help
-                  you start with better accounts before the first email goes out.
-                </p>
-                <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                  <Button
-                    asChild
-                    size="lg"
-                    className="w-full border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_20px_48px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:w-auto"
-                  >
-                    <Link href={ROUTES.BOOK_MEETING}>
-                      <span className="inline-flex items-center gap-2">
-                        Book Strategy Call
-                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </SurfaceCard>
+            <SectionIntro
+              align="center"
+              copy="Bad outbound usually starts long before the first message. Frithly fixes the parts that make strong outreach impossible."
+              eyebrow="Problem"
+              title="Most outbound fails before the first email."
+            />
           </motion.div>
 
-          <motion.div
-            className="grid gap-8 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] xl:items-start"
-            {...revealProps(enableMotion, 0.08)}
-          >
-            <div className="space-y-6">
-              <SectionIntro
-                copy="Tell us how outbound works today, where it breaks, and what kind of pipeline you want to create. We use that to shape the right next step."
-                eyebrow="Tell us about your outbound"
-                title="We need a clear picture before we recommend anything."
-              />
+          <motion.div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" {...revealProps(enableMotion, 0.08)}>
+            {problemCards.map((card, index) => {
+              const Icon = card.icon;
 
-              <SurfaceCard tone="neutral">
-                <div className="space-y-4">
-                  {[
-                    "Review where targeting breaks down",
-                    "Spot wasted outreach",
-                    "Show what a better brief looks like",
-                    "Recommend the right starting point",
-                  ].map((item) => (
-                    <div className="flex items-start gap-3 text-sm leading-7 text-slate-300" key={item}>
-                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/70" />
-                      <span>{item}</span>
+              return (
+                <SurfaceCard className="h-full" key={card.title} tone={index === 3 ? "spotlight" : "neutral"}>
+                  <div className="space-y-5">
+                    <div className="w-fit rounded-[1rem] border border-white/[0.06] bg-white/[0.03] p-3 text-white/82">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
-                  ))}
-                </div>
-              </SurfaceCard>
-            </div>
-
-            <form
-              className="relative overflow-hidden rounded-[1.3rem] border border-white/[0.06] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_34%),linear-gradient(180deg,rgba(11,12,16,0.98),rgba(4,5,8,1))] p-7 shadow-[0_40px_120px_rgba(0,0,0,0.24)] lg:p-9"
-              onSubmit={handleAuditSubmit}
-            >
-              <div className="mb-6 flex flex-col gap-4 border-b border-white/[0.06] pb-5 sm:mb-7 sm:pb-6 min-[460px]:flex-row min-[460px]:items-start min-[460px]:justify-between">
-                <div className="max-w-2xl">
-                  <div className="text-[1.3rem] font-semibold leading-tight text-white">
-                    A few details so we can see if there is a fit.
+                    <div className="text-[1.4rem] font-semibold text-white">{card.title}</div>
+                    <p className="text-sm leading-7 text-white/64">{card.copy}</p>
                   </div>
-                  <p className="mt-2 text-sm leading-7 text-slate-400">
-                    We use this to understand your market, how outreach works today, and where
-                    better targeting could help first.
-                  </p>
-                </div>
+                </SurfaceCard>
+              );
+            })}
+          </motion.div>
 
-                <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-300 sm:text-[11px] sm:tracking-[0.16em]">
-                  <span className="h-2 w-2 rounded-full bg-white/70 shadow-[0_0_12px_rgba(167,139,250,0.18)]" />
-                  Manual review
-                </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                {auditFieldMeta.map((field) => (
-                  <div className="space-y-2.5" key={field.name}>
-                    <Label className="text-[0.95rem] font-medium text-white/92" htmlFor={field.name}>
-                      {field.label}
-                    </Label>
-                    <Input
-                      className={applicationFieldClassName}
-                      id={field.name}
-                      name={field.name}
-                      onChange={(event) =>
-                        updateAuditField(field.name as keyof AuditFormState, event.target.value)
-                      }
-                      placeholder={field.placeholder}
-                      suppressHydrationWarning
-                      value={auditForm[field.name as keyof AuditFormState]}
-                    />
-                  </div>
-                ))}
-
-                <div className="space-y-2.5">
-                  <Label className="text-[0.95rem] font-medium text-white/92" htmlFor="industry">
-                    Industry
-                  </Label>
-                  <Select
-                    onValueChange={(value) => updateAuditField("industry", value)}
-                    value={auditForm.industry}
-                  >
-                    <SelectTrigger
-                      className={applicationFieldClassName}
-                      id="industry"
-                      suppressHydrationWarning
-                    >
-                      <SelectValue placeholder="Select industry" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="B2B SaaS">B2B SaaS</SelectItem>
-                      <SelectItem value="AI Startup">AI Startup</SelectItem>
-                      <SelectItem value="IT Services">IT Services</SelectItem>
-                      <SelectItem value="Agency">Agency</SelectItem>
-                      <SelectItem value="Enterprise Software">Enterprise Software</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label className="text-[0.95rem] font-medium text-white/92" htmlFor="geography">
-                    Target Geography
-                  </Label>
-                  <Select
-                    onValueChange={(value) => updateAuditField("geography", value)}
-                    value={auditForm.geography}
-                  >
-                    <SelectTrigger
-                      className={applicationFieldClassName}
-                      id="geography"
-                      suppressHydrationWarning
-                    >
-                      <SelectValue placeholder="Select geography" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="North America">North America</SelectItem>
-                      <SelectItem value="UK and EU">UK and EU</SelectItem>
-                      <SelectItem value="Global enterprise">Global enterprise</SelectItem>
-                      <SelectItem value="Regional market">Regional market</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2.5 md:col-span-2">
-                  <Label className="text-[0.95rem] font-medium text-white/92" htmlFor="currentProcess">
-                    Current Outbound Process
-                  </Label>
-                  <Textarea
-                    className={applicationTextareaClassName}
-                    id="currentProcess"
-                    name="currentProcess"
-                    onChange={(event) => updateAuditField("currentProcess", event.target.value)}
-                    placeholder="How do you choose accounts and start outreach today?"
-                    rows={4}
-                    suppressHydrationWarning
-                    value={auditForm.currentProcess}
-                  />
-                </div>
-
-                <div className="space-y-2.5 md:col-span-2">
-                  <Label className="text-[0.95rem] font-medium text-white/92" htmlFor="biggestBottleneck">
-                    Biggest Bottleneck
-                  </Label>
-                  <Textarea
-                    className={applicationTextareaClassName}
-                    id="biggestBottleneck"
-                    name="biggestBottleneck"
-                    onChange={(event) => updateAuditField("biggestBottleneck", event.target.value)}
-                    placeholder="What is wasting the most outbound effort right now?"
-                    rows={4}
-                    suppressHydrationWarning
-                    value={auditForm.biggestBottleneck}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-col gap-4 border-t border-white/[0.06] pt-5 sm:mt-7 sm:pt-6 min-[460px]:flex-row min-[460px]:items-center min-[460px]:justify-between">
-                <p className="max-w-xl text-sm leading-7 text-slate-400">
-                  We review every application manually before recommending the right pilot,
-                  strategy call, or next step.
-                </p>
-                <Button
-                  size="lg"
-                  type="submit"
-                  className="w-full rounded-[1.05rem] border-white/[0.08] bg-[linear-gradient(180deg,rgba(23,27,34,0.98),rgba(11,14,18,1))] text-white shadow-[0_22px_54px_rgba(0,0,0,0.28)] hover:border-white/[0.14] hover:bg-[linear-gradient(180deg,rgba(28,33,40,1),rgba(13,16,20,1))] sm:min-w-[16rem] sm:w-auto"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Apply for a targeting review
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                </Button>
-              </div>
-            </form>
+          <motion.div {...revealProps(enableMotion, 0.12)}>
+            <SurfaceCard className="px-8 py-7 text-center lg:px-10" tone="spotlight">
+              <p className="mx-auto max-w-4xl text-[1.15rem] leading-8 text-white/80 sm:text-[1.2rem]">
+                Frithly solves all four before your team starts outreach.
+              </p>
+            </SurfaceCard>
           </motion.div>
         </div>
       </StorySection>
 
-      <StorySection className="pt-16 pb-14 sm:pt-20 sm:pb-18" glow="shadow" id="faq">
+      <StorySection id="timing">
         <div className="space-y-12">
-          <motion.div className="max-w-4xl" {...revealProps(enableMotion, 0.04)}>
+          <motion.div {...revealProps(enableMotion, 0.04)}>
             <SectionIntro
-              copy="Clear answers for teams deciding whether better targeting should come before more outreach."
+              align="center"
+              copy="Timing creates opportunities because companies usually show what is changing before they are ready to buy."
+              eyebrow="Why Timing Matters"
+              title="Companies leave signals before they buy."
+            />
+          </motion.div>
+
+          <motion.div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
+            {timingSignals.map((signal, index) => (
+              <SurfaceCard className="h-full" key={signal.title} tone={index === 0 ? "spotlight" : "neutral"}>
+                <div className="space-y-4">
+                  <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/40")}>
+                    Signal
+                  </div>
+                  <div className="text-[1.3rem] font-semibold text-white">{signal.title}</div>
+                  <p className="text-sm leading-7 text-white/64">{signal.copy}</p>
+                </div>
+              </SurfaceCard>
+            ))}
+          </motion.div>
+        </div>
+      </StorySection>
+
+      <ProcessSection enableMotion={enableMotion} />
+
+      <StorySection id="receive">
+        <div className="space-y-12">
+          <motion.div {...revealProps(enableMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              copy="Each opportunity arrives as something your sales team can use immediately, not another record to clean up."
+              eyebrow="What You Receive"
+              title="Every opportunity includes everything needed to start the conversation."
+            />
+          </motion.div>
+
+          <motion.div {...revealProps(enableMotion, 0.08)}>
+            <SurfaceCard className="px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10" tone="spotlight">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {receiveItems.map((item) => (
+                  <div
+                    className="flex items-center gap-3 rounded-[1rem] border border-white/[0.06] bg-white/[0.025] px-4 py-4 text-white/80"
+                    key={item}
+                  >
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-[#d8c9ff]" aria-hidden="true" />
+                    <span className="text-sm font-medium leading-6 sm:text-[0.96rem]">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </SurfaceCard>
+          </motion.div>
+        </div>
+      </StorySection>
+
+      <StorySection id="sample-opportunity">
+        <div className="space-y-12">
+          <motion.div {...revealProps(enableMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              copy="This is what a serious buyer can inspect before trusting the system."
+              eyebrow="Sample Opportunity"
+              title="A real opportunity should explain the signal, the person, the timing, and the message."
+            />
+          </motion.div>
+
+          <motion.div {...revealProps(enableMotion, 0.08)}>
+            <SurfaceCard className="p-0" tone="spotlight">
+              <div className="p-6 sm:p-8 xl:p-10">
+                <div className="mx-auto max-w-5xl">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/40")}>
+                        SDR Hiring Signal
+                      </div>
+                      <div className="mt-3 text-[2rem] font-semibold text-white sm:text-[2.4rem]">
+                        Northbeam Analytics
+                      </div>
+                    </div>
+                    <div className="rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/82">
+                      Verified opportunity
+                    </div>
+                  </div>
+
+                  <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                    <OpportunityField label="Signal" value="First SDR hire posted 8 days ago" />
+                    <OpportunityField label="Company" value="Northbeam Analytics" />
+                    <OpportunityField label="Decision maker" value="Marcus King, Sales Director" />
+                    <OpportunityField label="Why now" value="First outbound hire — pipeline infrastructure gap" />
+                    <OpportunityField label="Contact" value="Verified (live email + LinkedIn)" />
+                  </div>
+
+                  <div className="mt-8 rounded-[1.2rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="rounded-[0.9rem] border border-white/[0.08] bg-white/[0.03] p-2.5">
+                        <Users2 className="h-4 w-4" aria-hidden="true" />
+                      </div>
+                      <div className="text-lg font-semibold">Why this made the brief</div>
+                    </div>
+                    <p className="mt-4 text-sm leading-7 text-white/68">
+                      Northbeam posted their first SDR role this month. That&apos;s the exact point
+                      where list-building eats the new hire&apos;s first month instead of selling —
+                      Marcus has a clear, immediate reason to want a working pipeline before that
+                      hire starts.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </SurfaceCard>
+          </motion.div>
+        </div>
+      </StorySection>
+
+      <StorySection id="why-frithly">
+        <div className="space-y-12">
+          <motion.div {...revealProps(enableMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              copy="The difference is not more data. The difference is better timing, better qualification, and better delivery."
+              eyebrow="Why Frithly"
+              title="Traditional sourcing gives you records. Frithly gives you opportunities."
+            />
+          </motion.div>
+
+          <motion.div {...revealProps(enableMotion, 0.08)}>
+            <SurfaceCard className="px-5 py-5 sm:px-7 sm:py-7" tone="spotlight">
+              <div className="grid grid-cols-2 gap-4 border-b border-white/[0.06] pb-4 text-sm font-semibold uppercase tracking-[0.14em] text-white/56">
+                <div>Traditional sourcing</div>
+                <div>Frithly</div>
+              </div>
+              <div className="mt-4 space-y-3">
+                {whyFrithlyRows.map(([traditional, frithly]) => (
+                  <div
+                    className="grid grid-cols-2 gap-4 rounded-[1rem] border border-white/[0.05] bg-white/[0.02] px-4 py-4 sm:px-5"
+                    key={`${traditional}-${frithly}`}
+                  >
+                    <div className="text-sm font-medium leading-6 text-white/56">{traditional}</div>
+                    <div className="text-sm font-semibold leading-6 text-white">{frithly}</div>
+                  </div>
+                ))}
+              </div>
+            </SurfaceCard>
+          </motion.div>
+        </div>
+      </StorySection>
+
+      <StorySection id="ideal-customers">
+        <div className="space-y-12">
+          <motion.div {...revealProps(enableMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              copy="Frithly works best for teams where a better account, a better contact, and better timing directly improve conversations."
+              eyebrow="Ideal Customers"
+              title="Built for teams that care about timing, fit, and verified decision-makers."
+            />
+          </motion.div>
+
+          <motion.div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
+            {audienceCards.map((card) => {
+              const Icon = card.icon;
+
+              return (
+                <SurfaceCard className="h-full" key={card.title} tone="neutral">
+                  <div className="space-y-5">
+                    <div className="w-fit rounded-[1rem] border border-white/[0.06] bg-white/[0.03] p-3 text-white/82">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <div className="text-[1.28rem] font-semibold text-white">{card.title}</div>
+                    <p className="text-sm leading-7 text-white/64">{card.copy}</p>
+                  </div>
+                </SurfaceCard>
+              );
+            })}
+          </motion.div>
+        </div>
+      </StorySection>
+
+      <StorySection className="pt-16 sm:pt-20" id="faq">
+        <div className="space-y-12">
+          <motion.div {...revealProps(enableMotion, 0.04)}>
+            <SectionIntro
+              align="center"
+              copy="The answers teams usually want before they decide whether a signal-led approach fits how they sell."
               eyebrow="FAQ"
-              title="Questions buyers ask before they trust the system."
+              title="Clear answers before you book the call."
             />
           </motion.div>
 
@@ -1496,14 +854,14 @@ export function PlatformHomepage() {
             <Accordion className="space-y-4" collapsible type="single">
               {platformFaqs.map((faq, index) => (
                 <AccordionItem
-                  className="rounded-[1.05rem] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(12,14,20,0.9),rgba(4,5,8,0.99))] px-4 py-1 shadow-[0_16px_48px_rgba(0,0,0,0.16)] sm:px-5"
+                  className="rounded-[1.35rem] border border-white/[0.08] bg-white/[0.03] px-5 py-1 shadow-[0_20px_54px_rgba(0,0,0,0.2)]"
                   key={faq.question}
                   value={`faq-${index}`}
                 >
-                  <AccordionTrigger className="text-left text-[0.98rem] font-medium leading-7 text-white sm:text-base">
+                  <AccordionTrigger className="text-left text-[1rem] font-semibold leading-7 text-white sm:text-[1.06rem]">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="pb-4 text-[0.98rem] leading-7 text-slate-300 sm:text-base sm:leading-8">
+                  <AccordionContent className="pb-4 text-[0.98rem] leading-8 text-white/68">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -1511,6 +869,37 @@ export function PlatformHomepage() {
             </Accordion>
           </motion.div>
         </div>
+      </StorySection>
+
+      <StorySection className="pt-16 pb-18 sm:pt-20 sm:pb-24" id="cta">
+        <motion.div {...revealProps(enableMotion, 0.04)}>
+          <SurfaceCard className="px-8 py-10 text-center lg:px-12 lg:py-14" tone="spotlight">
+            <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-48 max-w-xl rounded-full bg-[radial-gradient(circle_at_center,rgba(201,183,255,0.18),transparent_72%)] blur-3xl" />
+            <div className="relative">
+              <SectionEyebrow>Final CTA</SectionEyebrow>
+              <div
+                className={cn(
+                  headlineFont.className,
+                  "mx-auto mt-7 max-w-4xl text-[2.8rem] font-semibold leading-[0.92] tracking-[-0.06em] text-white sm:text-[4rem] lg:text-[4.9rem]",
+                )}
+              >
+                See how your next opportunity looks.
+              </div>
+              <p className="mx-auto mt-6 max-w-3xl text-[1.02rem] leading-8 text-white/68">
+                If you want better timing, better-fit accounts, and verified decision-makers
+                before outreach starts, Frithly was built for that layer.
+              </p>
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <Button asChild size="lg" className={cn("w-full sm:w-auto", gradientButtonClassName)}>
+                  <Link href={ROUTES.CONTACT_SALES}>Request Sample</Link>
+                </Button>
+                <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
+                  <Link href={ROUTES.BOOK_MEETING}>Book Call</Link>
+                </Button>
+              </div>
+            </div>
+          </SurfaceCard>
+        </motion.div>
       </StorySection>
     </div>
   );
