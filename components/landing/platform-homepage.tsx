@@ -436,42 +436,6 @@ function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
                           ))}
                         </div>
 
-                        <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
-                          <div className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                            <div className="grid min-w-[28rem] grid-cols-5 gap-3 sm:min-w-0">
-                            {processSteps.map((step, index) => {
-                              const isCurrent = index === activeIndex;
-                              const isPassed = index < activeIndex;
-
-                              return (
-                                <div className="relative flex flex-col items-center text-center" key={step.label}>
-                                  <div
-                                    className={cn(
-                                      "relative z-[1] flex h-8 w-8 items-center justify-center rounded-full border bg-[#161616] text-[11px] font-semibold transition-all sm:h-9 sm:w-9",
-                                      isCurrent
-                                        ? "border-[rgba(201,183,255,0.34)] text-white shadow-[0_0_0_1px_rgba(201,183,255,0.12),0_0_18px_rgba(201,183,255,0.22)]"
-                                        : isPassed
-                                          ? "border-white/[0.14] text-white/78"
-                                          : "border-white/[0.08] text-white/42",
-                                    )}
-                                  >
-                                    {step.label}
-                                  </div>
-                                  <div
-                                    className={cn(
-                                      monoFont.className,
-                                      "mt-4 text-[0.62rem] uppercase tracking-[0.14em] transition-colors sm:mt-5 sm:text-[0.68rem]",
-                                      isCurrent ? "text-white/82" : isPassed ? "text-white/62" : "text-white/36",
-                                    )}
-                                  >
-                                    {step.title}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </motion.div>
