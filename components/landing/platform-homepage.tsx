@@ -437,7 +437,8 @@ function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
                         </div>
 
                         <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
-                          <div className="grid grid-cols-5 gap-2 sm:gap-3">
+                          <div className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            <div className="grid min-w-[28rem] grid-cols-5 gap-3 sm:min-w-0">
                             {processSteps.map((step, index) => {
                               const isCurrent = index === activeIndex;
                               const isPassed = index < activeIndex;
@@ -468,6 +469,7 @@ function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
                                 </div>
                               );
                             })}
+                            </div>
                           </div>
                         </div>
                       </div>
