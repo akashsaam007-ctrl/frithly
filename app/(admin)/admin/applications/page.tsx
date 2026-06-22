@@ -388,6 +388,75 @@ export default async function AdminApplicationsPage({
 
                 <Card>
                   <CardHeader>
+                    <CardTitle>Contact and routing</CardTitle>
+                    <CardDescription>
+                      How this account wants follow-up handled after qualification review.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="grid gap-4 text-sm text-muted sm:grid-cols-2">
+                    <div>
+                      <p className="font-semibold text-ink">Primary contact</p>
+                      <p className="mt-1">{data.selectedApplication.fullName}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">Role</p>
+                      <p className="mt-1">{data.selectedApplication.role || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">Work email</p>
+                      <p className="mt-1 break-all">{data.selectedApplication.email}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">WhatsApp</p>
+                      <p className="mt-1">{data.selectedApplication.whatsappNumber}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">Preferred contact method</p>
+                      <p className="mt-1 capitalize">
+                        {data.selectedApplication.preferredContactMethod}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">Telegram</p>
+                      <p className="mt-1">
+                        {data.selectedApplication.telegramHandle || "Not provided"}
+                      </p>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <p className="font-semibold text-ink">LinkedIn profile</p>
+                      {data.selectedApplication.linkedinProfile ? (
+                        <a
+                          className="mt-1 inline-block break-all text-terracotta underline underline-offset-4"
+                          href={data.selectedApplication.linkedinProfile}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {data.selectedApplication.linkedinProfile}
+                        </a>
+                      ) : (
+                        <p className="mt-1">Not provided</p>
+                      )}
+                    </div>
+                    <div className="sm:col-span-2">
+                      <p className="font-semibold text-ink">Website</p>
+                      {data.selectedApplication.website ? (
+                        <a
+                          className="mt-1 inline-block break-all text-terracotta underline underline-offset-4"
+                          href={data.selectedApplication.website}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {data.selectedApplication.website}
+                        </a>
+                      ) : (
+                        <p className="mt-1">Not provided</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
                     <CardTitle>Application profile</CardTitle>
                     <CardDescription>
                       Core ICP scope, thresholds, and commercial context for this account.

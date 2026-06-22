@@ -19,6 +19,7 @@ import { captureEvent } from "@/lib/monitoring/posthog";
 type RequiredContactability = "premium" | "strong";
 type CurrencyOption = "EUR" | "GBP" | "USD";
 type OutboundMaturity = "manual" | "none" | "structured" | "team";
+type PreferredContactMethod = "email" | "linkedin" | "telegram" | "whatsapp";
 
 type CampaignApplicationFormState = {
   averageClientValue: string;
@@ -33,13 +34,17 @@ type CampaignApplicationFormState = {
   fullName: string;
   industry: string;
   leadGoal: string;
+  linkedinProfile: string;
   minimumScore: string;
   outboundMaturity: OutboundMaturity;
+  preferredContactMethod: PreferredContactMethod;
   requiredContactability: RequiredContactability;
   role: string;
   services: string;
   successDefinition: string;
   targetTitles: string;
+  telegramHandle: string;
+  whatsappNumber: string;
   website: string;
 };
 
@@ -56,13 +61,17 @@ const initialFormState: CampaignApplicationFormState = {
   fullName: "",
   industry: "SEO agencies",
   leadGoal: "25",
+  linkedinProfile: "",
   minimumScore: "70",
   outboundMaturity: "manual",
+  preferredContactMethod: "whatsapp",
   requiredContactability: "premium",
   role: "",
   services: "SEO, PPC",
   successDefinition: "",
   targetTitles: "Founder, CEO",
+  telegramHandle: "",
+  whatsappNumber: "",
   website: "",
 };
 
@@ -116,13 +125,17 @@ export function CampaignApplicationForm() {
           fullName: formState.fullName,
           industry: formState.industry,
           leadGoal: Number(formState.leadGoal),
+          linkedinProfile: formState.linkedinProfile,
           minimumScore: Number(formState.minimumScore),
           outboundMaturity: formState.outboundMaturity,
+          preferredContactMethod: formState.preferredContactMethod,
           requiredContactability: formState.requiredContactability,
           role: formState.role,
           services: splitCsv(formState.services),
           successDefinition: formState.successDefinition,
+          telegramHandle: formState.telegramHandle,
           targetTitles: splitCsv(formState.targetTitles),
+          whatsappNumber: formState.whatsappNumber,
           website: formState.website,
         }),
         headers: {
@@ -197,6 +210,21 @@ export function CampaignApplicationForm() {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="whatsappNumber">WhatsApp</Label>
+            <Input
+              required
+              id="whatsappNumber"
+              name="whatsappNumber"
+              onChange={(event) => updateFormState("whatsappNumber", event.target.value)}
+              placeholder="+91 98765 43210"
+              value={formState.whatsappNumber}
+            />
+            <p className="text-xs leading-6 text-muted">
+              Use the number you want reminders and quick follow-ups on.
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="company">Company</Label>
             <Input
               required
@@ -205,6 +233,18 @@ export function CampaignApplicationForm() {
               onChange={(event) => updateFormState("company", event.target.value)}
               placeholder="Acme Growth"
               value={formState.company}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="linkedinProfile">LinkedIn profile</Label>
+            <Input
+              required
+              id="linkedinProfile"
+              name="linkedinProfile"
+              onChange={(event) => updateFormState("linkedinProfile", event.target.value)}
+              placeholder="linkedin.com/in/alexmorgan"
+              value={formState.linkedinProfile}
             />
           </div>
 
@@ -222,11 +262,43 @@ export function CampaignApplicationForm() {
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="website">Website</Label>
             <Input
+              required
               id="website"
               name="website"
               onChange={(event) => updateFormState("website", event.target.value)}
               placeholder="https://yourcompany.com"
               value={formState.website}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="preferredContactMethod">Preferred contact method</Label>
+            <Select
+              onValueChange={(value) =>
+                updateFormState("preferredContactMethod", value as PreferredContactMethod)
+              }
+              value={formState.preferredContactMethod}
+            >
+              <SelectTrigger id="preferredContactMethod">
+                <SelectValue placeholder="How should we follow up?" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                <SelectItem value="linkedin">LinkedIn</SelectItem>
+                <SelectItem value="telegram">Telegram</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="telegramHandle">Telegram (optional)</Label>
+            <Input
+              id="telegramHandle"
+              name="telegramHandle"
+              onChange={(event) => updateFormState("telegramHandle", event.target.value)}
+              placeholder="@alexmorgan"
+              value={formState.telegramHandle}
             />
           </div>
         </div>
@@ -477,8 +549,9 @@ export function CampaignApplicationForm() {
 
       <div className="flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-xl text-sm leading-7 text-muted">
-          We review every application manually. If there is a fit, we&apos;ll come back with the
-          recommended campaign shape and best next step.
+          We review every application manually first. If there&apos;s a fit, we&apos;ll come back
+          with the recommended campaign shape, preferred follow-up channel, and the right strategy
+          call link.
         </p>
         <Button className="w-full sm:w-auto" disabled={isSubmitting} size="lg" type="submit">
           {isSubmitting ? "Submitting..." : "Apply for a campaign"}

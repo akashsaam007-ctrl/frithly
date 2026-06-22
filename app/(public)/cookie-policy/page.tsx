@@ -146,14 +146,14 @@ export default function CookiePolicyPage() {
               <>
                 <p>
                   For cookie or tracking questions, contact{" "}
-                  <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                  <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                     {SUPPORT_EMAIL}
                   </a>
                   .
                 </p>
                 <p>
                   You can also review our{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.PRIVACY}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.PRIVACY}>
                     Privacy Policy
                   </Link>{" "}
                   for broader details on how we process data.

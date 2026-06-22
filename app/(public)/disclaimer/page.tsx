@@ -142,15 +142,15 @@ export default function DisclaimerPage() {
               <>
                 <p>
                   This Disclaimer should be read together with our{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.TERMS}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.TERMS}>
                     Terms of Service
                   </Link>
                   ,{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.PRIVACY}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.PRIVACY}>
                     Privacy Policy
                   </Link>
                   , and{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.ACCEPTABLE_USE_POLICY}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.ACCEPTABLE_USE_POLICY}>
                     Acceptable Use Policy
                   </Link>
                   .
@@ -164,7 +164,7 @@ export default function DisclaimerPage() {
               <>
                 <p>
                   For questions about this Disclaimer, email{" "}
-                  <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                  <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                     {SUPPORT_EMAIL}
                   </a>
                   .

@@ -16,17 +16,18 @@ import {
 
 export const metadata: Metadata = buildPublicMetadata({
   description:
-    "Frithly helps outbound teams find better-fit accounts, the right contacts, and better timing before outreach starts.",
+    "Frithly identifies buying signals, manually qualifies companies, verifies decision-makers, and delivers outbound-ready opportunities your team can act on immediately.",
   keywords: [
     "Frithly",
-    "outbound research service",
-    "better fit accounts",
-    "B2B prospect research",
-    "weekly outbound brief",
-    "founder outbound support",
+    "buying signals",
+    "manual qualification",
+    "decision maker verification",
+    "outbound opportunities",
+    "personalized outreach",
+    "sales intelligence service",
   ],
   path: "/",
-  title: "Frithly | Better Outbound Starts With Better Accounts",
+  title: "Frithly | Better Outbound Starts Before the First Email",
 });
 
 type HomePageProps = {
@@ -89,9 +90,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <StructuredData
         data={buildWebPageSchema({
           description:
-            "Frithly gives founders, agencies, and outbound teams better-fit accounts, the right contacts, and better timing before outreach starts.",
+            "Frithly identifies buying signals, manually qualifies companies, verifies decision-makers, and delivers outbound-ready opportunities your team can act on immediately.",
           path: "/",
-          title: "Frithly | Better Outbound Starts With Better Accounts",
+          title: "Frithly | Better Outbound Starts Before the First Email",
         })}
       />
       <StructuredData data={buildServiceSchema()} />

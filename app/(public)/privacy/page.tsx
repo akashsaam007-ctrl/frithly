@@ -66,7 +66,7 @@ export default function PrivacyPage() {
               </p>
               <p>
                 For privacy requests, data-access requests, or deletion requests, contact{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
                 .
@@ -211,7 +211,7 @@ export default function PrivacyPage() {
               </ul>
               <p>
                 To exercise these rights, email{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
                 .
@@ -232,7 +232,7 @@ export default function PrivacyPage() {
               <p>
                 We do not knowingly sell personal information for monetary consideration. If local
                 law grants you additional rights, contact{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>{" "}
                 and we will review your request in line with applicable law.
@@ -336,14 +336,14 @@ export default function PrivacyPage() {
             <>
               <p>
                 For privacy or data protection questions, email{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
                 .
               </p>
               <p>
                 You can also review our{" "}
-                <Link className="font-semibold text-terracotta" href={ROUTES.TERMS}>
+                <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.TERMS}>
                   Terms of Service
                 </Link>{" "}
                 for subscription and service terms.

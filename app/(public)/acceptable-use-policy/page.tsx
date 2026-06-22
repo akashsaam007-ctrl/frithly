@@ -59,7 +59,7 @@ export default function AcceptableUsePolicyPage() {
               <>
                 <p>
                   This policy supplements our{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.TERMS}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.TERMS}>
                     Terms of Service
                   </Link>{" "}
                   and helps protect customers, prospects, systems, and Frithly&apos;s operating
@@ -149,7 +149,7 @@ export default function AcceptableUsePolicyPage() {
               <>
                 <p>
                   If you believe someone is misusing {APP_NAME}, contact{" "}
-                  <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                  <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                     {SUPPORT_EMAIL}
                   </a>
                   .

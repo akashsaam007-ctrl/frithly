@@ -288,7 +288,7 @@ export default function TermsPage() {
                 These Terms are intended to be governed by the laws selected by the operator of
                 {APP_NAME}. Until the governing jurisdiction is finalized with counsel, disputes
                 should first be raised directly with us in good faith at{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
                 .
@@ -314,14 +314,14 @@ export default function TermsPage() {
             <>
               <p>
                 For contract, billing, or legal questions, email{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
                 .
               </p>
               <p>
                 You can also review our{" "}
-                <Link className="font-semibold text-terracotta" href={ROUTES.PRIVACY}>
+                <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.PRIVACY}>
                   Privacy Policy
                 </Link>{" "}
                 for information about how we collect and process data.

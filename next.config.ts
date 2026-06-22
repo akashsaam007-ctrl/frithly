@@ -27,6 +27,7 @@ export default function createNextConfig(phase: string): NextConfig {
   const sentryEnabledInDev = process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
   const baseConfig: NextConfig = {
     allowedDevOrigins: getAllowedDevOrigins(),
+    distDir: isDevServer ? ".next-dev" : ".next",
     env: {
       NEXT_PUBLIC_IS_DEV_SERVER: isDevServer ? "true" : "false",
     },

@@ -61,7 +61,7 @@ export default function GdprPage() {
                 <p>
                   This policy applies where UK GDPR, EU GDPR, or similar data protection laws apply
                   to personal data processed by {APP_NAME}. It should be read alongside our{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.PRIVACY}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.PRIVACY}>
                     Privacy Policy
                   </Link>
                   .
@@ -162,7 +162,7 @@ export default function GdprPage() {
               <>
                 <p>
                   To make a privacy or data-subject request, email{" "}
-                  <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                  <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                     {SUPPORT_EMAIL}
                   </a>{" "}
                   with enough detail for us to verify the request and respond appropriately.
@@ -180,11 +180,11 @@ export default function GdprPage() {
               <>
                 <p>
                   For more detail on cookies and general privacy practices, see our{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.COOKIE_POLICY}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.COOKIE_POLICY}>
                     Cookie Policy
                   </Link>{" "}
                   and{" "}
-                  <Link className="font-semibold text-terracotta" href={ROUTES.PRIVACY}>
+                  <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.PRIVACY}>
                     Privacy Policy
                   </Link>
                   .

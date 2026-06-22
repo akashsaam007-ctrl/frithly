@@ -1,6 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import {
   COOKIE_CONSENT_STORAGE_KEY,
   type CookieConsentChoice,
@@ -12,16 +11,23 @@ import type {
 
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 const posthogToken = process.env.NEXT_PUBLIC_POSTHOG_TOKEN;
+const isDevServer = process.env.NEXT_PUBLIC_IS_DEV_SERVER === "true";
 const posthogEnabledInDev = process.env.NEXT_PUBLIC_POSTHOG_ENABLE_IN_DEV === "true";
 const posthogEnabled =
   Boolean(posthogToken) &&
-  (process.env.NODE_ENV === "production" || posthogEnabledInDev);
+  (!isDevServer || posthogEnabledInDev);
+const sentryEnabledInDev = process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
+const sentryUserEnabled =
+  Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN) &&
+  (!isDevServer || sentryEnabledInDev);
 
 type PostHogClient = typeof import("posthog-js").default;
+type SentryClient = typeof import("@sentry/nextjs");
 
 let posthogClient: PostHogClient | null = null;
 let posthogLoadingPromise: Promise<PostHogClient | null> | null = null;
 let posthogInitialized = false;
+let sentryClientPromise: Promise<SentryClient | null> | null = null;
 
 function getConsentChoice(): CookieConsentChoice | null {
   if (typeof window === "undefined") {
@@ -67,6 +73,18 @@ async function loadPostHogClient() {
   }
 
   return posthogLoadingPromise;
+}
+
+async function loadSentryClient() {
+  if (!sentryUserEnabled || typeof window === "undefined") {
+    return null;
+  }
+
+  if (!sentryClientPromise) {
+    sentryClientPromise = import("@sentry/nextjs");
+  }
+
+  return sentryClientPromise;
 }
 
 export async function syncAnalyticsConsent() {
@@ -138,9 +156,11 @@ export function identifyAnalyticsUser(params: {
   email?: string | null;
   type: "admin" | "customer";
 }) {
-  Sentry.setUser({
-    email: params.email ?? undefined,
-    id: params.distinctId,
+  void loadSentryClient().then((Sentry) => {
+    Sentry?.setUser({
+      email: params.email ?? undefined,
+      id: params.distinctId,
+    });
   });
 
   void syncAnalyticsConsent().then((ready) => {
@@ -156,7 +176,9 @@ export function identifyAnalyticsUser(params: {
 }
 
 export function resetAnalyticsUser() {
-  Sentry.setUser(null);
+  void loadSentryClient().then((Sentry) => {
+    Sentry?.setUser(null);
+  });
 
   if (!posthogInitialized) {
     return;

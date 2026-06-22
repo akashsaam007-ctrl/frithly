@@ -22,14 +22,18 @@ const campaignApplicationSchema = z.object({
   fullName: z.string().trim().min(2),
   industry: z.string().trim().min(2),
   leadGoal: z.number().int().min(10).max(500),
+  linkedinProfile: z.string().trim().min(3),
   minimumScore: z.number().int().min(50).max(90),
   outboundMaturity: z.enum(["manual", "none", "structured", "team"]),
+  preferredContactMethod: z.enum(["email", "whatsapp", "linkedin", "telegram"]),
   requiredContactability: z.enum(["premium", "strong"]),
   role: z.string().trim().optional(),
   services: z.array(z.string().trim().min(1)).default([]),
   successDefinition: z.string().trim().optional(),
+  telegramHandle: z.string().trim().optional(),
   targetTitles: z.array(z.string().trim().min(1)).default([]),
-  website: z.string().trim().optional(),
+  whatsappNumber: z.string().trim().min(6),
+  website: z.string().trim().min(3),
 });
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -86,6 +90,22 @@ function normalizeWebsite(value?: string) {
   return `https://${normalized}`;
 }
 
+function normalizeLinkedinProfile(value?: string) {
+  const normalized = value?.trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
+    return normalized;
+  }
+
+  return normalized.startsWith("linkedin.com/")
+    ? `https://${normalized}`
+    : `https://linkedin.com/in/${normalized.replace(/^@/, "")}`;
+}
+
 function buildFallbackNotes(parsed: z.infer<typeof campaignApplicationSchema>) {
   return JSON.stringify(
     {
@@ -95,13 +115,17 @@ function buildFallbackNotes(parsed: z.infer<typeof campaignApplicationSchema>) {
       currency: parsed.currency,
       founderConfidenceMin: parsed.founderConfidenceMin,
       leadGoal: parsed.leadGoal,
+      linkedinProfile: normalizeLinkedinProfile(parsed.linkedinProfile),
       minimumScore: parsed.minimumScore,
       outboundMaturity: parsed.outboundMaturity,
+      preferredContactMethod: parsed.preferredContactMethod,
       requiredContactability: parsed.requiredContactability,
       services: parsed.services,
       source: "campaign_application_fallback",
       successDefinition: normalizeOptionalValue(parsed.successDefinition),
+      telegramHandle: normalizeOptionalValue(parsed.telegramHandle),
       targetTitles: parsed.targetTitles,
+      whatsappNumber: parsed.whatsappNumber.trim(),
       website: normalizeWebsite(parsed.website),
     },
     null,
@@ -125,13 +149,17 @@ async function insertCampaignApplicationRecord(parsed: z.infer<typeof campaignAp
     full_name: parsed.fullName.trim(),
     industry: parsed.industry.trim(),
     lead_goal: parsed.leadGoal,
+    linkedin_profile: normalizeLinkedinProfile(parsed.linkedinProfile),
     minimum_score: parsed.minimumScore,
     outbound_maturity: parsed.outboundMaturity,
+    preferred_contact_method: parsed.preferredContactMethod,
     required_contactability: parsed.requiredContactability,
     role: normalizeOptionalValue(parsed.role),
     services: normalizeOptionalArray(parsed.services),
     success_definition: normalizeOptionalValue(parsed.successDefinition),
+    telegram_handle: normalizeOptionalValue(parsed.telegramHandle),
     target_titles: normalizeOptionalArray(parsed.targetTitles),
+    whatsapp_number: parsed.whatsappNumber.trim(),
     website: normalizeWebsite(parsed.website),
   };
 
@@ -233,15 +261,19 @@ export async function POST(request: Request) {
         geography: geographyLabel || "Not provided",
         industry: parsed.data.industry.trim(),
         leadGoal: parsed.data.leadGoal,
+        linkedinProfile: normalizeLinkedinProfile(parsed.data.linkedinProfile),
         minimumScore: parsed.data.minimumScore,
         outboundMaturity: parsed.data.outboundMaturity,
+        preferredContactMethod: parsed.data.preferredContactMethod,
         recipientEmail: SUPPORT_EMAIL,
         requiredContactability: parsed.data.requiredContactability,
         role: normalizeOptionalValue(parsed.data.role),
         services: parsed.data.services,
         storage: savedApplication.storage,
         successDefinition: normalizeOptionalValue(parsed.data.successDefinition),
+        telegramHandle: normalizeOptionalValue(parsed.data.telegramHandle),
         targetTitles: parsed.data.targetTitles,
+        whatsappNumber: parsed.data.whatsappNumber.trim(),
         website: normalizeWebsite(parsed.data.website),
       }),
     ]);

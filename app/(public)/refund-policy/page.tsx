@@ -120,7 +120,7 @@ export default function RefundPolicyPage() {
             <>
               <p>
                 To request a refund review, email{" "}
-                <a className="font-semibold text-terracotta" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="font-semibold text-[#d8c9ff]" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>{" "}
                 with:
@@ -156,11 +156,11 @@ export default function RefundPolicyPage() {
             <>
               <p>
                 This Refund Policy should be read together with our{" "}
-                <Link className="font-semibold text-terracotta" href={ROUTES.TERMS}>
+                <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.TERMS}>
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link className="font-semibold text-terracotta" href={ROUTES.PRIVACY}>
+                <Link className="font-semibold text-[#d8c9ff]" href={ROUTES.PRIVACY}>
                   Privacy Policy
                 </Link>
                 .

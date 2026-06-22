@@ -11,15 +11,19 @@ export type CampaignApplicationAlertEmailProps = {
   geography: string;
   industry: string;
   leadGoal: number;
+  linkedinProfile?: string | null;
   minimumScore: number;
   outboundMaturity: string;
+  preferredContactMethod: "email" | "linkedin" | "telegram" | "whatsapp";
   recipientEmail: string;
   requiredContactability: string;
   role?: string | null;
   services: string[];
   storage: string;
   successDefinition?: string | null;
+  telegramHandle?: string | null;
   targetTitles: string[];
+  whatsappNumber: string;
   website?: string | null;
 };
 
@@ -37,6 +41,10 @@ export function CampaignApplicationAlertEmail(props: CampaignApplicationAlertEma
           `Company: ${props.company}`,
           `Role: ${props.role ?? "Not provided"}`,
           `Website: ${props.website ?? "Not provided"}`,
+          `LinkedIn: ${props.linkedinProfile ?? "Not provided"}`,
+          `WhatsApp: ${props.whatsappNumber}`,
+          `Preferred contact method: ${props.preferredContactMethod}`,
+          `Telegram: ${props.telegramHandle ?? "Not provided"}`,
           `Industry: ${props.industry}`,
           `Geography: ${props.geography}`,
           `Company size: ${props.companySize}`,

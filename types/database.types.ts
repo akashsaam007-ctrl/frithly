@@ -83,9 +83,11 @@ export type Database = {
           id?: string;
           industry: string;
           lead_goal: number;
+          linkedin_profile?: string | null;
           minimum_score: number;
           onboarding_notes?: string | null;
           outbound_maturity: "manual" | "none" | "structured" | "team";
+          preferred_contact_method: "email" | "linkedin" | "telegram" | "whatsapp";
           qualification_notes?: string | null;
           recommended_plan?: "design_partner" | "growth" | "scale" | "starter" | null;
           required_contactability: "premium" | "strong";
@@ -96,7 +98,9 @@ export type Database = {
           status?: "accepted" | "active" | "onboarding" | "pending" | "qualified" | "rejected" | "reviewing" | null;
           success_definition?: string | null;
           target_titles?: string[] | null;
+          telegram_handle?: string | null;
           updated_at?: string | null;
+          whatsapp_number: string;
           website?: string | null;
         };
         Relationships: [];
@@ -116,9 +120,11 @@ export type Database = {
           id: string;
           industry: string;
           lead_goal: number;
+          linkedin_profile: string | null;
           minimum_score: number;
           onboarding_notes: string | null;
           outbound_maturity: "manual" | "none" | "structured" | "team";
+          preferred_contact_method: "email" | "linkedin" | "telegram" | "whatsapp";
           qualification_notes: string | null;
           recommended_plan: "design_partner" | "growth" | "scale" | "starter" | null;
           required_contactability: "premium" | "strong";
@@ -129,7 +135,9 @@ export type Database = {
           status: "accepted" | "active" | "onboarding" | "pending" | "qualified" | "rejected" | "reviewing" | null;
           success_definition: string | null;
           target_titles: string[] | null;
+          telegram_handle: string | null;
           updated_at: string | null;
+          whatsapp_number: string;
           website: string | null;
         };
         Update: {
@@ -148,9 +156,11 @@ export type Database = {
           id?: string;
           industry?: string;
           lead_goal?: number;
+          linkedin_profile?: string | null;
           minimum_score?: number;
           onboarding_notes?: string | null;
           outbound_maturity?: "manual" | "none" | "structured" | "team";
+          preferred_contact_method?: "email" | "linkedin" | "telegram" | "whatsapp";
           qualification_notes?: string | null;
           recommended_plan?: "design_partner" | "growth" | "scale" | "starter" | null;
           required_contactability?: "premium" | "strong";
@@ -161,7 +171,9 @@ export type Database = {
           status?: "accepted" | "active" | "onboarding" | "pending" | "qualified" | "rejected" | "reviewing" | null;
           success_definition?: string | null;
           target_titles?: string[] | null;
+          telegram_handle?: string | null;
           updated_at?: string | null;
+          whatsapp_number?: string;
           website?: string | null;
         };
       };

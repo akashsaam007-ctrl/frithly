@@ -47,6 +47,15 @@ const initialState: SalesInquiryFormState = {
 export function SalesInquiryForm() {
   const [formState, setFormState] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fieldClassName =
+    "rounded-[1rem] border-white/[0.08] bg-white/[0.03] text-white placeholder:text-white/34 focus-visible:ring-[rgba(201,183,255,0.34)] focus-visible:ring-offset-[#050505]";
+  const selectContentClassName =
+    "border-white/[0.08] bg-[#0a0a0a] text-white shadow-[0_24px_70px_rgba(0,0,0,0.42)]";
+  const selectItemClassName = "text-white focus:text-white";
+  const labelClassName = "text-white";
+  const helperTextClassName = "text-xs leading-6 text-white/46";
+  const submitButtonClassName =
+    "border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#050505] shadow-[0_18px_52px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#050505]";
 
   function updateField<K extends keyof SalesInquiryFormState>(
     field: K,
@@ -88,8 +97,9 @@ export function SalesInquiryForm() {
     <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="sales-full-name">Full name</Label>
+          <Label className={labelClassName} htmlFor="sales-full-name">Full name</Label>
           <Input
+            className={fieldClassName}
             required
             id="sales-full-name"
             placeholder="Alex Morgan"
@@ -99,8 +109,9 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-email">Work email</Label>
+          <Label className={labelClassName} htmlFor="sales-email">Work email</Label>
           <Input
+            className={fieldClassName}
             required
             id="sales-email"
             placeholder="alex@company.com"
@@ -111,20 +122,22 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-whatsapp">WhatsApp</Label>
+          <Label className={labelClassName} htmlFor="sales-whatsapp">WhatsApp</Label>
           <Input
+            className={fieldClassName}
             required
             id="sales-whatsapp"
             placeholder="+91 98765 43210"
             value={formState.whatsappNumber}
             onChange={(event) => updateField("whatsappNumber", event.target.value)}
           />
-          <p className="text-xs leading-6 text-muted">Include country code so we can confirm quickly.</p>
+          <p className={helperTextClassName}>Include country code so we can confirm quickly.</p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-company">Company</Label>
+          <Label className={labelClassName} htmlFor="sales-company">Company</Label>
           <Input
+            className={fieldClassName}
             required
             id="sales-company"
             placeholder="Acme Growth"
@@ -134,8 +147,9 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-role">Role</Label>
+          <Label className={labelClassName} htmlFor="sales-role">Role</Label>
           <Input
+            className={fieldClassName}
             id="sales-role"
             placeholder="Founder, Head of Growth"
             value={formState.role}
@@ -144,8 +158,9 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-linkedin">LinkedIn profile</Label>
+          <Label className={labelClassName} htmlFor="sales-linkedin">LinkedIn profile</Label>
           <Input
+            className={fieldClassName}
             required
             id="sales-linkedin"
             placeholder="linkedin.com/in/alexmorgan"
@@ -155,8 +170,9 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-website">Website</Label>
+          <Label className={labelClassName} htmlFor="sales-website">Website</Label>
           <Input
+            className={fieldClassName}
             required
             id="sales-website"
             placeholder="https://yourcompany.com"
@@ -166,45 +182,46 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-company-size">Company size</Label>
+          <Label className={labelClassName} htmlFor="sales-company-size">Company size</Label>
           <Select
             onValueChange={(value) => updateField("companySize", value)}
             value={formState.companySize}
           >
-            <SelectTrigger id="sales-company-size">
+            <SelectTrigger className={fieldClassName} id="sales-company-size">
               <SelectValue placeholder="Select company size" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1-10">1-10 employees</SelectItem>
-              <SelectItem value="11-50">11-50 employees</SelectItem>
-              <SelectItem value="51-200">51-200 employees</SelectItem>
-              <SelectItem value="201-500">201-500 employees</SelectItem>
-              <SelectItem value="500+">500+ employees</SelectItem>
+            <SelectContent className={selectContentClassName}>
+              <SelectItem className={selectItemClassName} value="1-10">1-10 employees</SelectItem>
+              <SelectItem className={selectItemClassName} value="11-50">11-50 employees</SelectItem>
+              <SelectItem className={selectItemClassName} value="51-200">51-200 employees</SelectItem>
+              <SelectItem className={selectItemClassName} value="201-500">201-500 employees</SelectItem>
+              <SelectItem className={selectItemClassName} value="500+">500+ employees</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-contact-method">Preferred contact method</Label>
+          <Label className={labelClassName} htmlFor="sales-contact-method">Preferred contact method</Label>
           <Select
             onValueChange={(value) => updateField("preferredContactMethod", value)}
             value={formState.preferredContactMethod}
           >
-            <SelectTrigger id="sales-contact-method">
+            <SelectTrigger className={fieldClassName} id="sales-contact-method">
               <SelectValue placeholder="How should we follow up?" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="email">Email</SelectItem>
-              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-              <SelectItem value="linkedin">LinkedIn</SelectItem>
-              <SelectItem value="telegram">Telegram</SelectItem>
+            <SelectContent className={selectContentClassName}>
+              <SelectItem className={selectItemClassName} value="email">Email</SelectItem>
+              <SelectItem className={selectItemClassName} value="whatsapp">WhatsApp</SelectItem>
+              <SelectItem className={selectItemClassName} value="linkedin">LinkedIn</SelectItem>
+              <SelectItem className={selectItemClassName} value="telegram">Telegram</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sales-telegram">Telegram (optional)</Label>
+          <Label className={labelClassName} htmlFor="sales-telegram">Telegram (optional)</Label>
           <Input
+            className={fieldClassName}
             id="sales-telegram"
             placeholder="@alexmorgan"
             value={formState.telegramHandle}
@@ -213,27 +230,28 @@ export function SalesInquiryForm() {
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="sales-primary-need">What do you want to discuss?</Label>
+          <Label className={labelClassName} htmlFor="sales-primary-need">What do you want to discuss?</Label>
           <Select
             onValueChange={(value) => updateField("primaryNeed", value)}
             value={formState.primaryNeed}
           >
-            <SelectTrigger id="sales-primary-need">
+            <SelectTrigger className={fieldClassName} id="sales-primary-need">
               <SelectValue placeholder="Choose the main reason for reaching out" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="plan-fit">Plan fit and pricing</SelectItem>
-              <SelectItem value="outbound-goals">Outbound goals and ICP fit</SelectItem>
-              <SelectItem value="onboarding">Onboarding and rollout questions</SelectItem>
-              <SelectItem value="application">Whether to apply or book a meeting first</SelectItem>
-              <SelectItem value="reactivation">Reactivation or workspace access</SelectItem>
+            <SelectContent className={selectContentClassName}>
+              <SelectItem className={selectItemClassName} value="plan-fit">Plan fit and pricing</SelectItem>
+              <SelectItem className={selectItemClassName} value="outbound-goals">Outbound goals and ICP fit</SelectItem>
+              <SelectItem className={selectItemClassName} value="onboarding">Onboarding and rollout questions</SelectItem>
+              <SelectItem className={selectItemClassName} value="application">Whether to request a sample or book a call first</SelectItem>
+              <SelectItem className={selectItemClassName} value="reactivation">Reactivation or workspace access</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="sales-message">What should we know before we reply?</Label>
+          <Label className={labelClassName} htmlFor="sales-message">What should we know before we reply?</Label>
           <Textarea
+            className={fieldClassName}
             required
             id="sales-message"
             placeholder="Tell us what you sell, who you want to reach, and what you want help deciding."
@@ -244,14 +262,14 @@ export function SalesInquiryForm() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-2xl text-sm leading-7 text-muted">
+      <div className="flex flex-col gap-3 border-t border-white/[0.08] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-2xl text-sm leading-7 text-white/52">
           We&apos;ll review the details first and reply from hello@frithly.com with the best next
-          step. If there&apos;s a fit, we&apos;ll send the right scheduling link instead of pushing
-          you straight into a calendar.
+          step. If there&apos;s a fit, we&apos;ll point you toward the right sample or call instead
+          of sending you through unnecessary steps.
         </p>
-        <Button className="w-full sm:w-auto" disabled={isSubmitting} size="lg" type="submit">
-          {isSubmitting ? "Submitting..." : "Send to sales"}
+        <Button className={`w-full sm:w-auto ${submitButtonClassName}`} disabled={isSubmitting} size="lg" type="submit">
+          {isSubmitting ? "Submitting..." : "Send details"}
         </Button>
       </div>
     </form>

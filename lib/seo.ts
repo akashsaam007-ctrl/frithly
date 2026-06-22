@@ -12,14 +12,11 @@ const SERVICE_ID = absoluteUrl("/#service");
 const SITE_LAST_MODIFIED = "2026-06-02T00:00:00.000Z";
 const PRIMARY_MARKETS = ["United States", "Canada", "United Kingdom", "Europe"] as const;
 const SITE_NAV_ITEMS = [
-  { name: "Home", path: "/" },
-  { name: "Apply", path: "/apply" },
-  { name: "Contact", path: "/contact" },
-  { name: "Pricing", path: "/pricing" },
-  { name: "About", path: "/about" },
-  { name: "Guides", path: "/guides" },
-  { name: "Proof", path: "/proof" },
-  { name: "Demo", path: "/demo" },
+  { name: "Process", path: "/#process" },
+  { name: "Sample", path: "/#sample-opportunity" },
+  { name: "Why Frithly", path: "/#why-frithly" },
+  { name: "FAQ", path: "/#faq" },
+  { name: "Book Call", path: BOOKING_URL },
 ] as const;
 
 type PublicMetadataOptions = {
@@ -38,6 +35,7 @@ type BreadcrumbItem = {
 type FaqItem = {
   answer: string;
   question: string;
+  schemaAnswer?: string;
 };
 
 function normalizePath(path: string) {
@@ -67,8 +65,8 @@ export function buildPublicMetadata({
       canonical,
     },
     authors: [{ name: APP_NAME }],
-    category: "Outbound targeting and research service",
-    classification: "B2B outbound research and targeting service",
+    category: "Sales intelligence service",
+    classification: "Signal-led outbound opportunity service",
     creator: APP_NAME,
     description,
     formatDetection: {
@@ -82,7 +80,7 @@ export function buildPublicMetadata({
       description,
       images: [
         {
-          alt: `${APP_NAME} | Better outbound starts with better accounts`,
+          alt: `${APP_NAME} | Better outbound starts before the first email`,
           height: 630,
           url: absoluteUrl(DEFAULT_IMAGE),
           width: 1200,
@@ -161,41 +159,14 @@ export function buildOrganizationSchema() {
     ],
     description: META.DESCRIPTION,
     email: SUPPORT_EMAIL,
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "Frithly outbound research programs",
-      itemListElement: [
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "Starter",
-          },
-        },
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "Growth",
-          },
-        },
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "Scale",
-          },
-        },
-      ],
-    },
     image: absoluteUrl(DEFAULT_LOGO),
     knowsAbout: [
-      "outbound targeting",
-      "B2B prospect research",
-      "account research",
-      "safer outreach",
-      "sales prospect research",
-      "weekly outbound research briefs",
+      "buying signals",
+      "manual qualification",
+      "decision maker verification",
+      "outbound opportunities",
+      "personalized outreach",
+      "sales intelligence",
     ],
     legalName: APP_NAME,
     logo: absoluteUrl(DEFAULT_LOGO),
@@ -211,12 +182,12 @@ export function buildWebSiteSchema() {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     about: [
-      "Better outbound targeting",
-      "Weekly account research",
-      "Better-fit accounts",
-      "Safer outreach",
+      "Buying signals",
+      "Manual qualification",
+      "Verified decision-makers",
+      "Outbound-ready opportunities",
     ],
-    alternateName: "Frithly outbound research",
+    alternateName: "Frithly outbound opportunity service",
     description: META.DESCRIPTION,
     image: absoluteUrl(DEFAULT_LOGO),
     inLanguage: "en-GB",
@@ -224,13 +195,13 @@ export function buildWebSiteSchema() {
     name: APP_NAME,
     potentialAction: [
       {
-        "@type": "CommunicateAction",
-        name: "Apply for a targeting review",
-        target: absoluteUrl("/apply"),
+        "@type": "ViewAction",
+        name: "See a sample opportunity",
+        target: absoluteUrl("/#sample-opportunity"),
       },
       {
         "@type": "ScheduleAction",
-        name: "Book an outbound intelligence review",
+        name: "Book a Frithly intro call",
         target: BOOKING_URL,
       },
     ],
@@ -251,31 +222,17 @@ export function buildServiceSchema() {
       "@type": "Audience",
       audienceType: "Founders, CEOs, revenue leaders, SDR teams, agencies, and GTM operators",
     },
-    category: "Outbound targeting and research service",
+    category: "Sales intelligence service",
     description:
-      "A premium outbound research service for teams that want better-fit accounts, better timing, and safer outreach before campaigns start.",
+      "Frithly identifies buying signals, manually qualifies companies, verifies decision-makers, and delivers outbound-ready opportunities your team can act on immediately.",
     image: absoluteUrl(DEFAULT_LOGO),
-    name: `${APP_NAME} outbound targeting service`,
-    offers: {
-      "@type": "Offer",
-      availability: "https://schema.org/InStock",
-      category: "B2B service",
-      description:
-        "Custom outbound research programs built around ICP, geography, timing, deliverability, and weekly delivery.",
-      priceCurrency: "GBP",
-      priceSpecification: {
-        "@type": "PriceSpecification",
-        minPrice: 499,
-        priceCurrency: "GBP",
-      },
-      url: absoluteUrl("/apply"),
-    },
+    name: `${APP_NAME} outbound opportunity service`,
     provider: {
       "@id": ORG_ID,
     },
     serviceOutput:
-      "Weekly briefs with better-fit accounts, the right contacts, clear timing context, and stronger outreach angles.",
-    serviceType: "Outbound targeting and research service",
+      "Outbound-ready opportunities with verified contacts, why-now triggers, and personalized email sequences.",
+    serviceType: "Signal-led outbound opportunity service",
     slogan: APP_TAGLINE,
     url: absoluteUrl("/"),
   };
@@ -289,7 +246,7 @@ export function buildFaqSchema(faqs: FaqItem[]) {
       "@type": "Question",
       acceptedAnswer: {
         "@type": "Answer",
-        text: faq.answer,
+        text: faq.schemaAnswer ?? faq.answer,
       },
       name: faq.question,
     })),
@@ -344,7 +301,7 @@ export function buildContactPageSchema() {
       "@id": ORG_ID,
     },
     description:
-      "Contact Frithly for outbound research programs, onboarding, scheduling, and support.",
+      "Contact Frithly for sample requests, booking, onboarding, and support.",
     inLanguage: "en-GB",
     name: "Contact Frithly",
     url: absoluteUrl("/contact"),
@@ -418,7 +375,7 @@ export function buildSiteNavigationSchema() {
       "@type": "SiteNavigationElement",
       name: item.name,
       position: index + 1,
-      url: absoluteUrl(item.path),
+      url: item.path.startsWith("http") ? item.path : absoluteUrl(item.path),
     })),
   };
 }

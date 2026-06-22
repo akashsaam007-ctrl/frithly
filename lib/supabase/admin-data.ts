@@ -638,6 +638,7 @@ export type AdminApplicationRecord = {
   id: string;
   industry: string;
   isFallback: boolean;
+  linkedinProfile: string | null;
   linkedCustomerId: string | null;
   linkedCustomerName: string | null;
   linkedCustomerPlan: CustomerRow["plan"];
@@ -647,6 +648,7 @@ export type AdminApplicationRecord = {
   onboardingNotes: string | null;
   outboundMaturity: CampaignApplicationRow["outbound_maturity"];
   planRecommendation: AdminApplicationPlanRecommendation;
+  preferredContactMethod: "email" | "linkedin" | "telegram" | "whatsapp";
   qualificationNotes: string | null;
   recommendedPlan: CampaignApplicationRow["recommended_plan"];
   requiredContactability: CampaignApplicationRow["required_contactability"];
@@ -661,8 +663,10 @@ export type AdminApplicationRecord = {
   successDefinition: string | null;
   summary: string;
   targetTitles: string[];
+  telegramHandle: string | null;
   updatedAtRaw: null | string;
   updatedAtLabel: null | string;
+  whatsappNumber: string;
   website: string | null;
 };
 
@@ -947,10 +951,12 @@ function buildAdminApplicationRecord(params: {
     fullName: string;
     id: string;
     industry: string;
+    linkedinProfile: string | null;
     leadGoal: number;
     minimumScore: number;
     onboardingNotes: null | string;
     outboundMaturity: string;
+    preferredContactMethod: "email" | "linkedin" | "telegram" | "whatsapp";
     qualificationNotes: null | string;
     recommendedPlan: CampaignApplicationRow["recommended_plan"];
     requiredContactability: string;
@@ -962,7 +968,9 @@ function buildAdminApplicationRecord(params: {
     status: AdminApplicationStatus;
     successDefinition: null | string;
     targetTitles: string[];
+    telegramHandle: string | null;
     updatedAt: null | string;
+    whatsappNumber: string;
     website: null | string;
   };
   linkedCustomer?: {
@@ -1032,6 +1040,7 @@ function buildAdminApplicationRecord(params: {
     id: params.application.id,
     industry: params.application.industry,
     isFallback: params.application.source === "sample_requests_fallback",
+    linkedinProfile: params.application.linkedinProfile,
     linkedCustomerId: params.linkedCustomer?.id ?? null,
     linkedCustomerName: params.linkedCustomer?.name ?? null,
     linkedCustomerPlan: params.linkedCustomer?.plan ?? null,
@@ -1041,6 +1050,7 @@ function buildAdminApplicationRecord(params: {
     onboardingNotes: params.application.onboardingNotes,
     outboundMaturity: params.application.outboundMaturity as CampaignApplicationRow["outbound_maturity"],
     planRecommendation,
+    preferredContactMethod: params.application.preferredContactMethod,
     qualificationNotes: params.application.qualificationNotes,
     recommendedPlan: params.application.recommendedPlan,
     requiredContactability: params.application.requiredContactability as CampaignApplicationRow["required_contactability"],
@@ -1060,10 +1070,12 @@ function buildAdminApplicationRecord(params: {
     successDefinition: params.application.successDefinition,
     summary: intelligence.summary,
     targetTitles: params.application.targetTitles,
+    telegramHandle: params.application.telegramHandle,
     updatedAtRaw: params.application.updatedAt,
     updatedAtLabel: params.application.updatedAt
       ? formatLongDate(params.application.updatedAt)
       : null,
+    whatsappNumber: params.application.whatsappNumber,
     website: params.application.website,
   } satisfies AdminApplicationRecord;
 }
@@ -1119,10 +1131,12 @@ export async function getAdminApplicationsData(filters?: {
         fullName: application.full_name,
         id: application.id,
         industry: application.industry,
+        linkedinProfile: application.linkedin_profile,
         leadGoal: application.lead_goal,
         minimumScore: application.minimum_score,
         onboardingNotes: application.onboarding_notes,
         outboundMaturity: application.outbound_maturity,
+        preferredContactMethod: application.preferred_contact_method,
         qualificationNotes: application.qualification_notes,
         recommendedPlan: application.recommended_plan,
         requiredContactability: application.required_contactability,
@@ -1134,7 +1148,9 @@ export async function getAdminApplicationsData(filters?: {
         status: application.status ?? "pending",
         successDefinition: application.success_definition,
         targetTitles: normalizeStringArray(application.target_titles),
+        telegramHandle: application.telegram_handle,
         updatedAt: application.updated_at,
+        whatsappNumber: application.whatsapp_number,
         website: application.website,
       },
       linkedCustomer: customerByEmail.get(application.email.trim().toLowerCase()) ?? null,
@@ -1179,6 +1195,8 @@ export async function getAdminApplicationsData(filters?: {
           fullName: request.full_name,
           id: request.id,
           industry: request.industry ?? "Unknown ICP",
+          linkedinProfile:
+            typeof parsedNotes.linkedinProfile === "string" ? parsedNotes.linkedinProfile : null,
           leadGoal: typeof parsedNotes.leadGoal === "number" ? parsedNotes.leadGoal : 25,
           minimumScore:
             typeof parsedNotes.minimumScore === "number" ? parsedNotes.minimumScore : 70,
@@ -1188,6 +1206,13 @@ export async function getAdminApplicationsData(filters?: {
             typeof parsedNotes.outboundMaturity === "string"
               ? parsedNotes.outboundMaturity
               : "manual",
+          preferredContactMethod:
+            parsedNotes.preferredContactMethod === "email" ||
+            parsedNotes.preferredContactMethod === "linkedin" ||
+            parsedNotes.preferredContactMethod === "telegram" ||
+            parsedNotes.preferredContactMethod === "whatsapp"
+              ? parsedNotes.preferredContactMethod
+              : "email",
           qualificationNotes:
             typeof parsedNotes.qualificationNotes === "string"
               ? parsedNotes.qualificationNotes
@@ -1224,8 +1249,14 @@ export async function getAdminApplicationsData(filters?: {
           targetTitles: Array.isArray(parsedNotes.targetTitles)
             ? parsedNotes.targetTitles.filter((value): value is string => typeof value === "string")
             : normalizeStringArray(request.target_role?.split(",")),
+          telegramHandle:
+            typeof parsedNotes.telegramHandle === "string" ? parsedNotes.telegramHandle : null,
           updatedAt:
             typeof parsedNotes.updatedAt === "string" ? parsedNotes.updatedAt : request.created_at,
+          whatsappNumber:
+            typeof parsedNotes.whatsappNumber === "string"
+              ? parsedNotes.whatsappNumber
+              : "Not provided",
           website: typeof parsedNotes.website === "string" ? parsedNotes.website : null,
         },
         linkedCustomer: customerByEmail.get(request.email.trim().toLowerCase()) ?? null,
@@ -1260,8 +1291,13 @@ export async function getAdminApplicationsData(filters?: {
       application.company,
       application.fullName,
       application.email,
+      application.whatsappNumber,
+      application.linkedinProfile ?? "",
+      application.telegramHandle ?? "",
+      application.website ?? "",
       application.industry,
       application.geographyLabel,
+      application.currentChallenges,
     ]
       .join(" ")
       .toLowerCase();

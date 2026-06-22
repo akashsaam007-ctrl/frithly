@@ -5,8 +5,9 @@ import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[linear-gradient(180deg,#04070c_0%,#030508_100%)] py-12 text-white sm:py-14">
-      <Container className="space-y-8 sm:space-y-10">
+    <footer className="relative overflow-hidden border-t border-white/[0.06] bg-[linear-gradient(180deg,#080808_0%,#040404_100%)] py-12 text-white sm:py-14">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_center,rgba(201,183,255,0.08),transparent_72%)] blur-3xl" />
+      <Container className="relative space-y-8 sm:space-y-10">
         <div className="grid gap-8 sm:gap-10 xl:grid-cols-[0.95fr_2.05fr]">
           <div className="space-y-4">
             <Logo
@@ -14,11 +15,12 @@ export function Footer() {
               imageClassName="h-8 sm:h-9 md:h-10"
             />
             <p className="max-w-sm text-base leading-8 text-white/68">
-              Frithly helps outbound teams start with better-fit accounts, better timing, and
-              stronger reasons to reach out before the first email is ever sent.
+              Frithly identifies buying signals, manually qualifies companies, verifies
+              decision-makers, and delivers outbound-ready opportunities your team can act on
+              immediately.
             </p>
             <div className="max-w-md text-sm leading-7 text-white/54">
-              Better-fit accounts. Right contacts. Human-reviewed briefs. Safer outbound.
+              Buying signals. Verified decision-makers. Manual QA. Personalized outreach.
             </div>
           </div>
 
@@ -26,26 +28,28 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Experience</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <Link className="block transition-colors hover:text-white" href="/#problem">
-                  Why outbound fails
+                <Link className="block transition-colors hover:text-white" href="/#process">
+                  Process
                 </Link>
-                <Link className="block transition-colors hover:text-white" href="/#deliverables">
-                  What your team gets
+                <Link className="block transition-colors hover:text-white" href="/#sample-opportunity">
+                  Sample opportunity
                 </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.HOW_IT_WORKS}>
-                  How it works
+                <Link className="block transition-colors hover:text-white" href="/#why-frithly">
+                  Why Frithly
                 </Link>
-                <Link className="block transition-colors hover:text-white" href="/#signals">
-                  Timing examples
-                </Link>
-                <Link className="block transition-colors hover:text-white" href="/#pilot">
-                  Start small
+                <Link className="block transition-colors hover:text-white" href="/#receive">
+                  What you receive
                 </Link>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.FAQ}>
                   FAQ
                 </Link>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.BOOK_MEETING}>
-                  Book a meeting
+                <Link
+                  className="block transition-colors hover:text-white"
+                  href={ROUTES.BOOK_MEETING}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Book call
                 </Link>
               </div>
             </div>
@@ -53,14 +57,17 @@ export function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-white">Program</h3>
               <div className="space-y-3 text-sm text-white/70">
-                <span className="block">Better-fit accounts for teams that care about reply quality</span>
-                <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT_SALES}>
-                  Talk to sales
-                </Link>
+                <span className="block">
+                  Signal discovery, manual qualification, verified contacts, and ready-to-send
+                  outreach.
+                </span>
                 <Link className="block transition-colors hover:text-white" href={ROUTES.CONTACT}>
                   Contact
                 </Link>
-                <span className="block">Serving outbound teams across the UK, EU, and beyond</span>
+                <span className="block">
+                  Built for B2B SaaS, AI agencies, software companies, cybersecurity, and
+                  consulting firms.
+                </span>
               </div>
             </div>
 

@@ -289,10 +289,14 @@ export async function sendSalesInquiryAlertEmail(props: {
   companySize?: string | null;
   email: string;
   fullName: string;
+  linkedinProfile: string;
   message: string;
   primaryNeed: string;
+  preferredContactMethod: "email" | "linkedin" | "telegram" | "whatsapp";
   recipientEmail: string;
   role?: string | null;
+  telegramHandle?: string | null;
+  whatsappNumber: string;
   website?: string | null;
 }) {
   const text = [
@@ -303,7 +307,11 @@ export async function sendSalesInquiryAlertEmail(props: {
     `Company: ${props.company}`,
     `Role: ${props.role ?? "Not provided"}`,
     `Website: ${props.website ?? "Not provided"}`,
+    `LinkedIn: ${props.linkedinProfile}`,
     `Company size: ${props.companySize ?? "Not provided"}`,
+    `WhatsApp: ${props.whatsappNumber}`,
+    `Preferred contact method: ${props.preferredContactMethod}`,
+    `Telegram: ${props.telegramHandle ?? "Not provided"}`,
     `Primary need: ${props.primaryNeed}`,
     "",
     props.message,
@@ -353,6 +361,10 @@ export async function sendCampaignApplicationAlertEmail(
     `Company: ${props.company}`,
     `Role: ${props.role ?? "Not provided"}`,
     `Website: ${props.website ?? "Not provided"}`,
+    `LinkedIn: ${props.linkedinProfile ?? "Not provided"}`,
+    `WhatsApp: ${props.whatsappNumber}`,
+    `Preferred contact method: ${props.preferredContactMethod}`,
+    `Telegram: ${props.telegramHandle ?? "Not provided"}`,
     `Industry: ${props.industry}`,
     `Geography: ${props.geography}`,
     `Company size: ${props.companySize}`,

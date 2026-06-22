@@ -13,10 +13,14 @@ const salesRequestSchema = z.object({
   companySize: z.string().trim().optional(),
   email: z.string().trim().email(),
   fullName: z.string().trim().min(2),
+  linkedinProfile: z.string().trim().min(3),
   message: z.string().trim().min(20).max(5000),
   primaryNeed: z.string().trim().min(2),
+  preferredContactMethod: z.enum(["email", "whatsapp", "linkedin", "telegram"]),
   role: z.string().trim().optional(),
-  website: z.string().trim().optional(),
+  telegramHandle: z.string().trim().optional(),
+  whatsappNumber: z.string().trim().min(6),
+  website: z.string().trim().min(3),
 });
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -52,6 +56,20 @@ function isRateLimited(ipAddress: string) {
 function normalizeOptionalValue(value?: string) {
   const normalized = value?.trim();
   return normalized ? normalized : null;
+}
+
+function normalizeUrl(value?: string) {
+  const normalized = value?.trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
+    return normalized;
+  }
+
+  return `https://${normalized}`;
 }
 
 export async function POST(request: Request) {
@@ -105,11 +123,15 @@ export async function POST(request: Request) {
         companySize: normalizeOptionalValue(parsed.data.companySize),
         email: normalizedEmail,
         fullName,
+        linkedinProfile: normalizeUrl(parsed.data.linkedinProfile) ?? parsed.data.linkedinProfile.trim(),
         message: parsed.data.message.trim(),
         primaryNeed: parsed.data.primaryNeed.trim(),
+        preferredContactMethod: parsed.data.preferredContactMethod,
         recipientEmail: SUPPORT_EMAIL,
         role: normalizeOptionalValue(parsed.data.role),
-        website: normalizeOptionalValue(parsed.data.website),
+        telegramHandle: normalizeOptionalValue(parsed.data.telegramHandle),
+        whatsappNumber: parsed.data.whatsappNumber.trim(),
+        website: normalizeUrl(parsed.data.website),
       }),
     ]);
 

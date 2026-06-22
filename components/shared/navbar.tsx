@@ -10,11 +10,11 @@ import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 
 const marketingNavLinks = [
-  { href: "/#problem", label: "Why Outbound Fails" },
-  { href: "/#deliverables", label: "What You Get" },
-  { href: "/#pipeline", label: "How It Works" },
-  { href: "/#pilot", label: "Start Small" },
+  { href: "/#process", label: "Process" },
+  { href: "/#sample-opportunity", label: "Sample" },
+  { href: "/#why-frithly", label: "Why Frithly" },
   { href: ROUTES.FAQ, label: "FAQ" },
+  { external: true, href: ROUTES.BOOK_MEETING, label: "Book Call" },
 ];
 
 export function Navbar() {
@@ -60,9 +60,9 @@ export function Navbar() {
 
   const navClassName = isHome
     ? isScrolled
-      ? "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(3,4,6,0.9),rgba(3,4,6,0.74))] shadow-[0_16px_44px_rgba(0,0,0,0.28)] backdrop-blur-2xl"
-      : "border-b border-white/[0.04] bg-[linear-gradient(180deg,rgba(3,4,6,0.78),rgba(3,4,6,0.42))] backdrop-blur-xl"
-    : "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(3,4,6,0.92),rgba(3,4,6,0.78))] shadow-[0_16px_44px_rgba(0,0,0,0.28)] backdrop-blur-2xl";
+      ? "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(5,5,5,0.94),rgba(9,9,9,0.84))] shadow-[0_16px_44px_rgba(0,0,0,0.34)] backdrop-blur-2xl"
+      : "border-b border-white/[0.04] bg-[linear-gradient(180deg,rgba(5,5,5,0.82),rgba(5,5,5,0.48))] backdrop-blur-xl"
+    : "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(5,5,5,0.96),rgba(9,9,9,0.88))] shadow-[0_16px_44px_rgba(0,0,0,0.34)] backdrop-blur-2xl";
 
   const homeTextClassName = isScrolled ? "text-white/80 hover:text-white" : "text-white/82 hover:text-white";
   const defaultTextClassName = "text-white/76 transition-colors hover:text-white";
@@ -70,6 +70,9 @@ export function Navbar() {
   const iconButtonClassName = isHome
     ? "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]"
     : "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]";
+  const gradientButtonClassName =
+    "rounded-[0.92rem] border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#050505] shadow-[0_18px_44px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#050505]";
+
   return (
     <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navClassName}`}>
       <Container className="relative flex h-16 items-center justify-between">
@@ -81,6 +84,8 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={`text-sm font-medium transition-colors ${linkClassName}`}
+              rel={link.external ? "noreferrer" : undefined}
+              target={link.external ? "_blank" : undefined}
             >
               {link.label}
             </Link>
@@ -91,10 +96,9 @@ export function Navbar() {
           <Button
             asChild
             size="md"
-            variant="secondary"
-            className="rounded-[0.82rem] border-white/[0.08] bg-[#11151c] text-white shadow-[0_16px_36px_rgba(0,0,0,0.18)] hover:border-white/[0.14] hover:bg-[#171c24] hover:text-white"
+            className={gradientButtonClassName}
           >
-            <Link href={ROUTES.BOOK_MEETING}>Book strategy call</Link>
+            <Link href="/#sample-opportunity">See Sample</Link>
           </Button>
         </div>
 
@@ -117,13 +121,13 @@ export function Navbar() {
         <div className="lg:hidden">
           <button
             aria-label="Close menu overlay"
-            className="fixed inset-0 top-16 z-40 bg-[rgba(4,10,17,0.68)] backdrop-blur-[3px]"
+            className="fixed inset-0 top-16 z-40 bg-[rgba(5,5,5,0.72)] backdrop-blur-[4px]"
             onClick={() => setIsMenuOpen(false)}
             type="button"
           />
           <div
             className={
-              "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/[0.06] bg-[linear-gradient(180deg,rgba(3,4,6,0.98),rgba(3,4,6,0.94))] shadow-[0_24px_60px_rgba(0,0,0,0.32)]"
+              "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/[0.06] bg-[linear-gradient(180deg,rgba(5,5,5,0.99),rgba(9,9,9,0.96))] shadow-[0_24px_60px_rgba(0,0,0,0.36)]"
             }
           >
             <Container className="flex flex-col gap-5 px-4 py-5 sm:px-5 sm:py-6">
@@ -132,8 +136,8 @@ export function Navbar() {
                   Explore Frithly
                 </p>
                 <p className="hidden text-sm leading-6 text-white/62 min-[460px]:block">
-                  Explore how Frithly turns broad outbound targeting into smaller, higher-relevance
-                  opportunities your team can actually work.
+                  Explore how Frithly turns buying signals into manually qualified, verified,
+                  outbound-ready opportunities.
                 </p>
               </div>
 
@@ -143,6 +147,8 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     className="px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base"
+                    rel={link.external ? "noreferrer" : undefined}
+                    target={link.external ? "_blank" : undefined}
                   >
                     {link.label}
                   </Link>
@@ -153,12 +159,9 @@ export function Navbar() {
                 <Button
                   asChild
                   size="lg"
-                  variant="secondary"
-                  className="w-full rounded-[0.88rem] border-white/[0.08] bg-[#11151c] text-white hover:border-white/[0.14] hover:bg-[#171c24] hover:text-white"
+                  className={`w-full ${gradientButtonClassName}`}
                 >
-                  <Link href={ROUTES.BOOK_MEETING}>
-                    Book strategy call
-                  </Link>
+                  <Link href="/#sample-opportunity">See Sample</Link>
                 </Button>
               </div>
             </Container>

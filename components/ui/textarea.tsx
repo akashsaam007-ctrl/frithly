@@ -8,6 +8,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     <textarea
       ref={ref}
       rows={rows}
+      suppressHydrationWarning
       className={cn(
         "flex min-h-32 w-full rounded-lg border border-white/12 bg-[#0b1520]/92 px-4 py-3 text-sm text-ink transition-colors placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-cream disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:dark]",
         className,

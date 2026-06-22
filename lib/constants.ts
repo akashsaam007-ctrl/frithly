@@ -2,7 +2,7 @@ import { publicEnv } from "@/lib/utils/public-env";
 
 export const APP_NAME = "Frithly";
 export const APP_TAGLINE =
-  "Better outbound starts with better accounts.";
+  "Better outbound starts before the first email.";
 export const APP_DOMAIN = "frithly.com";
 export const CALENDLY_URL = publicEnv.NEXT_PUBLIC_CALENDLY_URL;
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
@@ -123,7 +123,7 @@ export const ROUTES = {
   GUIDES: "/guides",
   HELP: "/help",
   HOME: "/",
-  HOW_IT_WORKS: "/#pipeline",
+  HOW_IT_WORKS: "/#process",
   ICP: "/icp",
   LOGIN: "/login",
   PRICING: "/#application",
@@ -140,8 +140,8 @@ export const ROUTES = {
 
 export const META = {
   DESCRIPTION:
-    "Frithly helps outbound teams find better-fit accounts, the right contacts, and better timing before outreach starts.",
+    "Frithly identifies buying signals, manually qualifies companies, verifies decision-makers, and delivers outbound-ready opportunities your team can act on immediately.",
   KEYWORDS:
-    "Frithly, outbound research service, better fit accounts, B2B prospect research, weekly outbound brief, sales prospect research, deliverability safe outreach, founder outbound support",
-  TITLE: "Frithly | Better Outbound Starts With Better Accounts",
+    "Frithly, buying signals, outbound opportunities, decision maker verification, manual qualification, sales intelligence service, personalized outreach, outbound ready opportunities",
+  TITLE: "Frithly | Better Outbound Starts Before the First Email",
 } as const;
