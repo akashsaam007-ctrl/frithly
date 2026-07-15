@@ -140,6 +140,28 @@ function buildBookingUrl(params: {
   return url.toString();
 }
 
+async function runNonBlockingTask(
+  label: string,
+  task: () => Promise<unknown>,
+  context: Record<string, unknown>,
+) {
+  try {
+    await task();
+  } catch (error) {
+    Sentry.captureException(error, {
+      extra: {
+        ...context,
+        side_effect: label,
+      },
+    });
+
+    console.error(`${label} failed`, {
+      ...context,
+      error,
+    });
+  }
+}
+
 export async function POST(request: Request) {
   const ipAddress = getClientIp(request);
 
@@ -228,39 +250,38 @@ export async function POST(request: Request) {
       requestId,
     });
 
-    const emailResults = await Promise.allSettled([
-      sendSampleRequestReceivedEmail({
-        bookingLink: bookingUrl,
-        firstName,
-        recipientEmail: normalizedEmail,
-        requestId,
-      }),
-      sendSampleRequestAlertEmail({
-        additionalRequirements: normalizeOptionalValue(parsed.data.additionalRequirements),
-        companySizes: parsed.data.companySizes,
-        companyWebsite: normalizedWebsite,
-        email: normalizedEmail,
-        fullName,
-        offerDescription: parsed.data.offerDescription.trim(),
-        recipientEmail: SUPPORT_EMAIL,
-        requestId,
-        submittedAt,
-        targetDescription: parsed.data.targetDescription.trim(),
-        targetRegions: parsed.data.targetRegions,
-        whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
-      }),
+    await Promise.allSettled([
+      runNonBlockingTask(
+        "sample request confirmation email",
+        () =>
+          sendSampleRequestReceivedEmail({
+            bookingLink: bookingUrl,
+            firstName,
+            recipientEmail: normalizedEmail,
+            requestId,
+          }),
+        { email: normalizedEmail, requestId },
+      ),
+      runNonBlockingTask(
+        "sample request internal alert email",
+        () =>
+          sendSampleRequestAlertEmail({
+            additionalRequirements: normalizeOptionalValue(parsed.data.additionalRequirements),
+            companySizes: parsed.data.companySizes,
+            companyWebsite: normalizedWebsite,
+            email: normalizedEmail,
+            fullName,
+            offerDescription: parsed.data.offerDescription.trim(),
+            recipientEmail: SUPPORT_EMAIL,
+            requestId,
+            submittedAt,
+            targetDescription: parsed.data.targetDescription.trim(),
+            targetRegions: parsed.data.targetRegions,
+            whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
+          }),
+        { email: normalizedEmail, requestId },
+      ),
     ]);
-
-    emailResults.forEach((result, index) => {
-      if (result.status === "rejected") {
-        console.error(
-          index === 0
-            ? "Sample request confirmation email failed"
-            : "Internal sample request alert failed",
-          result.reason,
-        );
-      }
-    });
 
     return NextResponse.json({
       bookingUrl,
