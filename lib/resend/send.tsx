@@ -328,23 +328,30 @@ export async function sendSalesInquiryAlertEmail(props: {
 
 export async function sendSampleRequestAlertEmail(props: SampleRequestAlertEmailProps) {
   const text = [
-    "New sample request",
+    "New personalized sample request",
     "",
-    `Name: ${props.fullName}`,
-    `Email: ${props.email}`,
-    `Company: ${props.company ?? "Not provided"}`,
-    `Industry: ${props.industry ?? "Not provided"}`,
-    `Target role: ${props.targetRole ?? "Not provided"}`,
-    `Company size: ${props.companySize ?? "Not provided"}`,
-    `Geography: ${props.geography ?? "Not provided"}`,
+    `Request ID: ${props.requestId}`,
+    `Full name: ${props.fullName}`,
+    `Work email: ${props.email}`,
+    `Company website: ${props.companyWebsite}`,
+    `WhatsApp: ${props.whatsapp ?? "Not provided"}`,
+    `Target regions: ${props.targetRegions.join(", ")}`,
+    `Company sizes: ${props.companySizes.join(", ")}`,
+    `Submitted at: ${props.submittedAt}`,
+    "Meeting status: not_scheduled",
     "",
-    props.frustration,
+    "What the company sells:",
+    props.offerDescription,
+    "",
+    "Who they want to target:",
+    props.targetDescription,
+    ...(props.additionalRequirements ? ["", "Additional requirements:", props.additionalRequirements] : []),
   ].join("\n");
 
   return sendFrithlyEmail({
     react: <SampleRequestAlertEmail {...props} />,
     replyTo: props.email,
-    subject: `Sample request: ${props.fullName}`,
+    subject: `New personalized sample request: ${props.fullName}`,
     text,
     to: SUPPORT_EMAIL,
   });

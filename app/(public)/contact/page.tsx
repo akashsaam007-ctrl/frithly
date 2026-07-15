@@ -135,7 +135,7 @@ export default function ContactPage() {
 
               <div className="flex flex-wrap gap-4 pt-2">
                 <Button asChild size="lg" className={gradientButtonClassName}>
-                  <Link href={ROUTES.CONTACT_SALES}>Request sample</Link>
+                  <Link href={ROUTES.SAMPLE}>Request sample</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary" className={darkButtonClassName}>
                   <Link href={ROUTES.BOOK_MEETING}>Book strategy call</Link>

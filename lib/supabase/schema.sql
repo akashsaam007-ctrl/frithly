@@ -93,12 +93,42 @@ create table if not exists sample_requests (
   full_name text not null,
   email text not null,
   company text,
+  company_website text,
   industry text,
   target_role text,
   company_size text,
+  company_sizes text[] default '{}',
   geography text,
+  target_regions text[] default '{}',
   frustration text,
-  status text default 'pending' check (status in ('pending', 'researching', 'delivered', 'converted', 'declined')),
+  offer_description text,
+  target_description text,
+  additional_requirements text,
+  whatsapp text,
+  request_type text default 'personalized_sample_leads',
+  request_id text unique,
+  source text default 'website_sample_request',
+  submitted_at timestamptz default now(),
+  meeting_status text default 'not_scheduled',
+  meeting_id text,
+  meeting_time timestamptz,
+  status text default 'new' check (
+    status in (
+      'pending',
+      'researching',
+      'delivered',
+      'converted',
+      'declined',
+      'new',
+      'under_review',
+      'sample_ready',
+      'meeting_scheduled',
+      'review_completed',
+      'qualified',
+      'not_qualified',
+      'closed'
+    )
+  ),
   delivered_at timestamptz,
   notes text,
   created_at timestamptz default now()
@@ -150,6 +180,7 @@ create index if not exists idx_batches_delivery_date on batches(delivery_date de
 create index if not exists idx_leads_batch_id on leads(batch_id);
 create index if not exists idx_feedback_customer_id on feedback(customer_id);
 create index if not exists idx_sample_requests_status on sample_requests(status);
+create unique index if not exists idx_sample_requests_request_id on sample_requests(request_id);
 create index if not exists idx_campaign_applications_status on campaign_applications(status);
 create index if not exists idx_campaign_applications_created_at on campaign_applications(created_at desc);
 create index if not exists idx_campaign_applications_status_created_at on campaign_applications(status, created_at desc);

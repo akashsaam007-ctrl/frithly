@@ -1,8 +1,10 @@
 import { EmailLayout, EmailMuted, EmailParagraph } from "@/lib/resend/templates/shared";
 
 export type SampleRequestReceivedEmailProps = {
+  bookingLink: string;
   firstName: string;
   recipientEmail: string;
+  requestId: string;
 };
 
 export function getSampleRequestReceivedEmailSubject() {
@@ -10,16 +12,20 @@ export function getSampleRequestReceivedEmailSubject() {
 }
 
 export function getSampleRequestReceivedEmailText({
+  bookingLink,
   firstName,
+  requestId,
 }: SampleRequestReceivedEmailProps) {
   return [
-    `Hey ${firstName},`,
+    `Hi ${firstName},`,
     "",
-    "We received your request for a free 5-lead Frithly sample.",
+    "We have received your personalized lead sample request. Our research team will review your company, target market, and requirements before preparing the sample.",
     "",
-    "Our team is reviewing your ICP now. We will send your sample within 48 hours with researched leads, why-now context, and opener ideas.",
+    `Request ID: ${requestId}`,
     "",
-    "If there is anything urgent we should know, just reply to this email.",
+    `You can schedule your video review here: ${bookingLink}`,
+    "",
+    "During the call, we will explain the companies selected, the relevant buying signals, and the targeting logic behind the sample.",
     "",
     "Frithly",
   ].join("\n");
@@ -28,19 +34,24 @@ export function getSampleRequestReceivedEmailText({
 export function SampleRequestReceivedEmail(props: SampleRequestReceivedEmailProps) {
   return (
     <EmailLayout
-      preview="Your Frithly sample request is in and our team is reviewing it now."
+      preview="We received your Frithly sample request."
       recipientEmail={props.recipientEmail}
-      title="Your Frithly sample request is in"
+      title="We received your Frithly sample request"
     >
-      <EmailParagraph>Hey {props.firstName},</EmailParagraph>
+      <EmailParagraph>Hi {props.firstName},</EmailParagraph>
       <EmailParagraph>
-        We received your request for a free 5-lead Frithly sample.
+        We have received your personalized lead sample request. Our research team will review your
+        company, target market, and requirements before preparing the sample.
       </EmailParagraph>
-      <EmailMuted>
-        Our team is reviewing your ICP now. We will send your sample within 48 hours with
-        researched leads, why-now context, and opener ideas.
-      </EmailMuted>
-      <EmailParagraph>If there is anything urgent we should know, just reply here.</EmailParagraph>
+      <EmailMuted>Request ID: {props.requestId}</EmailMuted>
+      <EmailParagraph>
+        You can schedule your video review here:{" "}
+        <a href={props.bookingLink}>{props.bookingLink}</a>
+      </EmailParagraph>
+      <EmailParagraph>
+        During the call, we will explain the companies selected, the relevant buying signals, and
+        the targeting logic behind the sample.
+      </EmailParagraph>
     </EmailLayout>
   );
 }

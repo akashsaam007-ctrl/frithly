@@ -11,7 +11,6 @@ import { ROUTES } from "@/lib/constants";
 
 const marketingNavLinks = [
   { href: "/#process", label: "Process" },
-  { href: "/#sample-opportunity", label: "Sample" },
   { href: "/#why-frithly", label: "Why Frithly" },
   { href: ROUTES.FAQ, label: "FAQ" },
   { external: true, href: ROUTES.BOOK_MEETING, label: "Book Call" },
@@ -98,7 +97,7 @@ export function Navbar() {
             size="md"
             className={gradientButtonClassName}
           >
-            <Link href="/#sample-opportunity">See Sample</Link>
+            <Link href={ROUTES.SAMPLE}>Request Sample</Link>
           </Button>
         </div>
 
@@ -161,7 +160,7 @@ export function Navbar() {
                   size="lg"
                   className={`w-full ${gradientButtonClassName}`}
                 >
-                  <Link href="/#sample-opportunity">See Sample</Link>
+                  <Link href={ROUTES.SAMPLE}>Request Sample</Link>
                 </Button>
               </div>
             </Container>

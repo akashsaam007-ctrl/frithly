@@ -80,10 +80,10 @@ export function Faq() {
                 </Link>
                 . If you would rather share details first and let us steer the next step,{" "}
                 <Link
-                  href={ROUTES.CONTACT_SALES}
+                  href={ROUTES.SAMPLE}
                   className="font-semibold text-terracotta underline underline-offset-4"
                 >
-                  talk to sales
+                  request a sample
                 </Link>
                 .
               </div>

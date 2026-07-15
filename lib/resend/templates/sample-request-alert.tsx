@@ -1,36 +1,56 @@
 import { EmailLayout, EmailList, EmailParagraph } from "@/lib/resend/templates/shared";
 
 export type SampleRequestAlertEmailProps = {
-  company?: string | null;
-  companySize?: string | null;
+  additionalRequirements?: string | null;
+  companySizes: string[];
+  companyWebsite: string;
   email: string;
-  frustration: string;
   fullName: string;
-  geography?: string | null;
-  industry?: string | null;
+  offerDescription: string;
   recipientEmail: string;
-  targetRole?: string | null;
+  requestId: string;
+  submittedAt: string;
+  targetDescription: string;
+  targetRegions: string[];
+  whatsapp?: string | null;
 };
 
 export function SampleRequestAlertEmail(props: SampleRequestAlertEmailProps) {
   return (
     <EmailLayout
-      preview={`New sample request from ${props.fullName}`}
+      preview={`New personalized sample request from ${props.fullName}`}
       recipientEmail={props.recipientEmail}
-      title="New sample request"
+      title="New personalized sample request"
     >
       <EmailList
         items={[
-          `Name: ${props.fullName}`,
-          `Email: ${props.email}`,
-          `Company: ${props.company ?? "Not provided"}`,
-          `Industry: ${props.industry ?? "Not provided"}`,
-          `Target role: ${props.targetRole ?? "Not provided"}`,
-          `Company size: ${props.companySize ?? "Not provided"}`,
-          `Geography: ${props.geography ?? "Not provided"}`,
+          `Request ID: ${props.requestId}`,
+          `Full name: ${props.fullName}`,
+          `Work email: ${props.email}`,
+          `Company website: ${props.companyWebsite}`,
+          `WhatsApp: ${props.whatsapp ?? "Not provided"}`,
+          `Target regions: ${props.targetRegions.join(", ")}`,
+          `Company sizes: ${props.companySizes.join(", ")}`,
+          `Submitted at: ${props.submittedAt}`,
+          "Meeting status: not_scheduled",
         ]}
       />
-      <EmailParagraph>{props.frustration}</EmailParagraph>
+      <EmailParagraph>
+        <strong>What the company sells</strong>
+      </EmailParagraph>
+      <EmailParagraph>{props.offerDescription}</EmailParagraph>
+      <EmailParagraph>
+        <strong>Who they want to target</strong>
+      </EmailParagraph>
+      <EmailParagraph>{props.targetDescription}</EmailParagraph>
+      {props.additionalRequirements ? (
+        <>
+          <EmailParagraph>
+            <strong>Additional requirements</strong>
+          </EmailParagraph>
+          <EmailParagraph>{props.additionalRequirements}</EmailParagraph>
+        </>
+      ) : null}
     </EmailLayout>
   );
 }

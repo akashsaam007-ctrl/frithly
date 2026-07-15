@@ -710,14 +710,23 @@ function mapSampleRequestStatusToApplicationStatus(
   status: SampleRequestRow["status"],
 ): AdminApplicationStatus {
   switch (status) {
+    case "under_review":
     case "researching":
       return "reviewing";
+    case "sample_ready":
+    case "meeting_scheduled":
+    case "review_completed":
+    case "qualified":
     case "delivered":
       return "qualified";
     case "converted":
       return "active";
+    case "not_qualified":
     case "declined":
       return "rejected";
+    case "closed":
+      return "accepted";
+    case "new":
     case "pending":
     default:
       return "pending";

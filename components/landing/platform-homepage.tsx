@@ -481,9 +481,9 @@ export function PlatformHomepage() {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className={cn("w-full sm:w-auto", gradientButtonClassName)}>
-                <Link href="/#sample-opportunity">
+                <Link href={ROUTES.SAMPLE}>
                   <span className="inline-flex items-center gap-2">
-                    See Sample Opportunity
+                    Request Sample
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </Link>
@@ -849,7 +849,7 @@ export function PlatformHomepage() {
               </p>
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
                 <Button asChild size="lg" className={cn("w-full sm:w-auto", gradientButtonClassName)}>
-                  <Link href={ROUTES.CONTACT_SALES}>Request Sample</Link>
+                  <Link href={ROUTES.SAMPLE}>Request Sample</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
                   <Link href={ROUTES.BOOK_MEETING}>Book Call</Link>

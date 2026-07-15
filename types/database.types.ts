@@ -417,7 +417,10 @@ export type Database = {
       };
       sample_requests: {
         Insert: {
+          additional_requirements?: string | null;
           company?: string | null;
+          company_sizes?: string[] | null;
+          company_website?: string | null;
           company_size?: string | null;
           created_at?: string | null;
           delivered_at?: string | null;
@@ -427,13 +430,41 @@ export type Database = {
           geography?: string | null;
           id?: string;
           industry?: string | null;
+          meeting_id?: string | null;
+          meeting_status?: string | null;
+          meeting_time?: string | null;
           notes?: string | null;
-          status?: "converted" | "declined" | "delivered" | "pending" | "researching" | null;
+          offer_description?: string | null;
+          request_id?: string | null;
+          request_type?: string | null;
+          source?: string | null;
+          status?:
+            | "closed"
+            | "converted"
+            | "declined"
+            | "delivered"
+            | "meeting_scheduled"
+            | "new"
+            | "not_qualified"
+            | "pending"
+            | "qualified"
+            | "researching"
+            | "review_completed"
+            | "sample_ready"
+            | "under_review"
+            | null;
+          submitted_at?: string | null;
+          target_description?: string | null;
+          target_regions?: string[] | null;
           target_role?: string | null;
+          whatsapp?: string | null;
         };
         Relationships: [];
         Row: {
+          additional_requirements: string | null;
           company: string | null;
+          company_sizes: string[] | null;
+          company_website: string | null;
           company_size: string | null;
           created_at: string | null;
           delivered_at: string | null;
@@ -443,12 +474,40 @@ export type Database = {
           geography: string | null;
           id: string;
           industry: string | null;
+          meeting_id: string | null;
+          meeting_status: string | null;
+          meeting_time: string | null;
           notes: string | null;
-          status: "converted" | "declined" | "delivered" | "pending" | "researching" | null;
+          offer_description: string | null;
+          request_id: string | null;
+          request_type: string | null;
+          source: string | null;
+          status:
+            | "closed"
+            | "converted"
+            | "declined"
+            | "delivered"
+            | "meeting_scheduled"
+            | "new"
+            | "not_qualified"
+            | "pending"
+            | "qualified"
+            | "researching"
+            | "review_completed"
+            | "sample_ready"
+            | "under_review"
+            | null;
+          submitted_at: string | null;
+          target_description: string | null;
+          target_regions: string[] | null;
           target_role: string | null;
+          whatsapp: string | null;
         };
         Update: {
+          additional_requirements?: string | null;
           company?: string | null;
+          company_sizes?: string[] | null;
+          company_website?: string | null;
           company_size?: string | null;
           created_at?: string | null;
           delivered_at?: string | null;
@@ -458,9 +517,34 @@ export type Database = {
           geography?: string | null;
           id?: string;
           industry?: string | null;
+          meeting_id?: string | null;
+          meeting_status?: string | null;
+          meeting_time?: string | null;
           notes?: string | null;
-          status?: "converted" | "declined" | "delivered" | "pending" | "researching" | null;
+          offer_description?: string | null;
+          request_id?: string | null;
+          request_type?: string | null;
+          source?: string | null;
+          status?:
+            | "closed"
+            | "converted"
+            | "declined"
+            | "delivered"
+            | "meeting_scheduled"
+            | "new"
+            | "not_qualified"
+            | "pending"
+            | "qualified"
+            | "researching"
+            | "review_completed"
+            | "sample_ready"
+            | "under_review"
+            | null;
+          submitted_at?: string | null;
+          target_description?: string | null;
+          target_regions?: string[] | null;
           target_role?: string | null;
+          whatsapp?: string | null;
         };
       };
     };

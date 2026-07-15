@@ -31,8 +31,8 @@ export function Footer() {
                 <Link className="block transition-colors hover:text-white" href="/#process">
                   Process
                 </Link>
-                <Link className="block transition-colors hover:text-white" href="/#sample-opportunity">
-                  Sample opportunity
+                <Link className="block transition-colors hover:text-white" href={ROUTES.SAMPLE}>
+                  Request sample
                 </Link>
                 <Link className="block transition-colors hover:text-white" href="/#why-frithly">
                   Why Frithly

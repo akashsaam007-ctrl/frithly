@@ -1,23 +1,32 @@
 import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { BOOKING_URL, SUPPORT_EMAIL } from "@/lib/constants";
 import {
   getFirstName,
   sendSampleRequestAlertEmail,
   sendSampleRequestReceivedEmail,
 } from "@/lib/resend/send";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { SUPPORT_EMAIL } from "@/lib/constants";
 
 const sampleRequestSchema = z.object({
-  company: z.string().trim().optional(),
-  companySize: z.string().trim().optional(),
-  email: z.string().email(),
-  frustration: z.string().trim().min(10),
+  additionalRequirements: z.string().trim().max(2000).optional().default(""),
+  companySizes: z.array(z.string().trim().min(1)).min(1),
+  companyWebsite: z.string().trim().min(1),
   fullName: z.string().trim().min(2),
-  geography: z.string().trim().optional(),
-  industry: z.string().trim().optional(),
-  targetRole: z.string().trim().optional(),
+  offerDescription: z.string().trim().min(10).max(500),
+  requestType: z.literal("personalized_sample_leads"),
+  targetDescription: z.string().trim().min(10).max(500),
+  targetRegions: z.array(z.string().trim().min(1)).min(1),
+  whatsapp: z.string().trim().max(64).optional().default(""),
+  workEmail: z.string().trim().email(),
+});
+
+const sampleRequestMeetingUpdateSchema = z.object({
+  meetingId: z.string().trim().max(500).nullable().optional(),
+  meetingStatus: z.enum(["meeting_scheduled", "scheduled_later"]),
+  meetingTime: z.string().trim().datetime().nullable().optional(),
+  requestId: z.string().trim().min(1),
 });
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -55,6 +64,82 @@ function normalizeOptionalValue(value?: string) {
   return normalized ? normalized : null;
 }
 
+function normalizeWebsite(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return trimmed;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+}
+
+function extractWebsiteLabel(website: string) {
+  try {
+    const hostname = new URL(website).hostname.replace(/^www\./i, "");
+    return hostname || website;
+  } catch {
+    return website;
+  }
+}
+
+async function generateRequestId(adminClient: ReturnType<typeof createSupabaseAdminClient>) {
+  const year = new Date().getUTCFullYear();
+  const startOfYear = new Date(Date.UTC(year, 0, 1)).toISOString();
+  const endOfYear = new Date(Date.UTC(year + 1, 0, 1)).toISOString();
+
+  const { count, error } = await adminClient
+    .from("sample_requests")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", startOfYear)
+    .lt("created_at", endOfYear);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const sequence = String((count ?? 0) + 1).padStart(6, "0");
+  return `FSL-${year}-${sequence}`;
+}
+
+function buildLegacySummary(params: {
+  additionalRequirements: string;
+  offerDescription: string;
+  targetDescription: string;
+}) {
+  const sections = [
+    `Offer: ${params.offerDescription.trim()}`,
+    `Targeting: ${params.targetDescription.trim()}`,
+  ];
+
+  if (params.additionalRequirements.trim()) {
+    sections.push(`Additional requirements: ${params.additionalRequirements.trim()}`);
+  }
+
+  return sections.join("\n\n");
+}
+
+function buildBookingUrl(params: {
+  companyWebsite: string;
+  email: string;
+  fullName: string;
+  requestId: string;
+}) {
+  const url = new URL(BOOKING_URL);
+
+  url.searchParams.set("email", params.email);
+  url.searchParams.set("hide_gdpr_banner", "1");
+  url.searchParams.set("name", params.fullName);
+  url.searchParams.set("a1", params.companyWebsite);
+  url.searchParams.set("a2", params.requestId);
+
+  return url.toString();
+}
+
 export async function POST(request: Request) {
   const ipAddress = getClientIp(request);
 
@@ -86,64 +171,101 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Please provide your name, work email, and a short description of your current lead-sourcing frustration.",
+          "Please provide your name, work email, website, offer details, target profile, region, and company size.",
       },
       { status: 400 },
     );
   }
 
-  const normalizedEmail = parsed.data.email.trim().toLowerCase();
-  const fullName = parsed.data.fullName.trim();
   const adminClient = createSupabaseAdminClient();
+  const normalizedEmail = parsed.data.workEmail.trim().toLowerCase();
+  const fullName = parsed.data.fullName.trim();
+  const normalizedWebsite = normalizeWebsite(parsed.data.companyWebsite);
+  const submittedAt = new Date().toISOString();
+  let requestId = "";
 
   try {
-    const { data: sampleRequest, error: insertError } = await adminClient
-      .from("sample_requests")
-      .insert({
-        company: normalizeOptionalValue(parsed.data.company),
-        company_size: normalizeOptionalValue(parsed.data.companySize),
-        email: normalizedEmail,
-        frustration: parsed.data.frustration.trim(),
-        full_name: fullName,
-        geography: normalizeOptionalValue(parsed.data.geography),
-        industry: normalizeOptionalValue(parsed.data.industry),
-        target_role: normalizeOptionalValue(parsed.data.targetRole),
-      })
-      .select("id")
-      .single();
+    requestId = await generateRequestId(adminClient);
 
-    if (insertError || !sampleRequest) {
-      throw new Error(insertError?.message ?? "Unable to save sample request.");
+    const { error: insertError } = await adminClient.from("sample_requests").insert({
+      company: extractWebsiteLabel(normalizedWebsite),
+      company_size: parsed.data.companySizes.join(", "),
+      company_website: normalizedWebsite,
+      created_at: submittedAt,
+      email: normalizedEmail,
+      frustration: buildLegacySummary({
+        additionalRequirements: parsed.data.additionalRequirements,
+        offerDescription: parsed.data.offerDescription,
+        targetDescription: parsed.data.targetDescription,
+      }),
+      full_name: fullName,
+      geography: parsed.data.targetRegions.join(", "),
+      meeting_status: "not_scheduled",
+      notes: null,
+      request_id: requestId,
+      request_type: parsed.data.requestType,
+      source: "website_sample_request",
+      status: "new",
+      submitted_at: submittedAt,
+      target_role: null,
+      target_regions: parsed.data.targetRegions,
+      company_sizes: parsed.data.companySizes,
+      offer_description: parsed.data.offerDescription.trim(),
+      target_description: parsed.data.targetDescription.trim(),
+      additional_requirements: normalizeOptionalValue(parsed.data.additionalRequirements),
+      whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
+    });
+
+    if (insertError) {
+      throw new Error(insertError.message);
     }
 
     const firstName = getFirstName(fullName);
+    const bookingUrl = buildBookingUrl({
+      companyWebsite: normalizedWebsite,
+      email: normalizedEmail,
+      fullName,
+      requestId,
+    });
+
     const emailResults = await Promise.allSettled([
       sendSampleRequestReceivedEmail({
+        bookingLink: bookingUrl,
         firstName,
         recipientEmail: normalizedEmail,
+        requestId,
       }),
       sendSampleRequestAlertEmail({
-        company: normalizeOptionalValue(parsed.data.company),
-        companySize: normalizeOptionalValue(parsed.data.companySize),
+        additionalRequirements: normalizeOptionalValue(parsed.data.additionalRequirements),
+        companySizes: parsed.data.companySizes,
+        companyWebsite: normalizedWebsite,
         email: normalizedEmail,
-        frustration: parsed.data.frustration.trim(),
         fullName,
-        geography: normalizeOptionalValue(parsed.data.geography),
-        industry: normalizeOptionalValue(parsed.data.industry),
+        offerDescription: parsed.data.offerDescription.trim(),
         recipientEmail: SUPPORT_EMAIL,
-        targetRole: normalizeOptionalValue(parsed.data.targetRole),
+        requestId,
+        submittedAt,
+        targetDescription: parsed.data.targetDescription.trim(),
+        targetRegions: parsed.data.targetRegions,
+        whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
       }),
     ]);
 
     emailResults.forEach((result, index) => {
       if (result.status === "rejected") {
-        console.error(index === 0 ? "Sample request confirmation email failed" : "Internal sample request alert failed", result.reason);
+        console.error(
+          index === 0
+            ? "Sample request confirmation email failed"
+            : "Internal sample request alert failed",
+          result.reason,
+        );
       }
     });
 
     return NextResponse.json({
+      bookingUrl,
       message: "Sample request received.",
-      requestId: sampleRequest.id,
+      requestId,
       success: true,
     });
   } catch (error) {
@@ -151,11 +273,84 @@ export async function POST(request: Request) {
     console.error("Sample request submission failed", {
       email: normalizedEmail,
       error,
+      requestId,
     });
 
     return NextResponse.json(
       {
-        error: "We couldn't submit your sample request right now. Please try again in a minute.",
+        error: "We couldn't submit your request right now. Please try again in a minute.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      {
+        error: "We couldn't read that scheduling update.",
+      },
+      { status: 400 },
+    );
+  }
+
+  const parsed = sampleRequestMeetingUpdateSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        error: "Provide a valid request ID and meeting status.",
+      },
+      { status: 400 },
+    );
+  }
+
+  const adminClient = createSupabaseAdminClient();
+
+  try {
+    const updatePayload =
+      parsed.data.meetingStatus === "meeting_scheduled"
+        ? {
+            meeting_id: parsed.data.meetingId ?? null,
+            meeting_status: "meeting_scheduled" as const,
+            meeting_time: parsed.data.meetingTime ?? null,
+            status: "meeting_scheduled" as const,
+          }
+        : {
+            meeting_status: "scheduled_later" as const,
+          };
+
+    const { data, error } = await adminClient
+      .from("sample_requests")
+      .update(updatePayload)
+      .eq("request_id", parsed.data.requestId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data) {
+      return NextResponse.json({ error: "Sample request not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Sample request meeting update failed", {
+      error,
+      requestId: parsed.data.requestId,
+    });
+
+    return NextResponse.json(
+      {
+        error: "We couldn't update that sample request right now.",
       },
       { status: 500 },
     );
