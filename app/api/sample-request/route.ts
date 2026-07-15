@@ -106,6 +106,24 @@ async function generateRequestId(adminClient: ReturnType<typeof createSupabaseAd
   return `FSL-${year}-${sequence}`;
 }
 
+function buildLegacyNotes(params: {
+  additionalRequirements: string;
+  requestId: string;
+  targetDescription: string;
+}) {
+  const sections = [`Request ID: ${params.requestId}`];
+
+  if (params.targetDescription.trim()) {
+    sections.push(`Targeting: ${params.targetDescription.trim()}`);
+  }
+
+  if (params.additionalRequirements.trim()) {
+    sections.push(`Additional requirements: ${params.additionalRequirements.trim()}`);
+  }
+
+  return sections.join("\n");
+}
+
 function buildLegacySummary(params: {
   additionalRequirements: string;
   offerDescription: string;
@@ -162,6 +180,103 @@ async function runNonBlockingTask(
   }
 }
 
+async function insertSampleRequest(
+  adminClient: ReturnType<typeof createSupabaseAdminClient>,
+  params: {
+    additionalRequirements: string;
+    companySizes: string[];
+    fullName: string;
+    normalizedEmail: string;
+    normalizedWebsite: string;
+    offerDescription: string;
+    requestId: string;
+    submittedAt: string;
+    targetDescription: string;
+    targetRegions: string[];
+    whatsapp: string;
+  },
+) {
+  const modernPayload = {
+    company: extractWebsiteLabel(params.normalizedWebsite),
+    company_size: params.companySizes.join(", "),
+    company_website: params.normalizedWebsite,
+    created_at: params.submittedAt,
+    email: params.normalizedEmail,
+    frustration: buildLegacySummary({
+      additionalRequirements: params.additionalRequirements,
+      offerDescription: params.offerDescription,
+      targetDescription: params.targetDescription,
+    }),
+    full_name: params.fullName,
+    geography: params.targetRegions.join(", "),
+    meeting_status: "not_scheduled" as const,
+    notes: null,
+    request_id: params.requestId,
+    request_type: "personalized_sample_leads" as const,
+    source: "website_sample_request",
+    status: "new" as const,
+    submitted_at: params.submittedAt,
+    target_role: null,
+    target_regions: params.targetRegions,
+    company_sizes: params.companySizes,
+    offer_description: params.offerDescription.trim(),
+    target_description: params.targetDescription.trim(),
+    additional_requirements: normalizeOptionalValue(params.additionalRequirements),
+    whatsapp: normalizeOptionalValue(params.whatsapp),
+  };
+
+  const { error: modernInsertError } = await adminClient
+    .from("sample_requests")
+    .insert(modernPayload);
+
+  if (!modernInsertError) {
+    return { mode: "modern" as const };
+  }
+
+  Sentry.captureException(modernInsertError, {
+    extra: {
+      requestId: params.requestId,
+      sample_insert_mode: "modern",
+    },
+  });
+
+  console.warn("Modern sample request insert failed, retrying legacy payload", {
+    error: modernInsertError,
+    requestId: params.requestId,
+  });
+
+  const legacyPayload = {
+    company: extractWebsiteLabel(params.normalizedWebsite),
+    company_size: params.companySizes.join(", "),
+    created_at: params.submittedAt,
+    email: params.normalizedEmail,
+    frustration: buildLegacySummary({
+      additionalRequirements: params.additionalRequirements,
+      offerDescription: params.offerDescription,
+      targetDescription: params.targetDescription,
+    }),
+    full_name: params.fullName,
+    geography: params.targetRegions.join(", "),
+    notes: buildLegacyNotes({
+      additionalRequirements: params.additionalRequirements,
+      requestId: params.requestId,
+      targetDescription: params.targetDescription,
+    }),
+    status: "new" as const,
+    target_role: null,
+  };
+
+  const { error: legacyInsertError } = await adminClient
+    .from("sample_requests")
+    .insert(legacyPayload);
+
+  if (legacyInsertError) {
+    throw new Error(legacyInsertError.message);
+  }
+
+  return { mode: "legacy" as const };
+}
+
 export async function POST(request: Request) {
   const ipAddress = getClientIp(request);
 
@@ -209,38 +324,19 @@ export async function POST(request: Request) {
   try {
     requestId = await generateRequestId(adminClient);
 
-    const { error: insertError } = await adminClient.from("sample_requests").insert({
-      company: extractWebsiteLabel(normalizedWebsite),
-      company_size: parsed.data.companySizes.join(", "),
-      company_website: normalizedWebsite,
-      created_at: submittedAt,
-      email: normalizedEmail,
-      frustration: buildLegacySummary({
-        additionalRequirements: parsed.data.additionalRequirements,
-        offerDescription: parsed.data.offerDescription,
-        targetDescription: parsed.data.targetDescription,
-      }),
-      full_name: fullName,
-      geography: parsed.data.targetRegions.join(", "),
-      meeting_status: "not_scheduled",
-      notes: null,
-      request_id: requestId,
-      request_type: parsed.data.requestType,
-      source: "website_sample_request",
-      status: "new",
-      submitted_at: submittedAt,
-      target_role: null,
-      target_regions: parsed.data.targetRegions,
-      company_sizes: parsed.data.companySizes,
-      offer_description: parsed.data.offerDescription.trim(),
-      target_description: parsed.data.targetDescription.trim(),
-      additional_requirements: normalizeOptionalValue(parsed.data.additionalRequirements),
-      whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
+    const insertResult = await insertSampleRequest(adminClient, {
+      additionalRequirements: parsed.data.additionalRequirements,
+      companySizes: parsed.data.companySizes,
+      fullName,
+      normalizedEmail,
+      normalizedWebsite,
+      offerDescription: parsed.data.offerDescription,
+      requestId,
+      submittedAt,
+      targetDescription: parsed.data.targetDescription,
+      targetRegions: parsed.data.targetRegions,
+      whatsapp: parsed.data.whatsapp,
     });
-
-    if (insertError) {
-      throw new Error(insertError.message);
-    }
 
     const firstName = getFirstName(fullName);
     const bookingUrl = buildBookingUrl({
@@ -260,7 +356,7 @@ export async function POST(request: Request) {
             recipientEmail: normalizedEmail,
             requestId,
           }),
-        { email: normalizedEmail, requestId },
+        { email: normalizedEmail, insert_mode: insertResult.mode, requestId },
       ),
       runNonBlockingTask(
         "sample request internal alert email",
@@ -279,7 +375,7 @@ export async function POST(request: Request) {
             targetRegions: parsed.data.targetRegions,
             whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
           }),
-        { email: normalizedEmail, requestId },
+        { email: normalizedEmail, insert_mode: insertResult.mode, requestId },
       ),
     ]);
 
@@ -353,12 +449,46 @@ export async function PATCH(request: Request) {
       .select("id")
       .maybeSingle();
 
-    if (error) {
-      throw new Error(error.message);
+    if (!error && data) {
+      return NextResponse.json({ success: true });
     }
 
-    if (!data) {
+    const { data: legacyMatch, error: legacyLookupError } = await adminClient
+      .from("sample_requests")
+      .select("id")
+      .ilike("notes", `%${parsed.data.requestId}%`)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (legacyLookupError) {
+      throw new Error(legacyLookupError.message);
+    }
+
+    if (!legacyMatch) {
+      if (error) {
+        throw new Error(error.message);
+      }
+
       return NextResponse.json({ error: "Sample request not found." }, { status: 404 });
+    }
+
+    const { error: legacyUpdateError } = await adminClient
+      .from("sample_requests")
+      .update({
+        notes:
+          parsed.data.meetingStatus === "meeting_scheduled"
+            ? `${parsed.data.requestId}\nMeeting scheduled${parsed.data.meetingTime ? `\nMeeting time: ${parsed.data.meetingTime}` : ""}`
+            : `${parsed.data.requestId}\nScheduling deferred`,
+        status:
+          parsed.data.meetingStatus === "meeting_scheduled"
+            ? ("meeting_scheduled" as const)
+            : ("new" as const),
+      })
+      .eq("id", legacyMatch.id);
+
+    if (legacyUpdateError) {
+      throw new Error(legacyUpdateError.message);
     }
 
     return NextResponse.json({ success: true });
