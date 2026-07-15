@@ -52,10 +52,20 @@ Frontend / product shell:
 - `NEXT_PUBLIC_APP_URL`
 - `LEADGEN_BACKEND_API_URL`
 - `LEADGEN_BACKEND_SHARED_SECRET`
+- `EMAIL_PROVIDER=google_workspace`
+- `SMTP_HOST=smtp.gmail.com`
+- `SMTP_PORT=465`
+- `SMTP_SECURE=true`
+- `SMTP_USER=hello@frithly.com`
+- `SMTP_PASSWORD`
+- `SMTP_FROM_EMAIL=hello@frithly.com`
+- `SMTP_REPLY_TO=hello@frithly.com`
+- `ADMIN_EMAIL_ALLOWLIST`
+
+Resend fallback, only if `EMAIL_PROVIDER=resend`:
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
 - `RESEND_REPLY_TO`
-- `ADMIN_EMAIL_ALLOWLIST`
 
 Backend / intelligence engine:
 - `TENANT_SHARED_SECRET`

@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
+import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { APP_NAME, PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
-import { resend } from "@/lib/resend/client";
 import {
   CampaignApplicationAlertEmail,
   type CampaignApplicationAlertEmailProps,
@@ -71,6 +72,15 @@ import { env } from "@/lib/utils/env";
 import { formatCurrency } from "@/lib/utils";
 import type { PlanId } from "@/types";
 
+type EmailPayload = {
+  from: string;
+  html: string;
+  replyTo: string;
+  subject: string;
+  text: string;
+  to: string | string[];
+};
+
 export function planNameFromId(planId: PlanId | null | undefined) {
   switch (planId) {
     case "design_partner":
@@ -94,25 +104,19 @@ async function sendFrithlyEmail(params: {
   to: string | string[];
 }) {
   const html = buildEmailHtmlFromText(params.text);
+  const payload = buildEmailPayload({
+    html,
+    replyTo: params.replyTo,
+    subject: params.subject,
+    text: params.text,
+    to: params.to,
+  });
 
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
-      const result = await resend.emails.send({
-        from: `${APP_NAME} <${env.RESEND_FROM_EMAIL}>`,
-        html,
-        replyTo: params.replyTo ?? env.RESEND_REPLY_TO,
-        subject: params.subject,
-        text: params.text,
-        to: params.to,
-      });
-
-      if (result.error) {
-        throw new Error(`Resend email failed: ${result.error.message}`);
-      }
-
-      return result;
+      return await sendEmailWithConfiguredProvider(payload);
     } catch (error) {
       lastError = error;
 
@@ -123,6 +127,80 @@ async function sendFrithlyEmail(params: {
   }
 
   throw lastError;
+}
+
+function buildEmailPayload(params: {
+  html: string;
+  replyTo?: string;
+  subject: string;
+  text: string;
+  to: string | string[];
+}): EmailPayload {
+  if (env.EMAIL_PROVIDER === "google_workspace") {
+    return {
+      from: `${APP_NAME} <${env.SMTP_FROM_EMAIL}>`,
+      html: params.html,
+      replyTo: params.replyTo ?? env.SMTP_REPLY_TO ?? env.SMTP_FROM_EMAIL ?? SUPPORT_EMAIL,
+      subject: params.subject,
+      text: params.text,
+      to: params.to,
+    };
+  }
+
+  return {
+    from: `${APP_NAME} <${env.RESEND_FROM_EMAIL}>`,
+    html: params.html,
+    replyTo: params.replyTo ?? env.RESEND_REPLY_TO ?? env.RESEND_FROM_EMAIL ?? SUPPORT_EMAIL,
+    subject: params.subject,
+    text: params.text,
+    to: params.to,
+  };
+}
+
+async function sendEmailWithConfiguredProvider(payload: EmailPayload) {
+  if (env.EMAIL_PROVIDER === "google_workspace") {
+    return sendWithGoogleWorkspace(payload);
+  }
+
+  return sendWithResend(payload);
+}
+
+async function sendWithResend(payload: EmailPayload) {
+  if (!env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is required when EMAIL_PROVIDER=resend.");
+  }
+
+  const resend = new Resend(env.RESEND_API_KEY);
+  const result = await resend.emails.send(payload);
+
+  if (result.error) {
+    throw new Error(`Resend email failed: ${result.error.message}`);
+  }
+
+  return result;
+}
+
+async function sendWithGoogleWorkspace(payload: EmailPayload) {
+  if (
+    !env.SMTP_HOST ||
+    !env.SMTP_PASSWORD ||
+    !env.SMTP_PORT ||
+    !env.SMTP_USER
+  ) {
+    throw new Error("Google Workspace SMTP env is incomplete.");
+  }
+
+  const transporter = nodemailer.createTransport({
+    auth: {
+      pass: env.SMTP_PASSWORD,
+      user: env.SMTP_USER,
+    },
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_SECURE ?? env.SMTP_PORT === 465,
+  });
+
+  return transporter.sendMail(payload);
 }
 
 function escapeHtml(value: string) {

@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-dev/
 /out/
 
 # production
@@ -34,6 +35,8 @@ codex-dev.stdout.log
 codex-dev.stderr.log
 .codex-dev*.log
 .codex-logs/
+.codex-runtime/
+frithly-*.log
 /data/owned-company-dataset.json
 
 # env files (can opt-in for committing if needed)
