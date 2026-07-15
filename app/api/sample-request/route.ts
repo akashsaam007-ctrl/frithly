@@ -156,18 +156,22 @@ async function runNonBlockingTask(
   try {
     await task();
   } catch (error) {
-    Sentry.captureException(error, {
-      extra: {
-        ...context,
-        side_effect: label,
-      },
-    });
-
-    console.error(`${label} failed`, {
+    console.warn(`${label} failed`, {
       ...context,
       error,
     });
   }
+}
+
+function logHandledFallback(
+  label: string,
+  context: Record<string, unknown>,
+  error: unknown,
+) {
+  console.warn(label, {
+    ...context,
+    error,
+  });
 }
 
 async function insertSampleRequest(
@@ -223,17 +227,10 @@ async function insertSampleRequest(
     return { mode: "modern" as const };
   }
 
-  Sentry.captureException(modernInsertError, {
-    extra: {
-      requestId: params.requestId,
-      sample_insert_mode: "modern",
-    },
-  });
-
-  console.warn("Modern sample request insert failed, retrying legacy payload", {
-    error: modernInsertError,
+  logHandledFallback("Modern sample request insert failed, retrying legacy payload", {
     requestId: params.requestId,
-  });
+    sample_insert_mode: "legacy_fallback",
+  }, modernInsertError);
 
   const legacyPayload = {
     company: extractWebsiteLabel(params.normalizedWebsite),
@@ -286,19 +283,11 @@ async function persistSampleRequest(
   try {
     return await insertSampleRequest(adminClient, params);
   } catch (error) {
-    Sentry.captureException(error, {
-      extra: {
-        email: params.normalizedEmail,
-        requestId: params.requestId,
-        sample_insert_mode: "email_only_fallback",
-      },
-    });
-
-    console.error("Sample request database persistence failed, continuing with email-only fallback", {
+    logHandledFallback("Sample request database persistence failed, continuing with email-only fallback", {
       email: params.normalizedEmail,
-      error,
       requestId: params.requestId,
-    });
+      sample_insert_mode: "email_only_fallback",
+    }, error);
 
     return { mode: "email_only" as const };
   }
@@ -370,6 +359,12 @@ export async function POST(request: Request) {
       companyWebsite: normalizedWebsite,
       email: normalizedEmail,
       fullName,
+      requestId,
+    });
+
+    console.info("Sample request accepted", {
+      email: normalizedEmail,
+      insert_mode: insertResult.mode,
       requestId,
     });
 
