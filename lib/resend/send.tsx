@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_NAME, PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import { resend } from "@/lib/resend/client";
 import {
   CampaignApplicationAlertEmail,
@@ -95,14 +95,34 @@ async function sendFrithlyEmail(params: {
 }) {
   const html = buildEmailHtmlFromText(params.text);
 
-  return resend.emails.send({
-    from: env.RESEND_FROM_EMAIL,
-    html,
-    replyTo: params.replyTo ?? env.RESEND_REPLY_TO,
-    subject: params.subject,
-    text: params.text,
-    to: params.to,
-  });
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const result = await resend.emails.send({
+        from: `${APP_NAME} <${env.RESEND_FROM_EMAIL}>`,
+        html,
+        replyTo: params.replyTo ?? env.RESEND_REPLY_TO,
+        subject: params.subject,
+        text: params.text,
+        to: params.to,
+      });
+
+      if (result.error) {
+        throw new Error(`Resend email failed: ${result.error.message}`);
+      }
+
+      return result;
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+      }
+    }
+  }
+
+  throw lastError;
 }
 
 function escapeHtml(value: string) {

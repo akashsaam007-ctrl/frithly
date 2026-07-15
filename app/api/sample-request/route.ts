@@ -156,6 +156,13 @@ async function runNonBlockingTask(
   try {
     await task();
   } catch (error) {
+    Sentry.captureException(error, {
+      extra: {
+        ...context,
+        side_effect: label,
+      },
+    });
+
     console.warn(`${label} failed`, {
       ...context,
       error,
