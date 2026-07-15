@@ -499,10 +499,10 @@ export function SampleRequestForm() {
     "min-h-[96px] rounded-[0.65rem] border-white/[0.12] bg-[#0c0c0c] px-4 py-3 text-[0.92rem] leading-6 text-[#f5f5f5] placeholder:text-[#666666] focus-visible:border-[rgba(241,181,64,0.85)] focus-visible:ring-[rgba(241,181,64,0.10)] focus-visible:ring-offset-[#111111]";
 
   return (
-    <div className="rounded-[1.25rem] border border-white/[0.1] bg-[rgba(17,17,17,0.92)] p-[1.375rem] shadow-[0_24px_80px_rgba(0,0,0,0.35)] sm:p-8">
+    <div className="w-full max-w-full rounded-[1rem] border border-white/[0.1] bg-[rgba(17,17,17,0.92)] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.35)] sm:rounded-[1.25rem] sm:p-8">
       {confirmation ? (
-        <div className="space-y-6">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#f1b540]/20 bg-[#f1b540]/10 text-[#f1b540]">
+        <div className="space-y-5 sm:space-y-6">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#f1b540]/20 bg-[#f1b540]/10 text-[#f1b540] sm:h-12 sm:w-12">
             <svg
               aria-hidden="true"
               className="h-5 w-5"
@@ -519,7 +519,7 @@ export function SampleRequestForm() {
             <h2
               ref={confirmationHeadingRef}
               tabIndex={-1}
-              className="text-[1.6rem] font-semibold tracking-[-0.03em] text-[#f7f7f7] outline-none sm:text-[1.9rem]"
+              className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-[#f7f7f7] outline-none sm:text-[1.9rem]"
             >
               Your sample request has been received
             </h2>
@@ -534,7 +534,7 @@ export function SampleRequestForm() {
 
           <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
             <Button
-              className={cn("h-[3.25rem] w-full rounded-[0.7rem] text-[0.95rem] font-semibold", gradientButtonClassName)}
+              className={cn("h-[3.1rem] w-full rounded-[0.7rem] text-[0.9rem] font-semibold sm:h-[3.25rem] sm:text-[0.95rem]", gradientButtonClassName)}
               onClick={() => {
                 setShowCalendar(true);
                 setScheduledLater(false);
@@ -547,7 +547,7 @@ export function SampleRequestForm() {
               Book my sample review
             </Button>
             <Button
-              className={cn("h-[3.25rem] rounded-[0.7rem] px-5 text-[0.95rem]", outlineButtonClassName)}
+              className={cn("h-[3.1rem] w-full rounded-[0.7rem] px-5 text-[0.9rem] sm:h-[3.25rem] sm:w-auto sm:text-[0.95rem]", outlineButtonClassName)}
               type="button"
               variant="secondary"
               onClick={() => {
@@ -573,7 +573,7 @@ export function SampleRequestForm() {
             <div className="space-y-4">
               <div className="overflow-hidden rounded-[0.9rem] border border-white/[0.08] bg-[#090909]">
                 <iframe
-                  className="h-[620px] w-full"
+                  className="h-[640px] w-full sm:h-[620px]"
                   src={confirmation.bookingUrl}
                   title="Book your Frithly sample review"
                 />
@@ -594,7 +594,7 @@ export function SampleRequestForm() {
       ) : (
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-2">
-            <h2 className="text-[1.45rem] font-semibold tracking-[-0.03em] text-[#f7f7f7] sm:text-[1.5rem]">
+            <h2 className="text-[1.35rem] font-semibold tracking-[-0.03em] text-[#f7f7f7] sm:text-[1.5rem]">
               Request your sample
             </h2>
             <p className="text-[0.88rem] leading-6 text-[#a3a3a3]">
@@ -604,33 +604,36 @@ export function SampleRequestForm() {
             </p>
           </div>
 
-          <div className="mt-6 flex items-start justify-between gap-4 border-b border-white/[0.08] pb-5">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <div className="flex min-w-0 flex-1 items-center gap-3 text-[0.78rem] font-semibold uppercase tracking-[0.12em]">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span className={cn("text-[#737373]", step === 1 && "text-[#f1b540]")}>01</span>
-                  <span className={cn("truncate text-[#737373]", step === 1 && "text-[#f7f7f7]")}>
-                    Your details
-                  </span>
-                </div>
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "h-px flex-1 rounded-full bg-white/[0.08]",
-                    step === 2 && "bg-[#f1b540]",
-                  )}
-                />
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span className={cn("text-[#737373]", step === 2 && "text-[#f1b540]")}>02</span>
-                  <span className={cn("truncate text-[#737373]", step === 2 && "text-[#f7f7f7]")}>
-                    Targeting
-                  </span>
-                </div>
+          <div className="mt-5 border-b border-white/[0.08] pb-5 sm:mt-6">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#737373]">
+                Step {step} of 2
+              </p>
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[#f1b540]">
+                {step === 1 ? "Your details" : "Targeting"}
+              </p>
+            </div>
+            <div className="mt-4 flex min-w-0 flex-1 items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.1em] sm:text-[0.78rem] sm:tracking-[0.12em]">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className={cn("text-[#737373]", step === 1 && "text-[#f1b540]")}>01</span>
+                <span className={cn("hidden text-[#737373] min-[390px]:inline", step === 1 && "text-[#f7f7f7]")}>
+                  Your details
+                </span>
+              </div>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "h-px flex-1 rounded-full bg-white/[0.08]",
+                  step === 2 && "bg-[#f1b540]",
+                )}
+              />
+              <div className="flex min-w-0 items-center gap-2">
+                <span className={cn("text-[#737373]", step === 2 && "text-[#f1b540]")}>02</span>
+                <span className={cn("hidden text-[#737373] min-[390px]:inline", step === 2 && "text-[#f7f7f7]")}>
+                  Targeting
+                </span>
               </div>
             </div>
-            <p className="shrink-0 text-[0.74rem] font-medium uppercase tracking-[0.12em] text-[#737373]">
-              Step {step} of 2
-            </p>
           </div>
 
           {submitError ? (
@@ -640,7 +643,7 @@ export function SampleRequestForm() {
           ) : null}
 
           {step === 1 ? (
-            <div className="mt-7 space-y-5">
+            <div className="mt-6 space-y-5 sm:mt-7">
               <div className="grid gap-[1.125rem] md:grid-cols-2">
                 <div className="space-y-2">
                   <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-full-name">
@@ -785,7 +788,7 @@ export function SampleRequestForm() {
               </div>
             </div>
           ) : (
-            <div className="mt-7 space-y-5">
+            <div className="mt-6 space-y-5 sm:mt-7">
               <h3
                 ref={stepTwoHeadingRef}
                 tabIndex={-1}
@@ -894,7 +897,7 @@ export function SampleRequestForm() {
                     }}
                   />
                   <Button
-                    className={cn("h-12 rounded-[0.7rem] px-4 text-[0.88rem]", outlineButtonClassName)}
+                    className={cn("h-12 w-full rounded-[0.7rem] px-4 text-[0.88rem] sm:w-auto", outlineButtonClassName)}
                     type="button"
                     variant="secondary"
                     onClick={() => {
