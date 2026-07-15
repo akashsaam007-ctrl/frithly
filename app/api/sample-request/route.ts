@@ -87,22 +87,12 @@ function extractWebsiteLabel(website: string) {
   }
 }
 
-async function generateRequestId(adminClient: ReturnType<typeof createSupabaseAdminClient>) {
+function generateRequestId() {
   const year = new Date().getUTCFullYear();
-  const startOfYear = new Date(Date.UTC(year, 0, 1)).toISOString();
-  const endOfYear = new Date(Date.UTC(year + 1, 0, 1)).toISOString();
-
-  const { count, error } = await adminClient
-    .from("sample_requests")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", startOfYear)
-    .lt("created_at", endOfYear);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  const sequence = String((count ?? 0) + 1).padStart(6, "0");
+  const entropy = `${Date.now()}${Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(3, "0")}`;
+  const sequence = entropy.slice(-6);
   return `FSL-${year}-${sequence}`;
 }
 
@@ -277,6 +267,43 @@ async function insertSampleRequest(
   return { mode: "legacy" as const };
 }
 
+async function persistSampleRequest(
+  adminClient: ReturnType<typeof createSupabaseAdminClient>,
+  params: {
+    additionalRequirements: string;
+    companySizes: string[];
+    fullName: string;
+    normalizedEmail: string;
+    normalizedWebsite: string;
+    offerDescription: string;
+    requestId: string;
+    submittedAt: string;
+    targetDescription: string;
+    targetRegions: string[];
+    whatsapp: string;
+  },
+) {
+  try {
+    return await insertSampleRequest(adminClient, params);
+  } catch (error) {
+    Sentry.captureException(error, {
+      extra: {
+        email: params.normalizedEmail,
+        requestId: params.requestId,
+        sample_insert_mode: "email_only_fallback",
+      },
+    });
+
+    console.error("Sample request database persistence failed, continuing with email-only fallback", {
+      email: params.normalizedEmail,
+      error,
+      requestId: params.requestId,
+    });
+
+    return { mode: "email_only" as const };
+  }
+}
+
 export async function POST(request: Request) {
   const ipAddress = getClientIp(request);
 
@@ -322,9 +349,9 @@ export async function POST(request: Request) {
   let requestId = "";
 
   try {
-    requestId = await generateRequestId(adminClient);
+    requestId = generateRequestId();
 
-    const insertResult = await insertSampleRequest(adminClient, {
+    const insertResult = await persistSampleRequest(adminClient, {
       additionalRequirements: parsed.data.additionalRequirements,
       companySizes: parsed.data.companySizes,
       fullName,
