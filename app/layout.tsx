@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { Toaster } from "@/components/ui/toast";
 import { APP_DOMAIN, APP_NAME, META } from "@/lib/constants";
@@ -91,6 +92,7 @@ export default function RootLayout({
     <html lang="en-GB">
       <body className={inter.variable}>
         {children}
+        <Analytics />
         <PostHogProvider />
         <Toaster />
       </body>
