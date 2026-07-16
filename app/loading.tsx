@@ -10,11 +10,10 @@ export default function Loading() {
       <div className="relative flex w-full max-w-md flex-col items-center gap-5 rounded-[1.75rem] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(10,11,15,0.94),rgba(3,4,6,0.995))] px-8 py-10 text-center shadow-[0_28px_84px_rgba(0,0,0,0.28)]">
         <Logo imageClassName="h-8 sm:h-9" priority />
         <Spinner className="text-white/72" />
-        <div className="space-y-2.5">
+        <div>
           <h1 className="text-[1.95rem] font-semibold tracking-[-0.04em] text-white md:text-[2.25rem]">
             Loading Frithly
           </h1>
-          <p className="text-white/58">Preparing the next Frithly view.</p>
         </div>
       </div>
     </main>

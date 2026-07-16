@@ -16,13 +16,10 @@ export default function PublicLoading() {
           priority
         />
         <Spinner className="text-white/72" />
-        <div className="space-y-2.5">
+        <div>
           <h1 className="text-[2rem] font-semibold tracking-[-0.04em] text-white sm:text-[2.35rem]">
             Loading Frithly
           </h1>
-          <p className="mx-auto max-w-md text-[0.98rem] leading-8 text-white/58">
-            Preparing the next view in the same black-enterprise experience.
-          </p>
         </div>
       </div>
     </main>
