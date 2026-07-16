@@ -148,28 +148,6 @@ function buildBookingUrl(params: {
   return url.toString();
 }
 
-async function runNonBlockingTask(
-  label: string,
-  task: () => Promise<unknown>,
-  context: Record<string, unknown>,
-) {
-  try {
-    await task();
-  } catch (error) {
-    Sentry.captureException(error, {
-      extra: {
-        ...context,
-        side_effect: label,
-      },
-    });
-
-    console.warn(`${label} failed`, {
-      ...context,
-      error,
-    });
-  }
-}
-
 function logHandledFallback(
   label: string,
   context: Record<string, unknown>,
@@ -375,37 +353,27 @@ export async function POST(request: Request) {
       requestId,
     });
 
-    await Promise.allSettled([
-      runNonBlockingTask(
-        "sample request confirmation email",
-        () =>
-          sendSampleRequestReceivedEmail({
-            bookingLink: bookingUrl,
-            firstName,
-            recipientEmail: normalizedEmail,
-            requestId,
-          }),
-        { email: normalizedEmail, insert_mode: insertResult.mode, requestId },
-      ),
-      runNonBlockingTask(
-        "sample request internal alert email",
-        () =>
-          sendSampleRequestAlertEmail({
-            additionalRequirements: normalizeOptionalValue(parsed.data.additionalRequirements),
-            companySizes: parsed.data.companySizes,
-            companyWebsite: normalizedWebsite,
-            email: normalizedEmail,
-            fullName,
-            offerDescription: parsed.data.offerDescription.trim(),
-            recipientEmail: SUPPORT_EMAIL,
-            requestId,
-            submittedAt,
-            targetDescription: parsed.data.targetDescription.trim(),
-            targetRegions: parsed.data.targetRegions,
-            whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
-          }),
-        { email: normalizedEmail, insert_mode: insertResult.mode, requestId },
-      ),
+    await Promise.all([
+      sendSampleRequestReceivedEmail({
+        bookingLink: bookingUrl,
+        firstName,
+        recipientEmail: normalizedEmail,
+        requestId,
+      }),
+      sendSampleRequestAlertEmail({
+        additionalRequirements: normalizeOptionalValue(parsed.data.additionalRequirements),
+        companySizes: parsed.data.companySizes,
+        companyWebsite: normalizedWebsite,
+        email: normalizedEmail,
+        fullName,
+        offerDescription: parsed.data.offerDescription.trim(),
+        recipientEmail: SUPPORT_EMAIL,
+        requestId,
+        submittedAt,
+        targetDescription: parsed.data.targetDescription.trim(),
+        targetRegions: parsed.data.targetRegions,
+        whatsapp: normalizeOptionalValue(parsed.data.whatsapp),
+      }),
     ]);
 
     return NextResponse.json({
@@ -415,7 +383,13 @@ export async function POST(request: Request) {
       success: true,
     });
   } catch (error) {
-    Sentry.captureException(error);
+    Sentry.captureException(error, {
+      extra: {
+        email: normalizedEmail,
+        requestId,
+        workflow: "sample_request_email_delivery",
+      },
+    });
     console.error("Sample request submission failed", {
       email: normalizedEmail,
       error,

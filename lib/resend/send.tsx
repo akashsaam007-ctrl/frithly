@@ -80,6 +80,10 @@ type EmailPayload = {
   to: string | string[];
 };
 
+function normalizeRecipients(value: string | string[]) {
+  return Array.isArray(value) ? value.join(", ") : value;
+}
+
 export function planNameFromId(planId: PlanId | null | undefined) {
   switch (planId) {
     case "design_partner":
@@ -156,7 +160,21 @@ async function sendEmailWithConfiguredProvider(payload: EmailPayload) {
     secure: env.SMTP_SECURE ?? env.SMTP_PORT === 465,
   });
 
-  return transporter.sendMail(payload);
+  const result = await transporter.sendMail(payload);
+
+  console.info("Google Workspace SMTP email accepted", {
+    accepted: result.accepted,
+    messageId: result.messageId,
+    rejected: result.rejected,
+    subject: payload.subject,
+    to: normalizeRecipients(payload.to),
+  });
+
+  if (result.rejected.length > 0) {
+    throw new Error(`Google Workspace SMTP rejected recipients: ${result.rejected.join(", ")}`);
+  }
+
+  return result;
 }
 
 function escapeHtml(value: string) {
