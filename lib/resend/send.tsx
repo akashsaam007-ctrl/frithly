@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import nodemailer from "nodemailer";
-import { APP_NAME, PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_NAME, INTERNAL_REQUEST_EMAIL, PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import {
   CampaignApplicationAlertEmail,
   type CampaignApplicationAlertEmailProps,
@@ -395,6 +395,57 @@ export async function sendSalesInquiryAlertEmail(props: {
     subject: `Sales inquiry: ${props.fullName}`,
     text,
     to: props.recipientEmail,
+  });
+}
+
+export async function sendGuideDownloadEmail(props: {
+  firstName: string;
+  guideUrl: string;
+  recipientEmail: string;
+}) {
+  const text = [
+    `Hi ${props.firstName},`,
+    "",
+    "Here is your Signal-Based Outbound Playbook:",
+    props.guideUrl,
+    "",
+    "Inside, you will find the buying-signal taxonomy, Why Now framework, 100-point scoring model, outreach examples, and manual QA checklist.",
+    "",
+    "Frithly",
+  ].join("\n");
+
+  return sendFrithlyEmail({
+    react: <></>,
+    subject: "Your Frithly Signal-Based Outbound Playbook",
+    text,
+    to: props.recipientEmail,
+  });
+}
+
+export async function sendGuideDownloadAlertEmail(props: {
+  companyName: string;
+  companyWebsite?: string | null;
+  firstName: string;
+  recipientEmail?: string;
+  submittedAt: string;
+  workEmail: string;
+}) {
+  const text = [
+    "New guide download",
+    "",
+    `First name: ${props.firstName}`,
+    `Work email: ${props.workEmail}`,
+    `Company: ${props.companyName}`,
+    `Website: ${props.companyWebsite ?? "Not provided"}`,
+    `Submitted at: ${props.submittedAt}`,
+  ].join("\n");
+
+  return sendFrithlyEmail({
+    react: <></>,
+    replyTo: props.workEmail,
+    subject: `Guide download: ${props.firstName} at ${props.companyName}`,
+    text,
+    to: props.recipientEmail ?? INTERNAL_REQUEST_EMAIL,
   });
 }
 
