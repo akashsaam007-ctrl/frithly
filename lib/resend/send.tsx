@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
 import nodemailer from "nodemailer";
-import { Resend } from "resend";
 import { APP_NAME, PLANS, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import {
   CampaignApplicationAlertEmail,
@@ -136,21 +135,10 @@ function buildEmailPayload(params: {
   text: string;
   to: string | string[];
 }): EmailPayload {
-  if (env.EMAIL_PROVIDER === "google_workspace") {
-    return {
-      from: `${APP_NAME} <${env.SMTP_FROM_EMAIL}>`,
-      html: params.html,
-      replyTo: params.replyTo ?? env.SMTP_REPLY_TO ?? env.SMTP_FROM_EMAIL ?? SUPPORT_EMAIL,
-      subject: params.subject,
-      text: params.text,
-      to: params.to,
-    };
-  }
-
   return {
-    from: `${APP_NAME} <${env.RESEND_FROM_EMAIL}>`,
+    from: `${APP_NAME} <${env.SMTP_FROM_EMAIL}>`,
     html: params.html,
-    replyTo: params.replyTo ?? env.RESEND_REPLY_TO ?? env.RESEND_FROM_EMAIL ?? SUPPORT_EMAIL,
+    replyTo: params.replyTo ?? env.SMTP_REPLY_TO ?? SUPPORT_EMAIL,
     subject: params.subject,
     text: params.text,
     to: params.to,
@@ -158,38 +146,6 @@ function buildEmailPayload(params: {
 }
 
 async function sendEmailWithConfiguredProvider(payload: EmailPayload) {
-  if (env.EMAIL_PROVIDER === "google_workspace") {
-    return sendWithGoogleWorkspace(payload);
-  }
-
-  return sendWithResend(payload);
-}
-
-async function sendWithResend(payload: EmailPayload) {
-  if (!env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY is required when EMAIL_PROVIDER=resend.");
-  }
-
-  const resend = new Resend(env.RESEND_API_KEY);
-  const result = await resend.emails.send(payload);
-
-  if (result.error) {
-    throw new Error(`Resend email failed: ${result.error.message}`);
-  }
-
-  return result;
-}
-
-async function sendWithGoogleWorkspace(payload: EmailPayload) {
-  if (
-    !env.SMTP_HOST ||
-    !env.SMTP_PASSWORD ||
-    !env.SMTP_PORT ||
-    !env.SMTP_USER
-  ) {
-    throw new Error("Google Workspace SMTP env is incomplete.");
-  }
-
   const transporter = nodemailer.createTransport({
     auth: {
       pass: env.SMTP_PASSWORD,
