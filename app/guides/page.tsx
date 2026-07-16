@@ -25,17 +25,38 @@ const values = [
 
 const sneakPeek = [
   {
-    body: "The commercial events worth monitoring before you build a list.",
+    body: "A practical list of business events that can create urgency, budget movement, or timing relevance before you build a list.",
     title: "Buying signals",
   },
   {
-    body: "A simple way to decide which accounts deserve rep time.",
+    body: "A clear way to compare accounts so reps spend time on opportunities with stronger fit, timing, and evidence.",
     title: "Scoring model",
   },
   {
-    body: "A practical check to keep weak angles out of outreach.",
+    body: "A review checklist to remove weak assumptions, stale signals, bad-fit accounts, and outreach angles that feel forced.",
     title: "Manual QA",
   },
+  {
+    body: "A simple structure for turning an observed event into a credible reason to start a conversation.",
+    title: "Why-now angle",
+  },
+  {
+    body: "Examples showing how to reference signals without sounding fake, over-personalized, or generic.",
+    title: "Outreach examples",
+  },
+  {
+    body: "A cleaner operating model for founders, agencies, and revenue teams that want fewer random accounts and more context.",
+    title: "Outbound workflow",
+  },
+] as const;
+
+const guideDeliverables = [
+  "A buying-signal checklist you can use before prospecting",
+  "A 100-point account scoring model for prioritization",
+  "A Why Now framework for writing more credible openers",
+  "Signal-led email examples and follow-up direction",
+  "Manual QA rules for approving or rejecting opportunities",
+  "A simple workflow for building smaller, stronger account lists",
 ] as const;
 
 const audience = [
@@ -186,19 +207,20 @@ export default function GuidesPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1180px] gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.44fr_0.56fr] lg:items-start">
+      <section className="mx-auto grid max-w-[1180px] gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.36fr_0.64fr] lg:items-start">
         <div>
           <SectionLabel>Sneak peek</SectionLabel>
           <h2 className="mt-5 text-[2.2rem] font-semibold leading-[1.02] tracking-[-0.055em] text-white sm:text-[3rem]">
             What the guide helps you do
           </h2>
           <p className="mt-5 max-w-xl text-[1rem] leading-8 text-[#b7b3c5]">
-            No giant framework dump here. The guide gives you a practical way to find better
-            accounts, understand why now matters, and avoid weak outreach angles.
+            The guide is built to help you move from broad targeting to better-timed outreach.
+            It shows what to look for, how to judge whether the signal matters, and how to turn
+            that context into a stronger first conversation.
           </p>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           {sneakPeek.map((item, index) => (
             <article
               key={item.title}
@@ -219,12 +241,24 @@ export default function GuidesPage() {
           <div className="rounded-[1.35rem] bg-[#08070b]/95 p-6 sm:p-8">
             <Sparkles className="h-5 w-5 text-white/72" aria-hidden="true" />
             <h2 className="mt-5 text-[2rem] font-semibold leading-[1.04] tracking-[-0.055em] text-white sm:text-[2.6rem]">
-              Built for teams that want better conversations, not bigger lists.
+              What do you get?
             </h2>
             <p className="mt-5 text-[0.98rem] leading-8 text-[#b7b3c5]">
-              Use it to rethink targeting, spot timely account changes, and create outreach that
-              has a real reason to exist.
+              A focused playbook your team can use before launching outbound. It gives you the
+              filters, scoring logic, and messaging structure needed to find better-fit accounts
+              and explain why now is a sensible time to reach out.
             </p>
+            <div className="mt-7 grid gap-3">
+              {guideDeliverables.map((item) => (
+                <div
+                  key={item}
+                  className="flex gap-3 rounded-[0.9rem] border border-white/[0.08] bg-white/[0.025] px-4 py-3 text-[0.92rem] leading-6 text-white/72"
+                >
+                  <Check className="mt-1 h-4 w-4 shrink-0 text-white/72" aria-hidden="true" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <GuideDownloadForm />
