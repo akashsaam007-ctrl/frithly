@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { BOOKING_URL, SUPPORT_EMAIL } from "@/lib/constants";
+import { BOOKING_URL, INTERNAL_REQUEST_EMAIL } from "@/lib/constants";
 import {
   getFirstName,
   sendSampleRequestAlertEmail,
@@ -367,7 +367,7 @@ export async function POST(request: Request) {
         email: normalizedEmail,
         fullName,
         offerDescription: parsed.data.offerDescription.trim(),
-        recipientEmail: SUPPORT_EMAIL,
+        recipientEmail: INTERNAL_REQUEST_EMAIL,
         requestId,
         submittedAt,
         targetDescription: parsed.data.targetDescription.trim(),

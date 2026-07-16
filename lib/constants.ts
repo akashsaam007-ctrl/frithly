@@ -10,6 +10,7 @@ export const DEFAULT_CALENDLY_URL =
   "https://calendly.com/akashmanoharan-frithly/frithly-outbound-intelligence-review";
 export const BOOKING_URL = CALENDLY_URL ?? DEFAULT_CALENDLY_URL;
 export const SUPPORT_EMAIL = "hello@frithly.com";
+export const INTERNAL_REQUEST_EMAIL = "akashmanoharan@frithly.com";
 export const BUSINESS_ADDRESS =
   "55, Peranayakanvalasu, Dharapuram, Tiruppur, Mulanur, Tamil Nadu, India - 638106";
 
