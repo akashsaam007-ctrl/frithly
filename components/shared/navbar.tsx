@@ -12,6 +12,7 @@ import { ROUTES } from "@/lib/constants";
 const marketingNavLinks = [
   { href: "/#process", label: "Process" },
   { href: "/#why-frithly", label: "Why Frithly" },
+  { href: ROUTES.GUIDES, label: "Free Guide" },
   { href: ROUTES.FAQ, label: "FAQ" },
   { external: true, href: ROUTES.BOOK_MEETING, label: "Book Call" },
 ];
