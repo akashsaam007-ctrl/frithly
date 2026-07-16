@@ -494,15 +494,17 @@ export function SampleRequestForm() {
   const outlineButtonClassName =
     "border-white/[0.1] bg-white/[0.03] text-white shadow-none hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-white";
   const inputClassName =
-    "h-12 rounded-[0.65rem] border-white/[0.12] bg-[#0c0c0c] px-4 text-[0.92rem] text-[#f5f5f5] placeholder:text-[#666666] focus-visible:border-[rgba(241,181,64,0.85)] focus-visible:ring-[rgba(241,181,64,0.10)] focus-visible:ring-offset-[#111111]";
+    "h-12 rounded-[0.8rem] border-white/[0.1] bg-white/[0.035] px-4 text-[0.92rem] text-white placeholder:text-white/34 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus-visible:border-white/[0.2] focus-visible:ring-[rgba(201,183,255,0.24)] focus-visible:ring-offset-[#050505]";
   const textareaClassName =
-    "min-h-[96px] rounded-[0.65rem] border-white/[0.12] bg-[#0c0c0c] px-4 py-3 text-[0.92rem] leading-6 text-[#f5f5f5] placeholder:text-[#666666] focus-visible:border-[rgba(241,181,64,0.85)] focus-visible:ring-[rgba(241,181,64,0.10)] focus-visible:ring-offset-[#111111]";
+    "min-h-[96px] rounded-[0.8rem] border-white/[0.1] bg-white/[0.035] px-4 py-3 text-[0.92rem] leading-6 text-white placeholder:text-white/34 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus-visible:border-white/[0.2] focus-visible:ring-[rgba(201,183,255,0.24)] focus-visible:ring-offset-[#050505]";
 
   return (
-    <div className="w-full max-w-full rounded-[1rem] border border-white/[0.1] bg-[rgba(17,17,17,0.92)] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.35)] sm:rounded-[1.25rem] sm:p-8">
+    <div className="relative w-full max-w-full overflow-hidden rounded-[1rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.018))] p-4 shadow-[0_28px_90px_rgba(0,0,0,0.42)] sm:rounded-[1.25rem] sm:p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_8%,rgba(201,183,255,0.12),transparent_34%),radial-gradient(circle_at_8%_0%,rgba(244,194,139,0.08),transparent_30%)]" />
+      <div className="relative">
       {confirmation ? (
         <div className="space-y-5 sm:space-y-6">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#f1b540]/20 bg-[#f1b540]/10 text-[#f1b540] sm:h-12 sm:w-12">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] text-white shadow-[0_0_34px_rgba(201,183,255,0.18)] sm:h-12 sm:w-12">
             <svg
               aria-hidden="true"
               className="h-5 w-5"
@@ -519,15 +521,15 @@ export function SampleRequestForm() {
             <h2
               ref={confirmationHeadingRef}
               tabIndex={-1}
-              className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-[#f7f7f7] outline-none sm:text-[1.9rem]"
+              className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-white outline-none sm:text-[1.9rem]"
             >
               Your sample request has been received
             </h2>
-            <p className="max-w-2xl text-[0.95rem] leading-7 text-[#a3a3a3]">
+            <p className="max-w-2xl text-[0.95rem] leading-7 text-white/68">
               Our team will review your criteria and prepare a personalized lead sample. Choose a
               convenient time below for the video walkthrough.
             </p>
-            <p className="text-[0.82rem] uppercase tracking-[0.16em] text-[#737373]">
+            <p className="text-[0.82rem] uppercase tracking-[0.16em] text-white/42">
               Request ID {confirmation.requestId}
             </p>
           </div>
@@ -564,14 +566,14 @@ export function SampleRequestForm() {
           </div>
 
           {scheduledLater ? (
-            <p className="rounded-[0.9rem] border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[0.86rem] leading-6 text-[#b8b8b8]">
+            <p className="rounded-[0.9rem] border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[0.86rem] leading-6 text-white/72">
               We have sent the booking link to your email.
             </p>
           ) : null}
 
           {showCalendar ? (
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-[0.9rem] border border-white/[0.08] bg-[#090909]">
+              <div className="overflow-hidden rounded-[0.9rem] border border-white/[0.08] bg-[#050505]">
                 <iframe
                   className="h-[640px] w-full sm:h-[620px]"
                   src={confirmation.bookingUrl}
@@ -579,11 +581,11 @@ export function SampleRequestForm() {
                 />
               </div>
               {callBooked ? (
-                <p className="text-[0.86rem] leading-6 text-[#b8b8b8]">
+                <p className="text-[0.86rem] leading-6 text-white/72">
                   Your review call has been logged. We will prepare the sample before the meeting.
                 </p>
               ) : (
-                <p className="text-[0.86rem] leading-6 text-[#737373]">
+                <p className="text-[0.86rem] leading-6 text-white/42">
                   Your timezone is detected automatically. We will use the details you already
                   shared, so there is nothing to re-enter.
                 </p>
@@ -594,10 +596,10 @@ export function SampleRequestForm() {
       ) : (
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-2">
-            <h2 className="text-[1.35rem] font-semibold tracking-[-0.03em] text-[#f7f7f7] sm:text-[1.5rem]">
+            <h2 className="text-[1.35rem] font-semibold tracking-[-0.03em] text-white sm:text-[1.5rem]">
               Request your sample
             </h2>
-            <p className="text-[0.88rem] leading-6 text-[#a3a3a3]">
+            <p className="text-[0.88rem] leading-6 text-white/64">
               {step === 1
                 ? "Start with a few basic details. It takes less than two minutes."
                 : "Define the companies you want Frithly to research."}
@@ -606,17 +608,17 @@ export function SampleRequestForm() {
 
           <div className="mt-5 border-b border-white/[0.08] pb-5 sm:mt-6">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#737373]">
+              <p className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-white/42">
                 Step {step} of 2
               </p>
-              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[#f1b540]">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-white">
                 {step === 1 ? "Your details" : "Targeting"}
               </p>
             </div>
             <div className="mt-4 flex min-w-0 flex-1 items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.1em] sm:text-[0.78rem] sm:tracking-[0.12em]">
               <div className="flex min-w-0 items-center gap-2">
-                <span className={cn("text-[#737373]", step === 1 && "text-[#f1b540]")}>01</span>
-                <span className={cn("hidden text-[#737373] min-[390px]:inline", step === 1 && "text-[#f7f7f7]")}>
+                <span className={cn("text-white/36", step === 1 && "text-white")}>01</span>
+                <span className={cn("hidden text-white/36 min-[390px]:inline", step === 1 && "text-white")}>
                   Your details
                 </span>
               </div>
@@ -624,12 +626,12 @@ export function SampleRequestForm() {
                 aria-hidden="true"
                 className={cn(
                   "h-px flex-1 rounded-full bg-white/[0.08]",
-                  step === 2 && "bg-[#f1b540]",
+                  step === 2 && "bg-[linear-gradient(90deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)]",
                 )}
               />
               <div className="flex min-w-0 items-center gap-2">
-                <span className={cn("text-[#737373]", step === 2 && "text-[#f1b540]")}>02</span>
-                <span className={cn("hidden text-[#737373] min-[390px]:inline", step === 2 && "text-[#f7f7f7]")}>
+                <span className={cn("text-white/36", step === 2 && "text-white")}>02</span>
+                <span className={cn("hidden text-white/36 min-[390px]:inline", step === 2 && "text-white")}>
                   Targeting
                 </span>
               </div>
@@ -869,8 +871,8 @@ export function SampleRequestForm() {
                         className={cn(
                           "rounded-full border px-3.5 py-2 text-[0.82rem] transition-colors",
                           selected
-                            ? "border-[#f1b540]/70 bg-[#f1b540]/12 text-[#f7f7f7]"
-                            : "border-white/[0.08] bg-white/[0.03] text-[#a3a3a3] hover:border-white/[0.16] hover:text-[#f3f3f3]",
+                            ? "border-white/[0.18] bg-white/[0.08] text-white shadow-[0_0_28px_rgba(201,183,255,0.12)]"
+                            : "border-white/[0.08] bg-white/[0.03] text-white/62 hover:border-white/[0.16] hover:text-white",
                         )}
                         type="button"
                         onClick={() => toggleRegion(region)}
@@ -943,8 +945,8 @@ export function SampleRequestForm() {
                         className={cn(
                           "flex min-h-[3.15rem] items-center justify-center rounded-[0.8rem] border px-3 py-2 text-[0.84rem] font-medium transition-colors",
                           selected
-                            ? "border-[#f1b540]/70 bg-[#f1b540]/12 text-[#f7f7f7]"
-                            : "border-white/[0.08] bg-white/[0.03] text-[#a3a3a3] hover:border-white/[0.16] hover:text-[#f3f3f3]",
+                            ? "border-white/[0.18] bg-white/[0.08] text-white shadow-[0_0_28px_rgba(201,183,255,0.12)]"
+                            : "border-white/[0.08] bg-white/[0.03] text-white/62 hover:border-white/[0.16] hover:text-white",
                         )}
                         type="button"
                         onClick={() => toggleCompanySize(size)}
@@ -1009,13 +1011,14 @@ export function SampleRequestForm() {
                   )}
                 </Button>
               </div>
-              <p className="text-center text-[0.74rem] leading-5 text-[#737373]">
+              <p className="text-center text-[0.74rem] leading-5 text-white/42">
                 After submitting, you can choose a time for the sample review call.
               </p>
             </div>
           )}
         </form>
       )}
+      </div>
     </div>
   );
 }

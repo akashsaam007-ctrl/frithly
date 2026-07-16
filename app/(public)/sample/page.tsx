@@ -57,7 +57,7 @@ export const metadata: Metadata = buildPublicMetadata({
 export default function SamplePage() {
   return (
     <main className="relative isolate overflow-hidden bg-[#050505] py-5 text-white sm:py-12 lg:py-16">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_30%,rgba(241,181,64,0.08),transparent_38%),linear-gradient(180deg,#050505_0%,#060606_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_24%,rgba(201,183,255,0.12),transparent_36%),radial-gradient(circle_at_18%_18%,rgba(244,194,139,0.08),transparent_30%),linear-gradient(180deg,#050505_0%,#090909_48%,#050505_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:176px_176px] opacity-[0.04]" />
       <StructuredData
         data={buildWebPageSchema({
@@ -82,7 +82,7 @@ export default function SamplePage() {
         <section className="mx-auto max-w-[1200px] px-4 pt-3 pb-11 sm:px-8 sm:pt-4 sm:pb-14 lg:px-0 lg:pt-4 lg:pb-20">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-14">
             <div className="pt-2 lg:pt-14">
-              <p className="mb-3 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[#f1b540] sm:mb-4 sm:text-[0.75rem]">
+              <p className="mb-3 inline-flex rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white sm:mb-4 sm:text-[0.75rem]">
                 Personalized Sample
               </p>
               <h1 className="max-w-[480px] text-[2.35rem] font-semibold leading-[0.96] tracking-[-0.05em] text-[#f7f7f7] sm:text-[2.6rem] lg:text-[3rem]">
@@ -98,8 +98,8 @@ export default function SamplePage() {
 
               <ul className="mt-6 space-y-3 sm:mt-8 sm:space-y-3.5">
                 {deliverables.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[0.96rem] text-[#d4d4d4]">
-                    <span className="mt-[0.14rem] inline-flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full border border-[#f1b540]/30 bg-[#f1b540]/10 text-[#f1b540]">
+                  <li key={item} className="flex items-start gap-3 text-[0.96rem] text-white/78">
+                    <span className="mt-[0.14rem] inline-flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-white shadow-[0_0_22px_rgba(201,183,255,0.14)]">
                       <svg
                         aria-hidden="true"
                         className="h-3.5 w-3.5"
@@ -116,7 +116,7 @@ export default function SamplePage() {
                 ))}
               </ul>
 
-              <div className="mt-6 max-w-[470px] border-l-2 border-[#f1b540]/85 pl-4 text-[0.8rem] leading-6 text-[#737373] sm:mt-7 sm:text-[0.82rem]">
+              <div className="mt-6 max-w-[470px] border-l-2 border-white/[0.16] pl-4 text-[0.8rem] leading-6 text-white/46 sm:mt-7 sm:text-[0.82rem]">
                 No generic database export. Every sample is reviewed manually before the call.
               </div>
             </div>
@@ -141,9 +141,9 @@ export default function SamplePage() {
             {nextSteps.map((step) => (
               <article
                 key={step.number}
-                className="rounded-[0.9rem] border border-white/[0.08] bg-white/[0.025] p-6"
+                className="rounded-[1rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.018))] p-6 shadow-[0_18px_58px_rgba(0,0,0,0.24)]"
               >
-                <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#f1b540]">
+                <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-white">
                   {step.number}
                 </p>
                 <h3 className="mt-4 text-[1.1rem] font-semibold text-[#f3f3f3]">{step.title}</h3>
