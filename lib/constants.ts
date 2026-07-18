@@ -7,7 +7,7 @@ export const APP_DOMAIN = "frithly.com";
 export const CALENDLY_URL = publicEnv.NEXT_PUBLIC_CALENDLY_URL;
 export const CALCOM_URL = publicEnv.NEXT_PUBLIC_CALCOM_URL;
 export const DEFAULT_CALENDLY_URL =
-  "https://calendly.com/akashmanoharan-frithly/frithly-outbound-intelligence-review";
+  "https://calendly.com/akashmanoharan-frithly/1on1_call";
 export const BOOKING_URL = CALENDLY_URL ?? DEFAULT_CALENDLY_URL;
 export const SUPPORT_EMAIL = "hello@frithly.com";
 export const INTERNAL_REQUEST_EMAIL = "akashmanoharan@frithly.com";
