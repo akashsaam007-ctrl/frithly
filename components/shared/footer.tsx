@@ -46,10 +46,8 @@ export function Footer() {
                 <Link
                   className="block transition-colors hover:text-white"
                   href={ROUTES.BOOK_MEETING}
-                  rel="noreferrer"
-                  target="_blank"
                 >
-                  Book call
+                  Book 1 on 1 call
                 </Link>
               </div>
             </div>

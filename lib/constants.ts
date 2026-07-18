@@ -110,7 +110,7 @@ export const ROUTES = {
   BRIEFS: "/briefs",
   CAMPAIGNS: "/campaigns",
   COHORTS: "/cohorts",
-  BOOK_MEETING: BOOKING_URL,
+  BOOK_MEETING: "/book-call",
   CONTACT: "/contact",
   CONTACT_SALES: "/contact#sales-form",
   COOKIE_POLICY: "/cookie-policy",

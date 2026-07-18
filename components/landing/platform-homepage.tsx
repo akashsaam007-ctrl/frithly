@@ -489,7 +489,7 @@ export function PlatformHomepage() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
-                <Link href={ROUTES.BOOK_MEETING}>Book Intro Call</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Book 1 on 1 Call</Link>
               </Button>
             </div>
 
@@ -852,7 +852,7 @@ export function PlatformHomepage() {
                   <Link href={ROUTES.SAMPLE}>Request Sample</Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
-                  <Link href={ROUTES.BOOK_MEETING}>Book Call</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Book 1 on 1 Call</Link>
                 </Button>
               </div>
             </div>

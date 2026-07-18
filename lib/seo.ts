@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { APP_DOMAIN, APP_NAME, APP_TAGLINE, BOOKING_URL, META, SUPPORT_EMAIL } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, APP_TAGLINE, META, SUPPORT_EMAIL } from "@/lib/constants";
 import { publicEnv } from "@/lib/utils/public-env";
 
 const SITE_URL = publicEnv.NEXT_PUBLIC_APP_URL || `https://${APP_DOMAIN}`;
@@ -16,7 +16,7 @@ const SITE_NAV_ITEMS = [
   { name: "Sample", path: "/#sample-opportunity" },
   { name: "Why Frithly", path: "/#why-frithly" },
   { name: "FAQ", path: "/#faq" },
-  { name: "Book Call", path: BOOKING_URL },
+  { name: "Book 1 on 1 Call", path: "/book-call" },
 ] as const;
 
 type PublicMetadataOptions = {
@@ -146,7 +146,7 @@ export function buildOrganizationSchema() {
         contactType: "sales",
         email: SUPPORT_EMAIL,
         availableLanguage: ["en"],
-        url: BOOKING_URL,
+        url: absoluteUrl("/book-call"),
       },
       {
         "@type": "ContactPoint",
@@ -201,8 +201,8 @@ export function buildWebSiteSchema() {
       },
       {
         "@type": "ScheduleAction",
-        name: "Book a Frithly intro call",
-        target: BOOKING_URL,
+        name: "Book a Frithly 1 on 1 call",
+        target: absoluteUrl("/book-call"),
       },
     ],
     publisher: {

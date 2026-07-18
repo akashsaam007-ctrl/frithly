@@ -6,6 +6,7 @@ export type AnalyticsEventName =
   | "apply_flow_submitted"
   | "apply_flow_viewed"
   | "brief_viewed"
+  | "book_call_page_viewed"
   | "campaign_detail_viewed"
   | "campaigns_viewed"
   | "cohort_detail_viewed"

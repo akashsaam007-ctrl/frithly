@@ -14,7 +14,7 @@ const marketingNavLinks = [
   { href: "/#why-frithly", label: "Why Frithly" },
   { href: ROUTES.GUIDES, label: "Free Guide" },
   { href: ROUTES.FAQ, label: "FAQ" },
-  { external: true, href: ROUTES.BOOK_MEETING, label: "Book Call" },
+  { highlight: true, href: ROUTES.BOOK_MEETING, label: "Book 1 on 1 Call" },
 ];
 
 export function Navbar() {
@@ -79,17 +79,23 @@ export function Navbar() {
         <Logo imageClassName="h-8 sm:h-9 lg:h-10" priority />
 
         <div className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium transition-colors ${linkClassName}`}
-              rel={link.external ? "noreferrer" : undefined}
-              target={link.external ? "_blank" : undefined}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isHighlighted = "highlight" in link && link.highlight;
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={
+                  isHighlighted
+                    ? "rounded-full border border-white/[0.08] bg-white/[0.045] px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_36px_rgba(0,0,0,0.24)] transition-all hover:border-[rgba(201,183,255,0.22)] hover:bg-white/[0.07] hover:shadow-[0_0_32px_rgba(201,183,255,0.12)]"
+                    : `text-sm font-medium transition-colors ${linkClassName}`
+                }
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="hidden items-center gap-4 lg:flex">
@@ -142,17 +148,21 @@ export function Navbar() {
               </div>
 
               <div className="flex flex-col divide-y divide-white/[0.07] rounded-[1rem] border border-white/[0.06] bg-white/[0.02]">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base"
-                    rel={link.external ? "noreferrer" : undefined}
-                    target={link.external ? "_blank" : undefined}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const isHighlighted = "highlight" in link && link.highlight;
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base ${
+                        isHighlighted ? "bg-white/[0.035] text-white" : ""
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
 
               <div className="flex flex-col gap-3">
