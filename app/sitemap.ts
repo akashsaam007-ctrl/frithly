@@ -16,6 +16,7 @@ const staticRoutes = [
   { changeFrequency: "monthly" as const, path: "/pricing", priority: 0.9 },
   { changeFrequency: "monthly" as const, path: "/proof", priority: 0.8 },
   { changeFrequency: "weekly" as const, path: "/roi", priority: 0.7 },
+  { changeFrequency: "weekly" as const, path: "/sample", priority: 0.88 },
   { changeFrequency: "yearly" as const, path: "/privacy", priority: 0.35 },
   { changeFrequency: "yearly" as const, path: "/terms", priority: 0.35 },
   { changeFrequency: "yearly" as const, path: "/refund-policy", priority: 0.32 },
