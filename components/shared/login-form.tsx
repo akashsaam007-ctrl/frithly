@@ -35,7 +35,7 @@ export function LoginForm({
 
     try {
       const supabase = createSupabaseBrowserClient();
-      const redirectUrl = new URL("/auth/callback", window.location.origin);
+      const redirectUrl = new URL(ROUTES.HOME, window.location.origin);
 
       if (isSafeNextPath(nextPath)) {
         redirectUrl.searchParams.set("next", nextPath);
@@ -90,10 +90,10 @@ export function LoginForm({
 
         <div className="grid gap-3">
           <Button asChild className="w-full" size="lg">
-            <Link href={ROUTES.DASHBOARD}>Open Customer Dashboard</Link>
+            <Link href={ROUTES.HOME}>Open Public Site</Link>
           </Button>
           <Button asChild className="w-full" size="lg" variant="secondary">
-            <Link href={ROUTES.ADMIN_CUSTOMERS}>Open Admin Customers</Link>
+            <Link href={ROUTES.SAMPLE}>Open Sample Request</Link>
           </Button>
         </div>
       </div>

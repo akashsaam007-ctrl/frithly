@@ -22,8 +22,8 @@ export function getBootstrapRoleForEmail(email: string): AppRole {
   return isBootstrapAdminEmail(email) ? "admin" : "customer";
 }
 
-export function getPostLoginRouteForRole(role: AppRole) {
-  return role === "admin" ? ROUTES.ADMIN : ROUTES.DASHBOARD;
+export function getPostLoginRouteForRole() {
+  return ROUTES.HOME;
 }
 
 export async function getUserRoleByEmail(email: string): Promise<AppRole> {
@@ -56,6 +56,6 @@ export async function getUserRoleByEmail(email: string): Promise<AppRole> {
 }
 
 export async function getPostLoginRoute(email: string) {
-  const role = await getUserRoleByEmail(email);
-  return getPostLoginRouteForRole(role);
+  await getUserRoleByEmail(email);
+  return getPostLoginRouteForRole();
 }

@@ -213,7 +213,7 @@ export async function createLemonSqueezyCheckout(params: {
             product_options: {
               enabled_variants: [Number(variantId)],
               receipt_button_text: "Open Frithly",
-              receipt_link_url: `${env.NEXT_PUBLIC_APP_URL}/login`,
+              receipt_link_url: `${env.NEXT_PUBLIC_APP_URL}/book-call`,
               receipt_thank_you_note:
                 "Your Frithly subscription is confirmed. Use the same email to access your dashboard.",
               redirect_url: `${env.NEXT_PUBLIC_APP_URL}/book-call?checkout=success`,

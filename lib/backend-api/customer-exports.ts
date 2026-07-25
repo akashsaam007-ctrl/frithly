@@ -740,7 +740,7 @@ function buildProfileHref(filters: ExportFilterState, profileId: ExportProfileId
   params.set("city", filters.city);
   params.set("smtpState", filters.smtpState);
   params.set("draftReadiness", filters.draftReadiness);
-  return `/exports?${params.toString()}`;
+  return `/?${params.toString()}`;
 }
 
 function buildSummary(rows: ExportCandidateRow[], cohorts: WorkspaceCohort[]) {

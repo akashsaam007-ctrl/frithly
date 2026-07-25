@@ -25,37 +25,11 @@ function getAllowedDevOrigins() {
 export default function createNextConfig(phase: string): NextConfig {
   const isDevServer = phase === PHASE_DEVELOPMENT_SERVER;
   const sentryEnabledInDev = process.env.NEXT_PUBLIC_SENTRY_ENABLE_IN_DEV === "true";
-  const internalNoIndexRoutes = [
-    "/admin/:path*",
-    "/api/:path*",
-    "/auth/:path*",
-    "/billing/:path*",
-    "/briefs/:path*",
-    "/checkout/:path*",
-    "/dashboard/:path*",
-    "/help/:path*",
-    "/icp/:path*",
-    "/login",
-    "/pay",
-    "/signup",
-    "/verify",
-  ];
   const baseConfig: NextConfig = {
     allowedDevOrigins: getAllowedDevOrigins(),
     distDir: isDevServer ? ".next-dev" : ".next",
     env: {
       NEXT_PUBLIC_IS_DEV_SERVER: isDevServer ? "true" : "false",
-    },
-    async headers() {
-      return internalNoIndexRoutes.map((source) => ({
-        headers: [
-          {
-            key: "X-Robots-Tag",
-            value: "noindex, nofollow, noarchive, nosnippet",
-          },
-        ],
-        source,
-      }));
     },
     reactStrictMode: true,
   };
