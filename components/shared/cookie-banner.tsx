@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { ROUTES } from "@/lib/constants";
 import {
   COOKIE_CONSENT_CHANGED_EVENT,
@@ -9,6 +10,17 @@ import {
   type CookieConsentChoice,
 } from "@/lib/monitoring/consent";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const bodyFont = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["500"],
+});
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -33,22 +45,21 @@ export function CookieBanner() {
 
   return (
     <div className="no-print fixed inset-x-0 bottom-4 z-50 px-4 sm:bottom-6 sm:px-6 min-[520px]:left-auto min-[520px]:right-6 min-[520px]:max-w-[24rem] min-[520px]:px-0">
-      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[radial-gradient(circle_at_12%_0%,rgba(244,194,139,0.12),transparent_30%),radial-gradient(circle_at_88%_8%,rgba(201,183,255,0.14),transparent_34%),linear-gradient(180deg,rgba(18,18,20,0.96),rgba(5,5,5,0.98))] shadow-[0_38px_120px_rgba(0,0,0,0.52),0_0_55px_rgba(201,183,255,0.08)] backdrop-blur-2xl min-[520px]:mx-0 min-[520px]:max-w-[24rem]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_28%,rgba(255,255,255,0.025)_58%,transparent)]" />
-        <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,#f4c28b,#e8a7d7,#c9b7ff,transparent)] opacity-80" />
+      <div className={cn(bodyFont.className, "relative mx-auto max-w-4xl overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b] shadow-[0_38px_120px_rgba(0,0,0,0.52)] backdrop-blur-2xl min-[520px]:mx-0 min-[520px]:max-w-[24rem]")}>
+        <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
         <div className="relative flex flex-col gap-4 p-4 sm:p-5">
           <div className="space-y-2.5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 shadow-[0_12px_34px_rgba(0,0,0,0.22)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#c9b7ff] shadow-[0_0_18px_rgba(201,183,255,0.75)]" />
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-white">
+            <div className="inline-flex items-center gap-3 rounded-[3px] border border-[#262b31] bg-[#0c0e11]/78 px-3 py-1.5 shadow-[0_12px_34px_rgba(0,0,0,0.22)]">
+              <span className="h-px w-6 bg-[#e7a6d6]/70" />
+              <p className={cn(monoFont.className, "text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]")}>
                 Cookie preferences
               </p>
             </div>
-            <p className="text-[0.92rem] leading-6 text-[#c9d0dc]">
+            <p className="text-[14px] leading-[1.7] text-[#9ba1a8]">
               We use essential cookies and local storage to keep Frithly working properly.
               Optional analytics stay off unless you allow them. See our{" "}
               <Link
-                className="font-semibold text-white underline decoration-[#c9b7ff]/35 underline-offset-4 transition-colors hover:text-[#e8a7d7]"
+                className="font-semibold text-[#e7a6d6] underline decoration-[#e7a6d6]/35 underline-offset-4 transition-colors hover:text-[#f3f1ea]"
                 href={`${ROUTES.PRIVACY}#cookies`}
               >
                 cookie details
@@ -59,7 +70,7 @@ export function CookieBanner() {
 
           <div className="grid gap-2">
             <Button
-              className="h-auto min-h-12 w-full whitespace-normal rounded-2xl border-white/[0.1] bg-white/[0.035] px-4 py-3 text-center text-sm font-bold leading-5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all hover:border-[#c9b7ff]/35 hover:bg-white/[0.06]"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-[3px] border-[#262b31] bg-[#0c0e11]/78 px-4 py-3 text-center text-sm font-semibold leading-5 text-[#f3f1ea] shadow-none transition-all hover:border-[#9ba1a8] hover:bg-[#0c0e11]/78 hover:text-[#f3f1ea]"
               size="sm"
               variant="secondary"
               onClick={() => saveChoice("rejected")}
@@ -67,7 +78,7 @@ export function CookieBanner() {
               Reject optional cookies
             </Button>
             <Button
-              className="h-auto min-h-12 w-full whitespace-normal rounded-2xl border-0 bg-[linear-gradient(100deg,#f4c28b_0%,#e8a7d7_54%,#c9b7ff_100%)] px-4 py-3 text-center text-sm font-black leading-5 text-black shadow-[0_18px_50px_rgba(232,167,215,0.18),0_0_38px_rgba(201,183,255,0.12)] transition-all hover:brightness-105"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-[3px] border-0 bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] px-4 py-3 text-center text-sm font-semibold leading-5 text-[#241522] shadow-none transition-all hover:brightness-[1.08] hover:text-[#241522]"
               size="sm"
               onClick={() => saveChoice("accepted")}
             >
