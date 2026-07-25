@@ -207,6 +207,26 @@
   }
 }
 
+@keyframes terminal-scroll {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-terminal-scroll {
+    animation: none !important;
+  }
+}
+
+.animate-terminal-scroll {
+  animation: terminal-scroll 22s linear infinite;
+}
+
 @media print {
   .no-print {
     display: none !important;

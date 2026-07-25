@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { IBM_Plex_Mono, Inter } from "next/font/google";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState, type ReactNode } from "react";
+import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
+import { motion, useReducedMotion } from "framer-motion";
+import { type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -15,262 +15,178 @@ import { Container } from "@/components/ui/container";
 import { platformFaqs } from "@/components/landing/platform-homepage-data";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import {
-  ArrowRight,
-  BriefcaseBusiness,
-  Building2,
-  CheckCircle2,
-  Radar,
-  ShieldCheck,
-  Sparkles,
-  Target,
-  Users2,
-} from "lucide-react";
 
-const headlineFont = Inter({
+const displayFont = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-frithly-headline",
-  weight: ["500", "600", "700", "800"],
+  variable: "--font-frithly-display",
+  weight: ["600", "700"],
+});
+
+const bodyFont = Inter({
+  subsets: ["latin"],
+  variable: "--font-frithly-body",
+  weight: ["400", "500", "600"],
 });
 
 const monoFont = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["400", "500"],
 });
 
-const gradientButtonClassName =
-  "border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#090909] shadow-[0_18px_52px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#090909]";
+const primaryButtonClassName =
+  "rounded-[3px] border-0 bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] px-5 text-[#241522] shadow-none hover:brightness-[1.08] hover:text-[#241522] focus-visible:ring-[#e7a6d6]";
 
-const darkButtonClassName =
-  "border-white/[0.08] bg-white/[0.03] text-white shadow-[0_18px_46px_rgba(0,0,0,0.22)] hover:border-white/[0.14] hover:bg-white/[0.06] hover:text-white";
+const ghostButtonClassName =
+  "rounded-[3px] border border-[#262b31] bg-transparent px-5 text-[#f3f1ea] shadow-none hover:border-[#9ba1a8] hover:bg-transparent hover:text-[#f3f1ea] focus-visible:ring-[#e7a6d6]";
 
-const trustItems = ["Signal-driven", "Manual verification", "Personalized outreach"] as const;
+const tagItems = ["Signal-driven", "Manually verified", "Personalized, not templated"] as const;
 
-const heroOpportunityDetails = [
-  { label: "Signal", value: "Hiring SDRs" },
-  { label: "Company", value: "Acme AI" },
-  { label: "Decision maker", value: "VP Sales" },
-  { label: "Why now", value: "Sales expansion" },
-  { label: "Email", value: "Verified" },
-  { label: "Sequence", value: "4 emails included" },
+const terminalRows = [
+  { company: "Northbeam", contact: "Sales Director verified", signal: "SDR_HIRING", time: "08m ago" },
+  { company: "VantaFlow", contact: "VP Sales verified", signal: "FUNDING_EVENT", time: "21m ago" },
+  { company: "OrbitOps", contact: "Founder verified", signal: "PRODUCT_LAUNCH", time: "34m ago" },
+  { company: "Cinder AI", contact: "Head of Growth verified", signal: "GTM_EXPANSION", time: "47m ago" },
+  { company: "Layerdesk", contact: "RevOps verified", signal: "LEADERSHIP_HIRE", time: "01h ago" },
+  { company: "Northbeam", contact: "Sales Director verified", signal: "SDR_HIRING", time: "08m ago" },
+  { company: "VantaFlow", contact: "VP Sales verified", signal: "FUNDING_EVENT", time: "21m ago" },
+  { company: "OrbitOps", contact: "Founder verified", signal: "PRODUCT_LAUNCH", time: "34m ago" },
 ] as const;
 
 const problemCards = [
   {
-    copy: "Broad sourcing fills the sequence with companies that were never likely to buy.",
-    icon: Building2,
-    title: "Wrong companies",
+    body: "Broad sourcing fills the sequence with accounts that were never going to buy.",
+    index: "01",
+    title: "Wrong company",
   },
   {
-    copy: "Good accounts still stall when the contact is not the person who can move the deal.",
-    icon: Users2,
-    title: "Wrong people",
+    body: "Good accounts stall when the contact isn't the one who can actually move the deal.",
+    index: "02",
+    title: "Wrong person",
   },
   {
-    copy: "Even strong accounts go cold when outreach starts before there is a reason to care.",
-    icon: Radar,
+    body: "Even strong-fit accounts go cold when outreach lands before there's a reason to care.",
+    index: "03",
     title: "Wrong timing",
   },
   {
-    copy: "Without context, every opener sounds generic and every follow-up starts to blur together.",
-    icon: Sparkles,
-    title: "Generic messaging",
+    body: "Without real context, every opener sounds the same and every follow-up blurs together.",
+    index: "04",
+    title: "Generic message",
   },
 ] as const;
 
 const timingSignals = [
   {
-    copy: "A new SDR team usually means pipeline goals are already rising.",
-    title: "SDR Hiring",
+    body: "A new SDR team usually means pipeline targets just went up.",
+    index: "SIG.01",
+    title: "SDR hiring",
   },
   {
-    copy: "Fresh funding tends to create urgency around growth and sales execution.",
-    title: "New Funding",
+    body: "Fresh capital tends to create urgency around growth and GTM execution.",
+    index: "SIG.02",
+    title: "New funding",
   },
   {
-    copy: "Launching something new often creates a brief window for stronger outbound relevance.",
-    title: "Product Launches",
+    body: "A launch opens a short window where outbound relevance spikes.",
+    index: "SIG.03",
+    title: "Product launches",
   },
   {
-    copy: "Sales expansion makes account quality matter more because rep time gets expensive fast.",
-    title: "Sales Expansion",
+    body: "When rep time gets expensive fast, account quality starts to matter more.",
+    index: "SIG.04",
+    title: "Sales expansion",
   },
   {
-    copy: "New leadership often resets priorities, tooling, and where the team needs traction.",
-    title: "Leadership Hiring",
+    body: "New leadership resets priorities, tooling, and where the team needs traction.",
+    index: "SIG.05",
+    title: "Leadership hires",
   },
 ] as const;
 
 const processSteps = [
   {
-    body: "Find buying signals across the market before the account ever reaches your team.",
-    details: ["Hiring and GTM motion", "Expansion signals", "Fresh buying context"],
-    label: "01",
-    result: "A live slice of the market worth qualifying, not another raw list.",
+    body: "Scan hiring activity, funding events, and GTM motion for early buying signals.",
+    index: "01",
     title: "Detect",
   },
   {
-    body: "Manually review the company against your ICP so weak matches stop here.",
-    details: ["ICP fit checked", "Weak accounts removed", "Priority signals kept"],
-    label: "02",
-    result: "Only accounts that actually fit your market move forward.",
+    body: "A person, not a script, checks the account actually fits before it moves forward.",
+    index: "02",
     title: "Qualify",
   },
   {
-    body: "Verify companies, decision-makers, and contact paths before release.",
-    details: ["Decision-maker confirmed", "Domain quality checked", "Contact path verified"],
-    label: "03",
-    result: "The company, the person, and the route are confirmed before release.",
+    body: "Confirm the decision-maker, their live email, and direct phone number.",
+    index: "03",
     title: "Verify",
   },
   {
-    body: "Prepare the why-now context plus an initial email and follow-ups.",
-    details: ["Why-now angle", "Initial email draft", "Three follow-ups prepared"],
-    label: "04",
-    result: "Your team gets context and copy already shaped around the signal.",
+    body: "Write the why-now angle and a 4-email sequence around the actual signal.",
+    index: "04",
     title: "Personalize",
   },
   {
-    body: "Deliver outbound-ready opportunities your team can work immediately.",
-    details: ["Weekly brief shipped", "Ready for reps", "Manual QA completed"],
-    label: "05",
-    result: "The final brief is ready to work, not ready to clean up.",
+    body: "Hand your team an opportunity file that's ready to send, not sort.",
+    index: "05",
     title: "Deliver",
   },
 ] as const;
 
-const receiveItems = [
-  "Company profile",
-  "Website",
-  "Buying signal",
-  "Decision maker",
-  "LinkedIn profile",
-  "Company LinkedIn",
-  "Verified email",
-  "Verified phone",
-  "Why-now trigger",
-  "Initial email",
-  "Three follow-ups",
-  "Manual QA",
+const manifestItems = [
+  "Company profile + website",
+  "Buying signal + why-now trigger",
+  "Decision-maker name + title",
+  "LinkedIn - personal and company",
+  "Verified email address",
+  "Verified direct phone number",
+  "Initial email, written to the signal",
+  "Three personalized follow-ups",
 ] as const;
 
-const whyFrithlyRows = [
-  ["Databases", "Buying signals"],
-  ["Mass scraping", "Manual qualification"],
-  ["Generic contacts", "Decision makers"],
-  ["Templates", "Personalization"],
-  ["No context", "Why-now triggers"],
-  ["Raw records", "Outbound opportunities"],
+const comparisonRows = [
+  ["Sourcing", "Mass scraping", "Manual qualification"],
+  ["Contacts", "Generic contacts", "Confirmed decision-makers"],
+  ["Messaging", "Templates", "Written to the signal"],
+  ["Context", "None", "Why-now trigger included"],
+  ["Output", "Raw records", "Outbound-ready opportunities"],
 ] as const;
 
-const audienceCards = [
+const customerCards = [
   {
-    copy: "Outbound-heavy software teams that need cleaner timing and better-fit accounts.",
-    icon: Building2,
+    body: "Outbound-heavy teams that need cleaner timing and better-fit accounts.",
     title: "B2B SaaS",
   },
   {
-    copy: "Agencies that want stronger outbound opportunities instead of more research cleanup.",
-    icon: BriefcaseBusiness,
-    title: "AI Agencies",
+    body: "Teams that want sharper opportunities, not more research to clean up.",
+    title: "AI agencies",
   },
   {
-    copy: "Software companies building pipeline where rep time is too expensive to waste.",
-    icon: Target,
-    title: "Software Companies",
+    body: "Building pipeline where rep time is too expensive to waste.",
+    title: "Software companies",
   },
   {
-    copy: "Cybersecurity teams that need sharper why-now context before outreach begins.",
-    icon: ShieldCheck,
+    body: "Teams that need a sharper why-now before outreach even begins.",
     title: "Cybersecurity",
   },
   {
-    copy: "Consulting firms where better timing and better-fit accounts improve conversation quality fast.",
-    icon: Sparkles,
-    title: "Consulting Firms",
+    body: "Where better timing and better-fit accounts speed up every conversation.",
+    title: "Consulting firms",
   },
 ] as const;
 
-function revealProps(enableMotion: boolean, delay = 0, variant: "drift" | "lift" | "soft" = "lift") {
+function revealProps(enableMotion: boolean, delay = 0) {
   if (!enableMotion) {
     return {};
   }
 
-  const initial =
-    variant === "soft"
-      ? { opacity: 0 }
-      : variant === "drift"
-        ? { opacity: 0, x: 16, y: 14 }
-        : { opacity: 0, y: 28 };
-
-  const animate =
-    variant === "soft"
-      ? { opacity: 1 }
-      : variant === "drift"
-        ? { opacity: 1, x: 0, y: 0 }
-        : { opacity: 1, y: 0 };
-
   return {
-    initial,
-    transition: { delay, duration: 0.9, ease: [0.22, 1, 0.36, 1] as const },
-    viewport: { amount: 0.18, once: true },
-    whileInView: animate,
+    initial: { opacity: 0, y: 20 },
+    transition: { delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
+    viewport: { amount: 0.2, once: true },
+    whileInView: { opacity: 1, y: 0 },
   };
 }
 
-function SectionEyebrow({ children }: { children: string }) {
-  return (
-    <div
-      className={cn(
-        monoFont.className,
-        "inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-white/74",
-      )}
-    >
-      <span className="relative flex h-2.5 w-2.5">
-        <span className="absolute inset-0 rounded-full bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] blur-[6px]" />
-        <span className="relative rounded-full bg-white/85" />
-      </span>
-      {children}
-    </div>
-  );
-}
-
-function SectionIntro({
-  align = "left",
-  copy,
-  eyebrow,
-  title,
-}: {
-  align?: "center" | "left";
-  copy: string;
-  eyebrow: string;
-  title: ReactNode;
-}) {
-  return (
-    <div className={cn("space-y-6", align === "center" ? "mx-auto text-center" : "text-left")}>
-      <SectionEyebrow>{eyebrow}</SectionEyebrow>
-      <div
-        className={cn(
-          headlineFont.className,
-          "max-w-5xl text-[2.6rem] font-semibold leading-[0.92] tracking-[-0.065em] text-white sm:text-[3.8rem] lg:text-[4.7rem] xl:text-[5.4rem]",
-          align === "center" ? "mx-auto" : "",
-        )}
-      >
-        {title}
-      </div>
-      <p
-        className={cn(
-          "max-w-3xl text-[1rem] leading-8 text-white/68 sm:text-[1.08rem] sm:leading-8",
-          align === "center" ? "mx-auto" : "",
-        )}
-      >
-        {copy}
-      </p>
-    </div>
-  );
-}
-
-function StorySection({
+function SectionShell({
   children,
   className,
   id,
@@ -280,172 +196,164 @@ function StorySection({
   id: string;
 }) {
   return (
-    <section className={cn("relative py-24 sm:py-28 lg:py-32", className)} id={id}>
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_center,rgba(201,183,255,0.07),transparent_72%)] blur-3xl" />
-      <Container className="relative">{children}</Container>
+    <section
+      className={cn(
+        "relative border-t border-[#1e2227] py-[76px] sm:py-[96px] lg:py-[120px]",
+        className,
+      )}
+      id={id}
+    >
+      <Container className="relative max-w-[1180px] px-5 sm:px-8">{children}</Container>
     </section>
   );
 }
 
-function SurfaceCard({
-  children,
-  className,
-  tone = "neutral",
+function SectionHeader({
+  eyebrow,
+  lede,
+  title,
 }: {
-  children: ReactNode;
-  className?: string;
-  tone?: "neutral" | "spotlight";
+  eyebrow?: string;
+  lede?: string;
+  title: ReactNode;
 }) {
-  const toneClassName =
-    tone === "spotlight"
-      ? "border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.02))] shadow-[0_28px_90px_rgba(0,0,0,0.28)]"
-      : "border-white/[0.06] bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.018))] shadow-[0_24px_70px_rgba(0,0,0,0.22)]";
-
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-[1.5rem] border p-6 backdrop-blur-xl sm:p-7 lg:p-8",
-        toneClassName,
-        className,
-      )}
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.03),transparent_22%),radial-gradient(circle_at_80%_18%,rgba(201,183,255,0.06),transparent_22%)]" />
-      <div className="relative">{children}</div>
+    <div className="max-w-[640px]">
+      {eyebrow ? (
+        <div
+          className={cn(
+            monoFont.className,
+            "mb-4 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]",
+          )}
+        >
+          <span className="h-px w-8 bg-[#e7a6d6]/70" />
+          {eyebrow}
+        </div>
+      ) : null}
+      <h2
+        className={cn(
+          displayFont.className,
+          "text-[28px] font-semibold leading-[1.08] tracking-[-0.01em] text-[#f3f1ea] sm:text-[38px]",
+        )}
+      >
+        {title}
+      </h2>
+      {lede ? (
+        <p className="mt-5 max-w-[560px] text-[16px] leading-[1.7] text-[#9ba1a8]">
+          {lede}
+        </p>
+      ) : null}
     </div>
   );
 }
 
-function OpportunityField({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function SignalTerminal() {
   return (
-    <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.025] px-4 py-4">
-      <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/42")}>
-        {label}
+    <div className="relative overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
+      <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
+      <div className="flex items-center justify-between border-b border-[#1e2227] bg-[#1b1f24] px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[#c75c4a]" />
+          <span className="h-2 w-2 rounded-full bg-[#f3b583]" />
+          <span className="h-2 w-2 rounded-full bg-[#4bc996]" />
+        </div>
+        <div
+          className={cn(
+            monoFont.className,
+            "text-[11px] font-medium uppercase tracking-[0.14em] text-[#9ba1a8]",
+          )}
+        >
+          INCOMING_SIGNALS.LOG
+        </div>
       </div>
-      <div className="mt-2 text-[1.02rem] font-semibold text-white">{value}</div>
-    </div>
-  );
-}
-
-function ProcessSection({ enableMotion }: { enableMotion: boolean }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeStep = processSteps[activeIndex];
-
-  return (
-    <StorySection id="process">
-      <div className="space-y-12">
-        <motion.div {...revealProps(enableMotion, 0.04)}>
-          <SectionIntro
-            align="center"
-            copy="Every step exists to remove wasted outreach before it reaches your sales team."
-            eyebrow="Process"
-            title="Signals become outbound-ready opportunities."
-          />
-        </motion.div>
-
-        <motion.div {...revealProps(enableMotion, 0.08)}>
-          <SurfaceCard className="overflow-hidden" tone="spotlight">
-            <div className="space-y-5 sm:space-y-6">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                {processSteps.map((step, index) => {
-                  const isActive = index === activeIndex;
-
-                  return (
-                    <button
-                      key={step.title}
-                      className={cn(
-                        "group flex h-full min-h-[7.25rem] w-full flex-col justify-between rounded-[1rem] border px-4 py-4 text-left transition-all duration-300",
-                        isActive
-                          ? "border-[rgba(201,183,255,0.24)] bg-white/[0.05] shadow-[0_0_0_1px_rgba(201,183,255,0.12),0_20px_44px_rgba(0,0,0,0.24)]"
-                          : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1] hover:bg-white/[0.035]",
-                      )}
-                      onClick={() => setActiveIndex(index)}
-                      type="button"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            monoFont.className,
-                            "text-[10px] uppercase tracking-[0.16em] text-white/38 transition-colors",
-                            isActive ? "text-white/72" : "group-hover:text-white/54",
-                          )}
-                        >
-                          {step.label}
-                        </span>
-                        <span
-                          className={cn(
-                            "h-1.5 w-1.5 rounded-full bg-white/22 transition-all",
-                            isActive ? "bg-[#d9caff] shadow-[0_0_16px_rgba(201,183,255,0.32)]" : "",
-                          )}
-                        />
-                      </div>
-                      <div className={cn("mt-4 text-[1.02rem] font-semibold transition-colors", isActive ? "text-white" : "text-white/72")}>
-                        {step.title}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="rounded-[1.4rem] border border-white/[0.06] bg-[#090909]/84 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.22)] sm:p-6 lg:p-7">
-                <AnimatePresence initial={false} mode="wait">
-                  <motion.div
-                    key={activeStep.title}
-                    animate={enableMotion ? { opacity: 1, y: 0 } : undefined}
-                    className="space-y-5"
-                    initial={enableMotion ? { opacity: 0, y: 12 } : undefined}
-                    exit={enableMotion ? { opacity: 0, y: -12 } : undefined}
-                    transition={enableMotion ? { duration: 0.32, ease: [0.22, 1, 0.36, 1] } : undefined}
+      <div className="relative h-[390px] overflow-hidden px-4 py-2 sm:h-[430px]">
+        <div className="animate-terminal-scroll space-y-0">
+          {terminalRows.map((row, index) => (
+            <div
+              className="grid grid-cols-[1fr_auto] gap-4 border-b border-[#1e2227] py-4"
+              key={`${row.company}-${row.signal}-${index}`}
+            >
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={cn(
+                      monoFont.className,
+                      "rounded-[3px] border border-[#262b31] bg-[#0c0e11] px-2 py-1 text-[10px] uppercase tracking-[0.1em] text-[#e7a6d6]",
+                    )}
                   >
-                    <div className="grid gap-4 lg:grid-cols-[minmax(0,0.34fr)_minmax(0,0.66fr)]">
-                      <div className="rounded-[1.25rem] border border-white/[0.05] bg-white/[0.02] p-5 sm:p-6 lg:p-7">
-                        <div className="flex items-center gap-3">
-                          <span className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/42")}>
-                            Step {activeStep.label}
-                          </span>
-                          <span className="h-px flex-1 bg-white/[0.08]" />
-                        </div>
-
-                        <div className="mt-5 text-[1.8rem] font-semibold leading-tight text-white sm:text-[2.1rem]">
-                          {activeStep.title}
-                        </div>
-                        <p className="mt-4 max-w-xl text-[0.98rem] leading-8 text-white/66 sm:text-[1.03rem]">
-                          {activeStep.body}
-                        </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                          {activeStep.details.map((detail, index) => (
-                            <div
-                              className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] px-4 py-5 sm:px-5"
-                              key={detail}
-                            >
-                              <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/38")}>
-                                Layer 0{index + 1}
-                              </div>
-                              <div className="mt-4 text-base font-medium leading-7 text-white/82">
-                                {detail}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
+                    {row.signal}
+                  </span>
+                  <span className="text-[15px] font-semibold text-[#f3f1ea]">{row.company}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-[13px] text-[#9ba1a8]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#4bc996]" />
+                  {row.contact}
+                </div>
               </div>
+              <div className={cn(monoFont.className, "text-[11px] text-[#5c636b]")}>{row.time}</div>
             </div>
-          </SurfaceCard>
-        </motion.div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#14171b] to-transparent" />
       </div>
-    </StorySection>
+    </div>
+  );
+}
+
+function CompactCard({
+  body,
+  index,
+  title,
+}: {
+  body: string;
+  index?: string;
+  title: string;
+}) {
+  return (
+    <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5">
+      {index ? (
+        <div className={cn(monoFont.className, "mb-4 text-[11px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6]")}>
+          {index}
+        </div>
+      ) : null}
+      <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>{title}</h3>
+      <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{body}</p>
+    </div>
+  );
+}
+
+function ManifestPanel() {
+  const leftItems = manifestItems.slice(0, 4);
+  const rightItems = manifestItems.slice(4);
+
+  return (
+    <div className="overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
+      <div className="flex items-center justify-between border-b border-[#262b31] bg-[#1b1f24] px-5 py-4">
+        <div className={cn(monoFont.className, "text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]")}>
+          OPPORTUNITY_MANIFEST
+        </div>
+        <div className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.12em] text-[#5c636b]")}>
+          8 FIELDS
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2">
+        {[leftItems, rightItems].map((items, columnIndex) => (
+          <div className={cn(columnIndex === 1 ? "md:border-l md:border-[#1e2227]" : "")} key={columnIndex}>
+            {items.map((item) => (
+              <div
+                className="flex items-center gap-3 border-b border-[#1e2227] px-5 py-4 last:border-b-0"
+                key={item}
+              >
+                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#4bc996]/50 text-[10px] text-[#4bc996]">
+                  ✓
+                </span>
+                <span className="text-[15px] leading-6 text-[#f3f1ea]">{item}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -454,411 +362,246 @@ export function PlatformHomepage() {
   const enableMotion = !reduceMotion;
 
   return (
-    <div className="relative isolate overflow-hidden bg-[#050505] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,194,139,0.06),transparent_18%),radial-gradient(circle_at_78%_14%,rgba(201,183,255,0.08),transparent_18%),radial-gradient(circle_at_52%_72%,rgba(232,167,215,0.05),transparent_24%),linear-gradient(180deg,#050505_0%,#090909_42%,#111111_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:176px_176px] opacity-[0.05]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(5,5,5,0.98),rgba(5,5,5,0))]" />
+    <div className={cn(bodyFont.className, "relative isolate overflow-hidden bg-[#0c0e11] text-[#f3f1ea]")}>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_78%_8%,rgba(238,159,203,0.16),transparent_28%),radial-gradient(circle_at_88%_16%,rgba(182,171,232,0.14),transparent_26%)]" />
 
-      <section className="relative pt-6 sm:pt-14 xl:min-h-[calc(100svh-4.5rem)]" id="top">
-        <Container className="grid gap-10 py-8 sm:py-14 lg:py-18 xl:min-h-[calc(100svh-5rem)] xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.02fr)] xl:items-center xl:gap-10 xl:py-24">
-          <motion.div className="space-y-7 sm:space-y-8 xl:pr-5" {...revealProps(enableMotion, 0.04, "drift")}>
-            <SectionEyebrow>Better outbound starts before the first email</SectionEyebrow>
-
-            <div
+      <section className="relative py-[76px] sm:py-[96px] lg:py-[120px]">
+        <Container className="relative grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+          <motion.div className="max-w-[650px]" {...revealProps(enableMotion, 0.02)}>
+            <div className={cn(monoFont.className, "mb-5 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]")}>
+              Signal-qualified outbound
+            </div>
+            <h1
               className={cn(
-                headlineFont.className,
-                "max-w-[9ch] text-[3.2rem] font-semibold leading-[0.9] tracking-[-0.08em] text-white sm:text-[4.8rem] lg:text-[5.35rem] xl:text-[5.95rem] 2xl:text-[6.45rem]",
+                displayFont.className,
+                "text-[36px] font-semibold leading-[1.08] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
               )}
             >
-              Better outbound starts before the first email.
-            </div>
-
-            <p className="max-w-2xl text-[1.02rem] leading-8 text-white/72 sm:text-[1.1rem]">
-              Frithly identifies buying signals, manually qualifies companies, verifies
-              decision-makers, and delivers outbound-ready opportunities your team can act on
-              immediately.
+              Outbound built on timing, not luck.
+            </h1>
+            <p className="mt-6 max-w-[610px] text-[17px] leading-[1.7] text-[#9ba1a8] sm:text-[18px]">
+              We find the moment a company is ready to buy, verify the person who can say yes, and
+              hand your team an opportunity built to send - not another list to clean up.
             </p>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className={cn("w-full sm:w-auto", gradientButtonClassName)}>
-                <Link href={ROUTES.SAMPLE}>
-                  <span className="inline-flex items-center gap-2">
-                    Request Sample
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                </Link>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild className={primaryButtonClassName} size="lg">
+                <Link href={ROUTES.SAMPLE}>Request a sample</Link>
               </Button>
-              <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
-                <Link href={ROUTES.BOOK_MEETING}>Book 1 on 1 Call</Link>
+              <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
+                <Link href={ROUTES.BOOK_MEETING}>Book a 1:1 call</Link>
               </Button>
             </div>
-
-            <div className="flex flex-wrap gap-3 text-sm text-white/56">
-              {trustItems.map((item) => (
-                <div className="inline-flex items-center gap-3" key={item}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                  <span>{item}</span>
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3">
+              {tagItems.map((item) => (
+                <div
+                  className={cn(monoFont.className, "flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-[#9ba1a8]")}
+                  key={item}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#4bc996]" />
+                  {item}
                 </div>
               ))}
             </div>
           </motion.div>
 
-          <motion.div className="relative xl:max-w-[38rem] xl:justify-self-end 2xl:max-w-[39rem]" {...revealProps(enableMotion, 0.12, "soft")}>
-            <motion.div
-              animate={enableMotion ? { opacity: [0.28, 0.42, 0.28], y: [-6, 4, -6] } : undefined}
-              className="pointer-events-none absolute -right-10 top-6 h-72 w-72 rounded-full bg-[rgba(201,183,255,0.08)] blur-[132px]"
-              transition={enableMotion ? { duration: 8, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY } : undefined}
-            />
-            <SurfaceCard className="xl:ml-auto" tone="spotlight">
-              <div className="space-y-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/42")}>
-                      Sample opportunity
-                    </div>
-                    <div className="mt-3 text-[1.7rem] font-semibold leading-tight text-white sm:text-[1.9rem]">
-                      Acme AI
-                    </div>
-                  </div>
-                  <div className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/82">
-                    Ready for reps
-                  </div>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {heroOpportunityDetails.map((item) => (
-                    <OpportunityField key={item.label} label={item.label} value={item.value} />
-                  ))}
-                </div>
-
-                <div className="grid gap-3 lg:grid-cols-[minmax(0,0.58fr)_minmax(0,0.42fr)]">
-                  <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5">
-                    <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/42")}>
-                      Why this account
-                    </div>
-                    <div className="mt-4 space-y-3">
-                      {[
-                        "Hiring SDRs shows active sales expansion.",
-                        "VP Sales is the person most likely to care first.",
-                        "The why-now angle is already clear before outreach starts.",
-                      ].map((item) => (
-                        <div className="flex items-start gap-3 text-sm leading-6 text-white/70" key={item}>
-                          <span className="mt-2 h-2 w-2 rounded-full bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)]" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-[1.1rem] border border-white/[0.06] bg-white/[0.025] p-5">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="text-sm font-semibold text-white">Included</div>
-                      <div className="inline-flex items-center gap-2 text-sm text-white/60">
-                        <CheckCircle2 className="h-4 w-4 text-white/62" aria-hidden="true" />
-                        Verified
-                      </div>
-                    </div>
-                    <div className="mt-4 space-y-3">
-                      {[
-                        "Initial email included",
-                        "Three follow-ups prepared",
-                        "Manual QA before delivery",
-                      ].map((item) => (
-                        <div className="flex items-center gap-3 text-sm text-white/72" key={item}>
-                          <CheckCircle2 className="h-4 w-4 text-white/62" aria-hidden="true" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SurfaceCard>
+          <motion.div {...revealProps(enableMotion, 0.1)}>
+            <SignalTerminal />
           </motion.div>
         </Container>
       </section>
 
-      <StorySection id="problem">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="Bad outbound usually starts long before the first message. Frithly fixes the parts that make strong outreach impossible."
-              eyebrow="Problem"
-              title="Most outbound fails before the first email."
-            />
-          </motion.div>
-
-          <motion.div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" {...revealProps(enableMotion, 0.08)}>
-            {problemCards.map((card, index) => {
-              const Icon = card.icon;
-
-              return (
-                <SurfaceCard className="h-full" key={card.title} tone={index === 3 ? "spotlight" : "neutral"}>
-                  <div className="space-y-5">
-                    <div className="w-fit rounded-[1rem] border border-white/[0.06] bg-white/[0.03] p-3 text-white/82">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </div>
-                    <div className="text-[1.4rem] font-semibold text-white">{card.title}</div>
-                    <p className="text-sm leading-7 text-white/64">{card.copy}</p>
-                  </div>
-                </SurfaceCard>
-              );
-            })}
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.12)}>
-            <SurfaceCard className="px-8 py-7 text-center lg:px-10" tone="spotlight">
-              <p className="mx-auto max-w-4xl text-[1.15rem] leading-8 text-white/80 sm:text-[1.2rem]">
-                Frithly solves all four before your team starts outreach.
-              </p>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection id="timing">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="Timing creates opportunities because companies usually show what is changing before they are ready to buy."
-              eyebrow="Why Timing Matters"
-              title="Companies leave signals before they buy."
-            />
-          </motion.div>
-
-          <motion.div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
-            {timingSignals.map((signal, index) => (
-              <SurfaceCard className="h-full" key={signal.title} tone={index === 0 ? "spotlight" : "neutral"}>
-                <div className="space-y-4">
-                  <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.16em] text-white/40")}>
-                    Signal
-                  </div>
-                  <div className="text-[1.3rem] font-semibold text-white">{signal.title}</div>
-                  <p className="text-sm leading-7 text-white/64">{signal.copy}</p>
-                </div>
-              </SurfaceCard>
-            ))}
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <ProcessSection enableMotion={enableMotion} />
-
-      <StorySection id="receive">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="Each opportunity arrives as something your sales team can use immediately, not another record to clean up."
-              eyebrow="What You Receive"
-              title="Every opportunity includes everything needed to start the conversation."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10" tone="spotlight">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {receiveItems.map((item) => (
-                  <div
-                    className="flex items-center gap-3 rounded-[1rem] border border-white/[0.06] bg-white/[0.025] px-4 py-4 text-white/80"
-                    key={item}
-                  >
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-[#d8c9ff]" aria-hidden="true" />
-                    <span className="text-sm font-medium leading-6 sm:text-[0.96rem]">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection id="sample-opportunity">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="This is what a serious buyer can inspect before trusting the system."
-              eyebrow="Sample Opportunity"
-              title="A real opportunity should explain the signal, the person, the timing, and the message."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="p-0" tone="spotlight">
-              <div className="p-6 sm:p-8 xl:p-10">
-                <div className="mx-auto max-w-5xl">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className={cn(monoFont.className, "text-[10px] uppercase tracking-[0.18em] text-white/40")}>
-                        SDR Hiring Signal
-                      </div>
-                      <div className="mt-3 text-[2rem] font-semibold text-white sm:text-[2.4rem]">
-                        Northbeam Analytics
-                      </div>
-                    </div>
-                    <div className="rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/82">
-                      Verified opportunity
-                    </div>
-                  </div>
-
-                  <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                    <OpportunityField label="Signal" value="First SDR hire posted 8 days ago" />
-                    <OpportunityField label="Company" value="Northbeam Analytics" />
-                    <OpportunityField label="Decision maker" value="Marcus King, Sales Director" />
-                    <OpportunityField label="Why now" value="First outbound hire — pipeline infrastructure gap" />
-                    <OpportunityField label="Contact" value="Verified (live email + LinkedIn)" />
-                  </div>
-
-                  <div className="mt-8 rounded-[1.2rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
-                    <div className="flex items-center gap-3 text-white">
-                      <div className="rounded-[0.9rem] border border-white/[0.08] bg-white/[0.03] p-2.5">
-                        <Users2 className="h-4 w-4" aria-hidden="true" />
-                      </div>
-                      <div className="text-lg font-semibold">Why this made the brief</div>
-                    </div>
-                    <p className="mt-4 text-sm leading-7 text-white/68">
-                      Northbeam posted their first SDR role this month. That&apos;s the exact point
-                      where list-building eats the new hire&apos;s first month instead of selling —
-                      Marcus has a clear, immediate reason to want a working pipeline before that
-                      hire starts.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection id="why-frithly">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="The difference is not more data. The difference is better timing, better qualification, and better delivery."
-              eyebrow="Why Frithly"
-              title="Traditional sourcing gives you records. Frithly gives you opportunities."
-            />
-          </motion.div>
-
-          <motion.div {...revealProps(enableMotion, 0.08)}>
-            <SurfaceCard className="px-5 py-5 sm:px-7 sm:py-7" tone="spotlight">
-              <div className="grid grid-cols-2 gap-4 border-b border-white/[0.06] pb-4 text-sm font-semibold uppercase tracking-[0.14em] text-white/56">
-                <div>Traditional sourcing</div>
-                <div>Frithly</div>
-              </div>
-              <div className="mt-4 space-y-3">
-                {whyFrithlyRows.map(([traditional, frithly]) => (
-                  <div
-                    className="grid grid-cols-2 gap-4 rounded-[1rem] border border-white/[0.05] bg-white/[0.02] px-4 py-4 sm:px-5"
-                    key={`${traditional}-${frithly}`}
-                  >
-                    <div className="text-sm font-medium leading-6 text-white/56">{traditional}</div>
-                    <div className="text-sm font-semibold leading-6 text-white">{frithly}</div>
-                  </div>
-                ))}
-              </div>
-            </SurfaceCard>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection id="ideal-customers">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="Frithly works best for teams where a better account, a better contact, and better timing directly improve conversations."
-              eyebrow="Ideal Customers"
-              title="Built for teams that care about timing, fit, and verified decision-makers."
-            />
-          </motion.div>
-
-          <motion.div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
-            {audienceCards.map((card) => {
-              const Icon = card.icon;
-
-              return (
-                <SurfaceCard className="h-full" key={card.title} tone="neutral">
-                  <div className="space-y-5">
-                    <div className="w-fit rounded-[1rem] border border-white/[0.06] bg-white/[0.03] p-3 text-white/82">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </div>
-                    <div className="text-[1.28rem] font-semibold text-white">{card.title}</div>
-                    <p className="text-sm leading-7 text-white/64">{card.copy}</p>
-                  </div>
-                </SurfaceCard>
-              );
-            })}
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection className="pt-16 sm:pt-20" id="faq">
-        <div className="space-y-12">
-          <motion.div {...revealProps(enableMotion, 0.04)}>
-            <SectionIntro
-              align="center"
-              copy="The answers teams usually want before they decide whether a signal-led approach fits how they sell."
-              eyebrow="FAQ"
-              title="Clear answers before you book the call."
-            />
-          </motion.div>
-
-          <motion.div className="mx-auto max-w-4xl" {...revealProps(enableMotion, 0.08)}>
-            <Accordion className="space-y-4" collapsible type="single">
-              {platformFaqs.map((faq, index) => (
-                <AccordionItem
-                  className="rounded-[1.35rem] border border-white/[0.08] bg-white/[0.03] px-5 py-1 shadow-[0_20px_54px_rgba(0,0,0,0.2)]"
-                  key={faq.question}
-                  value={`faq-${index}`}
-                >
-                  <AccordionTrigger className="text-left text-[1rem] font-semibold leading-7 text-white sm:text-[1.06rem]">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-4 text-[0.98rem] leading-8 text-white/68">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
-        </div>
-      </StorySection>
-
-      <StorySection className="pt-16 pb-18 sm:pt-20 sm:pb-24" id="cta">
-        <motion.div {...revealProps(enableMotion, 0.04)}>
-          <SurfaceCard className="px-8 py-10 text-center lg:px-12 lg:py-14" tone="spotlight">
-            <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-48 max-w-xl rounded-full bg-[radial-gradient(circle_at_center,rgba(201,183,255,0.18),transparent_72%)] blur-3xl" />
-            <div className="relative">
-              <SectionEyebrow>Final CTA</SectionEyebrow>
-              <div
-                className={cn(
-                  headlineFont.className,
-                  "mx-auto mt-7 max-w-4xl text-[2.8rem] font-semibold leading-[0.92] tracking-[-0.06em] text-white sm:text-[4rem] lg:text-[4.9rem]",
-                )}
-              >
-                See how your next opportunity looks.
-              </div>
-              <p className="mx-auto mt-6 max-w-3xl text-[1.02rem] leading-8 text-white/68">
-                If you want better timing, better-fit accounts, and verified decision-makers
-                before outreach starts, Frithly was built for that layer.
-              </p>
-              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <Button asChild size="lg" className={cn("w-full sm:w-auto", gradientButtonClassName)}>
-                  <Link href={ROUTES.SAMPLE}>Request Sample</Link>
-                </Button>
-                <Button asChild size="lg" variant="secondary" className={cn("w-full sm:w-auto", darkButtonClassName)}>
-                  <Link href={ROUTES.BOOK_MEETING}>Book 1 on 1 Call</Link>
-                </Button>
-              </div>
-            </div>
-          </SurfaceCard>
+      <SectionShell id="problem">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            eyebrow="The problem"
+            lede="Bad outbound rarely fails because of the message. It fails because of what happened - or didn't - before anyone sat down to write it."
+            title="Most outbound dies before the first email."
+          />
         </motion.div>
-      </StorySection>
+        <motion.div className="mt-12 grid border border-[#262b31] md:grid-cols-2 lg:grid-cols-4" {...revealProps(enableMotion, 0.08)}>
+          {problemCards.map((card) => (
+            <div className="border-b border-r border-[#262b31] border-l-[2px] border-l-[#c75c4a] p-6 last:border-r-0 md:[&:nth-child(even)]:border-r-0 lg:[&:nth-child(even)]:border-r lg:[&:nth-child(4n)]:border-r-0" key={card.title}>
+              <div className={cn(monoFont.className, "mb-5 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]")}>{card.index}</div>
+              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>{card.title}</h3>
+              <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{card.body}</p>
+            </div>
+          ))}
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="timing">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            eyebrow="Why timing wins"
+            lede="Long before a company signs anything, it leaves a trail - a hire, a raise, a launch. Timing is just paying attention to that trail."
+            title="Companies tell you they're about to buy. Most teams aren't listening."
+          />
+        </motion.div>
+        <motion.div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
+          {timingSignals.map((signal) => (
+            <CompactCard body={signal.body} index={signal.index} key={signal.title} title={signal.title} />
+          ))}
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="process">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            eyebrow="The pipeline"
+            lede="Every step exists to strip out wasted outreach before it ever reaches your sales team."
+            title="Five steps. One outbound-ready opportunity."
+          />
+        </motion.div>
+        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
+          <div className="relative grid gap-8 lg:grid-cols-5">
+            <div className="absolute left-0 right-0 top-5 hidden h-px bg-[#262b31] lg:block" />
+            {processSteps.map((step) => (
+              <div className="relative border-b border-[#1e2227] pb-6 lg:border-b-0 lg:pb-0" key={step.title}>
+                <div className="flex items-center gap-4 lg:block">
+                  <div className={cn(monoFont.className, "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#262b31] bg-[#0c0e11] text-[11px] font-medium text-[#e7a6d6]")}>
+                    {step.index}
+                  </div>
+                  <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea] lg:mt-6")}>{step.title}</h3>
+                </div>
+                <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8] lg:pr-4">{step.body}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="receive">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            eyebrow="What you receive"
+            title="Every opportunity arrives ready to work, not to clean up."
+          />
+        </motion.div>
+        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
+          <ManifestPanel />
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="sample-opportunity">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            eyebrow="Sample opportunity"
+            lede="This is what a serious buyer should be able to check before trusting the system with their pipeline."
+            title="A real opportunity, inspected - not summarized."
+          />
+        </motion.div>
+        <motion.div className="mt-12 overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b] lg:grid lg:grid-cols-2" {...revealProps(enableMotion, 0.08)}>
+          <div className="p-6 sm:p-8 lg:border-r lg:border-[#1e2227]">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-[3px] border border-[#4bc996]/40 px-2.5 py-1 text-[12px] font-medium text-[#4bc996]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#4bc996]" />
+              Verified opportunity
+            </div>
+            <h3 className={cn(displayFont.className, "text-[30px] font-semibold leading-tight text-[#f3f1ea]")}>
+              Northbeam Analytics
+            </h3>
+            <p className="mt-2 text-[15px] text-[#9ba1a8]">First SDR hire posted 8 days ago</p>
+            <div className="mt-8 divide-y divide-[#1e2227]">
+              {[
+                ["Decision maker", "Marcus King, Sales Director"],
+                ["Why now", "First outbound hire - no pipeline infra yet"],
+                ["Contact", "Live email + direct line, verified"],
+                ["Sequence", "1 initial + 3 follow-ups"],
+              ].map(([label, value]) => (
+                <div className="grid gap-2 py-4 sm:grid-cols-[0.36fr_0.64fr] sm:items-center" key={label}>
+                  <div className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.12em] text-[#5c636b]")}>{label}</div>
+                  <div className="text-[15px] leading-6 text-[#f3f1ea] sm:text-right">{value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="p-6 sm:p-8">
+            <div className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]")}>
+              Why this made the brief
+            </div>
+            <p className="mt-6 text-[17px] leading-[1.75] text-[#9ba1a8]">
+              Northbeam posted their first SDR role this month.{" "}
+              <strong className="font-semibold text-[#f3f1ea]">
+                That&apos;s the exact point where list-building would eat the new hire&apos;s entire first
+                month instead of selling.
+              </strong>{" "}
+              Marcus has a clear, immediate reason to want a working pipeline before that hire
+              starts - which is what makes the opening line write itself.
+            </p>
+          </div>
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="why-frithly">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader title="Traditional sourcing gives you records. Frithly gives you opportunities." />
+        </motion.div>
+        <motion.div className="mt-12 overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]" {...revealProps(enableMotion, 0.08)}>
+          <div className="grid grid-cols-[0.72fr_1fr_1fr] border-b border-[#262b31] bg-[#1b1f24] px-4 py-4 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9ba1a8] sm:px-6">
+            <div />
+            <div>Traditional sourcing</div>
+            <div>Frithly</div>
+          </div>
+          {comparisonRows.map(([label, traditional, frithly]) => (
+            <div className="grid grid-cols-[0.72fr_1fr_1fr] border-b border-[#1e2227] px-4 py-4 last:border-b-0 sm:px-6" key={label}>
+              <div className="text-[14px] text-[#9ba1a8]">{label}</div>
+              <div className="text-[14px] text-[#5c636b] line-through">{traditional}</div>
+              <div className="text-[14px] font-medium text-[#f3f1ea]">{frithly}</div>
+            </div>
+          ))}
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="ideal-customers">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader title="Built for teams where timing and fit change the conversation." />
+        </motion.div>
+        <motion.div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
+          {customerCards.map((card) => (
+            <CompactCard body={card.body} key={card.title} title={card.title} />
+          ))}
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="faq">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader title="Questions before you book." />
+        </motion.div>
+        <motion.div className="mt-10 max-w-[760px]" {...revealProps(enableMotion, 0.08)}>
+          <Accordion className="space-y-0 border-y border-[#262b31]" collapsible defaultValue="faq-0" type="single">
+            {platformFaqs.map((faq, index) => (
+              <AccordionItem className="border-b border-[#1e2227] last:border-b-0" key={faq.question} value={`faq-${index}`}>
+                <AccordionTrigger className={cn(displayFont.className, "py-5 text-left text-[18px] font-semibold text-[#f3f1ea] hover:no-underline")}>
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="pb-5 text-[15px] leading-[1.7] text-[#9ba1a8]">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell className="overflow-hidden py-[96px] sm:py-[120px] lg:py-[140px]" id="cta">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(238,159,203,0.12),transparent_34%),radial-gradient(circle_at_52%_52%,rgba(182,171,232,0.1),transparent_30%)]" />
+        <motion.div className="relative mx-auto max-w-[720px] text-center" {...revealProps(enableMotion, 0.02)}>
+          <h2 className={cn(displayFont.className, "text-[32px] font-semibold leading-[1.08] text-[#f3f1ea] sm:text-[44px]")}>
+            See how your next opportunity looks.
+          </h2>
+          <p className="mx-auto mt-5 max-w-[590px] text-[16px] leading-[1.7] text-[#9ba1a8]">
+            If you want better timing, better-fit accounts, and verified decision-makers before
+            outreach starts - this is the layer Frithly was built for.
+          </p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
+              <Link href={ROUTES.BOOK_MEETING}>Book a 1:1 call</Link>
+            </Button>
+            <Button asChild className={primaryButtonClassName} size="lg">
+              <Link href={ROUTES.SAMPLE}>Request a sample</Link>
+            </Button>
+          </div>
+        </motion.div>
+      </SectionShell>
     </div>
   );
 }

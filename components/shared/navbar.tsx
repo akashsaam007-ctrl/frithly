@@ -4,25 +4,59 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["700"],
+});
+
+const bodyFont = Inter({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+});
+
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["500"],
+});
 
 const marketingNavLinks = [
   { href: "/#process", label: "Process" },
   { href: "/#why-frithly", label: "Why Frithly" },
-  { href: ROUTES.GUIDES, label: "Free Guide" },
+  { href: "/#receive", label: "What You Receive" },
   { href: ROUTES.FAQ, label: "FAQ" },
-  { highlight: true, href: ROUTES.BOOK_MEETING, label: "Book 1 on 1 Call" },
-];
+] as const;
+
+const primaryButtonClassName =
+  "rounded-[3px] border-0 bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] px-5 text-[#241522] shadow-none hover:brightness-[1.08] hover:text-[#241522] focus-visible:ring-[#e7a6d6]";
+
+const ghostButtonClassName =
+  "rounded-[3px] border border-[#262b31] bg-transparent px-5 text-[#f3f1ea] shadow-none hover:border-[#9ba1a8] hover:bg-transparent hover:text-[#f3f1ea] focus-visible:ring-[#e7a6d6]";
+
+function Wordmark() {
+  return (
+    <Link
+      aria-label="Frithly home"
+      className="inline-flex items-center gap-3 text-[#f3f1ea] transition-opacity hover:opacity-90"
+      href={ROUTES.HOME}
+    >
+      <span className="h-2 w-2 rounded-[2px] bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)]" />
+      <span className={cn(displayFont.className, "text-[1.35rem] font-bold tracking-[-0.02em]")}>
+        Frithly
+      </span>
+    </Link>
+  );
+}
 
 export function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const isHome = pathname === ROUTES.HOME;
-  const navLinks = marketingNavLinks;
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -40,138 +74,79 @@ export function Navbar() {
     };
   }, [isMenuOpen]);
 
-  useEffect(() => {
-    if (!isHome) {
-      setIsScrolled(true);
-      return undefined;
-    }
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 18);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isHome]);
-
-  const navClassName = isHome
-    ? isScrolled
-      ? "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(5,5,5,0.94),rgba(9,9,9,0.84))] shadow-[0_16px_44px_rgba(0,0,0,0.34)] backdrop-blur-2xl"
-      : "border-b border-white/[0.04] bg-[linear-gradient(180deg,rgba(5,5,5,0.82),rgba(5,5,5,0.48))] backdrop-blur-xl"
-    : "border-b border-white/[0.05] bg-[linear-gradient(180deg,rgba(5,5,5,0.96),rgba(9,9,9,0.88))] shadow-[0_16px_44px_rgba(0,0,0,0.34)] backdrop-blur-2xl";
-
-  const homeTextClassName = isScrolled ? "text-white/80 hover:text-white" : "text-white/82 hover:text-white";
-  const defaultTextClassName = "text-white/76 transition-colors hover:text-white";
-  const linkClassName = isHome ? homeTextClassName : defaultTextClassName;
-  const iconButtonClassName = isHome
-    ? "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]"
-    : "inline-flex items-center justify-center rounded-[0.9rem] p-2 text-white transition-colors hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(196,181,253,0.22)]";
-  const gradientButtonClassName =
-    "rounded-[0.92rem] border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#050505] shadow-[0_18px_44px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#050505]";
-
   return (
-    <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navClassName}`}>
-      <Container className="relative flex h-16 items-center justify-between">
-        <Logo imageClassName="h-8 sm:h-9 lg:h-10" priority />
-
-        <div className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => {
-            const isHighlighted = "highlight" in link && link.highlight;
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={
-                  isHighlighted
-                    ? "rounded-full border border-white/[0.08] bg-white/[0.045] px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_36px_rgba(0,0,0,0.24)] transition-all hover:border-[rgba(201,183,255,0.22)] hover:bg-white/[0.07] hover:shadow-[0_0_32px_rgba(201,183,255,0.12)]"
-                    : `text-sm font-medium transition-colors ${linkClassName}`
-                }
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+    <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#1e2227] bg-[#0c0e11]/82 text-[#f3f1ea] backdrop-blur-[10px]">
+      <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
+      <Container className="relative flex h-16 max-w-[1180px] items-center justify-between px-5 sm:px-8">
+        <div className="hidden sm:block">
+          <Wordmark />
+        </div>
+        <div className="sm:hidden">
+          <Logo imageClassName="h-7" priority />
         </div>
 
-        <div className="hidden items-center gap-4 lg:flex">
-          <Button
-            asChild
-            size="md"
-            className={gradientButtonClassName}
-          >
-            <Link href={ROUTES.SAMPLE}>Request Sample</Link>
+        <div className={cn(bodyFont.className, "hidden items-center gap-8 min-[900px]:flex")}>
+          {marketingNavLinks.map((link) => (
+            <Link
+              className="text-[14px] font-medium text-[#9ba1a8] transition-colors hover:text-[#f3f1ea] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e7a6d6]"
+              href={link.href}
+              key={link.href}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="hidden items-center gap-3 min-[900px]:flex">
+          <Button asChild className={ghostButtonClassName} size="sm" variant="secondary">
+            <Link href={ROUTES.BOOK_MEETING}>Book a call</Link>
+          </Button>
+          <Button asChild className={primaryButtonClassName} size="sm">
+            <Link href={ROUTES.SAMPLE}>Request sample</Link>
           </Button>
         </div>
 
         <button
           aria-expanded={isMenuOpen}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className={`${iconButtonClassName} lg:hidden`}
+          className="inline-flex items-center justify-center rounded-[3px] border border-[#262b31] p-2 text-[#f3f1ea] transition-colors hover:border-[#9ba1a8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e7a6d6] min-[900px]:hidden"
           onClick={() => setIsMenuOpen((current) => !current)}
           type="button"
         >
-          {isMenuOpen ? (
-            <X className="h-5 w-5" aria-hidden="true" />
-          ) : (
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          )}
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </Container>
 
       {isMenuOpen ? (
-        <div className="lg:hidden">
+        <div className="min-[900px]:hidden">
           <button
             aria-label="Close menu overlay"
-            className="fixed inset-0 top-16 z-40 bg-[rgba(5,5,5,0.72)] backdrop-blur-[4px]"
+            className="fixed inset-0 top-16 z-40 bg-[#0c0e11]/78 backdrop-blur-[4px]"
             onClick={() => setIsMenuOpen(false)}
             type="button"
           />
-          <div
-            className={
-              "fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/[0.06] bg-[linear-gradient(180deg,rgba(5,5,5,0.99),rgba(9,9,9,0.96))] shadow-[0_24px_60px_rgba(0,0,0,0.36)]"
-            }
-          >
-            <Container className="flex flex-col gap-5 px-4 py-5 sm:px-5 sm:py-6">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
-                  Explore Frithly
-                </p>
-                <p className="hidden text-sm leading-6 text-white/62 min-[460px]:block">
-                  Explore how Frithly turns buying signals into manually qualified, verified,
-                  outbound-ready opportunities.
-                </p>
+          <div className="fixed inset-x-0 top-16 z-50 border-t border-[#1e2227] bg-[#0c0e11] shadow-[0_24px_60px_rgba(0,0,0,0.36)]">
+            <Container className="flex max-w-[1180px] flex-col gap-5 px-5 py-6 sm:px-8">
+              <p className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]")}>
+                Menu
+              </p>
+              <div className="divide-y divide-[#1e2227] border border-[#262b31]">
+                {marketingNavLinks.map((link) => (
+                  <Link
+                    className="block px-4 py-4 text-[15px] font-semibold text-[#f3f1ea] transition-colors hover:text-[#e7a6d6]"
+                    href={link.href}
+                    key={link.href}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
               </div>
-
-              <div className="flex flex-col divide-y divide-white/[0.07] rounded-[1rem] border border-white/[0.06] bg-white/[0.02]">
-                {navLinks.map((link) => {
-                  const isHighlighted = "highlight" in link && link.highlight;
-
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`px-4 py-3.5 text-[0.98rem] font-semibold text-white transition-colors hover:text-white/72 sm:py-4 sm:text-base ${
-                        isHighlighted ? "bg-white/[0.035] text-white" : ""
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <Button
-                  asChild
-                  size="lg"
-                  className={`w-full ${gradientButtonClassName}`}
-                >
-                  <Link href={ROUTES.SAMPLE}>Request Sample</Link>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
+                  <Link href={ROUTES.BOOK_MEETING}>Book a call</Link>
+                </Button>
+                <Button asChild className={primaryButtonClassName} size="lg">
+                  <Link href={ROUTES.SAMPLE}>Request sample</Link>
                 </Button>
               </div>
             </Container>
