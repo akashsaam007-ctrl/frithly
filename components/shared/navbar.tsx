@@ -4,17 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-const displayFont = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["700"],
-});
 
 const bodyFont = Inter({
   subsets: ["latin"],
@@ -39,21 +34,6 @@ const primaryButtonClassName =
 
 const ghostButtonClassName =
   "rounded-[3px] border border-[#262b31] bg-transparent px-5 text-[#f3f1ea] shadow-none hover:border-[#9ba1a8] hover:bg-transparent hover:text-[#f3f1ea] focus-visible:ring-[#e7a6d6]";
-
-function Wordmark() {
-  return (
-    <Link
-      aria-label="Frithly home"
-      className="inline-flex items-center gap-3 text-[#f3f1ea] transition-opacity hover:opacity-90"
-      href={ROUTES.HOME}
-    >
-      <span className="h-2 w-2 rounded-[2px] bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)]" />
-      <span className={cn(displayFont.className, "text-[1.35rem] font-bold tracking-[-0.02em]")}>
-        Frithly
-      </span>
-    </Link>
-  );
-}
 
 export function Navbar() {
   const pathname = usePathname();
@@ -80,7 +60,7 @@ export function Navbar() {
       <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
       <Container className="relative flex h-16 max-w-[1180px] items-center justify-between px-5 sm:px-8">
         <div className="hidden sm:block">
-          <Wordmark />
+          <Logo imageClassName="h-7 sm:h-8" priority />
         </div>
         <div className="sm:hidden">
           <Logo imageClassName="h-7" priority />

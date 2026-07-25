@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Space_Grotesk } from "next/font/google";
 import { cn } from "@/lib/utils";
+
+const logoFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["700"],
+});
 
 type LogoProps = {
   className?: string;
@@ -21,21 +27,24 @@ export function Logo({ className, href = "/", imageClassName, priority = false }
       href={href}
       aria-label="Frithly home"
       className={cn(
-        "inline-flex shrink-0 items-center transition-opacity hover:opacity-95",
+        "inline-flex shrink-0 items-center gap-2.5 text-[#f3f1ea] transition-opacity hover:opacity-95",
         className,
       )}
     >
       <Image
-        src="/frithly-logo.png"
+        src="/frithly-icon.png"
         alt="Frithly"
-        width={1935}
-        height={813}
+        width={374}
+        height={443}
         priority={priority}
         quality={100}
         unoptimized
-        sizes="(min-width: 1280px) 220px, (min-width: 1024px) 200px, (min-width: 640px) 176px, 152px"
-        className={cn("h-[2.05rem] w-auto sm:h-[2.3rem] md:h-[2.45rem]", imageClassName)}
+        sizes="48px"
+        className={cn("h-8 w-auto sm:h-9", imageClassName)}
       />
+      <span className={cn(logoFont.className, "text-[1.35rem] font-bold tracking-[-0.035em] sm:text-[1.5rem]")}>
+        Frithly
+      </span>
     </Link>
   );
 }
@@ -49,7 +58,7 @@ export function BrandMark({ className, imageClassName, priority = false }: Brand
       )}
     >
       <Image
-        src="/frithly-mark.png"
+        src="/frithly-icon.png"
         alt="Frithly mark"
         width={374}
         height={443}

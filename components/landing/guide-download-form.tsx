@@ -25,10 +25,10 @@ const initialFormState: FormState = {
 };
 
 const inputClassName =
-  "h-12 rounded-[0.85rem] border-white/[0.1] bg-white/[0.035] px-4 text-[0.92rem] text-white placeholder:text-white/34 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus-visible:border-white/[0.2] focus-visible:ring-[rgba(201,183,255,0.24)] focus-visible:ring-offset-[#050507]";
+  "h-12 rounded-[3px] border-[#262b31] bg-[#0c0e11]/78 px-4 text-[0.92rem] text-[#f3f1ea] placeholder:text-[#5c636b] shadow-none focus-visible:border-[#9ba1a8] focus-visible:ring-[#e7a6d6] focus-visible:ring-offset-[#0c0e11]";
 
 const gradientButtonClassName =
-  "border-transparent bg-[linear-gradient(135deg,#ffd083_0%,#f3a0d5_52%,#9e8cff_100%)] text-[#050507] shadow-[0_18px_52px_rgba(158,140,255,0.18)] hover:brightness-[1.03] hover:text-[#050507]";
+  "border-0 bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] text-[#241522] shadow-none hover:brightness-[1.08] hover:text-[#241522]";
 
 export function GuideDownloadForm() {
   const [formState, setFormState] = useState<FormState>(initialFormState);
@@ -81,19 +81,19 @@ export function GuideDownloadForm() {
 
   if (isSubmitted) {
     return (
-      <div className="rounded-[1.35rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.02))] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.36)] sm:p-7">
-        <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] text-white shadow-[0_0_34px_rgba(158,140,255,0.2)]">
+      <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5 shadow-[0_24px_70px_rgba(0,0,0,0.26)] sm:p-7">
+        <div className="inline-flex h-11 w-11 items-center justify-center rounded-[3px] border border-[#262b31] bg-[#0c0e11]/78 text-[#f3f1ea] shadow-[0_0_22px_rgba(231,166,214,0.12)]">
           <Check className="h-5 w-5" aria-hidden="true" />
         </div>
-        <h2 className="mt-5 text-[1.75rem] font-semibold leading-tight tracking-[-0.04em] text-white">
+        <h2 className="mt-5 text-[1.75rem] font-semibold leading-tight tracking-[-0.04em] text-[#f3f1ea]">
           Your guide is ready.
         </h2>
-        <p className="mt-3 text-[0.95rem] leading-7 text-white/66">
+        <p className="mt-3 text-[0.95rem] leading-7 text-[#9ba1a8]">
           We have also sent a copy to your email. You can download the complete playbook now or
           request a personalized sample next.
         </p>
         <div className="mt-6 grid gap-3">
-          <Button asChild className={cn("h-[3.25rem] rounded-[0.9rem] text-[0.95rem] font-semibold", gradientButtonClassName)}>
+          <Button asChild className={cn("h-[3.25rem] rounded-[3px] text-[0.95rem] font-semibold", gradientButtonClassName)}>
             <a href={GUIDE_URL} target="_blank" rel="noreferrer">
               Download the playbook
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
@@ -101,7 +101,7 @@ export function GuideDownloadForm() {
           </Button>
           <Button
             asChild
-            className="h-[3.25rem] rounded-[0.9rem] border-white/[0.1] bg-white/[0.03] text-white shadow-none hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-white"
+            className="h-[3.25rem] rounded-[3px] border-[#262b31] bg-transparent text-[#f3f1ea] shadow-none hover:border-[#9ba1a8] hover:bg-transparent hover:text-[#f3f1ea]"
             variant="secondary"
           >
             <Link href="/sample">Request a personalized sample</Link>
@@ -114,24 +114,24 @@ export function GuideDownloadForm() {
   return (
     <form
       id="download-guide"
-      className="rounded-[1.35rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.02))] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.36)] sm:p-7"
+      className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5 shadow-[0_24px_70px_rgba(0,0,0,0.26)] sm:p-7"
       onSubmit={handleSubmit}
     >
       <div>
-        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/44">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#e7a6d6]">
           Instant download
         </p>
-        <h2 className="mt-3 text-[1.65rem] font-semibold tracking-[-0.04em] text-white">
+        <h2 className="mt-3 text-[1.65rem] font-semibold tracking-[-0.04em] text-[#f3f1ea]">
           Get the complete playbook
         </h2>
-        <p className="mt-2 text-[0.94rem] leading-6 text-white/62">
+        <p className="mt-2 text-[0.94rem] leading-6 text-[#9ba1a8]">
           Enter your details and receive the full 20-page guide instantly.
         </p>
       </div>
 
       <div className="mt-6 grid gap-4">
         <div className="space-y-2">
-          <Label className="text-[0.82rem] font-medium text-white/82" htmlFor="guide-first-name">
+          <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-first-name">
             First name
           </Label>
           <Input
@@ -146,7 +146,7 @@ export function GuideDownloadForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[0.82rem] font-medium text-white/82" htmlFor="guide-work-email">
+          <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-work-email">
             Work email
           </Label>
           <Input
@@ -162,7 +162,7 @@ export function GuideDownloadForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[0.82rem] font-medium text-white/82" htmlFor="guide-company-name">
+          <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-company-name">
             Company name
           </Label>
           <Input
@@ -178,10 +178,10 @@ export function GuideDownloadForm() {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4">
-            <Label className="text-[0.82rem] font-medium text-white/82" htmlFor="guide-company-website">
+            <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-company-website">
               Company website
             </Label>
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/34">
+            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#5c636b]">
               Optional
             </span>
           </div>
@@ -203,7 +203,7 @@ export function GuideDownloadForm() {
       ) : null}
 
       <Button
-        className={cn("mt-6 h-14 w-full rounded-[0.95rem] text-[0.95rem] font-semibold", gradientButtonClassName)}
+        className={cn("mt-6 h-14 w-full rounded-[3px] text-[0.95rem] font-semibold", gradientButtonClassName)}
         disabled={isSubmitting}
         type="submit"
       >
@@ -219,7 +219,7 @@ export function GuideDownloadForm() {
           </>
         )}
       </Button>
-      <p className="mt-3 text-center text-[0.76rem] leading-5 text-white/42">
+      <p className="mt-3 text-center text-[0.76rem] leading-5 text-[#5c636b]">
         No spam. Just the guide and occasional practical outbound insights.
       </p>
     </form>

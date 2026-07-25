@@ -1,29 +1,14 @@
 import Link from "next/link";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Container } from "@/components/ui/container";
+import { Logo } from "@/components/ui/logo";
 import { APP_NAME, ROUTES, SUPPORT_EMAIL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-const displayFont = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["700"],
-});
 
 const bodyFont = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
-
-function FooterWordmark() {
-  return (
-    <Link className="inline-flex items-center gap-3 text-[#f3f1ea]" href={ROUTES.HOME}>
-      <span className="h-2 w-2 rounded-[2px] bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)]" />
-      <span className={cn(displayFont.className, "text-[1.35rem] font-bold tracking-[-0.02em]")}>
-        Frithly
-      </span>
-    </Link>
-  );
-}
 
 export function Footer() {
   return (
@@ -31,7 +16,7 @@ export function Footer() {
       <Container className="max-w-[1180px] px-5 sm:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1.4fr]">
           <div>
-            <FooterWordmark />
+            <Logo imageClassName="h-7" />
             <p className="mt-5 max-w-md text-[14px] leading-[1.7] text-[#9ba1a8]">
               Signal-qualified outbound opportunities for teams that want better timing, verified
               decision-makers, and outreach built around a real reason to buy.
