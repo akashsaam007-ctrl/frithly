@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { ROUTES } from "@/lib/constants";
+import { buildPublicMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPublicMetadata({
+  description: "Frithly account verification route.",
+  noIndex: true,
+  path: "/verify",
+  title: "Verify | Frithly",
+});
 
 type VerifyPageProps = {
   searchParams?: Promise<{

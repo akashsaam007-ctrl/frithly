@@ -5,6 +5,15 @@ import type { PlanId } from "@/types";
 
 export const metadata: Metadata = {
   description: "Talk to sales to activate a Frithly plan.",
+  robots: {
+    follow: false,
+    googleBot: {
+      follow: false,
+      index: false,
+      noimageindex: true,
+    },
+    index: false,
+  },
   title: "Talk to sales | Frithly",
 };
 
