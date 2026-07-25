@@ -17,9 +17,9 @@ export default function PublicLoading() {
         />
         <Spinner className="text-white/72" />
         <div>
-          <h1 className="text-[2rem] font-semibold tracking-[-0.04em] text-white sm:text-[2.35rem]">
+          <p className="text-[2rem] font-semibold tracking-[-0.04em] text-white sm:text-[2.35rem]">
             Loading Frithly
-          </h1>
+          </p>
         </div>
       </div>
     </main>

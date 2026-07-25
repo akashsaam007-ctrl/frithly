@@ -11,9 +11,9 @@ export default function Loading() {
         <Logo imageClassName="h-8 sm:h-9" priority />
         <Spinner className="text-white/72" />
         <div>
-          <h1 className="text-[1.95rem] font-semibold tracking-[-0.04em] text-white md:text-[2.25rem]">
+          <p className="text-[1.95rem] font-semibold tracking-[-0.04em] text-white md:text-[2.25rem]">
             Loading Frithly
-          </h1>
+          </p>
         </div>
       </div>
     </main>
