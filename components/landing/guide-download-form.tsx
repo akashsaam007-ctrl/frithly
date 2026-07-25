@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,17 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 const GUIDE_URL = "/guides/frithly-signal-based-outbound-playbook.pdf";
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-frithly-display",
+  weight: ["600", "700"],
+});
+
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
 
 type FormState = {
   companyName: string;
@@ -25,7 +37,7 @@ const initialFormState: FormState = {
 };
 
 const inputClassName =
-  "h-12 rounded-[3px] border-[#262b31] bg-[#0c0e11]/78 px-4 text-[0.92rem] text-[#f3f1ea] placeholder:text-[#5c636b] shadow-none focus-visible:border-[#9ba1a8] focus-visible:ring-[#e7a6d6] focus-visible:ring-offset-[#0c0e11]";
+  "h-12 rounded-[3px] border-[#262b31] bg-[#0c0e11]/78 px-4 text-[15px] text-[#f3f1ea] placeholder:text-[#5c636b] shadow-none focus-visible:border-[#9ba1a8] focus-visible:ring-[#e7a6d6] focus-visible:ring-offset-[#0c0e11]";
 
 const gradientButtonClassName =
   "border-0 bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] text-[#241522] shadow-none hover:brightness-[1.08] hover:text-[#241522]";
@@ -85,10 +97,10 @@ export function GuideDownloadForm() {
         <div className="inline-flex h-11 w-11 items-center justify-center rounded-[3px] border border-[#262b31] bg-[#0c0e11]/78 text-[#f3f1ea] shadow-[0_0_22px_rgba(231,166,214,0.12)]">
           <Check className="h-5 w-5" aria-hidden="true" />
         </div>
-        <h2 className="mt-5 text-[1.75rem] font-semibold leading-tight tracking-[-0.04em] text-[#f3f1ea]">
+        <h2 className={cn(displayFont.className, "mt-5 text-[28px] font-semibold leading-tight text-[#f3f1ea]")}>
           Your guide is ready.
         </h2>
-        <p className="mt-3 text-[0.95rem] leading-7 text-[#9ba1a8]">
+        <p className="mt-3 text-[15px] leading-[1.7] text-[#9ba1a8]">
           We have also sent a copy to your email. You can download the complete playbook now or
           request a personalized sample next.
         </p>
@@ -113,25 +125,25 @@ export function GuideDownloadForm() {
 
   return (
     <form
-      id="download-guide"
+      id="guide-download-form"
       className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5 shadow-[0_24px_70px_rgba(0,0,0,0.26)] sm:p-7"
       onSubmit={handleSubmit}
     >
       <div>
-        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#e7a6d6]">
+        <p className={cn(monoFont.className, "text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]")}>
           Instant download
         </p>
-        <h2 className="mt-3 text-[1.65rem] font-semibold tracking-[-0.04em] text-[#f3f1ea]">
+        <h2 className={cn(displayFont.className, "mt-3 text-[28px] font-semibold leading-tight text-[#f3f1ea]")}>
           Get the complete playbook
         </h2>
-        <p className="mt-2 text-[0.94rem] leading-6 text-[#9ba1a8]">
+        <p className="mt-3 text-[15px] leading-[1.7] text-[#9ba1a8]">
           Enter your details and receive the full 20-page guide instantly.
         </p>
       </div>
 
       <div className="mt-6 grid gap-4">
         <div className="space-y-2">
-          <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-first-name">
+          <Label className="text-[14px] font-medium text-[#f3f1ea]" htmlFor="guide-first-name">
             First name
           </Label>
           <Input
@@ -146,7 +158,7 @@ export function GuideDownloadForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-work-email">
+          <Label className="text-[14px] font-medium text-[#f3f1ea]" htmlFor="guide-work-email">
             Work email
           </Label>
           <Input
@@ -162,7 +174,7 @@ export function GuideDownloadForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-company-name">
+          <Label className="text-[14px] font-medium text-[#f3f1ea]" htmlFor="guide-company-name">
             Company name
           </Label>
           <Input
@@ -178,10 +190,10 @@ export function GuideDownloadForm() {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4">
-            <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="guide-company-website">
+            <Label className="text-[14px] font-medium text-[#f3f1ea]" htmlFor="guide-company-website">
               Company website
             </Label>
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#5c636b]">
+            <span className={cn(monoFont.className, "text-[11px] font-medium uppercase tracking-[0.12em] text-[#5c636b]")}>
               Optional
             </span>
           </div>
