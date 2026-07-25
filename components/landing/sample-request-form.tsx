@@ -490,21 +490,21 @@ export function SampleRequestForm() {
   }, [callBooked, confirmation, showCalendar, captureSampleEvent, updateMeetingStatus]);
 
   const gradientButtonClassName =
-    "border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#050505] shadow-[0_18px_52px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#050505]";
+    "rounded-[3px] border-transparent bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] text-[#0c0e11] shadow-[0_18px_52px_rgba(231,166,214,0.16)] hover:brightness-[1.03] hover:text-[#0c0e11]";
   const outlineButtonClassName =
-    "border-white/[0.1] bg-white/[0.03] text-white shadow-none hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-white";
+    "rounded-[3px] border-[#262b31] bg-[#14171b]/70 text-[#f3f1ea] shadow-none hover:border-[#343a42] hover:bg-[#1b1f24] hover:text-[#f3f1ea]";
   const inputClassName =
-    "h-12 rounded-[0.8rem] border-white/[0.1] bg-white/[0.035] px-4 text-[0.92rem] text-white placeholder:text-white/34 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus-visible:border-white/[0.2] focus-visible:ring-[rgba(201,183,255,0.24)] focus-visible:ring-offset-[#050505]";
+    "h-12 rounded-[3px] border-[#262b31] bg-[#0c0e11] px-4 text-[0.92rem] text-[#f3f1ea] placeholder:text-[#5c636b] shadow-[inset_0_1px_0_rgba(243,241,234,0.025)] focus-visible:border-[#b6abe8]/55 focus-visible:ring-[rgba(231,166,214,0.18)] focus-visible:ring-offset-[#0c0e11]";
   const textareaClassName =
-    "min-h-[96px] rounded-[0.8rem] border-white/[0.1] bg-white/[0.035] px-4 py-3 text-[0.92rem] leading-6 text-white placeholder:text-white/34 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus-visible:border-white/[0.2] focus-visible:ring-[rgba(201,183,255,0.24)] focus-visible:ring-offset-[#050505]";
+    "min-h-[96px] rounded-[3px] border-[#262b31] bg-[#0c0e11] px-4 py-3 text-[0.92rem] leading-6 text-[#f3f1ea] placeholder:text-[#5c636b] shadow-[inset_0_1px_0_rgba(243,241,234,0.025)] focus-visible:border-[#b6abe8]/55 focus-visible:ring-[rgba(231,166,214,0.18)] focus-visible:ring-offset-[#0c0e11]";
 
   return (
-    <div className="relative w-full max-w-full overflow-hidden rounded-[1rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.018))] p-4 shadow-[0_28px_90px_rgba(0,0,0,0.42)] sm:rounded-[1.25rem] sm:p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_8%,rgba(201,183,255,0.12),transparent_34%),radial-gradient(circle_at_8%_0%,rgba(244,194,139,0.08),transparent_30%)]" />
+    <div className="relative w-full max-w-full overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]/78 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_8%,rgba(231,166,214,0.1),transparent_34%),radial-gradient(circle_at_8%_0%,rgba(243,181,131,0.065),transparent_30%)]" />
       <div className="relative">
       {confirmation ? (
         <div className="space-y-5 sm:space-y-6">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] text-white shadow-[0_0_34px_rgba(201,183,255,0.18)] sm:h-12 sm:w-12">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-[3px] border border-[#262b31] bg-[#1b1f24] text-[#f3f1ea] shadow-[0_0_34px_rgba(231,166,214,0.14)] sm:h-12 sm:w-12">
             <svg
               aria-hidden="true"
               className="h-5 w-5"
@@ -521,22 +521,22 @@ export function SampleRequestForm() {
             <h2
               ref={confirmationHeadingRef}
               tabIndex={-1}
-              className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-white outline-none sm:text-[1.9rem]"
+              className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-[#f3f1ea] outline-none sm:text-[1.9rem]"
             >
               Your sample request has been received
             </h2>
-            <p className="max-w-2xl text-[0.95rem] leading-7 text-white/68">
+            <p className="max-w-2xl text-[0.95rem] leading-7 text-[#9ba1a8]">
               Our team will review your criteria and prepare a personalized lead sample. Choose a
               convenient time below for the video walkthrough.
             </p>
-            <p className="text-[0.82rem] uppercase tracking-[0.16em] text-white/42">
+            <p className="text-[0.82rem] uppercase tracking-[0.16em] text-[#5c636b]">
               Request ID {confirmation.requestId}
             </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
             <Button
-              className={cn("h-[3.1rem] w-full rounded-[0.7rem] text-[0.9rem] font-semibold sm:h-[3.25rem] sm:text-[0.95rem]", gradientButtonClassName)}
+              className={cn("h-[3.1rem] w-full text-[0.9rem] font-semibold sm:h-[3.25rem] sm:text-[0.95rem]", gradientButtonClassName)}
               onClick={() => {
                 setShowCalendar(true);
                 setScheduledLater(false);
@@ -549,7 +549,7 @@ export function SampleRequestForm() {
               Book my sample review
             </Button>
             <Button
-              className={cn("h-[3.1rem] w-full rounded-[0.7rem] px-5 text-[0.9rem] sm:h-[3.25rem] sm:w-auto sm:text-[0.95rem]", outlineButtonClassName)}
+              className={cn("h-[3.1rem] w-full px-5 text-[0.9rem] sm:h-[3.25rem] sm:w-auto sm:text-[0.95rem]", outlineButtonClassName)}
               type="button"
               variant="secondary"
               onClick={() => {
@@ -566,14 +566,14 @@ export function SampleRequestForm() {
           </div>
 
           {scheduledLater ? (
-            <p className="rounded-[0.9rem] border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[0.86rem] leading-6 text-white/72">
+            <p className="rounded-[3px] border border-[#262b31] bg-[#0c0e11] px-4 py-3 text-[0.86rem] leading-6 text-[#c8ccd1]">
               We have sent the booking link to your email.
             </p>
           ) : null}
 
           {showCalendar ? (
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-[0.9rem] border border-white/[0.08] bg-[#050505]">
+              <div className="overflow-hidden rounded-[6px] border border-[#262b31] bg-[#0c0e11]">
                 <iframe
                   className="h-[640px] w-full sm:h-[620px]"
                   src={confirmation.bookingUrl}
@@ -581,11 +581,11 @@ export function SampleRequestForm() {
                 />
               </div>
               {callBooked ? (
-                <p className="text-[0.86rem] leading-6 text-white/72">
+                <p className="text-[0.86rem] leading-6 text-[#c8ccd1]">
                   Your review call has been logged. We will prepare the sample before the meeting.
                 </p>
               ) : (
-                <p className="text-[0.86rem] leading-6 text-white/42">
+                <p className="text-[0.86rem] leading-6 text-[#5c636b]">
                   Your timezone is detected automatically. We will use the details you already
                   shared, so there is nothing to re-enter.
                 </p>
@@ -596,42 +596,42 @@ export function SampleRequestForm() {
       ) : (
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-2">
-            <h2 className="text-[1.35rem] font-semibold tracking-[-0.03em] text-white sm:text-[1.5rem]">
+            <h2 className="text-[1.35rem] font-semibold tracking-[-0.03em] text-[#f3f1ea] sm:text-[1.5rem]">
               Request your sample
             </h2>
-            <p className="text-[0.88rem] leading-6 text-white/64">
+            <p className="text-[0.88rem] leading-6 text-[#9ba1a8]">
               {step === 1
                 ? "Start with a few basic details. It takes less than two minutes."
                 : "Define the companies you want Frithly to research."}
             </p>
           </div>
 
-          <div className="mt-5 border-b border-white/[0.08] pb-5 sm:mt-6">
+          <div className="mt-5 border-b border-[#262b31] pb-5 sm:mt-6">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-white/42">
+              <p className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#5c636b]">
                 Step {step} of 2
               </p>
-              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-white">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[#f3f1ea]">
                 {step === 1 ? "Your details" : "Targeting"}
               </p>
             </div>
             <div className="mt-4 flex min-w-0 flex-1 items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.1em] sm:text-[0.78rem] sm:tracking-[0.12em]">
               <div className="flex min-w-0 items-center gap-2">
-                <span className={cn("text-white/36", step === 1 && "text-white")}>01</span>
-                <span className={cn("hidden text-white/36 min-[390px]:inline", step === 1 && "text-white")}>
+                <span className={cn("text-[#5c636b]", step === 1 && "text-[#f3f1ea]")}>01</span>
+                <span className={cn("hidden text-[#5c636b] min-[390px]:inline", step === 1 && "text-[#f3f1ea]")}>
                   Your details
                 </span>
               </div>
               <span
                 aria-hidden="true"
                 className={cn(
-                  "h-px flex-1 rounded-full bg-white/[0.08]",
-                  step === 2 && "bg-[linear-gradient(90deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)]",
+                  "h-px flex-1 rounded-full bg-[#262b31]",
+                  step === 2 && "bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)]",
                 )}
               />
               <div className="flex min-w-0 items-center gap-2">
-                <span className={cn("text-white/36", step === 2 && "text-white")}>02</span>
-                <span className={cn("hidden text-white/36 min-[390px]:inline", step === 2 && "text-white")}>
+                <span className={cn("text-[#5c636b]", step === 2 && "text-[#f3f1ea]")}>02</span>
+                <span className={cn("hidden text-[#5c636b] min-[390px]:inline", step === 2 && "text-[#f3f1ea]")}>
                   Targeting
                 </span>
               </div>
@@ -639,7 +639,7 @@ export function SampleRequestForm() {
           </div>
 
           {submitError ? (
-            <div className="mt-5 rounded-[0.85rem] border border-[#f38b86]/30 bg-[#2a1110]/65 px-4 py-3 text-[0.84rem] leading-6 text-[#ffd4d1]">
+            <div className="mt-5 rounded-[3px] border border-[#f38b86]/30 bg-[#2a1110]/65 px-4 py-3 text-[0.84rem] leading-6 text-[#ffd4d1]">
               <p>{submitError}</p>
             </div>
           ) : null}
@@ -648,7 +648,7 @@ export function SampleRequestForm() {
             <div className="mt-6 space-y-5 sm:mt-7">
               <div className="grid gap-[1.125rem] md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-full-name">
+                  <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-full-name">
                     Full name
                   </Label>
                   <Input
@@ -671,7 +671,7 @@ export function SampleRequestForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-work-email">
+                  <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-work-email">
                     Work email
                   </Label>
                   <Input
@@ -691,14 +691,14 @@ export function SampleRequestForm() {
                     }}
                     onFocus={markStarted}
                   />
-                  <p id="sample-work-email-help" className="text-[0.74rem] leading-5 text-[#737373]">
+                  <p id="sample-work-email-help" className="text-[0.74rem] leading-5 text-[#5c636b]">
                     A work email helps us understand your company faster.
                   </p>
                   <FieldError id="sample-work-email-error" message={errors.workEmail} />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-company-website">
+                  <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-company-website">
                     Company website
                   </Label>
                   <Input
@@ -727,10 +727,10 @@ export function SampleRequestForm() {
 
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center justify-between gap-4">
-                    <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-whatsapp-number">
+                    <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-whatsapp-number">
                       WhatsApp number
                     </Label>
-                    <span className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#737373]">
+                    <span className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#5c636b]">
                       Optional
                     </span>
                   </div>
@@ -745,9 +745,13 @@ export function SampleRequestForm() {
                       <SelectTrigger className={cn(inputClassName, "justify-between")}>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-[6px] border-[#262b31] bg-[#14171b] text-[#f3f1ea]">
                         {countryCodeOptions.map((option) => (
-                          <SelectItem key={option.label} value={option.value}>
+                          <SelectItem
+                            className="rounded-[3px] text-[#f3f1ea] focus:bg-[#1b1f24] focus:text-[#f3f1ea] [&_svg]:text-[#b6abe8]"
+                            key={option.label}
+                            value={option.value}
+                          >
                             {option.label}
                           </SelectItem>
                         ))}
@@ -766,7 +770,7 @@ export function SampleRequestForm() {
                       onFocus={markStarted}
                     />
                   </div>
-                  <p className="text-[0.74rem] leading-5 text-[#737373]">
+                  <p className="text-[0.74rem] leading-5 text-[#5c636b]">
                     We will only use this for sample updates or meeting coordination.
                   </p>
                 </div>
@@ -775,7 +779,7 @@ export function SampleRequestForm() {
               <div className="pt-1">
                 <Button
                   className={cn(
-                    "group h-[3.25rem] w-full rounded-[0.7rem] text-[0.95rem] font-semibold",
+                    "group h-[3.25rem] w-full text-[0.95rem] font-semibold",
                     gradientButtonClassName,
                   )}
                   type="button"
@@ -784,7 +788,7 @@ export function SampleRequestForm() {
                   Continue to targeting
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-[2px]" />
                 </Button>
-                <p className="mt-3 text-center text-[0.74rem] leading-5 text-[#737373]">
+                <p className="mt-3 text-center text-[0.74rem] leading-5 text-[#5c636b]">
                   Your information is used only to prepare your sample.
                 </p>
               </div>
@@ -800,7 +804,7 @@ export function SampleRequestForm() {
               </h3>
 
               <div className="space-y-2">
-                <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-offer-description">
+                <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-offer-description">
                   What does your company sell?
                 </Label>
                 <Textarea
@@ -820,14 +824,14 @@ export function SampleRequestForm() {
                   }}
                   onFocus={markStarted}
                 />
-                <p id="sample-offer-description-help" className="text-[0.74rem] leading-5 text-[#737373]">
+                <p id="sample-offer-description-help" className="text-[0.74rem] leading-5 text-[#5c636b]">
                   Keep it brief - 1 or 2 sentences is enough.
                 </p>
                 <FieldError id="sample-offer-description-error" message={errors.offerDescription} />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-target-description">
+                <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-target-description">
                   Who do you want to target?
                 </Label>
                 <Textarea
@@ -847,14 +851,14 @@ export function SampleRequestForm() {
                   }}
                   onFocus={markStarted}
                 />
-                <p id="sample-target-description-help" className="text-[0.74rem] leading-5 text-[#737373]">
+                <p id="sample-target-description-help" className="text-[0.74rem] leading-5 text-[#5c636b]">
                   Mention the type of company, industry, stage, or buying situation.
                 </p>
                 <FieldError id="sample-target-description-error" message={errors.targetDescription} />
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-custom-region">
+                <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-custom-region">
                   Target countries or regions
                 </Label>
                 <div
@@ -869,10 +873,10 @@ export function SampleRequestForm() {
                       <button
                         key={region}
                         className={cn(
-                          "rounded-full border px-3.5 py-2 text-[0.82rem] transition-colors",
+                          "rounded-[3px] border px-3.5 py-2 text-[0.82rem] transition-colors",
                           selected
-                            ? "border-white/[0.18] bg-white/[0.08] text-white shadow-[0_0_28px_rgba(201,183,255,0.12)]"
-                            : "border-white/[0.08] bg-white/[0.03] text-white/62 hover:border-white/[0.16] hover:text-white",
+                            ? "border-[#b6abe8]/45 bg-[#1b1f24] text-[#f3f1ea] shadow-[0_0_28px_rgba(231,166,214,0.1)]"
+                            : "border-[#262b31] bg-[#0c0e11] text-[#9ba1a8] hover:border-[#343a42] hover:text-[#f3f1ea]",
                         )}
                         type="button"
                         onClick={() => toggleRegion(region)}
@@ -899,7 +903,7 @@ export function SampleRequestForm() {
                     }}
                   />
                   <Button
-                    className={cn("h-12 w-full rounded-[0.7rem] px-4 text-[0.88rem] sm:w-auto", outlineButtonClassName)}
+                    className={cn("h-12 w-full px-4 text-[0.88rem] sm:w-auto", outlineButtonClassName)}
                     type="button"
                     variant="secondary"
                     onClick={() => {
@@ -915,11 +919,11 @@ export function SampleRequestForm() {
                     {formState.targetRegions.map((region) => (
                       <button
                         key={region}
-                        className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[0.78rem] text-[#d6d6d6] transition-colors hover:border-white/[0.16]"
+                        className="rounded-[3px] border border-[#262b31] bg-[#0c0e11] px-3 py-1.5 text-[0.78rem] text-[#c8ccd1] transition-colors hover:border-[#343a42]"
                         type="button"
                         onClick={() => toggleRegion(region)}
                       >
-                        {region} <span className="text-white/50">×</span>
+                        {region} <span className="text-[#5c636b]">x</span>
                       </button>
                     ))}
                   </div>
@@ -928,7 +932,7 @@ export function SampleRequestForm() {
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[0.82rem] font-medium text-[#d4d4d4]">
+                <Label className="text-[0.82rem] font-medium text-[#f3f1ea]">
                   Target company size
                 </Label>
                 <div
@@ -943,10 +947,10 @@ export function SampleRequestForm() {
                       <button
                         key={size}
                         className={cn(
-                          "flex min-h-[3.15rem] items-center justify-center rounded-[0.8rem] border px-3 py-2 text-[0.84rem] font-medium transition-colors",
+                          "flex min-h-[3.15rem] items-center justify-center rounded-[3px] border px-3 py-2 text-[0.84rem] font-medium transition-colors",
                           selected
-                            ? "border-white/[0.18] bg-white/[0.08] text-white shadow-[0_0_28px_rgba(201,183,255,0.12)]"
-                            : "border-white/[0.08] bg-white/[0.03] text-white/62 hover:border-white/[0.16] hover:text-white",
+                            ? "border-[#b6abe8]/45 bg-[#1b1f24] text-[#f3f1ea] shadow-[0_0_28px_rgba(231,166,214,0.1)]"
+                            : "border-[#262b31] bg-[#0c0e11] text-[#9ba1a8] hover:border-[#343a42] hover:text-[#f3f1ea]",
                         )}
                         type="button"
                         onClick={() => toggleCompanySize(size)}
@@ -961,10 +965,10 @@ export function SampleRequestForm() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-4">
-                  <Label className="text-[0.82rem] font-medium text-[#d4d4d4]" htmlFor="sample-additional-requirements">
+                  <Label className="text-[0.82rem] font-medium text-[#f3f1ea]" htmlFor="sample-additional-requirements">
                     Anything else we should know?
                   </Label>
-                  <span className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#737373]">
+                  <span className="text-[0.72rem] font-medium uppercase tracking-[0.12em] text-[#5c636b]">
                     Optional
                   </span>
                 </div>
@@ -983,7 +987,7 @@ export function SampleRequestForm() {
 
               <div className="grid gap-3 sm:grid-cols-[0.35fr_1fr]">
                 <Button
-                  className={cn("h-[3.25rem] rounded-[0.7rem] text-[0.95rem]", outlineButtonClassName)}
+                  className={cn("h-[3.25rem] text-[0.95rem]", outlineButtonClassName)}
                   type="button"
                   variant="secondary"
                   onClick={handleBack}
@@ -992,7 +996,7 @@ export function SampleRequestForm() {
                 </Button>
                 <Button
                   className={cn(
-                    "h-[3.25rem] rounded-[0.7rem] text-[0.95rem] font-semibold",
+                    "h-[3.25rem] text-[0.95rem] font-semibold",
                     gradientButtonClassName,
                   )}
                   disabled={isSubmitting}
@@ -1011,7 +1015,7 @@ export function SampleRequestForm() {
                   )}
                 </Button>
               </div>
-              <p className="text-center text-[0.74rem] leading-5 text-white/42">
+              <p className="text-center text-[0.74rem] leading-5 text-[#5c636b]">
                 After submitting, you can choose a time for the sample review call.
               </p>
             </div>
