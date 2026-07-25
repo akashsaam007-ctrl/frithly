@@ -13,10 +13,12 @@ const SITE_LAST_MODIFIED = "2026-06-02T00:00:00.000Z";
 const PRIMARY_MARKETS = ["United States", "Canada", "United Kingdom", "Europe"] as const;
 const SITE_NAV_ITEMS = [
   { name: "Process", path: "/#process" },
-  { name: "Sample", path: "/#sample-opportunity" },
   { name: "Why Frithly", path: "/#why-frithly" },
+  { name: "What You Receive", path: "/#receive" },
+  { name: "Free Guide", path: "/guides" },
   { name: "FAQ", path: "/#faq" },
   { name: "Book 1 on 1 Call", path: "/book-call" },
+  { name: "Request Sample", path: "/sample" },
 ] as const;
 
 type PublicMetadataOptions = {
@@ -154,7 +156,7 @@ export function buildOrganizationSchema() {
         contactType: "customer support",
         email: SUPPORT_EMAIL,
         availableLanguage: ["en"],
-        url: absoluteUrl("/contact"),
+        url: absoluteUrl("/book-call"),
       },
     ],
     description: META.DESCRIPTION,
@@ -304,7 +306,7 @@ export function buildContactPageSchema() {
       "Contact Frithly for sample requests, booking, onboarding, and support.",
     inLanguage: "en-GB",
     name: "Contact Frithly",
-    url: absoluteUrl("/contact"),
+    url: absoluteUrl("/book-call"),
   };
 }
 

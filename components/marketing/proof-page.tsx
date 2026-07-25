@@ -67,7 +67,7 @@ export function ProofPageView({ page }: ProofPageViewProps) {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link href="/pricing">See plans</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Book a call</Link>
               </Button>
             </div>
           </div>

@@ -51,6 +51,9 @@ export function Footer() {
                 <Link className="transition-colors hover:text-[#f3f1ea]" href="/#sample-opportunity">
                   Sample opportunity
                 </Link>
+                <Link className="transition-colors hover:text-[#f3f1ea]" href={ROUTES.GUIDES}>
+                  Free guide
+                </Link>
                 <Link className="transition-colors hover:text-[#f3f1ea]" href="/#faq">
                   FAQ
                 </Link>

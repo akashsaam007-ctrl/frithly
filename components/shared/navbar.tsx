@@ -30,6 +30,7 @@ const marketingNavLinks = [
   { href: "/#process", label: "Process" },
   { href: "/#why-frithly", label: "Why Frithly" },
   { href: "/#receive", label: "What You Receive" },
+  { href: ROUTES.GUIDES, label: "Free Guide" },
   { href: ROUTES.FAQ, label: "FAQ" },
 ] as const;
 

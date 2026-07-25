@@ -65,7 +65,7 @@ export async function POST(request: Request) {
   const redirectPath =
     checkoutState === "authorized" || checkoutState === "pending"
       ? ROUTES.DASHBOARD
-      : "/pricing";
+      : ROUTES.BOOK_MEETING;
   const redirectUrl = new URL(redirectPath, requestUrl.origin);
 
   redirectUrl.searchParams.set(

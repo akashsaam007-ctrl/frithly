@@ -121,7 +121,7 @@ export function CashfreePayLoader({
         <p className="text-lg font-semibold text-ink">Checkout link incomplete</p>
         <p className="text-muted">
           This payment link does not include the Cashfree subscription session required to open
-          checkout. Start again from pricing and we&apos;ll generate a fresh authorisation session.
+          checkout. Book a call and we&apos;ll generate a fresh authorisation session.
         </p>
       </div>
     );
@@ -165,7 +165,7 @@ export function CashfreePayLoader({
           Open secure authorisation
         </Button>
         <Button asChild type="button" variant="secondary">
-          <Link href="/pricing">Back to pricing</Link>
+          <Link href="/book-call">Book a call</Link>
         </Button>
       </div>
     </div>
