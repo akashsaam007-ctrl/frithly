@@ -30,8 +30,8 @@ export function Footer() {
           <div>
             <Logo imageClassName="h-7" />
             <p className="mt-5 max-w-md text-[14px] leading-[1.7] text-[#9ba1a8]">
-              Signal-qualified outbound opportunities for teams that want better timing, verified
-              decision-makers, and outreach built around a real reason to buy.
+              Signal-qualified outbound research. One company, one live reason, a verified
+              decision-maker — delivered every Tuesday, nothing older than twenty days.
             </p>
           </div>
 
@@ -41,14 +41,23 @@ export function Footer() {
                 Experience
               </h3>
               <div className="mt-4 grid gap-3 text-[13px] text-[#9ba1a8]">
-                <Link className={footerLinkClass} href="/#process">
-                  Process
+                <Link className={footerLinkClass} href="/#brief">
+                  The brief
                 </Link>
-                <Link className={footerLinkClass} href="/#receive">
-                  What you receive
+                <Link className={footerLinkClass} href="/#method">
+                  Method
                 </Link>
-                <Link className={footerLinkClass} href="/#sample-opportunity">
-                  Sample opportunity
+                <Link className={footerLinkClass} href="/#fewer">
+                  Fewer, better
+                </Link>
+                <Link className={footerLinkClass} href="/#who">
+                  Who runs it
+                </Link>
+                <Link className={footerLinkClass} href="/#terms">
+                  Terms
+                </Link>
+                <Link className={footerLinkClass} href={ROUTES.ENQUIRE}>
+                  Enquire
                 </Link>
                 <Link className={footerLinkClass} href={ROUTES.GUIDES}>
                   Free guide

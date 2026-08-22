@@ -29,33 +29,54 @@ type SalesInquiryFormState = {
   website: string;
 };
 
-const initialState: SalesInquiryFormState = {
-  company: "",
-  companySize: "",
-  email: "",
-  fullName: "",
-  linkedinProfile: "",
-  message: "",
-  primaryNeed: "",
-  preferredContactMethod: "",
-  role: "",
-  telegramHandle: "",
-  whatsappNumber: "",
-  website: "",
-};
+export const enquiryPlans = {
+  engine: { label: "Engine", price: "$3,900/mo", summary: "25 briefings every Tuesday, 100 per month" },
+  pipeline: { label: "Pipeline", price: "$2,400/mo", summary: "12 briefings every Tuesday, 50 per month" },
+  signal: { label: "Signal", price: "$1,200/mo", summary: "5 briefings every Tuesday, 20 per month" },
+  trial: { label: "Trial", price: "$750", summary: "Fifteen briefings over two weeks, credited if you continue" },
+} as const;
 
-export function SalesInquiryForm() {
-  const [formState, setFormState] = useState(initialState);
+export type EnquiryPlan = keyof typeof enquiryPlans;
+
+export function isEnquiryPlan(value: string | undefined): value is EnquiryPlan {
+  return value !== undefined && value in enquiryPlans;
+}
+
+function buildInitialState(plan?: EnquiryPlan): SalesInquiryFormState {
+  const selected = plan ? enquiryPlans[plan] : undefined;
+
+  return {
+    company: "",
+    companySize: "",
+    email: "",
+    fullName: "",
+    linkedinProfile: "",
+    message: selected
+      ? `Enquiring about the ${selected.label} plan (${selected.price}). `
+      : "",
+    preferredContactMethod: "",
+    primaryNeed: selected ? "plan-fit" : "",
+    role: "",
+    telegramHandle: "",
+    whatsappNumber: "",
+    website: "",
+  };
+}
+
+export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
+  const [formState, setFormState] = useState(() => buildInitialState(plan));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const selectedPlan = plan ? enquiryPlans[plan] : undefined;
+
   const fieldClassName =
-    "rounded-[1rem] border-white/[0.08] bg-white/[0.03] text-white placeholder:text-white/34 focus-visible:ring-[rgba(201,183,255,0.34)] focus-visible:ring-offset-[#050505]";
+    "rounded-[3px] border-[#262b31] bg-[#14171b] text-[#f3f1ea] placeholder:text-[#5c636b] focus-visible:ring-[#e7a6d6] focus-visible:ring-offset-[#0c0e11] focus:ring-[#e7a6d6] focus:ring-offset-[#0c0e11]";
   const selectContentClassName =
-    "border-white/[0.08] bg-[#0a0a0a] text-white shadow-[0_24px_70px_rgba(0,0,0,0.42)]";
-  const selectItemClassName = "text-white focus:text-white";
-  const labelClassName = "text-white";
-  const helperTextClassName = "text-xs leading-6 text-white/46";
+    "rounded-[6px] border-[#262b31] bg-[#14171b] text-[#f3f1ea] shadow-[0_24px_70px_rgba(0,0,0,0.42)]";
+  const selectItemClassName = "text-[#f3f1ea] focus:text-[#f3f1ea] focus:bg-[#1b1f24]";
+  const labelClassName = "text-[13px] font-medium text-[#f3f1ea]";
+  const helperTextClassName = "text-[12px] leading-6 text-[#5c636b]";
   const submitButtonClassName =
-    "border-transparent bg-[linear-gradient(135deg,#f4c28b_0%,#e8a7d7_52%,#c9b7ff_100%)] text-[#050505] shadow-[0_18px_52px_rgba(201,183,255,0.18)] hover:brightness-[1.03] hover:text-[#050505]";
+    "rounded-[3px] border-0 bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] px-5 text-[#241522] shadow-none hover:brightness-[1.08] hover:text-[#241522] focus-visible:ring-[#e7a6d6]";
 
   function updateField<K extends keyof SalesInquiryFormState>(
     field: K,
@@ -82,7 +103,7 @@ export function SalesInquiryForm() {
         throw new Error(payload.error ?? "We couldn't submit your details right now.");
       }
 
-      setFormState(initialState);
+      setFormState(buildInitialState(plan));
       toast.success("Thanks. We have your details and will reply from hello@frithly.com.");
     } catch (error) {
       toast.error(
@@ -95,6 +116,18 @@ export function SalesInquiryForm() {
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
+      {selectedPlan ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[6px] border border-[#262b31] bg-[#1b1f24] px-4 py-3">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]">Enquiring about</div>
+            <div className="mt-1 text-[15px] font-semibold text-[#f3f1ea]">
+              {selectedPlan.label} · {selectedPlan.price}
+            </div>
+          </div>
+          <div className="text-[13px] text-[#9ba1a8]">{selectedPlan.summary}</div>
+        </div>
+      ) : null}
+
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-2">
           <Label className={labelClassName} htmlFor="sales-full-name">Full name</Label>
@@ -241,9 +274,9 @@ export function SalesInquiryForm() {
             <SelectContent className={selectContentClassName}>
               <SelectItem className={selectItemClassName} value="plan-fit">Plan fit and pricing</SelectItem>
               <SelectItem className={selectItemClassName} value="outbound-goals">Outbound goals and ICP fit</SelectItem>
+              <SelectItem className={selectItemClassName} value="trial">The $750 trial</SelectItem>
               <SelectItem className={selectItemClassName} value="onboarding">Onboarding and rollout questions</SelectItem>
-              <SelectItem className={selectItemClassName} value="application">Whether to request a sample or book a call first</SelectItem>
-              <SelectItem className={selectItemClassName} value="reactivation">Reactivation or workspace access</SelectItem>
+              <SelectItem className={selectItemClassName} value="application">Whether to request a briefing or book a call first</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -259,17 +292,17 @@ export function SalesInquiryForm() {
             value={formState.message}
             onChange={(event) => updateField("message", event.target.value)}
           />
+          <p className={helperTextClassName}>A couple of sentences is enough — minimum 20 characters.</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-white/[0.08] pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-2xl text-sm leading-7 text-white/52">
-          We&apos;ll review the details first and reply from hello@frithly.com with the best next
-          step. If there&apos;s a fit, we&apos;ll point you toward the right sample or call instead
-          of sending you through unnecessary steps.
+      <div className="flex flex-col gap-4 border-t border-[#1e2227] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-2xl text-[13px] leading-6 text-[#9ba1a8]">
+          I read every enquiry myself and reply from hello@frithly.com with the honest next step —
+          a free briefing, a call, or a straight answer that this isn&apos;t a fit.
         </p>
         <Button className={`w-full sm:w-auto ${submitButtonClassName}`} disabled={isSubmitting} size="lg" type="submit">
-          {isSubmitting ? "Submitting..." : "Send details"}
+          {isSubmitting ? "Sending..." : "Send details"}
         </Button>
       </div>
     </form>

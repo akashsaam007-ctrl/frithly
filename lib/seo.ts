@@ -12,13 +12,15 @@ const SERVICE_ID = absoluteUrl("/#service");
 const SITE_LAST_MODIFIED = "2026-06-02T00:00:00.000Z";
 const PRIMARY_MARKETS = ["United States", "Canada", "United Kingdom", "Europe"] as const;
 const SITE_NAV_ITEMS = [
-  { name: "Process", path: "/#process" },
-  { name: "Why Frithly", path: "/#why-frithly" },
-  { name: "What You Receive", path: "/#receive" },
+  { name: "The Brief", path: "/#brief" },
+  { name: "Method", path: "/#method" },
+  { name: "Fewer, Better", path: "/#fewer" },
+  { name: "Who Runs It", path: "/#who" },
+  { name: "Terms", path: "/#terms" },
   { name: "Free Guide", path: "/guides" },
   { name: "FAQ", path: "/#faq" },
   { name: "Book 1 on 1 Call", path: "/book-call" },
-  { name: "Request Sample", path: "/sample" },
+  { name: "Free Briefing", path: "/briefing" },
 ] as const;
 
 type PublicMetadataOptions = {
@@ -198,8 +200,8 @@ export function buildWebSiteSchema() {
     potentialAction: [
       {
         "@type": "ViewAction",
-        name: "See a sample opportunity",
-        target: absoluteUrl("/#sample-opportunity"),
+        name: "Read a real briefing",
+        target: absoluteUrl("/#brief"),
       },
       {
         "@type": "ScheduleAction",

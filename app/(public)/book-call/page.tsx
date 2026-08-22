@@ -141,7 +141,7 @@ export default function BookCallPage() {
                 className="mt-5 w-full rounded-[3px] border-transparent bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] text-[#0c0e11] hover:brightness-[1.03] hover:text-[#0c0e11]"
                 size="lg"
               >
-                <Link href={ROUTES.SAMPLE}>Request Sample</Link>
+                <Link href={ROUTES.BRIEFING}>Request a free briefing</Link>
               </Button>
             </div>
           </div>

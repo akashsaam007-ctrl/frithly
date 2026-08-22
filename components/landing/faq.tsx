@@ -80,7 +80,7 @@ export function Faq() {
                 </Link>
                 . If you would rather share details first and let us steer the next step,{" "}
                 <Link
-                  href={ROUTES.SAMPLE}
+                  href={ROUTES.BRIEFING}
                   className="font-semibold text-terracotta underline underline-offset-4"
                 >
                   request a sample

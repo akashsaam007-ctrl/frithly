@@ -15,6 +15,7 @@ const eslintConfig = [
       ".codex-runtime/**",
       ".next-dev/**",
       ".next/**",
+      "_to_delete/**",
       "frithly-*.log",
       "next-env.d.ts",
       "node_modules/**",

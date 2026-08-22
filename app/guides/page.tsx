@@ -268,7 +268,7 @@ export default function GuidesPage() {
                   </a>
                 </Button>
                 <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
-                  <Link href="/sample">Request a sample</Link>
+                  <Link href="/briefing">Request a free briefing</Link>
                 </Button>
               </div>
             </div>
@@ -383,7 +383,7 @@ export default function GuidesPage() {
                 <Link href="/book-call">Book a 1:1 call</Link>
               </Button>
               <Button asChild className={primaryButtonClassName} size="lg">
-                <Link href="/sample">
+                <Link href="/briefing">
                   Request a sample
                   <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
                 </Link>

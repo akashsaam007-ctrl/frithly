@@ -13,20 +13,23 @@ import {
   buildWebSiteSchema,
 } from "@/lib/seo";
 
+const HOME_DESCRIPTION =
+  "We find the moment a company is ready to buy, verify the person who can say yes, and deliver a briefing your team can send the same day. Every Tuesday, nothing older than twenty days.";
+const HOME_TITLE = "Frithly | Signal-Qualified Outbound Research";
+
 export const metadata: Metadata = buildPublicMetadata({
-  description:
-    "Frithly identifies buying signals, manually qualifies companies, verifies decision-makers, and delivers outbound-ready opportunities your team can act on immediately.",
+  description: HOME_DESCRIPTION,
   keywords: [
     "Frithly",
+    "signal-qualified outbound",
     "buying signals",
-    "manual qualification",
+    "outbound research service",
     "decision maker verification",
-    "outbound opportunities",
-    "personalized outreach",
-    "sales intelligence service",
+    "sales trigger research",
+    "outbound briefings",
   ],
   path: "/",
-  title: "Frithly | Better Outbound Starts Before the First Email",
+  title: HOME_TITLE,
 });
 
 export default function HomePage() {
@@ -37,10 +40,9 @@ export default function HomePage() {
       <StructuredData data={buildSiteNavigationSchema()} />
       <StructuredData
         data={buildWebPageSchema({
-          description:
-            "Frithly identifies buying signals, manually qualifies companies, verifies decision-makers, and delivers outbound-ready opportunities your team can act on immediately.",
+          description: HOME_DESCRIPTION,
           path: "/",
-          title: "Frithly | Better Outbound Starts Before the First Email",
+          title: HOME_TITLE,
         })}
       />
       <StructuredData data={buildServiceSchema()} />

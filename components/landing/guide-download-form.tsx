@@ -116,7 +116,7 @@ export function GuideDownloadForm() {
             className="h-[3.25rem] rounded-[3px] border-[#262b31] bg-transparent text-[#f3f1ea] shadow-none hover:border-[#9ba1a8] hover:bg-transparent hover:text-[#f3f1ea]"
             variant="secondary"
           >
-            <Link href="/sample">Request a personalized sample</Link>
+            <Link href="/briefing">Request a free briefing</Link>
           </Button>
         </div>
       </div>

@@ -22,11 +22,11 @@ const monoFont = IBM_Plex_Mono({
 });
 
 const marketingNavLinks = [
-  { href: "/#process", label: "Process" },
-  { href: "/#why-frithly", label: "Why Frithly" },
-  { href: "/#receive", label: "What You Receive" },
-  { href: ROUTES.GUIDES, label: "Free Guide" },
-  { href: ROUTES.FAQ, label: "FAQ" },
+  { href: "/#brief", label: "The Brief" },
+  { href: "/#method", label: "Method" },
+  { href: "/#fewer", label: "Fewer, Better" },
+  { href: "/#who", label: "Who Runs It" },
+  { href: "/#terms", label: "Terms" },
 ] as const;
 
 const primaryButtonClassName =
@@ -80,10 +80,10 @@ export function Navbar() {
 
         <div className="hidden items-center gap-3 min-[900px]:flex">
           <Button asChild className={ghostButtonClassName} size="sm" variant="secondary">
-            <Link href={ROUTES.BOOK_MEETING}>Book a call</Link>
+            <Link href={ROUTES.BOOK_MEETING}>Start — $750</Link>
           </Button>
           <Button asChild className={primaryButtonClassName} size="sm">
-            <Link href={ROUTES.SAMPLE}>Request sample</Link>
+            <Link href={ROUTES.BRIEFING}>Free briefing</Link>
           </Button>
         </div>
 
@@ -124,10 +124,10 @@ export function Navbar() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
-                  <Link href={ROUTES.BOOK_MEETING}>Book a call</Link>
+                  <Link href={ROUTES.BOOK_MEETING}>Start — $750</Link>
                 </Button>
                 <Button asChild className={primaryButtonClassName} size="lg">
-                  <Link href={ROUTES.SAMPLE}>Request sample</Link>
+                  <Link href={ROUTES.BRIEFING}>Free briefing</Link>
                 </Button>
               </div>
             </Container>

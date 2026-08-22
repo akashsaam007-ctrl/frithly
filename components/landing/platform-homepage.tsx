@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
 import { motion, useReducedMotion } from "framer-motion";
-import { type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -39,137 +39,230 @@ const primaryButtonClassName =
 const ghostButtonClassName =
   "rounded-[3px] border border-[#262b31] bg-transparent px-5 text-[#f3f1ea] shadow-none hover:border-[#9ba1a8] hover:bg-transparent hover:text-[#f3f1ea] focus-visible:ring-[#e7a6d6]";
 
-const tagItems = ["Signal-driven", "Manually verified", "Personalized, not templated"] as const;
-
-const terminalRows = [
-  { company: "Northbeam", contact: "Sales Director verified", signal: "SDR_HIRING", time: "08m ago" },
-  { company: "VantaFlow", contact: "VP Sales verified", signal: "FUNDING_EVENT", time: "21m ago" },
-  { company: "OrbitOps", contact: "Founder verified", signal: "PRODUCT_LAUNCH", time: "34m ago" },
-  { company: "Cinder AI", contact: "Head of Growth verified", signal: "GTM_EXPANSION", time: "47m ago" },
-  { company: "Layerdesk", contact: "RevOps verified", signal: "LEADERSHIP_HIRE", time: "01h ago" },
-  { company: "Northbeam", contact: "Sales Director verified", signal: "SDR_HIRING", time: "08m ago" },
-  { company: "VantaFlow", contact: "VP Sales verified", signal: "FUNDING_EVENT", time: "21m ago" },
-  { company: "OrbitOps", contact: "Founder verified", signal: "PRODUCT_LAUNCH", time: "34m ago" },
+const briefFields = [
+  {
+    label: "Company",
+    note: "Website, LinkedIn company page and funding history attached in the delivered file.",
+    value: "42 employees · United Kingdom · product analytics",
+  },
+  {
+    label: "Buying signal",
+    note: "No outbound function existed before this hire. Seventeen days of relevance remaining.",
+    value: "First SDR role posted — three days ago",
+  },
+  {
+    label: "Decision-maker",
+    note: "Named. Confirmed in role this morning, not inherited from a database.",
+    value: "Sales Director",
+  },
+  {
+    label: "Contact",
+    note: "Both checked on the day of delivery. If either fails, the opportunity is replaced.",
+    value: "Live inbox, tested · direct line, not switchboard",
+  },
+  {
+    label: "Why now",
+    note: "List-building would eat the entire first month of a hire they just spent weeks recruiting. That is the opening line, and it writes itself.",
+    value: "Their new rep starts in three weeks with nothing to work",
+  },
+  {
+    label: "Outreach",
+    note: "No funding-history name-drop, no compliment about their blog. The signal is the personalisation.",
+    value: "Four emails, written to this trigger",
+  },
+  {
+    label: "Source",
+    note: "Every claim in this file is checkable by you. That is deliberate.",
+    value: "Original job posting, cited and linked",
+  },
 ] as const;
 
-const problemCards = [
+const triggerSignals = [
   {
-    body: "Broad sourcing fills the sequence with accounts that were never going to buy.",
+    body: "Outbound just became a function. Someone starts in three weeks with no pipeline to work.",
     index: "01",
-    title: "Wrong company",
+    title: "First SDR hire",
   },
   {
-    body: "Good accounts stall when the contact isn't the one who can actually move the deal.",
+    body: "Capital in, targets reset. Budget moves faster than at any other point in the year.",
     index: "02",
-    title: "Wrong person",
+    title: "Funding round",
   },
   {
-    body: "Even strong-fit accounts go cold when outreach lands before there's a reason to care.",
+    body: "A short window where outbound relevance spikes, then closes again.",
     index: "03",
-    title: "Wrong timing",
+    title: "Product launch",
   },
   {
-    body: "Without real context, every opener sounds the same and every follow-up blurs together.",
+    body: "More reps against the same sourcing. Account quality suddenly matters.",
     index: "04",
-    title: "Generic message",
-  },
-] as const;
-
-const timingSignals = [
-  {
-    body: "A new SDR team usually means pipeline targets just went up.",
-    index: "SIG.01",
-    title: "SDR hiring",
-  },
-  {
-    body: "Fresh capital tends to create urgency around growth and GTM execution.",
-    index: "SIG.02",
-    title: "New funding",
-  },
-  {
-    body: "A launch opens a short window where outbound relevance spikes.",
-    index: "SIG.03",
-    title: "Product launches",
-  },
-  {
-    body: "When rep time gets expensive fast, account quality starts to matter more.",
-    index: "SIG.04",
     title: "Sales expansion",
   },
   {
-    body: "New leadership resets priorities, tooling, and where the team needs traction.",
-    index: "SIG.05",
-    title: "Leadership hires",
-  },
-] as const;
-
-const processSteps = [
-  {
-    body: "Scan hiring activity, funding events, and GTM motion for early buying signals.",
-    index: "01",
-    title: "Detect",
-  },
-  {
-    body: "A person, not a script, checks the account actually fits before it moves forward.",
-    index: "02",
-    title: "Qualify",
-  },
-  {
-    body: "Confirm the decision-maker, their live email, and direct phone number.",
-    index: "03",
-    title: "Verify",
-  },
-  {
-    body: "Write the why-now angle and a 4-email sequence around the actual signal.",
-    index: "04",
-    title: "Personalize",
-  },
-  {
-    body: "Hand your team an opportunity file that's ready to send, not sort.",
+    body: "First ninety days. Tooling is briefly, genuinely replaceable.",
     index: "05",
-    title: "Deliver",
+    title: "New revenue lead",
   },
 ] as const;
 
-const manifestItems = [
-  "Company profile + website",
-  "Buying signal + why-now trigger",
-  "Decision-maker name + title",
-  "LinkedIn - personal and company",
-  "Verified email address",
-  "Verified direct phone number",
-  "Initial email, written to the signal",
-  "Three personalized follow-ups",
+const funnelRows = [
+  { label: "Analytics · 40", reason: "no live trigger" },
+  { label: "Security · 120", reason: "trigger 47d old" },
+  { label: "Devtools · 18", reason: "headcount low" },
+  { label: "Fintech · 260", reason: "outside ICP" },
+  { label: "Martech · 64", reason: "no DM found" },
+  { label: "Logistics · 90", reason: "already a customer" },
+  { label: "HR tech · 35", reason: "trigger 62d old" },
+  { label: "Payments · 150", reason: "wrong region" },
+  { label: "AI infra · 22", reason: "no live trigger" },
+  { label: "Insurtech · 78", reason: "outside ICP" },
+  { label: "Proptech · 44", reason: "role was a backfill" },
+  { label: "Data · 190", reason: "no DM found" },
+  { label: "Legal · 30", reason: "trigger 51d old" },
+  { label: "Cloud · 110", reason: "already a customer" },
+  { label: "Commerce · 55", reason: "outside ICP" },
+  { label: "Support · 82", reason: "no live trigger" },
+  { label: "Observability · 26", reason: "headcount low" },
+  { label: "Identity · 140", reason: "wrong region" },
+  { label: "Workflow · 48", reason: "trigger 38d old" },
+  { label: "Billing · 96", reason: "no DM found" },
+  { label: "Search · 33", reason: "outside ICP" },
+  { label: "Network · 175", reason: "already a customer" },
+  { label: "CRM · 60", reason: "role was a backfill" },
+  { label: "Analytics · 42", reason: "live trigger · 3d" },
 ] as const;
 
-const comparisonRows = [
-  ["Sourcing", "Mass scraping", "Manual qualification"],
-  ["Contacts", "Generic contacts", "Confirmed decision-makers"],
-  ["Messaging", "Templates", "Written to the signal"],
-  ["Context", "None", "Why-now trigger included"],
-  ["Output", "Raw records", "Outbound-ready opportunities"],
+const ledgerColumns = [
+  {
+    foot: "You paid once for the data and a second time in reputation. The second bill arrives later and lasts longer.",
+    headline: "2,000 contacts",
+    highlight: false,
+    rows: [
+      { label: "Replies", value: "~10, at a 0.5% rate" },
+      { label: "Rep hours", value: "~18 hrs cleaning, triaging, chasing bounces" },
+      { label: "Accounts spent", strong: "2,000 burned", value: "for roughly 12 months" },
+      { label: "Domain", value: "Bounce rate rises; every future send pays the tax" },
+      { label: "Market left", value: "2,000 fewer companies you can approach cold" },
+    ],
+    title: "A bought list",
+  },
+  {
+    foot: "Roughly a third of the replies for one fortieth of the market spent — and your rep keeps their week.",
+    headline: "50 companies",
+    highlight: true,
+    rows: [
+      { label: "Replies", value: "~3, at 6.2% on scored briefings" },
+      { label: "Rep hours", value: "~0 spent on research; the hours go to selling" },
+      { label: "Accounts spent", strong: "50 approached", value: "each with a real reason" },
+      { label: "Domain", value: "Verified contacts, negligible bounce" },
+      { label: "Market left", value: "1,950 companies still reachable later" },
+    ],
+    title: "A month of briefings",
+  },
 ] as const;
 
-const customerCards = [
+const volumeNotes = [
   {
-    body: "Outbound-heavy teams that need cleaner timing and better-fit accounts.",
-    title: "B2B SaaS",
+    body: "One rep can hold about forty real conversations a week. Handing them five hundred contacts does not raise that ceiling — it just moves their week from selling to sorting.",
+    title: "A rep is the bottleneck, not the list",
   },
   {
-    body: "Teams that want sharper opportunities, not more research to clean up.",
-    title: "AI agencies",
+    body: "A company emailed badly this month is unreachable for the next year, whatever changes at their end. Your addressable market is finite and non-renewable. Volume spends it fastest.",
+    title: "You can only knock once",
   },
   {
-    body: "Building pipeline where rep time is too expensive to waste.",
-    title: "Software companies",
+    body: "Bounces and complaints follow the domain, not the campaign. Cheap data raises the cost of every message you send afterwards, including the good ones.",
+    title: "Deliverability compounds",
+  },
+] as const;
+
+const firstWeeks = [
+  {
+    body: "Thirty minutes on your ICP, your offer, and which triggers matter for your sales cycle. It is the only meeting.",
+    day: "Day 1",
+    title: "One call",
   },
   {
-    body: "Teams that need a sharper why-now before outreach even begins.",
-    title: "Cybersecurity",
+    body: "The account universe is built and the criteria are shown to you for approval before anything is sourced.",
+    day: "Day 2–3",
+    title: "Calibration",
   },
   {
-    body: "Where better timing and better-fit accounts speed up every conversation.",
-    title: "Consulting firms",
+    body: "Seven briefings with sequences. You say what's off; the criteria are retuned the same day.",
+    day: "Day 7",
+    title: "First delivery",
+  },
+  {
+    body: "Eight more, adjusted. Then continue or stop — and the $750 comes off your first month.",
+    day: "Day 14",
+    title: "You decide",
+  },
+] as const;
+
+const founderNotes = [
+  "I built the sourcing pipeline, the scoring model, the verification workflow and the sending infrastructure, and I do the manual qualification on every account myself. When something is wrong with a delivery, you email me and I answer.",
+  "That is the trade. There is no account manager and no 24-hour desk. What there is instead: the person who designed the standard is the person applying it, every week, to every file.",
+  "Comfortable with four to five hours of overlap with US hours, and a full working day with the UK and EU.",
+] as const;
+
+const tiers = [
+  {
+    amount: "$1,200",
+    features: ["5 briefings every Tuesday", "20 per month", "500 accounts monitored", "All five triggers"],
+    highlight: false,
+    name: "Signal",
+    plan: "signal",
+  },
+  {
+    amount: "$2,400",
+    features: ["12 briefings every Tuesday", "50 per month", "1,500 accounts monitored", "All five triggers"],
+    highlight: true,
+    name: "Pipeline — most teams",
+    plan: "pipeline",
+  },
+  {
+    amount: "$3,900",
+    features: ["25 briefings every Tuesday", "100 per month", "4,000 accounts monitored", "All five triggers"],
+    highlight: false,
+    name: "Engine",
+    plan: "engine",
+  },
+] as const;
+
+const trialFields = [
+  {
+    label: "You receive",
+    note: "Verified decision-makers, live triggers, four-email sequences. The same standard as a full engagement.",
+    value: "Fifteen briefings over two weeks",
+  },
+  {
+    label: "If you continue",
+    note: "So assessing the work costs nothing if we proceed together.",
+    value: "The $750 is credited in full against your first month",
+  },
+  {
+    label: "If you don't",
+    note: "No clawback, no lock-in, no follow-up sequence aimed at you.",
+    value: "You keep everything delivered",
+  },
+] as const;
+
+const limits = [
+  {
+    body: "If your market produces fewer live triggers than your plan allows, we tell you and credit the difference. Loosening the criteria to hit a number would make the number meaningless.",
+    title: "We won't pad a thin month.",
+  },
+  {
+    body: "A briefing delivered to you goes to nobody else — not your competitor, not next quarter, not at a discount.",
+    title: "We won't resell your accounts.",
+  },
+  {
+    body: "Those depend on your offer, your market, your inbox health and your follow-up. We guarantee research quality, because that is the part we control.",
+    title: "We won't guarantee meetings.",
+  },
+  {
+    body: "Your sender reputation took years to build. We hand you the work; you decide what leaves your name.",
+    title: "We won't send from your domains.",
   },
 ] as const;
 
@@ -209,27 +302,14 @@ function SectionShell({
 }
 
 function SectionHeader({
-  eyebrow,
   lede,
   title,
 }: {
-  eyebrow?: string;
   lede?: string;
   title: ReactNode;
 }) {
   return (
     <div className="max-w-[640px]">
-      {eyebrow ? (
-        <div
-          className={cn(
-            monoFont.className,
-            "mb-4 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]",
-          )}
-        >
-          <span className="h-px w-8 bg-[#e7a6d6]/70" />
-          {eyebrow}
-        </div>
-      ) : null}
       <h2
         className={cn(
           displayFont.className,
@@ -239,120 +319,291 @@ function SectionHeader({
         {title}
       </h2>
       {lede ? (
-        <p className="mt-5 max-w-[560px] text-[16px] leading-[1.7] text-[#9ba1a8]">
-          {lede}
-        </p>
+        <p className="mt-5 max-w-[560px] text-[16px] leading-[1.7] text-[#9ba1a8]">{lede}</p>
       ) : null}
     </div>
   );
 }
 
-function SignalTerminal() {
+function DocumentPanel({
+  badge,
+  children,
+  eyebrow,
+  footnote,
+  title,
+}: {
+  badge: string;
+  children: ReactNode;
+  eyebrow: string;
+  footnote: string;
+  title: string;
+}) {
   return (
-    <div className="relative overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
+    <div className="overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
       <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
-      <div className="flex items-center justify-between border-b border-[#1e2227] bg-[#1b1f24] px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[#c75c4a]" />
-          <span className="h-2 w-2 rounded-full bg-[#f3b583]" />
-          <span className="h-2 w-2 rounded-full bg-[#4bc996]" />
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#262b31] bg-[#1b1f24] px-5 py-5 sm:px-7">
+        <div>
+          <div
+            className={cn(
+              monoFont.className,
+              "text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]",
+            )}
+          >
+            {eyebrow}
+          </div>
+          <div
+            className={cn(
+              displayFont.className,
+              "mt-2 text-[22px] font-semibold text-[#f3f1ea] sm:text-[26px]",
+            )}
+          >
+            {title}
+          </div>
         </div>
         <div
           className={cn(
             monoFont.className,
-            "text-[11px] font-medium uppercase tracking-[0.14em] text-[#9ba1a8]",
+            "rounded-[3px] border border-[#4bc996]/40 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-[#4bc996]",
           )}
         >
-          INCOMING_SIGNALS.LOG
+          {badge}
         </div>
       </div>
-      <div className="relative h-[390px] overflow-hidden px-4 py-2 sm:h-[430px]">
-        <div className="animate-terminal-scroll space-y-0">
-          {terminalRows.map((row, index) => (
-            <div
-              className="grid grid-cols-[1fr_auto] gap-4 border-b border-[#1e2227] py-4"
-              key={`${row.company}-${row.signal}-${index}`}
-            >
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={cn(
-                      monoFont.className,
-                      "rounded-[3px] border border-[#262b31] bg-[#0c0e11] px-2 py-1 text-[10px] uppercase tracking-[0.1em] text-[#e7a6d6]",
-                    )}
-                  >
-                    {row.signal}
-                  </span>
-                  <span className="text-[15px] font-semibold text-[#f3f1ea]">{row.company}</span>
-                </div>
-                <div className="mt-2 flex items-center gap-2 text-[13px] text-[#9ba1a8]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#4bc996]" />
-                  {row.contact}
-                </div>
-              </div>
-              <div className={cn(monoFont.className, "text-[11px] text-[#5c636b]")}>{row.time}</div>
-            </div>
-          ))}
-        </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#14171b] to-transparent" />
+      <div className="divide-y divide-[#1e2227]">{children}</div>
+      <div
+        className={cn(
+          monoFont.className,
+          "border-t border-[#262b31] bg-[#1b1f24] px-5 py-4 text-[11px] leading-[1.9] tracking-[0.08em] text-[#5c636b] sm:px-7",
+        )}
+      >
+        {footnote}
       </div>
     </div>
   );
 }
 
-function CompactCard({
-  body,
-  index,
-  title,
+function DocumentRow({
+  label,
+  note,
+  value,
 }: {
-  body: string;
-  index?: string;
-  title: string;
+  label: string;
+  note: string;
+  value: string;
 }) {
   return (
-    <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5">
-      {index ? (
-        <div className={cn(monoFont.className, "mb-4 text-[11px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6]")}>
-          {index}
-        </div>
-      ) : null}
-      <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>{title}</h3>
-      <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{body}</p>
+    <div className="grid gap-2 px-5 py-5 sm:grid-cols-[0.28fr_0.72fr] sm:gap-6 sm:px-7">
+      <div
+        className={cn(
+          monoFont.className,
+          "text-[11px] uppercase tracking-[0.12em] text-[#5c636b] sm:pt-1",
+        )}
+      >
+        {label}
+      </div>
+      <div>
+        <div className="text-[16px] leading-[1.55] text-[#f3f1ea]">{value}</div>
+        <div className="mt-2 text-[14px] leading-[1.65] text-[#9ba1a8]">{note}</div>
+      </div>
     </div>
   );
 }
 
-function ManifestPanel() {
-  const leftItems = manifestItems.slice(0, 4);
-  const rightItems = manifestItems.slice(4);
+function DecayChart({ enableMotion }: { enableMotion: boolean }) {
+  const curve = "M0,44 C120,50 220,70 330,96 C430,120 500,150 560,176";
 
   return (
-    <div className="overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
-      <div className="flex items-center justify-between border-b border-[#262b31] bg-[#1b1f24] px-5 py-4">
-        <div className={cn(monoFont.className, "text-[11px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]")}>
-          OPPORTUNITY_MANIFEST
-        </div>
-        <div className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.12em] text-[#5c636b]")}>
-          8 FIELDS
-        </div>
-      </div>
-      <div className="grid md:grid-cols-2">
-        {[leftItems, rightItems].map((items, columnIndex) => (
-          <div className={cn(columnIndex === 1 ? "md:border-l md:border-[#1e2227]" : "")} key={columnIndex}>
-            {items.map((item) => (
-              <div
-                className="flex items-center gap-3 border-b border-[#1e2227] px-5 py-4 last:border-b-0"
-                key={item}
+    <svg
+      aria-label="Signal value falls to zero at twenty days"
+      className="mt-5 block h-auto w-full"
+      role="img"
+      viewBox="0 0 880 220"
+    >
+      <defs>
+        <linearGradient id="frithly-decay" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#ee9fcb" stopOpacity="0.24" />
+          <stop offset="100%" stopColor="#ee9fcb" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <line stroke="#262b31" strokeWidth="1" x1="0" x2="880" y1="176" y2="176" />
+      <line stroke="#1e2227" strokeDasharray="2 6" strokeWidth="1" x1="0" x2="880" y1="40" y2="40" />
+      <motion.path
+        d={`${curve} L560,176 L0,176 Z`}
+        fill="url(#frithly-decay)"
+        {...(enableMotion
+          ? {
+              initial: { opacity: 0 },
+              transition: { delay: 0.5, duration: 1.2 },
+              viewport: { amount: 0.4, once: true },
+              whileInView: { opacity: 1 },
+            }
+          : {})}
+      />
+      <motion.path
+        d={curve}
+        fill="none"
+        stroke="#ee9fcb"
+        strokeWidth="2.4"
+        {...(enableMotion
+          ? {
+              initial: { pathLength: 0 },
+              transition: { duration: 1.8, ease: [0.16, 1, 0.3, 1] as const },
+              viewport: { amount: 0.4, once: true },
+              whileInView: { pathLength: 1 },
+            }
+          : {})}
+      />
+      <line stroke="#b6abe8" strokeDasharray="3 4" strokeWidth="1" x1="560" x2="560" y1="18" y2="196" />
+      <text className={monoFont.className} fill="#b6abe8" fontSize="11" x="570" y="30">
+        DAY 20 — DISCARDED
+      </text>
+      <text className={monoFont.className} fill="#5c636b" fontSize="11" x="4" y="34">
+        FULL VALUE
+      </text>
+      <text className={monoFont.className} fill="#5c636b" fontSize="11" x="4" y="196">
+        DAY 0
+      </text>
+      <text className={monoFont.className} fill="#5c636b" fontSize="11" x="272" y="196">
+        DAY 10
+      </text>
+    </svg>
+  );
+}
+
+function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
+  const keptIndex = funnelRows.length - 1;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const startedRef = useRef(false);
+  const [discarded, setDiscarded] = useState<boolean[]>(() => funnelRows.map(() => false));
+  const [delivered, setDelivered] = useState(false);
+
+  useEffect(() => {
+    if (startedRef.current) {
+      return;
+    }
+
+    const node = containerRef.current;
+
+    if (!enableMotion || !node || typeof IntersectionObserver === "undefined") {
+      startedRef.current = true;
+      setDiscarded(funnelRows.map((_, index) => index !== keptIndex));
+      setDelivered(true);
+      return;
+    }
+
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || startedRef.current) {
+            return;
+          }
+
+          startedRef.current = true;
+          observer.disconnect();
+
+          const order = funnelRows
+            .map((_, index) => index)
+            .filter((index) => index !== keptIndex)
+            .sort(() => Math.random() - 0.5);
+
+          order.forEach((index, step) => {
+            timeouts.push(
+              setTimeout(() => {
+                setDiscarded((current) => {
+                  const next = [...current];
+                  next[index] = true;
+                  return next;
+                });
+              }, 200 + step * 90),
+            );
+          });
+
+          timeouts.push(setTimeout(() => setDelivered(true), 200 + order.length * 90 + 320));
+        });
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+      timeouts.forEach((timeout) => clearTimeout(timeout));
+    };
+  }, [enableMotion, keptIndex]);
+
+  const discardedCount = discarded.filter(Boolean).length;
+
+  return (
+    <div ref={containerRef}>
+      <div className="grid grid-cols-2 gap-px border border-[#262b31] bg-[#1e2227] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {funnelRows.map((row, index) => {
+          const isKept = index === keptIndex;
+          const isOut = discarded[index];
+
+          return (
+            <div
+              className={cn(
+                "min-h-[78px] bg-[#14171b] p-3 transition-all duration-500",
+                isOut && "opacity-40",
+                isKept && delivered && "bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] opacity-100",
+              )}
+              key={row.label}
+            >
+              <span
+                className={cn(
+                  "block text-[12px] leading-5",
+                  isKept && delivered ? "font-semibold text-[#241522]" : "text-[#9ba1a8]",
+                  isOut && "line-through",
+                )}
               >
-                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#4bc996]/50 text-[10px] text-[#4bc996]">
-                  ✓
-                </span>
-                <span className="text-[15px] leading-6 text-[#f3f1ea]">{item}</span>
-              </div>
-            ))}
-          </div>
-        ))}
+                {row.label}
+              </span>
+              <span
+                className={cn(
+                  monoFont.className,
+                  "mt-1 block text-[10px] uppercase tracking-[0.08em]",
+                  isKept && delivered ? "font-medium text-[#241522]" : "text-[#e7a6d6]",
+                )}
+              >
+                {isKept ? (delivered ? row.reason : "") : isOut ? row.reason : ""}
+              </span>
+            </div>
+          );
+        })}
       </div>
+      <div
+        className={cn(
+          monoFont.className,
+          "mt-5 flex flex-wrap justify-between gap-4 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]",
+        )}
+      >
+        <span>
+          24 surfaced · <span className="text-[#e7a6d6]">{discardedCount}</span> discarded · 1 delivered
+        </span>
+        <span>Reasons recorded for every one</span>
+      </div>
+    </div>
+  );
+}
+
+function FounderPortrait() {
+  const [hasPhoto, setHasPhoto] = useState(true);
+
+  return (
+    <div className="relative flex aspect-[4/5] w-full max-w-[260px] items-center justify-center overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
+      {hasPhoto ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          alt="Akash Manoharan"
+          className="h-full w-full object-cover grayscale-[0.2] contrast-[1.04]"
+          onError={() => setHasPhoto(false)}
+          src="/akash.jpg"
+        />
+      ) : (
+        <span className={cn(displayFont.className, "text-[56px] font-semibold text-[#5c636b]")}>AM</span>
+      )}
     </div>
   );
 }
@@ -365,212 +616,503 @@ export function PlatformHomepage() {
     <div className={cn(bodyFont.className, "relative isolate overflow-hidden bg-[#0c0e11] text-[#f3f1ea]")}>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_78%_8%,rgba(238,159,203,0.16),transparent_28%),radial-gradient(circle_at_88%_16%,rgba(182,171,232,0.14),transparent_26%)]" />
 
-      <section className="relative py-[76px] sm:py-[96px] lg:py-[120px]">
-        <Container className="relative grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-          <motion.div className="max-w-[650px]" {...revealProps(enableMotion, 0.02)}>
-            <div className={cn(monoFont.className, "mb-5 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]")}>
-              Signal-qualified outbound
+      <section className="relative py-[76px] sm:py-[96px] lg:py-[116px]">
+        <Container className="relative max-w-[1180px] px-5 sm:px-8">
+          <motion.div className="max-w-[760px]" {...revealProps(enableMotion, 0.02)}>
+            <div
+              className={cn(
+                monoFont.className,
+                "mb-5 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e7a6d6]",
+              )}
+            >
+              Signal-qualified outbound research · since 2024
             </div>
             <h1
               className={cn(
                 displayFont.className,
-                "text-[36px] font-semibold leading-[1.08] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
+                "max-w-[15ch] text-[36px] font-semibold leading-[1.08] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
               )}
             >
-              Outbound built on timing, not luck.
+              Your rep doesn’t need more names. They need the{" "}
+              <span className="bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] bg-clip-text text-transparent">
+                right week
+              </span>
+              .
             </h1>
-            <p className="mt-6 max-w-[610px] text-[17px] leading-[1.7] text-[#9ba1a8] sm:text-[18px]">
+            <p className="mt-6 max-w-[560px] text-[17px] leading-[1.7] text-[#9ba1a8] sm:text-[18px]">
               We find the moment a company is ready to buy, verify the person who can say yes, and
-              hand your team an opportunity built to send - not another list to clean up.
+              deliver a briefing your team can send the same day. Every Tuesday. Nothing older than
+              twenty days.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild className={primaryButtonClassName} size="lg">
-                <Link href={ROUTES.SAMPLE}>Request a sample</Link>
+                <Link href={ROUTES.BOOK_MEETING}>Start with $750</Link>
               </Button>
               <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
-                <Link href={ROUTES.BOOK_MEETING}>Book a 1:1 call</Link>
+                <Link href="#brief">Read a real briefing</Link>
               </Button>
             </div>
-            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3">
-              {tagItems.map((item) => (
-                <div
-                  className={cn(monoFont.className, "flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-[#9ba1a8]")}
-                  key={item}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#4bc996]" />
-                  {item}
-                </div>
-              ))}
+            <div
+              className={cn(
+                monoFont.className,
+                "mt-10 flex flex-wrap gap-x-7 gap-y-3 border-t border-[#1e2227] pt-6 text-[11px] uppercase tracking-[0.12em] text-[#5c636b] [&_b]:font-medium [&_b]:text-[#9ba1a8]",
+              )}
+            >
+              <span>
+                Operating since <b>2024</b>
+              </span>
+              <span>
+                <b>24</b> engagements delivered
+              </span>
+              <span>
+                Bengaluru · <b>UK &amp; US clients</b>
+              </span>
+              <span>
+                GDPR · <b>DPA &amp; NDA standard</b>
+              </span>
             </div>
           </motion.div>
 
-          <motion.div {...revealProps(enableMotion, 0.1)}>
-            <SignalTerminal />
+          <motion.div
+            className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] sm:grid-cols-2 lg:grid-cols-4"
+            {...revealProps(enableMotion, 0.1)}
+          >
+            {[
+              { key: "Reply rate, scored vs unscored", value: "rate" },
+              { key: "Records verified by hand", value: "26,000" },
+              { key: "Engagements delivered", value: "24" },
+              { key: "Maximum signal age", value: "20 days" },
+            ].map((stat) => (
+              <div className="bg-[#14171b] px-5 py-7" key={stat.key}>
+                <div className={cn(displayFont.className, "text-[28px] font-semibold text-[#f3f1ea] sm:text-[32px]")}>
+                  {stat.value === "rate" ? (
+                    <span>
+                      <span className="text-[#5c636b] line-through">2.1%</span>{" "}
+                      <span className="text-[#5c636b]">→</span>{" "}
+                      <span className="text-[#e7a6d6]">6.2%</span>
+                    </span>
+                  ) : stat.value === "20 days" ? (
+                    <span>
+                      20 <span className="text-[16px] font-medium text-[#5c636b]">days</span>
+                    </span>
+                  ) : (
+                    stat.value
+                  )}
+                </div>
+                <div
+                  className={cn(
+                    monoFont.className,
+                    "mt-3 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]",
+                  )}
+                >
+                  {stat.key}
+                </div>
+              </div>
+            ))}
           </motion.div>
         </Container>
       </section>
 
-      <SectionShell id="problem">
+      <SectionShell id="brief">
         <motion.div {...revealProps(enableMotion, 0.02)}>
           <SectionHeader
-            eyebrow="The problem"
-            lede="Bad outbound rarely fails because of the message. It fails because of what happened - or didn't - before anyone sat down to write it."
-            title="Most outbound dies before the first email."
+            lede="This is a complete briefing in the format your team receives — not a summary of one. Read it and you’ll know whether this is worth $750 better than any paragraph I could write."
+            title="One company, one live reason, everything checked."
           />
         </motion.div>
-        <motion.div className="mt-12 grid border border-[#262b31] md:grid-cols-2 lg:grid-cols-4" {...revealProps(enableMotion, 0.08)}>
-          {problemCards.map((card) => (
-            <div className="border-b border-r border-[#262b31] border-l-[2px] border-l-[#c75c4a] p-6 last:border-r-0 md:[&:nth-child(even)]:border-r-0 lg:[&:nth-child(even)]:border-r lg:[&:nth-child(4n)]:border-r-0" key={card.title}>
-              <div className={cn(monoFont.className, "mb-5 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]")}>{card.index}</div>
-              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>{card.title}</h3>
-              <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{card.body}</p>
+        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
+          <DocumentPanel
+            badge="Verified by hand"
+            eyebrow="Opportunity FR-0417 · delivered Tuesday 09:00 · single recipient"
+            footnote="Example shown in the delivered format. Client identity withheld under NDA."
+            title="Series A analytics platform"
+          >
+            {briefFields.map((field) => (
+              <DocumentRow key={field.label} label={field.label} note={field.note} value={field.value} />
+            ))}
+          </DocumentPanel>
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="method">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            lede="Fit tells you a company could buy. A trigger tells you they might buy now. We only work the second kind — and we throw them away after twenty days."
+            title="Five triggers. And a rule that costs us volume."
+          />
+        </motion.div>
+        <motion.div
+          className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          {triggerSignals.map((signal) => (
+            <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5" key={signal.title}>
+              <div
+                className={cn(
+                  monoFont.className,
+                  "mb-4 text-[11px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6]",
+                )}
+              >
+                {signal.index}
+              </div>
+              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+                {signal.title}
+              </h3>
+              <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{signal.body}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div className="mt-14" {...revealProps(enableMotion, 0.08)}>
+          <div
+            className={cn(
+              monoFont.className,
+              "text-[11px] uppercase tracking-[0.14em] text-[#5c636b]",
+            )}
+          >
+            Value of a signal, by age
+          </div>
+          <DecayChart enableMotion={enableMotion} />
+          <p className="mt-6 max-w-[600px] text-[15px] leading-[1.7] text-[#9ba1a8]">
+            A funding round from March is not a weak signal — it is{" "}
+            <strong className="font-semibold text-[#f3f1ea]">no signal</strong>. It tells you what was
+            true in March. Vendors paid per record have every reason to keep selling it to you anyway.
+          </p>
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="discard">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            lede="Every rejection carries a recorded reason, and you receive that record alongside the work. Knowing what was discarded is how you audit a researcher."
+            title="One week: twenty-four found, one delivered."
+          />
+        </motion.div>
+        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
+          <DiscardFunnel enableMotion={enableMotion} />
+        </motion.div>
+      </SectionShell>
+
+      <SectionShell id="fewer">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            lede="Everyone compares cost per lead. Almost nobody counts what volume actually spends — which is rep hours, domain reputation, and the one resource you cannot buy more of: companies you haven’t burned yet."
+            title="Volume has a bill that never appears on the invoice."
+          />
+        </motion.div>
+
+        <motion.div
+          className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] lg:grid-cols-2"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          {ledgerColumns.map((column) => (
+            <div className={cn("bg-[#14171b]", column.highlight && "bg-[#1b1f24]")} key={column.title}>
+              <div className="border-b border-[#1e2227] px-6 py-6">
+                <div
+                  className={cn(
+                    monoFont.className,
+                    "text-[11px] uppercase tracking-[0.14em]",
+                    column.highlight ? "text-[#e7a6d6]" : "text-[#5c636b]",
+                  )}
+                >
+                  {column.title}
+                </div>
+                <div
+                  className={cn(
+                    displayFont.className,
+                    "mt-3 text-[26px] font-semibold text-[#f3f1ea] sm:text-[30px]",
+                  )}
+                >
+                  {column.headline}
+                </div>
+              </div>
+              {column.rows.map((row) => (
+                <div
+                  className="flex items-start justify-between gap-6 border-b border-[#1e2227] px-6 py-4"
+                  key={row.label}
+                >
+                  <span
+                    className={cn(
+                      monoFont.className,
+                      "shrink-0 pt-1 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]",
+                    )}
+                  >
+                    {row.label}
+                  </span>
+                  <span
+                    className={cn(
+                      "max-w-[26ch] text-right text-[14px] leading-[1.6]",
+                      column.highlight ? "text-[#f3f1ea]" : "text-[#9ba1a8]",
+                    )}
+                  >
+                    {"strong" in row && row.strong ? (
+                      <>
+                        <strong className="font-semibold text-[#e7a6d6]">{row.strong}</strong>{" "}
+                      </>
+                    ) : null}
+                    {row.value}
+                  </span>
+                </div>
+              ))}
+              <div
+                className={cn(
+                  "px-6 py-5 text-[14px] leading-[1.7]",
+                  column.highlight ? "text-[#f3f1ea]" : "text-[#9ba1a8]",
+                )}
+              >
+                {column.foot}
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          {volumeNotes.map((note) => (
+            <div key={note.title}>
+              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+                {note.title}
+              </h3>
+              <p className="mt-3 text-[14px] leading-[1.7] text-[#9ba1a8]">{note.body}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        <p
+          className={cn(
+            monoFont.className,
+            "mt-10 text-[11px] uppercase leading-[2] tracking-[0.12em] text-[#5c636b]",
+          )}
+        >
+          Illustrative figures at typical cold-list rates. The 6.2% is our observed reply rate on
+          scored briefings.
+        </p>
+      </SectionShell>
+
+      <SectionShell id="start">
+        <motion.div {...revealProps(enableMotion, 0.02)}>
+          <SectionHeader
+            lede="No onboarding portal, no kickoff deck, no implementation phase. This is the whole thing."
+            title="Your first two weeks, in full."
+          />
+        </motion.div>
+        <motion.div
+          className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] sm:grid-cols-2 lg:grid-cols-4"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          {firstWeeks.map((step) => (
+            <div className="relative bg-[#14171b] px-6 py-7" key={step.day}>
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#ee9fcb,transparent)]" />
+              <div
+                className={cn(
+                  monoFont.className,
+                  "mb-4 text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]",
+                )}
+              >
+                {step.day}
+              </div>
+              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+                {step.title}
+              </h3>
+              <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{step.body}</p>
             </div>
           ))}
         </motion.div>
       </SectionShell>
 
-      <SectionShell id="timing">
+      <SectionShell id="who">
         <motion.div {...revealProps(enableMotion, 0.02)}>
           <SectionHeader
-            eyebrow="Why timing wins"
-            lede="Long before a company signs anything, it leaves a trail - a hire, a raise, a launch. Timing is just paying attention to that trail."
-            title="Companies tell you they're about to buy. Most teams aren't listening."
+            title="You should know whose judgement you’re buying."
           />
         </motion.div>
-        <motion.div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
-          {timingSignals.map((signal) => (
-            <CompactCard body={signal.body} index={signal.index} key={signal.title} title={signal.title} />
-          ))}
+        <motion.div
+          className="mt-12 grid gap-10 lg:grid-cols-[260px_1fr] lg:gap-14"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          <div>
+            <FounderPortrait />
+            <div
+              className={cn(
+                monoFont.className,
+                "mt-4 text-[11px] uppercase leading-[1.9] tracking-[0.12em] text-[#5c636b]",
+              )}
+            >
+              Akash Manoharan
+              <br />
+              Founder · Bengaluru, IST
+              <br />
+              hello@frithly.com
+            </div>
+          </div>
+          <div className="max-w-[640px] space-y-5">
+            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">{founderNotes[0]}</p>
+            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">{founderNotes[1]}</p>
+            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">
+              It is also why I cap the work at four engagements at a time.{" "}
+              <strong className="font-semibold text-[#f3f1ea]">
+                The volumes on this page are what one person can deliver at this standard
+              </strong>{" "}
+              — not what would look impressive on a pricing page. When those four are taken, you’ll be
+              told rather than sold to.
+            </p>
+            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">{founderNotes[2]}</p>
+          </div>
         </motion.div>
       </SectionShell>
 
-      <SectionShell id="process">
+      <SectionShell id="result">
         <motion.div {...revealProps(enableMotion, 0.02)}>
           <SectionHeader
-            eyebrow="The pipeline"
-            lede="Every step exists to strip out wasted outreach before it ever reaches your sales team."
-            title="Five steps. One outbound-ready opportunity."
+            lede="Clients are under NDA, so no names. The numbers are ours and they are real."
+            title="One engagement, anonymised."
           />
         </motion.div>
-        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
-          <div className="relative grid gap-8 lg:grid-cols-5">
-            <div className="absolute left-0 right-0 top-5 hidden h-px bg-[#262b31] lg:block" />
-            {processSteps.map((step) => (
-              <div className="relative border-b border-[#1e2227] pb-6 lg:border-b-0 lg:pb-0" key={step.title}>
-                <div className="flex items-center gap-4 lg:block">
-                  <div className={cn(monoFont.className, "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#262b31] bg-[#0c0e11] text-[11px] font-medium text-[#e7a6d6]")}>
-                    {step.index}
-                  </div>
-                  <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea] lg:mt-6")}>{step.title}</h3>
+        <motion.div
+          className="mt-12 rounded-[6px] border border-[#262b31] bg-[#14171b] p-6 sm:p-9"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          <p
+            className={cn(
+              displayFont.className,
+              "text-[20px] font-semibold leading-[1.4] text-[#f3f1ea] sm:text-[26px]",
+            )}
+          >
+            Reply rate moved from 2.1% on their previously purchased lists to 6.2% on signal-scored
+            briefings — roughly a threefold lift, with no change to their offer or their sender.
+          </p>
+          <div className="mt-8 grid gap-6 border-t border-[#1e2227] pt-7 sm:grid-cols-3">
+            {[
+              { label: "Client", value: "150 employees · SaaS, USA" },
+              { label: "Trigger worked", value: "Sales expansion" },
+              { label: "Result", value: "2.1% → 6.2% reply rate" },
+            ].map((item) => (
+              <div key={item.label}>
+                <div
+                  className={cn(
+                    monoFont.className,
+                    "mb-2 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]",
+                  )}
+                >
+                  {item.label}
                 </div>
-                <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8] lg:pr-4">{step.body}</p>
+                <div className="text-[15px] leading-6 text-[#f3f1ea]">{item.value}</div>
               </div>
             ))}
           </div>
         </motion.div>
       </SectionShell>
 
-      <SectionShell id="receive">
+      <SectionShell id="terms">
         <motion.div {...revealProps(enableMotion, 0.02)}>
           <SectionHeader
-            eyebrow="What you receive"
-            title="Every opportunity arrives ready to work, not to clean up."
+            lede="A researcher spends roughly a third of their week finding and verifying accounts. This replaces that third — at a standard a rep building lists between calls cannot hold."
+            title="Priced against a researcher, not a database."
           />
         </motion.div>
-        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
-          <ManifestPanel />
-        </motion.div>
-      </SectionShell>
 
-      <SectionShell id="sample-opportunity">
-        <motion.div {...revealProps(enableMotion, 0.02)}>
-          <SectionHeader
-            eyebrow="Sample opportunity"
-            lede="This is what a serious buyer should be able to check before trusting the system with their pipeline."
-            title="A real opportunity, inspected - not summarized."
-          />
-        </motion.div>
-        <motion.div className="mt-12 overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b] lg:grid lg:grid-cols-2" {...revealProps(enableMotion, 0.08)}>
-          <div className="p-6 sm:p-8 lg:border-r lg:border-[#1e2227]">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-[3px] border border-[#4bc996]/40 px-2.5 py-1 text-[12px] font-medium text-[#4bc996]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#4bc996]" />
-              Verified opportunity
-            </div>
-            <h3 className={cn(displayFont.className, "text-[30px] font-semibold leading-tight text-[#f3f1ea]")}>
-              Northbeam Analytics
-            </h3>
-            <p className="mt-2 text-[15px] text-[#9ba1a8]">First SDR hire posted 8 days ago</p>
-            <div className="mt-8 divide-y divide-[#1e2227]">
-              {[
-                ["Decision maker", "Marcus King, Sales Director"],
-                ["Why now", "First outbound hire - no pipeline infra yet"],
-                ["Contact", "Live email + direct line, verified"],
-                ["Sequence", "1 initial + 3 follow-ups"],
-              ].map(([label, value]) => (
-                <div className="grid gap-2 py-4 sm:grid-cols-[0.36fr_0.64fr] sm:items-center" key={label}>
-                  <div className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.12em] text-[#5c636b]")}>{label}</div>
-                  <div className="text-[15px] leading-6 text-[#f3f1ea] sm:text-right">{value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="p-6 sm:p-8">
-            <div className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]")}>
-              Why this made the brief
-            </div>
-            <p className="mt-6 text-[17px] leading-[1.75] text-[#9ba1a8]">
-              Northbeam posted their first SDR role this month.{" "}
-              <strong className="font-semibold text-[#f3f1ea]">
-                That&apos;s the exact point where list-building would eat the new hire&apos;s entire first
-                month instead of selling.
-              </strong>{" "}
-              Marcus has a clear, immediate reason to want a working pipeline before that hire
-              starts - which is what makes the opening line write itself.
-            </p>
-          </div>
-        </motion.div>
-      </SectionShell>
-
-      <SectionShell id="why-frithly">
-        <motion.div {...revealProps(enableMotion, 0.02)}>
-          <SectionHeader title="Traditional sourcing gives you records. Frithly gives you opportunities." />
-        </motion.div>
-        <motion.div className="mt-12 overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]" {...revealProps(enableMotion, 0.08)}>
-          <div className="grid grid-cols-[0.72fr_1fr_1fr] border-b border-[#262b31] bg-[#1b1f24] px-4 py-4 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9ba1a8] sm:px-6">
-            <div />
-            <div>Traditional sourcing</div>
-            <div>Frithly</div>
-          </div>
-          {comparisonRows.map(([label, traditional, frithly]) => (
-            <div className="grid grid-cols-[0.72fr_1fr_1fr] border-b border-[#1e2227] px-4 py-4 last:border-b-0 sm:px-6" key={label}>
-              <div className="text-[14px] text-[#9ba1a8]">{label}</div>
-              <div className="text-[14px] text-[#5c636b] line-through">{traditional}</div>
-              <div className="text-[14px] font-medium text-[#f3f1ea]">{frithly}</div>
+        <motion.div
+          className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] lg:grid-cols-3"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          {tiers.map((tier) => (
+            <div
+              className={cn("flex flex-col bg-[#14171b] px-6 py-8", tier.highlight && "bg-[#1b1f24]")}
+              key={tier.name}
+            >
+              <div
+                className={cn(
+                  monoFont.className,
+                  "mb-5 text-[11px] uppercase tracking-[0.14em]",
+                  tier.highlight ? "text-[#e7a6d6]" : "text-[#5c636b]",
+                )}
+              >
+                {tier.name}
+              </div>
+              <div className={cn(displayFont.className, "text-[36px] font-semibold text-[#f3f1ea]")}>
+                {tier.amount}
+                <span className="ml-1 text-[13px] font-medium text-[#5c636b]">/mo</span>
+              </div>
+              <ul className="my-7 flex flex-1 flex-col gap-3">
+                {tier.features.map((feature) => (
+                  <li className="relative pl-5 text-[14px] leading-[1.6] text-[#9ba1a8]" key={feature}>
+                    <span className="absolute left-0 top-[11px] h-px w-3 bg-[#e7a6d6]" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                asChild
+                className={tier.highlight ? primaryButtonClassName : ghostButtonClassName}
+                size="lg"
+                variant={tier.highlight ? "primary" : "secondary"}
+              >
+                <Link href={`${ROUTES.ENQUIRE}?plan=${tier.plan}`}>Enquire</Link>
+              </Button>
             </div>
           ))}
         </motion.div>
+
+        <motion.div className="mt-8" {...revealProps(enableMotion, 0.08)}>
+          <DocumentPanel
+            badge="No minimum term"
+            eyebrow="Start here"
+            footnote="Retainers: three-month minimum, plus a one-time $750 onboarding — ICP definition, trigger calibration, sequence voice matching and a deliverability review. USD. White-label terms available for agencies."
+            title="A trial, before any commitment — $750"
+          >
+            {trialFields.map((field) => (
+              <DocumentRow key={field.label} label={field.label} note={field.note} value={field.value} />
+            ))}
+            <div className="px-5 py-6 sm:px-7">
+              <Button asChild className={primaryButtonClassName} size="lg">
+                <Link href={`${ROUTES.ENQUIRE}?plan=trial`}>Start the trial</Link>
+              </Button>
+            </div>
+          </DocumentPanel>
+        </motion.div>
       </SectionShell>
 
-      <SectionShell id="ideal-customers">
+      <SectionShell id="limits">
         <motion.div {...revealProps(enableMotion, 0.02)}>
-          <SectionHeader title="Built for teams where timing and fit change the conversation." />
+          <SectionHeader
+            title="What we won’t do, stated before you ask."
+          />
         </motion.div>
-        <motion.div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" {...revealProps(enableMotion, 0.08)}>
-          {customerCards.map((card) => (
-            <CompactCard body={card.body} key={card.title} title={card.title} />
+        <motion.div
+          className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] sm:grid-cols-2"
+          {...revealProps(enableMotion, 0.08)}
+        >
+          {limits.map((limit) => (
+            <div className="bg-[#14171b] px-6 py-7" key={limit.title}>
+              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+                {limit.title}
+              </h3>
+              <p className="mt-3 text-[14px] leading-[1.7] text-[#9ba1a8]">{limit.body}</p>
+            </div>
           ))}
         </motion.div>
       </SectionShell>
 
       <SectionShell id="faq">
         <motion.div {...revealProps(enableMotion, 0.02)}>
-          <SectionHeader title="Questions before you book." />
+          <SectionHeader title="Straight answers." />
         </motion.div>
         <motion.div className="mt-10 max-w-[760px]" {...revealProps(enableMotion, 0.08)}>
           <Accordion className="space-y-0 border-y border-[#262b31]" collapsible defaultValue="faq-0" type="single">
             {platformFaqs.map((faq, index) => (
-              <AccordionItem className="border-b border-[#1e2227] last:border-b-0" key={faq.question} value={`faq-${index}`}>
-                <AccordionTrigger className={cn(displayFont.className, "py-5 text-left text-[18px] font-semibold text-[#f3f1ea] hover:no-underline")}>
+              <AccordionItem
+                className="border-b border-[#1e2227] last:border-b-0"
+                key={faq.question}
+                value={`faq-${index}`}
+              >
+                <AccordionTrigger
+                  className={cn(
+                    displayFont.className,
+                    "py-5 text-left text-[18px] font-semibold text-[#f3f1ea] hover:no-underline",
+                  )}
+                >
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="pb-5 text-[15px] leading-[1.7] text-[#9ba1a8]">
@@ -585,19 +1127,24 @@ export function PlatformHomepage() {
       <SectionShell className="overflow-hidden py-[96px] sm:py-[120px] lg:py-[140px]" id="cta">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(238,159,203,0.12),transparent_34%),radial-gradient(circle_at_52%_52%,rgba(182,171,232,0.1),transparent_30%)]" />
         <motion.div className="relative mx-auto max-w-[720px] text-center" {...revealProps(enableMotion, 0.02)}>
-          <h2 className={cn(displayFont.className, "text-[32px] font-semibold leading-[1.08] text-[#f3f1ea] sm:text-[44px]")}>
-            See how your next opportunity looks.
+          <h2
+            className={cn(
+              displayFont.className,
+              "text-[32px] font-semibold leading-[1.08] text-[#f3f1ea] sm:text-[44px]",
+            )}
+          >
+            Ask for one briefing on your own market.
           </h2>
-          <p className="mx-auto mt-5 max-w-[590px] text-[16px] leading-[1.7] text-[#9ba1a8]">
-            If you want better timing, better-fit accounts, and verified decision-makers before
-            outreach starts - this is the layer Frithly was built for.
+          <p className="mx-auto mt-5 max-w-[520px] text-[16px] leading-[1.7] text-[#9ba1a8]">
+            Free, no call required. If it isn’t obviously better than the lists you’re buying now,
+            that’s a useful answer too.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
-              <Link href={ROUTES.BOOK_MEETING}>Book a 1:1 call</Link>
-            </Button>
             <Button asChild className={primaryButtonClassName} size="lg">
-              <Link href={ROUTES.SAMPLE}>Request a sample</Link>
+              <Link href={ROUTES.BRIEFING}>Request a free briefing</Link>
+            </Button>
+            <Button asChild className={ghostButtonClassName} size="lg" variant="secondary">
+              <Link href={ROUTES.BOOK_MEETING}>Start the $750 trial</Link>
             </Button>
           </div>
         </motion.div>

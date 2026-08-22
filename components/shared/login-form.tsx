@@ -93,7 +93,7 @@ export function LoginForm({
             <Link href={ROUTES.HOME}>Open Public Site</Link>
           </Button>
           <Button asChild className="w-full" size="lg" variant="secondary">
-            <Link href={ROUTES.SAMPLE}>Open Sample Request</Link>
+            <Link href={ROUTES.BRIEFING}>Request a free briefing</Link>
           </Button>
         </div>
       </div>
