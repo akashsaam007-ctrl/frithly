@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 
 type SalesInquiryFormState = {
@@ -63,13 +64,19 @@ function buildInitialState(plan?: EnquiryPlan): SalesInquiryFormState {
   };
 }
 
+const footNote =
+  "I read every enquiry myself and reply from hello@frithly.com with the honest next step — a free briefing, a call, or a straight answer that this isn't a fit.";
+
 export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
   const [formState, setFormState] = useState(() => buildInitialState(plan));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showOptional, setShowOptional] = useState(false);
   const selectedPlan = plan ? enquiryPlans[plan] : undefined;
 
-  const fieldClassName =
+  const fieldBase =
     "rounded-[3px] border-[#262b31] bg-[#14171b] text-[#f3f1ea] placeholder:text-[#5c636b] focus-visible:ring-[#e7a6d6] focus-visible:ring-offset-[#0c0e11] focus:ring-[#e7a6d6] focus:ring-offset-[#0c0e11]";
+  const fieldClassName = `${fieldBase} h-12 md:h-11`;
+  const areaClassName = fieldBase;
   const selectContentClassName =
     "rounded-[6px] border-[#262b31] bg-[#14171b] text-[#f3f1ea] shadow-[0_24px_70px_rgba(0,0,0,0.42)]";
   const selectItemClassName = "text-[#f3f1ea] focus:text-[#f3f1ea] focus:bg-[#1b1f24]";
@@ -128,7 +135,7 @@ export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
         </div>
       ) : null}
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 md:gap-5">
         <div className="space-y-2">
           <Label className={labelClassName} htmlFor="sales-full-name">Full name</Label>
           <Input
@@ -179,6 +186,16 @@ export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
           />
         </div>
 
+        <button
+          className="flex items-center justify-between rounded-[3px] border border-[#262b31] bg-[#14171b] px-4 py-3 text-left text-[13px] text-[#9ba1a8] md:hidden"
+          onClick={() => setShowOptional((current) => !current)}
+          type="button"
+        >
+          <span>{showOptional ? "Hide optional details" : "Add optional details — role, Telegram"}</span>
+          <span className="text-[#e7a6d6]">{showOptional ? "−" : "+"}</span>
+        </button>
+
+        <div className={cn("grid gap-4 md:contents", showOptional ? "" : "hidden")}>
         <div className="space-y-2">
           <Label className={labelClassName} htmlFor="sales-role">Role</Label>
           <Input
@@ -261,6 +278,7 @@ export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
             onChange={(event) => updateField("telegramHandle", event.target.value)}
           />
         </div>
+        </div>
 
         <div className="space-y-2 md:col-span-2">
           <Label className={labelClassName} htmlFor="sales-primary-need">What do you want to discuss?</Label>
@@ -284,10 +302,10 @@ export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
         <div className="space-y-2 md:col-span-2">
           <Label className={labelClassName} htmlFor="sales-message">What should we know before we reply?</Label>
           <Textarea
-            className={fieldClassName}
+            className={areaClassName}
             required
             id="sales-message"
-            placeholder="Tell us what you sell, who you want to reach, and what you want help deciding."
+            placeholder="What you sell, who you want to reach, and what you want help deciding."
             rows={6}
             value={formState.message}
             onChange={(event) => updateField("message", event.target.value)}
@@ -296,11 +314,10 @@ export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 border-t border-[#1e2227] pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-2xl text-[13px] leading-6 text-[#9ba1a8]">
-          I read every enquiry myself and reply from hello@frithly.com with the honest next step —
-          a free briefing, a call, or a straight answer that this isn&apos;t a fit.
-        </p>
+      <p className="text-[13px] leading-6 text-[#9ba1a8] sm:hidden">{footNote}</p>
+
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-col gap-4 border-t border-[#1e2227] bg-[#0c0e11]/95 px-5 py-4 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-6 sm:backdrop-blur-none">
+        <p className="hidden max-w-2xl text-[13px] leading-6 text-[#9ba1a8] sm:block">{footNote}</p>
         <Button className={`w-full sm:w-auto ${submitButtonClassName}`} disabled={isSubmitting} size="lg" type="submit">
           {isSubmitting ? "Sending..." : "Send details"}
         </Button>

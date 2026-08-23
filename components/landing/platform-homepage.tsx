@@ -291,7 +291,7 @@ function SectionShell({
   return (
     <section
       className={cn(
-        "relative border-t border-[#1e2227] py-[76px] sm:py-[96px] lg:py-[120px]",
+        "relative border-t border-[#1e2227] py-14 sm:py-[96px] lg:py-[120px]",
         className,
       )}
       id={id}
@@ -392,7 +392,7 @@ function DocumentRow({
   value: string;
 }) {
   return (
-    <div className="grid gap-2 px-5 py-5 sm:grid-cols-[0.28fr_0.72fr] sm:gap-6 sm:px-7">
+    <div className="grid gap-1.5 px-4 py-4 sm:grid-cols-[0.28fr_0.72fr] sm:gap-6 sm:px-7 sm:py-5">
       <div
         className={cn(
           monoFont.className,
@@ -402,8 +402,10 @@ function DocumentRow({
         {label}
       </div>
       <div>
-        <div className="text-[16px] leading-[1.55] text-[#f3f1ea]">{value}</div>
-        <div className="mt-2 text-[14px] leading-[1.65] text-[#9ba1a8]">{note}</div>
+        <div className="text-[15px] leading-[1.5] text-[#f3f1ea] sm:text-[16px] sm:leading-[1.55]">{value}</div>
+        <div className="mt-1.5 text-[13px] leading-[1.6] text-[#9ba1a8] sm:mt-2 sm:text-[14px] sm:leading-[1.65]">
+          {note}
+        </div>
       </div>
     </div>
   );
@@ -616,7 +618,7 @@ export function PlatformHomepage() {
     <div className={cn(bodyFont.className, "relative isolate overflow-hidden bg-[#0c0e11] text-[#f3f1ea]")}>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_78%_8%,rgba(238,159,203,0.16),transparent_28%),radial-gradient(circle_at_88%_16%,rgba(182,171,232,0.14),transparent_26%)]" />
 
-      <section className="relative py-[76px] sm:py-[96px] lg:py-[116px]">
+      <section className="relative py-12 sm:py-[96px] lg:py-[116px]">
         <Container className="relative max-w-[1180px] px-5 sm:px-8">
           <motion.div className="max-w-[760px]" {...revealProps(enableMotion, 0.02)}>
             <div
@@ -828,7 +830,7 @@ export function PlatformHomepage() {
               </div>
               {column.rows.map((row) => (
                 <div
-                  className="flex items-start justify-between gap-6 border-b border-[#1e2227] px-6 py-4"
+                  className="flex items-start justify-between gap-4 border-b border-[#1e2227] px-5 py-3.5 sm:gap-6 sm:px-6 sm:py-4"
                   key={row.label}
                 >
                   <span
@@ -903,7 +905,7 @@ export function PlatformHomepage() {
           {...revealProps(enableMotion, 0.08)}
         >
           {firstWeeks.map((step) => (
-            <div className="relative bg-[#14171b] px-6 py-7" key={step.day}>
+            <div className="relative bg-[#14171b] px-5 py-6 sm:px-6 sm:py-7" key={step.day}>
               <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#ee9fcb,transparent)]" />
               <div
                 className={cn(
@@ -1014,12 +1016,15 @@ export function PlatformHomepage() {
         </motion.div>
 
         <motion.div
-          className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] lg:grid-cols-3"
+          className="mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:mt-12 lg:grid lg:grid-cols-3 lg:gap-px lg:overflow-visible lg:border lg:border-[#262b31] lg:bg-[#1e2227] lg:pb-0 [&::-webkit-scrollbar]:hidden"
           {...revealProps(enableMotion, 0.08)}
         >
           {tiers.map((tier) => (
             <div
-              className={cn("flex flex-col bg-[#14171b] px-6 py-8", tier.highlight && "bg-[#1b1f24]")}
+              className={cn(
+                "flex w-[85%] shrink-0 snap-start flex-col rounded-[6px] border border-[#262b31] bg-[#14171b] px-5 py-6 sm:w-[58%] md:w-[42%] lg:w-auto lg:rounded-none lg:border-0 lg:px-6 lg:py-8",
+                tier.highlight && "bg-[#1b1f24] border-[#e7a6d6]/40 lg:border-0",
+              )}
               key={tier.name}
             >
               <div
@@ -1031,11 +1036,11 @@ export function PlatformHomepage() {
               >
                 {tier.name}
               </div>
-              <div className={cn(displayFont.className, "text-[36px] font-semibold text-[#f3f1ea]")}>
+              <div className={cn(displayFont.className, "text-[32px] font-semibold text-[#f3f1ea] lg:text-[36px]")}>
                 {tier.amount}
                 <span className="ml-1 text-[13px] font-medium text-[#5c636b]">/mo</span>
               </div>
-              <ul className="my-7 flex flex-1 flex-col gap-3">
+              <ul className="my-5 flex flex-1 flex-col gap-2.5 lg:my-7 lg:gap-3">
                 {tier.features.map((feature) => (
                   <li className="relative pl-5 text-[14px] leading-[1.6] text-[#9ba1a8]" key={feature}>
                     <span className="absolute left-0 top-[11px] h-px w-3 bg-[#e7a6d6]" />
@@ -1054,6 +1059,14 @@ export function PlatformHomepage() {
             </div>
           ))}
         </motion.div>
+        <p
+          className={cn(
+            monoFont.className,
+            "mt-3 text-[10px] uppercase tracking-[0.14em] text-[#5c636b] lg:hidden",
+          )}
+        >
+          Swipe for the other plans →
+        </p>
 
         <motion.div className="mt-8" {...revealProps(enableMotion, 0.08)}>
           <DocumentPanel
@@ -1085,7 +1098,7 @@ export function PlatformHomepage() {
           {...revealProps(enableMotion, 0.08)}
         >
           {limits.map((limit) => (
-            <div className="bg-[#14171b] px-6 py-7" key={limit.title}>
+            <div className="bg-[#14171b] px-5 py-6 sm:px-6 sm:py-7" key={limit.title}>
               <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
                 {limit.title}
               </h3>
@@ -1124,7 +1137,7 @@ export function PlatformHomepage() {
         </motion.div>
       </SectionShell>
 
-      <SectionShell className="overflow-hidden py-[96px] sm:py-[120px] lg:py-[140px]" id="cta">
+      <SectionShell className="overflow-hidden py-16 sm:py-[120px] lg:py-[140px]" id="cta">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(238,159,203,0.12),transparent_34%),radial-gradient(circle_at_52%_52%,rgba(182,171,232,0.1),transparent_30%)]" />
         <motion.div className="relative mx-auto max-w-[720px] text-center" {...revealProps(enableMotion, 0.02)}>
           <h2

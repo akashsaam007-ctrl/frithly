@@ -59,10 +59,13 @@ export function BriefingRequestForm() {
   const [formState, setFormState] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showOptional, setShowOptional] = useState(false);
   const [confirmation, setConfirmation] = useState<{ bookingUrl?: string } | null>(null);
 
-  const fieldClassName =
+  const fieldBase =
     "rounded-[3px] border-[#262b31] bg-[#14171b] text-[#f3f1ea] placeholder:text-[#5c636b] focus-visible:ring-[#e7a6d6] focus-visible:ring-offset-[#0c0e11]";
+  const fieldClassName = `${fieldBase} h-12 md:h-11`;
+  const areaClassName = fieldBase;
   const labelClassName = "text-[13px] font-medium text-[#f3f1ea]";
   const hintClassName = "text-[12px] leading-6 text-[#5c636b]";
   const primaryButtonClassName =
@@ -161,7 +164,7 @@ export function BriefingRequestForm() {
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 md:gap-5">
         <div className="space-y-2">
           <Label className={labelClassName} htmlFor="briefing-name">Full name</Label>
           <Input
@@ -199,21 +202,11 @@ export function BriefingRequestForm() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label className={labelClassName} htmlFor="briefing-whatsapp">WhatsApp (optional)</Label>
-          <Input
-            className={fieldClassName}
-            id="briefing-whatsapp"
-            onChange={(event) => updateField("whatsapp", event.target.value)}
-            placeholder="+44 7700 900123"
-            value={formState.whatsapp}
-          />
-        </div>
 
         <div className="space-y-2 md:col-span-2">
           <Label className={labelClassName} htmlFor="briefing-offer">What do you sell?</Label>
           <Textarea
-            className={fieldClassName}
+            className={areaClassName}
             id="briefing-offer"
             maxLength={500}
             minLength={10}
@@ -228,7 +221,7 @@ export function BriefingRequestForm() {
         <div className="space-y-2 md:col-span-2">
           <Label className={labelClassName} htmlFor="briefing-target">Who do you want to reach?</Label>
           <Textarea
-            className={fieldClassName}
+            className={areaClassName}
             id="briefing-target"
             maxLength={500}
             minLength={10}
@@ -249,7 +242,7 @@ export function BriefingRequestForm() {
               return (
                 <button
                   className={cn(
-                    "rounded-[3px] border px-3 py-2 text-[13px] transition-colors",
+                    "rounded-[3px] border px-3.5 py-2.5 text-[13px] transition-colors md:px-3 md:py-2",
                     isOn
                       ? "border-[#e7a6d6] bg-[#1b1f24] text-[#f3f1ea]"
                       : "border-[#262b31] bg-[#14171b] text-[#9ba1a8] hover:border-[#9ba1a8]",
@@ -274,7 +267,7 @@ export function BriefingRequestForm() {
               return (
                 <button
                   className={cn(
-                    "rounded-[3px] border px-3 py-2 text-[13px] transition-colors",
+                    "rounded-[3px] border px-3.5 py-2.5 text-[13px] transition-colors md:px-3 md:py-2",
                     isOn
                       ? "border-[#e7a6d6] bg-[#1b1f24] text-[#f3f1ea]"
                       : "border-[#262b31] bg-[#14171b] text-[#9ba1a8] hover:border-[#9ba1a8]",
@@ -290,17 +283,39 @@ export function BriefingRequestForm() {
           </div>
         </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <Label className={labelClassName} htmlFor="briefing-notes">Anything else? (optional)</Label>
-          <Textarea
-            className={fieldClassName}
-            id="briefing-notes"
-            maxLength={2000}
-            onChange={(event) => updateField("additionalRequirements", event.target.value)}
-            placeholder="Accounts to avoid, a trigger you care about most, a competitor you keep losing to."
-            rows={3}
-            value={formState.additionalRequirements}
-          />
+        <button
+          className="flex items-center justify-between rounded-[3px] border border-[#262b31] bg-[#14171b] px-4 py-3 text-left text-[13px] text-[#9ba1a8] md:hidden"
+          onClick={() => setShowOptional((current) => !current)}
+          type="button"
+        >
+          <span>{showOptional ? "Hide optional details" : "Add optional details — WhatsApp, notes"}</span>
+          <span className="text-[#e7a6d6]">{showOptional ? "−" : "+"}</span>
+        </button>
+
+        <div className={cn("grid gap-4 md:contents", showOptional ? "" : "hidden")}>
+          <div className="space-y-2">
+            <Label className={labelClassName} htmlFor="briefing-whatsapp">WhatsApp (optional)</Label>
+            <Input
+              className={fieldClassName}
+              id="briefing-whatsapp"
+              onChange={(event) => updateField("whatsapp", event.target.value)}
+              placeholder="+44 7700 900123"
+              value={formState.whatsapp}
+            />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label className={labelClassName} htmlFor="briefing-notes">Anything else? (optional)</Label>
+            <Textarea
+              className={areaClassName}
+              id="briefing-notes"
+              maxLength={2000}
+              onChange={(event) => updateField("additionalRequirements", event.target.value)}
+              placeholder="Accounts to avoid, a trigger you care about most, a competitor you keep losing to."
+              rows={3}
+              value={formState.additionalRequirements}
+            />
+          </div>
         </div>
       </div>
 
@@ -310,8 +325,12 @@ export function BriefingRequestForm() {
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-4 border-t border-[#1e2227] pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className={cn(hintClassName, "max-w-[38ch]")}>
+      <p className={cn(hintClassName, "sm:hidden")}>
+        One briefing, built for your market. No call required.
+      </p>
+
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-col gap-4 border-t border-[#1e2227] bg-[#0c0e11]/95 px-5 py-4 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-6 sm:backdrop-blur-none">
+        <p className={cn(hintClassName, "hidden max-w-[38ch] sm:block")}>
           One briefing, built for your market. No call required and no sequence aimed at you
           afterwards.
         </p>
