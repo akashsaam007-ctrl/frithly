@@ -58,7 +58,7 @@ export function Navbar() {
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#1e2227] bg-[#0c0e11]/82 text-[#f3f1ea] backdrop-blur-[10px]">
       <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
-      <Container className="relative flex h-16 max-w-[1180px] items-center justify-between px-5 sm:px-8">
+      <Container className="relative flex h-14 max-w-[1180px] items-center justify-between px-5 sm:h-16 sm:px-8">
         <div className="hidden sm:block">
           <Logo imageClassName="h-7 sm:h-8" priority />
         </div>
@@ -102,11 +102,11 @@ export function Navbar() {
         <div className="min-[900px]:hidden">
           <button
             aria-label="Close menu overlay"
-            className="fixed inset-0 top-16 z-40 bg-[#0c0e11]/78 backdrop-blur-[4px]"
+            className="fixed inset-0 top-14 sm:top-16 z-40 bg-[#0c0e11]/78 backdrop-blur-[4px]"
             onClick={() => setIsMenuOpen(false)}
             type="button"
           />
-          <div className="fixed inset-x-0 top-16 z-50 border-t border-[#1e2227] bg-[#0c0e11] shadow-[0_24px_60px_rgba(0,0,0,0.36)]">
+          <div className="fixed inset-x-0 top-14 sm:top-16 z-50 border-t border-[#1e2227] bg-[#0c0e11] shadow-[0_24px_60px_rgba(0,0,0,0.36)]">
             <Container className="flex max-w-[1180px] flex-col gap-5 px-5 py-6 sm:px-8">
               <p className={cn(monoFont.className, "text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]")}>
                 Menu

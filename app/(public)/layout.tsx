@@ -8,7 +8,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="relative min-h-screen bg-[#0c0e11] pt-[66px] text-[#f3f1ea]">
+    <div className="relative min-h-screen bg-[#0c0e11] pt-[58px] text-[#f3f1ea] sm:pt-[66px]">
       <Navbar />
       {children}
       <Footer />

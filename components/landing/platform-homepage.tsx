@@ -291,7 +291,7 @@ function SectionShell({
   return (
     <section
       className={cn(
-        "relative border-t border-[#1e2227] py-11 sm:py-[96px] lg:py-[120px]",
+        "relative border-t border-[#1e2227] py-10 sm:py-[96px] lg:py-[120px]",
         className,
       )}
       id={id}
@@ -313,13 +313,13 @@ function SectionHeader({
       <h2
         className={cn(
           displayFont.className,
-          "text-[23px] font-semibold leading-[1.12] tracking-[-0.01em] text-[#f3f1ea] sm:text-[38px]",
+          "text-[20px] font-semibold leading-[1.2] tracking-[-0.01em] text-[#f3f1ea] sm:text-[38px]",
         )}
       >
         {title}
       </h2>
       {lede ? (
-        <p className="mt-3.5 max-w-[560px] text-[14px] leading-[1.6] text-[#9ba1a8] sm:mt-5 sm:text-[16px] sm:leading-[1.7]">
+        <p className="mt-3 max-w-[560px] text-[13.5px] leading-[1.55] text-[#9ba1a8] sm:mt-5 sm:text-[16px] sm:leading-[1.7]">
         {lede}
       </p>
       ) : null}
@@ -541,7 +541,7 @@ function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
 
   return (
     <div ref={containerRef}>
-      <div className="grid grid-cols-2 gap-px border border-[#262b31] bg-[#1e2227] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div className="grid grid-cols-3 gap-px border border-[#262b31] bg-[#1e2227] md:grid-cols-4 lg:grid-cols-6">
         {funnelRows.map((row, index) => {
           const isKept = index === keptIndex;
           const isOut = discarded[index];
@@ -549,7 +549,7 @@ function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
           return (
             <div
               className={cn(
-                "min-h-[66px] bg-[#14171b] p-2.5 transition-all duration-500 sm:min-h-[78px] sm:p-3",
+                "min-h-[58px] bg-[#14171b] p-2 transition-all duration-500 sm:min-h-[78px] sm:p-3",
                 isOut && "opacity-40",
                 isKept && delivered && "bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] opacity-100",
               )}
@@ -557,7 +557,7 @@ function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
             >
               <span
                 className={cn(
-                  "block text-[11px] leading-[1.35] sm:text-[12px] sm:leading-5",
+                  "block text-[10.5px] leading-[1.3] sm:text-[12px] sm:leading-5",
                   isKept && delivered ? "font-semibold text-[#241522]" : "text-[#9ba1a8]",
                   isOut && "line-through",
                 )}
@@ -567,7 +567,7 @@ function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
               <span
                 className={cn(
                   monoFont.className,
-                  "mt-1 block text-[10px] uppercase tracking-[0.08em]",
+                  "mt-1 block text-[9px] uppercase leading-[1.3] tracking-[0.05em] sm:text-[10px] sm:tracking-[0.08em]",
                   isKept && delivered ? "font-medium text-[#241522]" : "text-[#e7a6d6]",
                 )}
               >
@@ -615,6 +615,43 @@ function FounderPortrait() {
 export function PlatformHomepage() {
   const reduceMotion = useReducedMotion() ?? false;
   const enableMotion = !reduceMotion;
+  const closingRef = useRef<HTMLDivElement | null>(null);
+  const [showActionBar, setShowActionBar] = useState(false);
+
+  useEffect(() => {
+    let scrolledPastHero = false;
+    let closingVisible = false;
+
+    const update = () => setShowActionBar(scrolledPastHero && !closingVisible);
+    const onScroll = () => {
+      scrolledPastHero = window.scrollY > 520;
+      update();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    const node = closingRef.current;
+    let observer: IntersectionObserver | undefined;
+
+    if (node && typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            closingVisible = entry.isIntersecting;
+            update();
+          });
+        },
+        { threshold: 0.2 },
+      );
+      observer.observe(node);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      observer?.disconnect();
+    };
+  }, []);
 
   return (
     <div className={cn(bodyFont.className, "relative isolate overflow-hidden bg-[#0c0e11] text-[#f3f1ea]")}>
@@ -634,7 +671,7 @@ export function PlatformHomepage() {
             <h1
               className={cn(
                 displayFont.className,
-                "max-w-[15ch] text-[29px] font-semibold leading-[1.1] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
+                "max-w-[15ch] text-[26px] font-semibold leading-[1.15] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
               )}
             >
               Your rep doesn’t need more names. They need the{" "}
@@ -643,7 +680,7 @@ export function PlatformHomepage() {
               </span>
               .
             </h1>
-            <p className="mt-4 max-w-[560px] text-[15px] leading-[1.65] text-[#9ba1a8] sm:mt-6 sm:text-[18px] sm:leading-[1.7]">
+            <p className="mt-3.5 max-w-[560px] text-[14px] leading-[1.6] text-[#9ba1a8] sm:mt-6 sm:text-[18px] sm:leading-[1.7]">
               We find the moment a company is ready to buy, verify the person who can say yes, and
               deliver a briefing your team can send the same day. Every Tuesday. Nothing older than
               twenty days.
@@ -746,23 +783,28 @@ export function PlatformHomepage() {
           />
         </motion.div>
         <motion.div
-          className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5"
+          className="mt-6 divide-y divide-[#1e2227] overflow-hidden rounded-[10px] border border-[#262b31] bg-[#14171b] sm:mt-12 sm:grid sm:grid-cols-2 sm:gap-4 sm:divide-y-0 sm:overflow-visible sm:rounded-none sm:border-0 sm:bg-transparent lg:grid-cols-3 xl:grid-cols-5"
           {...revealProps(enableMotion, 0.08)}
         >
           {triggerSignals.map((signal) => (
-            <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-4 sm:p-5" key={signal.title}>
-              <div
-                className={cn(
-                  monoFont.className,
-                  "mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6] sm:mb-4 sm:text-[11px]",
-                )}
-              >
-                {signal.index}
+            <div
+              className="px-4 py-3.5 sm:rounded-[6px] sm:border sm:border-[#262b31] sm:bg-[#14171b] sm:p-5"
+              key={signal.title}
+            >
+              <div className="flex items-baseline gap-2.5 sm:block">
+                <span
+                  className={cn(
+                    monoFont.className,
+                    "text-[10px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6] sm:mb-4 sm:block sm:text-[11px]",
+                  )}
+                >
+                  {signal.index}
+                </span>
+                <h3 className={cn(displayFont.className, "text-[15px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
+                  {signal.title}
+                </h3>
               </div>
-              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
-                {signal.title}
-              </h3>
-              <p className="mt-2 text-[13px] leading-[1.55] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
+              <p className="mt-1 text-[12.5px] leading-[1.5] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
                 {signal.body}
               </p>
             </div>
@@ -878,10 +920,10 @@ export function PlatformHomepage() {
         >
           {volumeNotes.map((note) => (
             <div key={note.title}>
-              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
+              <h3 className={cn(displayFont.className, "text-[15px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {note.title}
               </h3>
-              <p className="mt-2 text-[13px] leading-[1.6] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.7]">
+              <p className="mt-1.5 text-[12.5px] leading-[1.55] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.7]">
                 {note.body}
               </p>
             </div>
@@ -921,10 +963,10 @@ export function PlatformHomepage() {
               >
                 {step.day}
               </div>
-              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
+              <h3 className={cn(displayFont.className, "text-[15px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {step.title}
               </h3>
-              <p className="mt-2 text-[13px] leading-[1.55] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
+              <p className="mt-1.5 text-[12.5px] leading-[1.5] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
                 {step.body}
               </p>
             </div>
@@ -1101,10 +1143,10 @@ export function PlatformHomepage() {
         >
           {limits.map((limit) => (
             <div className="bg-[#14171b] px-4 py-5 sm:px-6 sm:py-7" key={limit.title}>
-              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
+              <h3 className={cn(displayFont.className, "text-[15px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {limit.title}
               </h3>
-              <p className="mt-2 text-[13px] leading-[1.6] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.7]">
+              <p className="mt-1.5 text-[12.5px] leading-[1.55] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.7]">
                 {limit.body}
               </p>
             </div>
@@ -1143,11 +1185,15 @@ export function PlatformHomepage() {
 
       <SectionShell className="overflow-hidden py-14 sm:py-[120px] lg:py-[140px]" id="cta">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(238,159,203,0.12),transparent_34%),radial-gradient(circle_at_52%_52%,rgba(182,171,232,0.1),transparent_30%)]" />
-        <motion.div className="relative mx-auto max-w-[720px] text-center" {...revealProps(enableMotion, 0.02)}>
+        <motion.div
+          className="relative mx-auto max-w-[720px] text-center"
+          ref={closingRef}
+          {...revealProps(enableMotion, 0.02)}
+        >
           <h2
             className={cn(
               displayFont.className,
-              "text-[26px] font-semibold leading-[1.1] text-[#f3f1ea] sm:text-[44px]",
+              "text-[22px] font-semibold leading-[1.2] text-[#f3f1ea] sm:text-[44px]",
             )}
           >
             Ask for one briefing on your own market.
@@ -1166,6 +1212,25 @@ export function PlatformHomepage() {
           </div>
         </motion.div>
       </SectionShell>
+
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-[#262b31] bg-[#0c0e11]/95 px-4 py-2.5 backdrop-blur transition-transform duration-300 sm:hidden",
+          showActionBar ? "translate-y-0" : "translate-y-full",
+        )}
+      >
+        <Button asChild className={`${primaryButtonClassName} h-11 flex-1 text-[13px]`} size="md">
+          <Link href={ROUTES.BRIEFING}>Free briefing</Link>
+        </Button>
+        <Button
+          asChild
+          className={`${ghostButtonClassName} h-11 flex-1 text-[13px]`}
+          size="md"
+          variant="secondary"
+        >
+          <Link href="#terms">See plans</Link>
+        </Button>
+      </div>
     </div>
   );
 }
