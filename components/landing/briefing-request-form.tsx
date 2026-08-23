@@ -329,7 +329,7 @@ export function BriefingRequestForm() {
         One briefing, built for your market. No call required.
       </p>
 
-      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-col gap-4 border-t border-[#1e2227] bg-[#0c0e11]/95 px-5 py-4 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-6 sm:backdrop-blur-none">
+      <div className="sticky bottom-0 -mx-4 -mb-4 flex flex-col gap-4 border-t border-[#1e2227] bg-[#0c0e11]/95 px-4 py-4 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-6 sm:backdrop-blur-none">
         <p className={cn(hintClassName, "hidden max-w-[38ch] sm:block")}>
           One briefing, built for your market. No call required and no sequence aimed at you
           afterwards.

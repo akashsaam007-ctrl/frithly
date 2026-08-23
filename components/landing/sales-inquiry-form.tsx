@@ -316,7 +316,7 @@ export function SalesInquiryForm({ plan }: { plan?: EnquiryPlan }) {
 
       <p className="text-[13px] leading-6 text-[#9ba1a8] sm:hidden">{footNote}</p>
 
-      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-col gap-4 border-t border-[#1e2227] bg-[#0c0e11]/95 px-5 py-4 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-6 sm:backdrop-blur-none">
+      <div className="sticky bottom-0 -mx-4 -mb-4 flex flex-col gap-4 border-t border-[#1e2227] bg-[#0c0e11]/95 px-4 py-4 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-6 sm:backdrop-blur-none">
         <p className="hidden max-w-2xl text-[13px] leading-6 text-[#9ba1a8] sm:block">{footNote}</p>
         <Button className={`w-full sm:w-auto ${submitButtonClassName}`} disabled={isSubmitting} size="lg" type="submit">
           {isSubmitting ? "Sending..." : "Send details"}

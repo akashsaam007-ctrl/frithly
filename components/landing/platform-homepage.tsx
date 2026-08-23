@@ -291,7 +291,7 @@ function SectionShell({
   return (
     <section
       className={cn(
-        "relative border-t border-[#1e2227] py-14 sm:py-[96px] lg:py-[120px]",
+        "relative border-t border-[#1e2227] py-11 sm:py-[96px] lg:py-[120px]",
         className,
       )}
       id={id}
@@ -313,13 +313,15 @@ function SectionHeader({
       <h2
         className={cn(
           displayFont.className,
-          "text-[28px] font-semibold leading-[1.08] tracking-[-0.01em] text-[#f3f1ea] sm:text-[38px]",
+          "text-[23px] font-semibold leading-[1.12] tracking-[-0.01em] text-[#f3f1ea] sm:text-[38px]",
         )}
       >
         {title}
       </h2>
       {lede ? (
-        <p className="mt-5 max-w-[560px] text-[16px] leading-[1.7] text-[#9ba1a8]">{lede}</p>
+        <p className="mt-3.5 max-w-[560px] text-[14px] leading-[1.6] text-[#9ba1a8] sm:mt-5 sm:text-[16px] sm:leading-[1.7]">
+        {lede}
+      </p>
       ) : null}
     </div>
   );
@@ -341,7 +343,7 @@ function DocumentPanel({
   return (
     <div className="overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
       <div className="h-0.5 bg-[linear-gradient(90deg,#f3b583_0%,#ee9fcb_50%,#b6abe8_100%)]" />
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#262b31] bg-[#1b1f24] px-5 py-5 sm:px-7">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#262b31] bg-[#1b1f24] px-4 py-4 sm:gap-4 sm:px-7 sm:py-5">
         <div>
           <div
             className={cn(
@@ -354,7 +356,7 @@ function DocumentPanel({
           <div
             className={cn(
               displayFont.className,
-              "mt-2 text-[22px] font-semibold text-[#f3f1ea] sm:text-[26px]",
+              "mt-1.5 text-[18px] font-semibold leading-[1.25] text-[#f3f1ea] sm:mt-2 sm:text-[26px]",
             )}
           >
             {title}
@@ -373,7 +375,7 @@ function DocumentPanel({
       <div
         className={cn(
           monoFont.className,
-          "border-t border-[#262b31] bg-[#1b1f24] px-5 py-4 text-[11px] leading-[1.9] tracking-[0.08em] text-[#5c636b] sm:px-7",
+          "border-t border-[#262b31] bg-[#1b1f24] px-4 py-3.5 text-[10px] leading-[1.8] tracking-[0.06em] text-[#5c636b] sm:px-7 sm:py-4 sm:text-[11px] sm:leading-[1.9] sm:tracking-[0.08em]",
         )}
       >
         {footnote}
@@ -547,7 +549,7 @@ function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
           return (
             <div
               className={cn(
-                "min-h-[78px] bg-[#14171b] p-3 transition-all duration-500",
+                "min-h-[66px] bg-[#14171b] p-2.5 transition-all duration-500 sm:min-h-[78px] sm:p-3",
                 isOut && "opacity-40",
                 isKept && delivered && "bg-[linear-gradient(135deg,#f3b583_0%,#ee9fcb_52%,#b6abe8_100%)] opacity-100",
               )}
@@ -555,7 +557,7 @@ function DiscardFunnel({ enableMotion }: { enableMotion: boolean }) {
             >
               <span
                 className={cn(
-                  "block text-[12px] leading-5",
+                  "block text-[11px] leading-[1.35] sm:text-[12px] sm:leading-5",
                   isKept && delivered ? "font-semibold text-[#241522]" : "text-[#9ba1a8]",
                   isOut && "line-through",
                 )}
@@ -594,7 +596,7 @@ function FounderPortrait() {
   const [hasPhoto, setHasPhoto] = useState(true);
 
   return (
-    <div className="relative flex aspect-[4/5] w-full max-w-[260px] items-center justify-center overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b]">
+    <div className="relative flex aspect-[4/5] w-full max-w-[190px] items-center justify-center overflow-hidden rounded-[6px] border border-[#262b31] bg-[#14171b] sm:max-w-[260px]">
       {hasPhoto ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -632,7 +634,7 @@ export function PlatformHomepage() {
             <h1
               className={cn(
                 displayFont.className,
-                "max-w-[15ch] text-[36px] font-semibold leading-[1.08] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
+                "max-w-[15ch] text-[29px] font-semibold leading-[1.1] tracking-[-0.01em] text-[#f3f1ea] sm:text-[56px]",
               )}
             >
               Your rep doesn’t need more names. They need the{" "}
@@ -641,12 +643,12 @@ export function PlatformHomepage() {
               </span>
               .
             </h1>
-            <p className="mt-6 max-w-[560px] text-[17px] leading-[1.7] text-[#9ba1a8] sm:text-[18px]">
+            <p className="mt-4 max-w-[560px] text-[15px] leading-[1.65] text-[#9ba1a8] sm:mt-6 sm:text-[18px] sm:leading-[1.7]">
               We find the moment a company is ready to buy, verify the person who can say yes, and
               deliver a briefing your team can send the same day. Every Tuesday. Nothing older than
               twenty days.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:gap-3">
               <Button asChild className={primaryButtonClassName} size="lg">
                 <Link href={ROUTES.BOOK_MEETING}>Start with $750</Link>
               </Button>
@@ -657,7 +659,7 @@ export function PlatformHomepage() {
             <div
               className={cn(
                 monoFont.className,
-                "mt-10 flex flex-wrap gap-x-7 gap-y-3 border-t border-[#1e2227] pt-6 text-[11px] uppercase tracking-[0.12em] text-[#5c636b] [&_b]:font-medium [&_b]:text-[#9ba1a8]",
+                "mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-[#1e2227] pt-5 text-[10px] uppercase tracking-[0.1em] text-[#5c636b] sm:mt-10 sm:gap-x-7 sm:gap-y-3 sm:pt-6 sm:text-[11px] sm:tracking-[0.12em] [&_b]:font-medium [&_b]:text-[#9ba1a8]",
               )}
             >
               <span>
@@ -676,7 +678,7 @@ export function PlatformHomepage() {
           </motion.div>
 
           <motion.div
-            className="mt-12 grid gap-px border border-[#262b31] bg-[#1e2227] sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-8 grid grid-cols-2 gap-px border border-[#262b31] bg-[#1e2227] sm:mt-12 lg:grid-cols-4"
             {...revealProps(enableMotion, 0.1)}
           >
             {[
@@ -685,8 +687,8 @@ export function PlatformHomepage() {
               { key: "Engagements delivered", value: "24" },
               { key: "Maximum signal age", value: "20 days" },
             ].map((stat) => (
-              <div className="bg-[#14171b] px-5 py-7" key={stat.key}>
-                <div className={cn(displayFont.className, "text-[28px] font-semibold text-[#f3f1ea] sm:text-[32px]")}>
+              <div className="bg-[#14171b] px-4 py-5 sm:px-5 sm:py-7" key={stat.key}>
+                <div className={cn(displayFont.className, "text-[20px] font-semibold leading-[1.15] text-[#f3f1ea] sm:text-[32px]")}>
                   {stat.value === "rate" ? (
                     <span>
                       <span className="text-[#5c636b] line-through">2.1%</span>{" "}
@@ -695,7 +697,7 @@ export function PlatformHomepage() {
                     </span>
                   ) : stat.value === "20 days" ? (
                     <span>
-                      20 <span className="text-[16px] font-medium text-[#5c636b]">days</span>
+                      20 <span className="text-[12px] font-medium text-[#5c636b] sm:text-[16px]">days</span>
                     </span>
                   ) : (
                     stat.value
@@ -704,7 +706,7 @@ export function PlatformHomepage() {
                 <div
                   className={cn(
                     monoFont.className,
-                    "mt-3 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]",
+                    "mt-2 text-[9.5px] uppercase leading-[1.5] tracking-[0.1em] text-[#5c636b] sm:mt-3 sm:text-[11px] sm:tracking-[0.12em]",
                   )}
                 >
                   {stat.key}
@@ -722,7 +724,7 @@ export function PlatformHomepage() {
             title="One company, one live reason, everything checked."
           />
         </motion.div>
-        <motion.div className="mt-12" {...revealProps(enableMotion, 0.08)}>
+        <motion.div className="mt-8 sm:mt-12" {...revealProps(enableMotion, 0.08)}>
           <DocumentPanel
             badge="Verified by hand"
             eyebrow="Opportunity FR-0417 · delivered Tuesday 09:00 · single recipient"
@@ -744,23 +746,25 @@ export function PlatformHomepage() {
           />
         </motion.div>
         <motion.div
-          className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5"
           {...revealProps(enableMotion, 0.08)}
         >
           {triggerSignals.map((signal) => (
-            <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-5" key={signal.title}>
+            <div className="rounded-[6px] border border-[#262b31] bg-[#14171b] p-4 sm:p-5" key={signal.title}>
               <div
                 className={cn(
                   monoFont.className,
-                  "mb-4 text-[11px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6]",
+                  "mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[#e7a6d6] sm:mb-4 sm:text-[11px]",
                 )}
               >
                 {signal.index}
               </div>
-              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {signal.title}
               </h3>
-              <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{signal.body}</p>
+              <p className="mt-2 text-[13px] leading-[1.55] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
+                {signal.body}
+              </p>
             </div>
           ))}
         </motion.div>
@@ -809,7 +813,7 @@ export function PlatformHomepage() {
         >
           {ledgerColumns.map((column) => (
             <div className={cn("bg-[#14171b]", column.highlight && "bg-[#1b1f24]")} key={column.title}>
-              <div className="border-b border-[#1e2227] px-6 py-6">
+              <div className="border-b border-[#1e2227] px-4 py-4 sm:px-6 sm:py-6">
                 <div
                   className={cn(
                     monoFont.className,
@@ -822,7 +826,7 @@ export function PlatformHomepage() {
                 <div
                   className={cn(
                     displayFont.className,
-                    "mt-3 text-[26px] font-semibold text-[#f3f1ea] sm:text-[30px]",
+                    "mt-2 text-[21px] font-semibold text-[#f3f1ea] sm:mt-3 sm:text-[30px]",
                   )}
                 >
                   {column.headline}
@@ -830,20 +834,20 @@ export function PlatformHomepage() {
               </div>
               {column.rows.map((row) => (
                 <div
-                  className="flex items-start justify-between gap-4 border-b border-[#1e2227] px-5 py-3.5 sm:gap-6 sm:px-6 sm:py-4"
+                  className="flex items-start justify-between gap-3 border-b border-[#1e2227] px-4 py-3 sm:gap-6 sm:px-6 sm:py-4"
                   key={row.label}
                 >
                   <span
                     className={cn(
                       monoFont.className,
-                      "shrink-0 pt-1 text-[11px] uppercase tracking-[0.12em] text-[#5c636b]",
+                      "shrink-0 pt-0.5 text-[9.5px] uppercase tracking-[0.1em] text-[#5c636b] sm:pt-1 sm:text-[11px] sm:tracking-[0.12em]",
                     )}
                   >
                     {row.label}
                   </span>
                   <span
                     className={cn(
-                      "max-w-[26ch] text-right text-[14px] leading-[1.6]",
+                      "max-w-[26ch] text-right text-[12.5px] leading-[1.5] sm:text-[14px] sm:leading-[1.6]",
                       column.highlight ? "text-[#f3f1ea]" : "text-[#9ba1a8]",
                     )}
                   >
@@ -858,7 +862,7 @@ export function PlatformHomepage() {
               ))}
               <div
                 className={cn(
-                  "px-6 py-5 text-[14px] leading-[1.7]",
+                  "px-4 py-4 text-[13px] leading-[1.6] sm:px-6 sm:py-5 sm:text-[14px] sm:leading-[1.7]",
                   column.highlight ? "text-[#f3f1ea]" : "text-[#9ba1a8]",
                 )}
               >
@@ -869,15 +873,17 @@ export function PlatformHomepage() {
         </motion.div>
 
         <motion.div
-          className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-8 grid gap-5 sm:mt-12 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3"
           {...revealProps(enableMotion, 0.08)}
         >
           {volumeNotes.map((note) => (
             <div key={note.title}>
-              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {note.title}
               </h3>
-              <p className="mt-3 text-[14px] leading-[1.7] text-[#9ba1a8]">{note.body}</p>
+              <p className="mt-2 text-[13px] leading-[1.6] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.7]">
+                {note.body}
+              </p>
             </div>
           ))}
         </motion.div>
@@ -905,20 +911,22 @@ export function PlatformHomepage() {
           {...revealProps(enableMotion, 0.08)}
         >
           {firstWeeks.map((step) => (
-            <div className="relative bg-[#14171b] px-5 py-6 sm:px-6 sm:py-7" key={step.day}>
+            <div className="relative bg-[#14171b] px-4 py-5 sm:px-6 sm:py-7" key={step.day}>
               <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#ee9fcb,transparent)]" />
               <div
                 className={cn(
                   monoFont.className,
-                  "mb-4 text-[11px] uppercase tracking-[0.14em] text-[#e7a6d6]",
+                  "mb-3 text-[10px] uppercase tracking-[0.12em] text-[#e7a6d6] sm:mb-4 sm:text-[11px] sm:tracking-[0.14em]",
                 )}
               >
                 {step.day}
               </div>
-              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {step.title}
               </h3>
-              <p className="mt-3 text-[14px] leading-[1.65] text-[#9ba1a8]">{step.body}</p>
+              <p className="mt-2 text-[13px] leading-[1.55] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
+                {step.body}
+              </p>
             </div>
           ))}
         </motion.div>
@@ -931,7 +939,7 @@ export function PlatformHomepage() {
           />
         </motion.div>
         <motion.div
-          className="mt-12 grid gap-10 lg:grid-cols-[260px_1fr] lg:gap-14"
+          className="mt-8 grid gap-7 sm:mt-12 sm:gap-10 lg:grid-cols-[260px_1fr] lg:gap-14"
           {...revealProps(enableMotion, 0.08)}
         >
           <div>
@@ -949,10 +957,10 @@ export function PlatformHomepage() {
               hello@frithly.com
             </div>
           </div>
-          <div className="max-w-[640px] space-y-5">
-            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">{founderNotes[0]}</p>
-            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">{founderNotes[1]}</p>
-            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">
+          <div className="max-w-[640px] space-y-4 sm:space-y-5">
+            <p className="text-[13.5px] leading-[1.7] text-[#9ba1a8] sm:text-[15px] sm:leading-[1.75]">{founderNotes[0]}</p>
+            <p className="text-[13.5px] leading-[1.7] text-[#9ba1a8] sm:text-[15px] sm:leading-[1.75]">{founderNotes[1]}</p>
+            <p className="text-[13.5px] leading-[1.7] text-[#9ba1a8] sm:text-[15px] sm:leading-[1.75]">
               It is also why I cap the work at four engagements at a time.{" "}
               <strong className="font-semibold text-[#f3f1ea]">
                 The volumes on this page are what one person can deliver at this standard
@@ -960,7 +968,7 @@ export function PlatformHomepage() {
               — not what would look impressive on a pricing page. When those four are taken, you’ll be
               told rather than sold to.
             </p>
-            <p className="text-[15px] leading-[1.75] text-[#9ba1a8]">{founderNotes[2]}</p>
+            <p className="text-[13.5px] leading-[1.7] text-[#9ba1a8] sm:text-[15px] sm:leading-[1.75]">{founderNotes[2]}</p>
           </div>
         </motion.div>
       </SectionShell>
@@ -973,19 +981,19 @@ export function PlatformHomepage() {
           />
         </motion.div>
         <motion.div
-          className="mt-12 rounded-[6px] border border-[#262b31] bg-[#14171b] p-6 sm:p-9"
+          className="mt-8 rounded-[6px] border border-[#262b31] bg-[#14171b] p-5 sm:mt-12 sm:p-9"
           {...revealProps(enableMotion, 0.08)}
         >
           <p
             className={cn(
               displayFont.className,
-              "text-[20px] font-semibold leading-[1.4] text-[#f3f1ea] sm:text-[26px]",
+              "text-[17px] font-semibold leading-[1.4] text-[#f3f1ea] sm:text-[26px]",
             )}
           >
             Reply rate moved from 2.1% on their previously purchased lists to 6.2% on signal-scored
             briefings — roughly a threefold lift, with no change to their offer or their sender.
           </p>
-          <div className="mt-8 grid gap-6 border-t border-[#1e2227] pt-7 sm:grid-cols-3">
+          <div className="mt-6 grid gap-4 border-t border-[#1e2227] pt-5 sm:mt-8 sm:grid-cols-3 sm:gap-6 sm:pt-7">
             {[
               { label: "Client", value: "150 employees · SaaS, USA" },
               { label: "Trigger worked", value: "Sales expansion" },
@@ -1016,33 +1024,35 @@ export function PlatformHomepage() {
         </motion.div>
 
         <motion.div
-          className="mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:mt-12 lg:grid lg:grid-cols-3 lg:gap-px lg:overflow-visible lg:border lg:border-[#262b31] lg:bg-[#1e2227] lg:pb-0 [&::-webkit-scrollbar]:hidden"
+          className="mt-8 grid gap-px border border-[#262b31] bg-[#1e2227] sm:mt-12 lg:grid-cols-3"
           {...revealProps(enableMotion, 0.08)}
         >
           {tiers.map((tier) => (
             <div
               className={cn(
-                "flex w-[85%] shrink-0 snap-start flex-col rounded-[6px] border border-[#262b31] bg-[#14171b] px-5 py-6 sm:w-[58%] md:w-[42%] lg:w-auto lg:rounded-none lg:border-0 lg:px-6 lg:py-8",
-                tier.highlight && "bg-[#1b1f24] border-[#e7a6d6]/40 lg:border-0",
+                "flex flex-col bg-[#14171b] px-4 py-5 sm:px-6 sm:py-8",
+                tier.highlight && "bg-[#1b1f24]",
               )}
               key={tier.name}
             >
-              <div
-                className={cn(
-                  monoFont.className,
-                  "mb-5 text-[11px] uppercase tracking-[0.14em]",
-                  tier.highlight ? "text-[#e7a6d6]" : "text-[#5c636b]",
-                )}
-              >
-                {tier.name}
+              <div className="flex items-baseline justify-between gap-3 sm:block">
+                <div
+                  className={cn(
+                    monoFont.className,
+                    "text-[10px] uppercase tracking-[0.14em] sm:mb-5 sm:text-[11px]",
+                    tier.highlight ? "text-[#e7a6d6]" : "text-[#5c636b]",
+                  )}
+                >
+                  {tier.name}
+                </div>
+                <div className={cn(displayFont.className, "text-[24px] font-semibold text-[#f3f1ea] sm:text-[36px]")}>
+                  {tier.amount}
+                  <span className="ml-1 text-[12px] font-medium text-[#5c636b] sm:text-[13px]">/mo</span>
+                </div>
               </div>
-              <div className={cn(displayFont.className, "text-[32px] font-semibold text-[#f3f1ea] lg:text-[36px]")}>
-                {tier.amount}
-                <span className="ml-1 text-[13px] font-medium text-[#5c636b]">/mo</span>
-              </div>
-              <ul className="my-5 flex flex-1 flex-col gap-2.5 lg:my-7 lg:gap-3">
+              <ul className="my-4 flex flex-1 flex-col gap-2 sm:my-7 sm:gap-3">
                 {tier.features.map((feature) => (
-                  <li className="relative pl-5 text-[14px] leading-[1.6] text-[#9ba1a8]" key={feature}>
+                  <li className="relative pl-5 text-[13px] leading-[1.55] text-[#9ba1a8] sm:text-[14px] sm:leading-[1.6]" key={feature}>
                     <span className="absolute left-0 top-[11px] h-px w-3 bg-[#e7a6d6]" />
                     {feature}
                   </li>
@@ -1059,14 +1069,6 @@ export function PlatformHomepage() {
             </div>
           ))}
         </motion.div>
-        <p
-          className={cn(
-            monoFont.className,
-            "mt-3 text-[10px] uppercase tracking-[0.14em] text-[#5c636b] lg:hidden",
-          )}
-        >
-          Swipe for the other plans →
-        </p>
 
         <motion.div className="mt-8" {...revealProps(enableMotion, 0.08)}>
           <DocumentPanel
@@ -1098,11 +1100,13 @@ export function PlatformHomepage() {
           {...revealProps(enableMotion, 0.08)}
         >
           {limits.map((limit) => (
-            <div className="bg-[#14171b] px-5 py-6 sm:px-6 sm:py-7" key={limit.title}>
-              <h3 className={cn(displayFont.className, "text-[18px] font-semibold text-[#f3f1ea]")}>
+            <div className="bg-[#14171b] px-4 py-5 sm:px-6 sm:py-7" key={limit.title}>
+              <h3 className={cn(displayFont.className, "text-[16px] font-semibold text-[#f3f1ea] sm:text-[18px]")}>
                 {limit.title}
               </h3>
-              <p className="mt-3 text-[14px] leading-[1.7] text-[#9ba1a8]">{limit.body}</p>
+              <p className="mt-2 text-[13px] leading-[1.6] text-[#9ba1a8] sm:mt-3 sm:text-[14px] sm:leading-[1.7]">
+                {limit.body}
+              </p>
             </div>
           ))}
         </motion.div>
@@ -1123,12 +1127,12 @@ export function PlatformHomepage() {
                 <AccordionTrigger
                   className={cn(
                     displayFont.className,
-                    "py-5 text-left text-[18px] font-semibold text-[#f3f1ea] hover:no-underline",
+                    "py-4 text-left text-[15.5px] font-semibold text-[#f3f1ea] hover:no-underline sm:py-5 sm:text-[18px]",
                   )}
                 >
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="pb-5 text-[15px] leading-[1.7] text-[#9ba1a8]">
+                <AccordionContent className="pb-4 text-[13.5px] leading-[1.65] text-[#9ba1a8] sm:pb-5 sm:text-[15px] sm:leading-[1.7]">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
@@ -1137,22 +1141,22 @@ export function PlatformHomepage() {
         </motion.div>
       </SectionShell>
 
-      <SectionShell className="overflow-hidden py-16 sm:py-[120px] lg:py-[140px]" id="cta">
+      <SectionShell className="overflow-hidden py-14 sm:py-[120px] lg:py-[140px]" id="cta">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(238,159,203,0.12),transparent_34%),radial-gradient(circle_at_52%_52%,rgba(182,171,232,0.1),transparent_30%)]" />
         <motion.div className="relative mx-auto max-w-[720px] text-center" {...revealProps(enableMotion, 0.02)}>
           <h2
             className={cn(
               displayFont.className,
-              "text-[32px] font-semibold leading-[1.08] text-[#f3f1ea] sm:text-[44px]",
+              "text-[26px] font-semibold leading-[1.1] text-[#f3f1ea] sm:text-[44px]",
             )}
           >
             Ask for one briefing on your own market.
           </h2>
-          <p className="mx-auto mt-5 max-w-[520px] text-[16px] leading-[1.7] text-[#9ba1a8]">
+          <p className="mx-auto mt-4 max-w-[520px] text-[14px] leading-[1.6] text-[#9ba1a8] sm:mt-5 sm:text-[16px] sm:leading-[1.7]">
             Free, no call required. If it isn’t obviously better than the lists you’re buying now,
             that’s a useful answer too.
           </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="mt-6 flex flex-col justify-center gap-2.5 sm:mt-8 sm:flex-row sm:gap-3">
             <Button asChild className={primaryButtonClassName} size="lg">
               <Link href={ROUTES.BRIEFING}>Request a free briefing</Link>
             </Button>

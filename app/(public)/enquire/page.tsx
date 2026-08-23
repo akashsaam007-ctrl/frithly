@@ -63,7 +63,7 @@ export default async function EnquirePage({
     <main
       className={cn(
         bodyFont.className,
-        "relative isolate overflow-hidden bg-[#0c0e11] py-8 text-[#f3f1ea] sm:py-14 lg:py-20",
+        "relative isolate overflow-hidden bg-[#0c0e11] py-6 text-[#f3f1ea] sm:py-14 lg:py-20",
       )}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_24%,rgba(231,166,214,0.11),transparent_34%),radial-gradient(circle_at_18%_18%,rgba(243,181,131,0.08),transparent_28%)]" />
@@ -87,12 +87,12 @@ export default async function EnquirePage({
       />
 
       <Container className="relative max-w-[1180px] px-5 sm:px-8">
-        <div className="grid gap-10 py-6 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-14 lg:py-10">
+        <div className="grid gap-8 py-4 sm:gap-10 sm:py-6 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-14 lg:py-10">
           <div>
             <p
               className={cn(
                 monoFont.className,
-                "mb-4 inline-flex rounded-[3px] border border-[#262b31] bg-[#14171b] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9ba1a8]",
+                "mb-3 inline-flex rounded-[3px] border border-[#262b31] bg-[#14171b] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#9ba1a8] sm:mb-4 sm:text-[11px] sm:tracking-[0.16em]",
               )}
             >
               Enquiry
@@ -100,20 +100,20 @@ export default async function EnquirePage({
             <h1
               className={cn(
                 displayFont.className,
-                "max-w-[13ch] text-[34px] font-semibold leading-[1.06] tracking-[-0.02em] text-[#f3f1ea] sm:text-[44px]",
+                "max-w-[13ch] text-[27px] font-semibold leading-[1.1] tracking-[-0.02em] text-[#f3f1ea] sm:text-[44px]",
               )}
             >
               Tell me about your market.
             </h1>
-            <p className="mt-5 max-w-[440px] text-[16px] leading-[1.7] text-[#9ba1a8]">
+            <p className="mt-4 max-w-[440px] text-[14.5px] leading-[1.65] text-[#9ba1a8] sm:mt-5 sm:text-[16px] sm:leading-[1.7]">
               Capacity stops at four engagements, so this is a real conversation rather than a
               queue. The details below let me answer with something useful instead of a calendar
               link.
             </p>
 
-            <ul className="mt-8 space-y-3">
+            <ul className="mt-6 space-y-2.5 sm:mt-8 sm:space-y-3">
               {promises.map((item) => (
-                <li className="flex items-start gap-3 text-[15px] leading-[1.6] text-[#c8ccd1]" key={item}>
+                <li className="flex items-start gap-3 text-[14px] leading-[1.55] text-[#c8ccd1] sm:text-[15px] sm:leading-[1.6]" key={item}>
                   <span className="mt-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#4bc996]/50 text-[10px] text-[#4bc996]">
                     ✓
                   </span>
@@ -123,7 +123,7 @@ export default async function EnquirePage({
             </ul>
           </div>
 
-          <div className="rounded-[6px] border border-[#262b31] bg-[#14171b]/74 p-5 shadow-[0_18px_58px_rgba(0,0,0,0.28)] sm:p-7">
+          <div className="rounded-[6px] border border-[#262b31] bg-[#14171b]/74 p-4 shadow-[0_18px_58px_rgba(0,0,0,0.28)] sm:p-7">
             <SalesInquiryForm plan={selectedPlan} />
           </div>
         </div>
