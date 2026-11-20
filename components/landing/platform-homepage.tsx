@@ -1106,7 +1106,7 @@ export function PlatformHomepage() {
                 size="lg"
                 variant={tier.highlight ? "primary" : "secondary"}
               >
-                <Link href={`${ROUTES.ENQUIRE}?plan=${tier.plan}`}>Enquire</Link>
+                <Link href={`${ROUTES.BOOK_MEETING}?plan=${tier.plan}`}>Enquire</Link>
               </Button>
             </div>
           ))}
