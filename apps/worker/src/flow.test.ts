@@ -66,7 +66,7 @@ d('outreach flow', () => {
     expect(p.subject).toBe('your three sdr roles');
     expect(p.text).toContain('14 MG Road, Bengaluru');
     expect(p.text).toContain('Reply "no"');
-    expect(received[0].raw).toMatch(/List-Unsubscribe: <http[^>]+\/u\//);
+    expect(received[0].raw).toMatch(/List-Unsubscribe:\s+<http[^>]+\/u\/[^>]+\/one-click>/);
     expect(received[0].raw).toContain('List-Unsubscribe-Post: List-Unsubscribe=One-Click');
   });
 
