@@ -1,0 +1,13 @@
+{
+  "name": "frithly",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:generate": "pnpm --filter @frithly/db generate",
+    "db:migrate": "pnpm --filter @frithly/db migrate"
+  }
+}
