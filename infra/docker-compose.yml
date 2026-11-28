@@ -1,0 +1,11 @@
+# On the VPS:  cp .env.example .env  (fill it in)  then  docker compose -f infra/docker-compose.yml up -d --build
+services:
+  worker:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.worker
+    env_file: ../.env
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: { max-size: "20m", max-file: "5" }

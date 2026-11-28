@@ -1,0 +1,74 @@
+# Frithly
+
+Signal-to-meeting outbound for small B2B teams. Frithly watches companies for buying signals, finds the right person and a verified email, writes a first email that passes an 11-point check, and sends it with follow-ups only after the user approves.
+
+## What's in milestone 1
+
+| Area | What it does | Where |
+|---|---|---|
+| Sign-in | Email + 6-digit code, no passwords. 5 codes/hour, 5 tries/code, 30-day sessions | `apps/web/lib/auth.ts` |
+| Onboarding | Offer, proof point, target titles, hiring roles, companies to watch, postal address, opt-out line, time zone | `apps/web/app/onboarding` |
+| Signal scanners (in-house) | Public job boards (Greenhouse, Lever, Ashby), website changes, tech stack changes, site problems, funding and news via Google News RSS. Polite: robots.txt, 1.5 s per host | `packages/engine/src/scanners` |
+| Discovery (optional) | Companies hiring for the user's roles via TheirStack, when the user's own list runs low | `scanners/discover.ts` |
+| People finder | Team/about pages → Claude Haiku extracts names and titles → best match for target titles | `packages/engine/src/people.ts` |
+| Email finder (in-house) | 12 name patterns → MX lookup → one SMTP session with catch-all test → stop at first hit. Learned pattern cached per domain. Optional Prospeo fallback for catch-all domains | `packages/engine/src/verify.ts` |
+| Drafts | Claude Sonnet writes; the 11-point check runs; failed checks are fed back for up to two rewrites | `packages/engine/src/ai.ts` |
+| Daily list | Released each morning in the user's time zone. Trial: 100 companies in 5 drops over 14 days | `apps/worker/src/jobs/release.ts` |
+| Review + approve | Live 11-point check in the browser; the server re-checks before approving | `apps/web/app/app/o/[id]` |
+| Sequencer (in-house) | Email + LinkedIn + call steps. Warm-up ramp 10 → 40/day per mailbox, sending window, 4–9 min spacing, same-thread follow-ups, sticky mailbox per thread | `apps/worker/src/jobs/send.ts` |
+| Mailboxes | SMTP/IMAP (Google Workspace app password, Zoho, any host) and Microsoft 365 via OAuth (Graph). Secrets AES-256-GCM encrypted | `packages/engine/src/mail.ts` |
+| Replies | Polled every 5 min, matched by thread headers, classified (rules first, Claude only if unclear). Any reply stops follow-ups; "no" → do-not-contact; opt-out → global list; out-of-office → push 5 days; bounce → email marked invalid | `apps/worker/src/jobs/poll.ts` |
+| Compliance | Footer with signature, opt-out line and postal address on every email; `List-Unsubscribe` + one-click (RFC 8058); global suppression list | `packages/core/src/compliance.ts`, `apps/web/app/u` |
+| LinkedIn | Assisted: sequence steps become tasks with the profile link. No automation in milestone 1 | `apps/web/app/app/tasks` |
+| Billing | Stripe Checkout (Starter $49, Pro $149, yearly $490/$1,490), 20% off the first month via a once-only coupon, add-ons as subscription items, webhook sync, customer portal | `apps/web/lib/billing.ts` |
+
+Not in milestone 1: Gmail OAuth (needs Google's restricted-scope review and a CASA assessment; Google Workspace users connect with an app password for now), LinkedIn automation via Unipile ($29 add-on), CRM sync, team seats UI, multi-client workspaces.
+
+## Layout
+
+```
+apps/web       Next.js 16 app (Vercel)
+apps/worker    Background jobs on pg-boss (VPS; needs outbound port 25)
+packages/core  Plans, 11-point check, email patterns, crypto, scheduling, compliance (no I/O)
+packages/db    Drizzle schema + migrations (Postgres)
+packages/engine Scanners, SMTP verifier, Claude, mail send/read
+infra          Worker Dockerfile and compose file
+```
+
+## Run locally
+
+```bash
+pnpm install
+cp .env.example .env            # fill DATABASE_URL, ENCRYPTION_KEY, ANTHROPIC_API_KEY at least
+export $(grep -v '^#' .env | xargs)
+pnpm db:migrate
+pnpm --filter @frithly/web dev   # http://localhost:3000 — sign-in codes print to this log
+pnpm --filter @frithly/worker dev
+```
+
+Tests: `pnpm test` (add `TEST_DATABASE_URL` to run the end-to-end send/reply test against Postgres; it wipes that database).
+
+## Go live: step by step
+
+1. **Database.** Create a Supabase (or Neon) project in a region near your users. Copy the *direct* connection string (port 5432) into `DATABASE_URL`.
+2. **Secrets.** `openssl rand -base64 32` → `ENCRYPTION_KEY`. Use the same value on Vercel and the VPS. If it changes, every connected mailbox must reconnect.
+3. **VPS for the worker.** Hetzner or OVH, smallest instance is enough to start. Ask support to unblock outbound port 25 (Hetzner requires a request after the first paid invoice). Set the server's reverse DNS (PTR) to the hostname in `VERIFY_HELO` and add an A record for it. Use a separate domain for `VERIFY_FROM`.
+   ```bash
+   git clone <this repo> && cd frithly && cp .env.example .env && nano .env
+   docker compose -f infra/docker-compose.yml up -d --build
+   docker compose -f infra/docker-compose.yml logs -f
+   ```
+   The worker applies migrations on start.
+4. **Web app on Vercel.** Import the repo, set **Root Directory = `apps/web`** (Vercel detects the pnpm workspace), add the env vars, deploy. Point `app.frithly.com` at it and set `APP_URL`.
+5. **Sign-in email.** Create a Resend (or Postmark) account, verify `frithly.com`, put the SMTP details in `SYSTEM_SMTP_*`.
+6. **Stripe.** Create products and prices: Starter $49/mo and $490/yr, Pro $149/mo and $1,490/yr, add-ons (opportunities $39, mailbox $6, seat $9, phones $49, all monthly). Create a coupon: 20% off, duration *once*. Add a webhook to `$APP_URL/api/stripe/webhook` for `checkout.session.completed` and `customer.subscription.*`. Turn on the customer portal.
+7. **Microsoft 365 mailboxes.** In Azure → App registrations: multi-tenant + personal accounts, redirect URI `$APP_URL/api/mailbox/microsoft/callback`, delegated permissions `Mail.Send`, `Mail.ReadWrite`, `User.Read`, `offline_access`, then a client secret. Put them in `MS_CLIENT_ID` / `MS_CLIENT_SECRET`. Publisher verification avoids the "unverified" warning.
+8. **Anthropic.** Create an API key and set a monthly spend limit in the console.
+9. **Smoke test.** Sign up with your own email, add 10 companies you know, connect a test mailbox, approve one email to yourself, reply "no" and check it lands in Do not contact.
+
+## Operating notes
+
+- **Deliverability:** tell users to send from a separate domain (e.g. `trybrightline.com`) with SPF, DKIM and DMARC. The worker caps each mailbox by warm-up day; keep `ALLOW_CATCH_ALL=0` until bounce rates are known.
+- **SMTP verification etiquette:** one session per domain per lookup, stops at the first valid address, results cached in `domain_mail`. Some providers (Microsoft 365, Google) return "valid" for everything or rate-limit; those come back as catch-all or unknown and are never sent to by default.
+- **Costs to watch:** Claude (Sonnet drafts, up to 3 attempts each; Haiku for extraction and reply sorting), optional Prospeo/TheirStack, Stripe fees.
+- **Logs:** the worker writes one JSON line per event (`scope`, `msg`). Check `mailboxes.last_error` for connection problems.

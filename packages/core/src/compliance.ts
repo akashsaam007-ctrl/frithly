@@ -4,7 +4,7 @@ export function footer(signature: string, postalAddress: string, optOutLine: str
 }
 
 export function unsubscribeHeaders(appUrl: string, unsubToken: string, mailto: string) {
-  const url = `${appUrl.replace(/\/$/, '')}/u/${unsubToken}`;
+  const url = `${appUrl.replace(/\/$/, '')}/u/${unsubToken}/one-click`;
   return {
     'List-Unsubscribe': `<${url}>, <mailto:${mailto}?subject=unsubscribe>`,
     'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',

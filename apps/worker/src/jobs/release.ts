@@ -1,6 +1,6 @@
 import { and, companies, contacts, db, desc, domainMail, drafts, eq, inArray, isNotNull, isNull, monthKey, opportunities, signals, usage, users, workspaces } from '@frithly/db';
-import { PLANS, TRIAL_RELEASE_DAYS, planLimits, type PlanKey } from '@frithly/core';
-import { findEmail, findPeople, pickContact, scanSite, summarizeSite, writeEmail } from '@frithly/engine';
+import { PLANS, TRIAL_RELEASE_DAYS, planLimits, signalScore, type PlanKey } from '@frithly/core';
+import { discoverHiring, findEmail, findPeople, pickContact, scanSite, summarizeSite, writeEmail } from '@frithly/engine';
 import { bumpUsage, log, todayIn } from '../lib';
 
 /**
@@ -38,6 +38,7 @@ export async function releaseAll(enqueueEnrich: (oppId: string) => Promise<unkno
     n = Math.min(n, lim.month - (u?.opportunities ?? 0));
     if (n <= 0) continue;
 
+    await topUp(ws, n);
     const pick = await db
       .select({ id: opportunities.id })
       .from(opportunities)
@@ -111,4 +112,26 @@ export async function enrichOpportunity(oppId: string) {
     await bumpUsage(ws.id, 'aiDrafts');
   }
   log('enrich', 'done', { domain: co.domain, email: contact.emailStatus });
+}
+
+/** If the user's own list has fewer fresh matches than today's release needs, add companies hiring for their roles. */
+async function topUp(ws: typeof workspaces.$inferSelect, need: number) {
+  if (!process.env.THEIRSTACK_API_KEY || !ws.profile?.hiringRoles.length) return;
+  const pool = await db.select({ id: opportunities.id }).from(opportunities)
+    .where(and(eq(opportunities.workspaceId, ws.id), eq(opportunities.status, 'new'), isNull(opportunities.releasedOn))).limit(need * 2);
+  if (pool.length >= need * 2) return;
+  try {
+    const found = await discoverHiring(ws.profile.hiringRoles, ws.profile.countries, Math.min(100, need * 3));
+    for (const f of found) {
+      const [co] = await db.insert(companies).values({ workspaceId: ws.id, domain: f.domain, name: f.name, industry: f.industry, size: f.size, country: f.country, source: 'discovery' })
+        .onConflictDoNothing().returning();
+      if (!co) continue; // already watched; the scanner handles it
+      const [sig] = await db.insert(signals).values({ workspaceId: ws.id, companyId: co.id, type: 'hiring', label: `Hiring a ${f.jobTitle}`, url: f.jobUrl, fingerprint: `ts:${f.jobId}` })
+        .onConflictDoNothing().returning();
+      if (sig) await db.insert(opportunities).values({ workspaceId: ws.id, companyId: co.id, signalId: sig.id, score: signalScore('hiring', (Date.now() - f.postedAt.getTime()) / 86_400_000, 0.6) }).onConflictDoNothing();
+    }
+    log('release', 'discovered', { ws: ws.id, n: found.length });
+  } catch (e) {
+    log('release', 'discovery failed', { error: (e as Error).message });
+  }
 }

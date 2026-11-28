@@ -6,3 +6,4 @@ export * from './scanners/ats';
 export * from './scanners/site';
 export * from './scanners/news';
 export * from './people';
+export * from './scanners/discover';
