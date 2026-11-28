@@ -160,7 +160,7 @@ export async function scanCompany(companyId: string) {
     if (row && c.needsTriage) fresh.push({ id: row.id, subtype: c.subtype, evidence: c.evidence, source: c.fingerprint.includes(':news:') ? 'news headline' : 'job post' });
   }
   if (fresh.length && process.env.ANTHROPIC_API_KEY) {
-    const t = await triageSignals({ name, domain: co.domain }, fresh);
+    const t = await triageSignals({ name, domain: co.domain, about: site.ok ? `${site.name ?? ''}: ${site.text.slice(0, 300)}` : undefined }, fresh);
     for (const v of t.verdicts) if (fresh.some((f) => f.id === v.id)) await db.update(signals).set({ verified: !!v.verified }).where(eq(signals.id, v.id));
     if (t.staffingAgency) {
       await db.update(companies).set({ isAgency: true }).where(eq(companies.id, co.id));

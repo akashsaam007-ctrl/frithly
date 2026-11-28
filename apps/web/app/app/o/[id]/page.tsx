@@ -42,6 +42,11 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
     .orderBy(desc(signals.eventDate)))
     .filter((x) => x.subtype)
     .map((x) => ({ ...x, points: x.verified && x.category !== 'DISQUALIFIER' ? Math.round((x.baseWeight ?? 0) * decay(x.eventDate!)) : 0 }));
+  // What counts: the strongest instance of each kind (and any disqualifier). Everything else is folded away.
+  const best = new Map<string, (typeof stack)[number]>();
+  for (const x of stack) if (x.points > 0 && (!best.has(x.subtype!) || x.points > best.get(x.subtype!)!.points)) best.set(x.subtype!, x);
+  const counted = [...best.values(), ...stack.filter((x) => x.category === 'DISQUALIFIER' && x.verified)].sort((a, b) => b.points - a.points);
+  const other = stack.filter((x) => !counted.includes(x));
   const [mb] = await db.select({ id: mailboxes.id }).from(mailboxes).where(eq(mailboxes.workspaceId, ws.id)).limit(1);
   const s = ws.sending;
 
@@ -121,21 +126,31 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
 
       <div className="grid2" style={{ marginBottom: 16 }}>
         <div className="card stack">
-          <div className="row"><span className="mut">Why now</span><span className="sp" /><span className="score">{o.score} pts</span><span className="pill v">{o.activeSignals} signals</span>{o.promotedBy && <span className="pill g">{PROMOTED_LABEL[o.promotedBy as keyof typeof PROMOTED_LABEL]}</span>}</div>
+          <div className="row"><span className="mut">Why now</span><span className="sp" /><span className="score">{o.score} pts</span><span className="pill v">{o.activeSignals} signal{o.activeSignals === 1 ? '' : 's'}</span>{o.promotedBy && <span className="pill g">{PROMOTED_LABEL[o.promotedBy as keyof typeof PROMOTED_LABEL]}</span>}</div>
           {o.combo && <strong className="sm">{o.combo}</strong>}
           {o.hypothesis && <p className="sm">{o.hypothesis}</p>}
           {o.angle && <p className="mut">Angle: {o.angle}</p>}
           <table className="sm">
             <tbody>
-              {stack.map((x) => (
-                <tr key={x.id} style={{ opacity: x.points || x.category === 'DISQUALIFIER' ? 1 : 0.55 }}>
+              {counted.map((x) => (
+                <tr key={x.id}>
                   <td><span className={`pill ${x.category === 'DISQUALIFIER' ? 'r' : ''}`}>{SUBTYPES[x.subtype as Subtype]?.label ?? x.label}</span></td>
-                  <td>{x.url ? <a href={x.url} target="_blank" rel="noreferrer">{x.evidence}</a> : x.evidence}<div className="mut">{x.eventDate!.toDateString()}{x.verified === null ? ' · checking' : x.verified === false ? ' · rejected as a false positive' : ''}</div></td>
+                  <td>{x.url ? <a href={x.url} target="_blank" rel="noreferrer">{x.evidence}</a> : x.evidence}<div className="mut">{x.eventDate!.toDateString()}</div></td>
                   <td className="num">{x.points ? `+${x.points}` : ''}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {other.length > 0 && (
+            <details className="sm">
+              <summary className="mut" style={{ cursor: 'pointer' }}>{other.length} more: duplicates, expired, still being checked or rejected</summary>
+              <ul className="stack" style={{ paddingLeft: 16, marginTop: 8, gap: 6 }}>
+                {other.map((x) => (
+                  <li key={x.id} className="mut">{SUBTYPES[x.subtype as Subtype]?.label ?? x.label}: {x.evidence} ({x.eventDate!.toDateString()}{x.verified === null ? ', checking' : x.verified === false ? ', rejected as a false positive' : x.points === 0 ? ', too old to count' : ', duplicate'})</li>
+                ))}
+              </ul>
+            </details>
+          )}
         </div>
         <div className="card stack">
           <span className="mut">Who to email{o.persona ? ` · problem owner: ${o.persona}` : ''}</span>

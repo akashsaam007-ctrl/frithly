@@ -1,4 +1,4 @@
-import { promises as dns } from 'node:dns';
+import { resolveMx, resolveTxt } from '../dns';
 import { mxProvider, txtVendors } from '@frithly/core';
 import { get, getJson } from '../http';
 
@@ -8,8 +8,8 @@ export interface DnsState { vendors: string[]; mx: string; spf: string[] }
 export async function dnsState(domain: string): Promise<DnsState | null> {
   try {
     const [txt, mx] = await Promise.all([
-      dns.resolveTxt(domain).then((r) => r.map((x) => x.join(''))).catch(() => [] as string[]),
-      dns.resolveMx(domain).then((r) => r.sort((a, b) => a.priority - b.priority).map((x) => x.exchange)).catch(() => [] as string[]),
+      resolveTxt(domain).catch(() => [] as string[]),
+      resolveMx(domain).then((r) => r.sort((a, b) => a.priority - b.priority).map((x) => x.exchange)).catch(() => [] as string[]),
     ]);
     if (!txt.length && !mx.length) return null;
     const spf = txt.find((t) => t.startsWith('v=spf1'))?.match(/include:([^\s]+)/g)?.map((x) => x.slice(8)).sort() ?? [];
@@ -97,8 +97,12 @@ export async function hnLaunches(companyName: string, domain: string, days = 45)
   const d = await getJson<{ hits: { title: string; url?: string; objectID: string; created_at: string }[] }>(
     `https://hn.algolia.com/api/v1/search_by_date?query=${encodeURIComponent(companyName)}&tags=(show_hn,launch_hn)&numericFilters=created_at_i>${since}`,
   );
-  const root = domain.split('.')[0].toLowerCase();
   return (d?.hits ?? [])
-    .filter((h) => /^(launch|show) hn/i.test(h.title) && (h.title.toLowerCase().includes(companyName.toLowerCase()) || (h.url ?? '').toLowerCase().includes(root)))
+    // Their own launch: the post links to their site, or it's "Launch HN: <Name>".
+    .filter((h) => {
+      let host = '';
+      try { host = new URL(h.url ?? '').hostname.replace(/^www\./, ''); } catch { /* text post */ }
+      return host === domain || host.endsWith(`.${domain}`) || new RegExp(`^Launch HN: ${companyName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(h.title);
+    })
     .map((h) => ({ title: h.title, url: `https://news.ycombinator.com/item?id=${h.objectID}`, at: new Date(h.created_at) }));
 }

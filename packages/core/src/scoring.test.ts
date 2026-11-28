@@ -104,3 +104,27 @@ describe('infra and news rules', () => {
     expect(classifyNews('Acme lays off 20% of staff', 'layoff')).toBe('LAYOFF');
   });
 });
+
+describe('live-run regressions', () => {
+  it('needs the tool, not the word', async () => {
+    const { competitorMention, headlineNames, classifyNews, jobSignals, snippet } = await import('./scoring');
+    const comps = ['Apollo', 'Outreach', 'Clay', 'ZoomInfo'];
+    expect(competitorMention('Run targeted, multi-channel outbound outreach to generate pipeline.', comps)).toBeNull();
+    expect(competitorMention('Our frontend uses Apollo GraphQL and Redux.', comps)).toBeNull();
+    expect(competitorMention('- Outreach: Write messages that speak to buyers.', comps)).toBeNull();
+    expect(competitorMention('Experience with Outreach, Salesloft or similar tools.', comps)?.tool).toBe('Outreach');
+    expect(competitorMention('You will build lists in Clay and enrich them.', comps)).toBeNull();
+    expect(competitorMention('Hands-on with Clay tables and HubSpot workflows.', comps)?.tool).toBe('Clay');
+    expect(competitorMention('Comfortable with ZoomInfo.', comps)?.tool).toBe('ZoomInfo');
+    expect(headlineNames('BBC axes linear channels', 'Linear')).toBe(false);
+    expect(classifyNews('Orleans Parish Clerk of Court raises concerns over funding', 'expansion')).toBeNull();
+    expect(classifyNews('Infisical Raises $40M Series B', 'expansion')).toBe('FUNDING');
+    expect(competitorMention('Outreach: Write messages that speak credibly to buyers using tools.', comps)).toBeNull();
+    expect(headlineNames('Linear raises $82M', 'Linear')).toBe(true);
+    expect(classifyNews('Attio - 2026 Funding Rounds & List of Investors', 'expansion')).toBeNull();
+    const t = jobSignals({ id: 'x', title: 'Head of Accounting', firstSeen: daysAgo(60) }, { competitors: [], roles: ['SDR', 'RevOps'], now });
+    expect(t).toEqual([]);
+    expect(jobSignals({ id: 'y', title: 'Head of Demand Generation', firstSeen: daysAgo(1) }, { competitors: [], roles: ['Demand Generation'], now }).map((x) => x.subtype)).toEqual(['FIRST_IN_FUNCTION', 'ROLE_MATCH']);
+    expect(snippet('We use Node.js and GCP. We are migrating from Heroku this year. Join us.', /migrating from/)).toBe('We are migrating from Heroku this year.');
+  });
+});

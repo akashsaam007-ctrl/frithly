@@ -148,7 +148,7 @@ export interface TriageVerdict { id: string; verified: boolean; reason: string }
  * is the quote really about this company, and does it mean what the rule thinks?
  * Also flags staffing agencies posting for undisclosed clients.
  */
-export async function triageSignals(company: { name: string; domain: string }, items: TriageItem[]): Promise<{ verdicts: TriageVerdict[]; staffingAgency: boolean }> {
+export async function triageSignals(company: { name: string; domain: string; about?: string }, items: TriageItem[]): Promise<{ verdicts: TriageVerdict[]; staffingAgency: boolean }> {
   if (!items.length) return { verdicts: [], staffingAgency: false };
   const m = await claude().messages.create({
     model: FAST,
@@ -156,7 +156,8 @@ export async function triageSignals(company: { name: string; domain: string }, i
     system: 'You check sales signals for false positives. Be strict. Reply with JSON only.',
     messages: [{
       role: 'user',
-      content: `Company: ${company.name} (${company.domain}).
+      content: `Company: ${company.name} (${company.domain}).${company.about ? `\nWhat they do (from their website): ${company.about.slice(0, 400)}` : ''}
+Reject anything about a different organisation with a similar name (e.g. a biotech called "Fathom Therapeutics" when the company is fathom.video).
 For each candidate, decide if the evidence really shows the signal FOR THIS COMPANY:
 - COMPETITOR_IN_JOB: the job requires or mentions using that product at this company (not a generic list of tools).
 - MIGRATION: they are moving off, consolidating, or rebuilding a system now.

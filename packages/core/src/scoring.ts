@@ -225,14 +225,46 @@ export interface JobLike { id: string; title: string; text?: string; location?: 
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/** Sentence around the first match, for evidence. */
+/** Sentence or bullet around the first match, for evidence. Doesn't split on "Node.js" or "e.g.". */
 export function snippet(text: string, re: RegExp, max = 220) {
   const m = re.exec(text);
   if (!m) return null;
-  const start = Math.max(0, text.lastIndexOf('.', m.index) + 1);
-  const endDot = text.indexOf('.', m.index + m[0].length);
-  const end = endDot === -1 ? Math.min(text.length, m.index + max) : Math.min(endDot + 1, start + max);
-  return text.slice(start, end).replace(/\s+/g, ' ').trim();
+  const boundary = /[.!?](?=\s+[A-Z])|\s[-–•]\s|\n/g;
+  let start = 0, end = text.length, b: RegExpExecArray | null;
+  while ((b = boundary.exec(text))) {
+    if (b.index < m.index) start = b.index + b[0].length;
+    else { end = b.index + 1; break; }
+  }
+  let out = text.slice(start, end).replace(/\s+/g, ' ').trim();
+  if (out.length > max) {
+    const at = Math.max(0, m.index - start - Math.floor(max / 3));
+    out = (at ? '…' : '') + out.slice(at, at + max).trim() + '…';
+  }
+  return out;
+}
+
+/** Tool names that are also everyday words need a tool context in the same sentence. */
+const AMBIGUOUS_TOOLS = /^(outreach|clay|apollo|instantly|seamless|close|attention|common room|default|unify|copper|notion|linear|plain)$/i;
+const TOOL_CONTEXT = /\b(tools?|stack|platform|crm|software|sequenc\w*|experience (with|in|using)|using|proficien\w*|familiar\w*|such as|like|e\.g\.|including|via)\b|\b(salesforce|hubspot|gong|salesloft|zoominfo|sales navigator|lusha|cognism|clari|chili ?piper|pipedrive)\b/i;
+const NOT_THE_TOOL = /^(graphql|client|server|federation|router|program|mission)$/i;
+
+/** Which competitor a job post really mentions, with its sentence. */
+export function competitorMention(text: string, competitors: string[]) {
+  for (const c of competitors) {
+    // Case-sensitive, so "Outreach" the product but not "outreach" the activity.
+    const re = new RegExp(`(?<![\\w-])${escapeRe(c)}(?![\\w-])`, 'g');
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text))) {
+      const next = text.slice(m.index + c.length).trim().split(/\s+/)[0]?.replace(/[^\w]/g, '') ?? '';
+      if (NOT_THE_TOOL.test(next)) continue;
+      // Only judge the text around this occurrence.
+      const local = text.slice(Math.max(0, m.index - 200), m.index + c.length + 200);
+      if (AMBIGUOUS_TOOLS.test(c) && !TOOL_CONTEXT.test(local.replace(new RegExp(escapeRe(c), 'g'), ''))) continue;
+      if (/^\s*:/.test(text.slice(m.index + c.length))) continue; // "Outreach: write messages…" is a bullet label
+      return { tool: c, evidence: snippet(local, new RegExp(escapeRe(c)), 260) ?? local.trim() };
+    }
+  }
+  return null;
 }
 
 export interface Candidate { subtype: Subtype; evidence: string; eventDate: Date; fingerprint: string; needsTriage: boolean; meta?: Record<string, string>; url?: string }
@@ -246,20 +278,30 @@ export function jobSignals(job: JobLike, o: { competitors: string[]; roles: stri
   const add = (subtype: Subtype, evidence: string | null, needsTriage: boolean, eventDate = date) => {
     if (evidence) out.push({ subtype, evidence, eventDate, fingerprint: `${subtype}:job:${job.id}`, needsTriage, meta, url: o.url });
   };
-  if (o.competitors.length) {
-    const re = new RegExp(`\\b(${o.competitors.map(escapeRe).join('|')})\\b`, 'i');
-    add('COMPETITOR_IN_JOB', snippet(text, re), true);
-  }
-  add('MIGRATION', snippet(text, MIGRATION), true);
+  const cm = o.competitors.length ? competitorMention(text, o.competitors) : null;
+  if (cm) { add('COMPETITOR_IN_JOB', cm.evidence, true); out[out.length - 1].meta = { ...meta, tool: cm.tool }; }
+  // When the user has said which roles matter, hiring signals must be about those functions.
+  const relevant = matchesRoles(job.title, o.roles);
+  if (!o.roles.length || relevant) add('MIGRATION', snippet(text, MIGRATION), true);
   const smallEnough = !o.sizeBand || ['1-10', '11-50', '51-200'].includes(o.sizeBand);
-  if (smallEnough && FIRST_IN_FUNCTION.test(job.title)) add('FIRST_IN_FUNCTION', job.title, true);
+  if (smallEnough && FIRST_IN_FUNCTION.test(job.title) && (!o.roles.length || relevant)) add('FIRST_IN_FUNCTION', job.title, true);
   if (ENTERPRISE_AE.test(job.title)) add('ENTERPRISE_AE', job.title, false);
   const ageDays = (now.getTime() - job.firstSeen.getTime()) / 86_400_000;
-  const specialist = SPECIALIST.test(job.title) || o.roles.some((r) => new RegExp(`\\b${escapeRe(r)}\\b`, 'i').test(job.title));
+  const specialist = o.roles.length ? relevant : SPECIALIST.test(job.title);
   // A stale role is a signal from the day it crosses 45 days, so it decays from then.
   if (specialist && ageDays >= 45) add('STALE_ROLE', `${job.title}, open since ${job.firstSeen.toISOString().slice(0, 10)}`, false, new Date(job.firstSeen.getTime() + 45 * 86_400_000));
-  if (o.roles.length && o.roles.some((r) => new RegExp(`\\b${escapeRe(r)}\\b`, 'i').test(job.title))) add('ROLE_MATCH', job.title, false);
+  if (relevant) add('ROLE_MATCH', job.title, false);
   return out;
+}
+
+/** "Head of Demand Generation" matches role "Demand Generation"; "AE" matches "Account Executive". */
+export function matchesRoles(title: string, roles: string[]) {
+  const t = title.toLowerCase();
+  const alias: Record<string, string[]> = { ae: ['account executive'], 'account executive': ['ae'], sdr: ['sales development'], bdr: ['business development'], revops: ['revenue operations'], 'revenue operations': ['revops'] };
+  return roles.some((r) => {
+    const k = r.toLowerCase();
+    return [k, ...(alias[k] ?? [])].some((x) => new RegExp(`\\b${escapeRe(x)}\\b`).test(t));
+  });
 }
 
 const tokens = (t: string) => new Set(t.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !['senior', 'junior', 'remote', 'the', 'and'].includes(w)));
@@ -328,12 +370,22 @@ export const NEWS_QUERIES = {
   layoff: '("layoffs" OR "lays off" OR "restructuring" OR "job cuts" OR "hiring freeze")',
 } as const;
 
+/** Funding-tracker and directory pages look like news but aren't events. */
+export const NOT_NEWS = /funding rounds|list of investors|funding,? valuation|company profile|competitors and alternatives|crunchbase|tracxn|pitchbook|cb insights|craft\.co|stock price|net worth/i;
+
+/** The headline must name the company as a proper noun: "Linear raises", not "linear channels". */
+export function headlineNames(title: string, companyName: string) {
+  return new RegExp(`(?<![\\w-])${escapeRe(companyName)}(?![\\w-])`).test(title);
+}
+
 export function classifyNews(title: string, query: keyof typeof NEWS_QUERIES): Subtype | null {
+  if (NOT_NEWS.test(title)) return null;
   const t = title.toLowerCase();
   if (query === 'layoff') return /layoff|lays off|restructur|job cuts|hiring freeze|downsiz/.test(t) ? 'LAYOFF' : null;
   if (query === 'leadership') return /appoint|joins as|names|hires|welcomes|promot/.test(t) && /\b(vp|cro|cto|ciso|cfo|coo|cmo|head of|chief|president|director)\b/.test(t) ? 'NEW_LEADER' : null;
   if (query === 'compliance') return /soc ?2|iso ?27001|hipaa|gdpr|dpdp|fedramp/.test(t) ? 'COMPLIANCE' : null;
   if (/expands? (to|into)|opens? (office|hub)|launch(es)? in|enters? /.test(t)) return 'REGIONAL';
-  if (/raise|funding|series [a-e]|seed|investment|backed/.test(t)) return 'FUNDING';
+  // Funding needs money or a round in the headline ("raises concerns" is not a round).
+  if (/raise|funding|series [a-e]|seed|investment|backed|secures/.test(t) && /[$€£₹]\s?\d|\d+(\.\d+)?\s?(m|mn|million|bn|billion|crore|cr)\b|series [a-e]\b|seed round|pre-seed|funding round/.test(t)) return 'FUNDING';
   return null;
 }

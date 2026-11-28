@@ -1,4 +1,4 @@
-import { promises as dns } from 'node:dns';
+import { resolveMx } from './dns';
 import net from 'node:net';
 import { randomBytes } from 'node:crypto';
 import { emailCandidates, PERSONAL_DOMAINS } from '@frithly/core';
@@ -13,7 +13,7 @@ export interface DomainProbe { mx: string | null; catchAll: boolean | null; resu
 
 export async function topMx(domain: string): Promise<string | null> {
   try {
-    const mx = await dns.resolveMx(domain);
+    const mx = await resolveMx(domain);
     return mx.sort((a, b) => a.priority - b.priority)[0]?.exchange ?? null;
   } catch {
     return null;

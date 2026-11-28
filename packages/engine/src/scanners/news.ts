@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { classifyNews, NEWS_QUERIES, type Subtype } from '@frithly/core';
+import { classifyNews, headlineNames, NEWS_QUERIES, type Subtype } from '@frithly/core';
 import { get } from '../http';
 
 export interface NewsItem { title: string; url: string; at: Date; source: string; kind: 'funding' | 'news' }
@@ -32,20 +32,20 @@ export async function scanNews(companyName: string, domain: string, days = 45): 
 /** One Google News RSS boolean query per category, scoped to the company name. */
 export async function newsByQuery(companyName: string, domain: string, query: keyof typeof NEWS_QUERIES, days = 45) {
   const q = encodeURIComponent(`"${companyName}" ${NEWS_QUERIES[query]}`);
-  const r = await get(`https://news.google.com/rss/search?q=${q}&hl=en-US&gl=US&ceid=US:en`, { skipRobots: true });
-  if (!r || r.status >= 400) return [];
+  let r = await get(`https://news.google.com/rss/search?q=${q}&hl=en-US&gl=US&ceid=US:en`, { skipRobots: true });
+  // Google sometimes answers bots with a captcha page; Bing News RSS takes the same boolean query.
+  if (!r || r.status >= 400 || !r.text.includes('<rss')) r = await get(`https://www.bing.com/news/search?q=${q}&format=rss`, { skipRobots: true });
+  if (!r || r.status >= 400 || !r.text.includes('<rss')) return [];
   const $ = cheerio.load(r.text, { xml: true });
   const since = Date.now() - days * 86_400_000;
-  const root = domain.split('.')[0].toLowerCase();
   const out: { title: string; url: string; at: Date; source: string; subtype: Subtype }[] = [];
   $('item').each((_, el) => {
     const title = $(el).find('title').text().replace(/\s+-\s+[^-]+$/, '');
     const at = new Date($(el).find('pubDate').text());
     if (!(at.getTime() >= since)) return;
-    const low = title.toLowerCase();
-    if (!low.includes(companyName.toLowerCase()) && !low.includes(root)) return;
+    if (!headlineNames(title, companyName) && !title.toLowerCase().includes(domain.toLowerCase())) return;
     const subtype = classifyNews(title, query);
-    if (subtype) out.push({ title, url: $(el).find('link').text(), at, source: $(el).find('source').text(), subtype });
+    if (subtype) out.push({ title, url: $(el).find('link').text(), at, source: $(el).find('source').text() || $(el).find('News\\:Source').text(), subtype });
   });
   return out;
 }
