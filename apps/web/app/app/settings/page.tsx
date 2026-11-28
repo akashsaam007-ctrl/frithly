@@ -39,7 +39,10 @@ async function saveSignals(fd: FormData) {
       ...ws.profile,
       competitors: String(fd.get('competitors') ?? '').split(',').map((x) => x.trim()).filter(Boolean),
       hiringRoles: String(fd.get('hiring') ?? '').split(',').map((x) => x.trim()).filter(Boolean),
-      gate: { minScore: n('minScore', 20, 200, 60), minCategories: n('minCategories', 1, 4, 2) },
+      gate: {
+        minScore: n('minScore', 20, 200, 60), minCategories: n('minCategories', 1, 4, 2), strongSingle: n('strongSingle', 20, 45, 35),
+        allowCombos: fd.get('allowCombos') === 'on', allowSingle: fd.get('allowSingle') === 'on',
+      },
     },
   }).where(eq(workspaces.id, ws.id));
   redirect('/app/settings?saved=signals');
@@ -168,12 +171,17 @@ export default async function Settings({ searchParams }: { searchParams: Promise
 
         <form action={saveSignals} className="card stack">
           <h2>Signals</h2>
-          <p className="mut">An account reaches your list only when its recent signals add up to the minimum score across enough different kinds of signal. Newer signals count more: full points for 7 days, 65% to day 21, 35% to day 45, then nothing.</p>
+          <p className="mut">An account reaches your list in any of three ways: its signals match a known pattern, one signal is strong enough on its own, or its signals add up to the minimum score across enough different kinds. Newer signals count more: full points for 7 days, 65% to day 21, 35% to day 45, then nothing.</p>
           <div className="grid2">
             <label>Competitors to look for in job posts<input name="competitors" defaultValue={ws.profile?.competitors?.join(', ')} placeholder="Salesforce, Outreach, Apollo" /></label>
             <label>Roles that point to a need<input name="hiring" defaultValue={ws.profile?.hiringRoles.join(', ')} placeholder="RevOps, SDR, Data Engineer" /></label>
             <label>Minimum score<input name="minScore" type="number" min={20} max={200} defaultValue={ws.profile?.gate?.minScore ?? 60} /></label>
             <label>Different kinds of signal needed<input name="minCategories" type="number" min={1} max={4} defaultValue={ws.profile?.gate?.minCategories ?? 2} /></label>
+            <label>Points for a single signal to count on its own<input name="strongSingle" type="number" min={20} max={45} defaultValue={ws.profile?.gate?.strongSingle ?? 35} /></label>
+          </div>
+          <div className="row">
+            <label style={{ flexDirection: 'row', alignItems: 'center' }}><input type="checkbox" name="allowCombos" defaultChecked={ws.profile?.gate?.allowCombos ?? true} style={{ width: 'auto' }} />Known patterns qualify on their own (e.g. new sales leader + SDR hiring, fresh funding + hiring)</label>
+            <label style={{ flexDirection: 'row', alignItems: 'center' }}><input type="checkbox" name="allowSingle" defaultChecked={ws.profile?.gate?.allowSingle ?? true} style={{ width: 'auto' }} />Strong single signals qualify on their own (new leader, competitor in a job post, dropped tool, first hire or migration in the last week)</label>
           </div>
           <p className="mut">Accounts are held back after layoffs, a sharp drop in job openings, if they’re a staffing agency, or for 45 days after you last emailed or skipped them.</p>
           <button className="btn pri" style={{ alignSelf: 'start' }}>Save signal settings</button>

@@ -63,6 +63,7 @@ d('signal engine', () => {
     expect(o.score).toBe(195);
     expect(o.activeSignals).toBe(6);
     expect(o.combo).toBe('New sales leader + sales team buildout');
+    expect(o.promotedBy).toBe('combo');
   });
 
   it('spends nothing on a second run when nothing changed', async () => {

@@ -15,6 +15,13 @@
       "when": 1795868568067,
       "tag": "0001_signal_engine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795869172699,
+      "tag": "0002_promotion_routes",
+      "breakpoints": true
     }
   ]
 }

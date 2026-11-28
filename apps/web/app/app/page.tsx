@@ -38,7 +38,7 @@ export default async function Today({ searchParams }: { searchParams: Promise<{ 
           {rows.map(({ o, c, ct, s }) => (
             <Link key={o.id} href={`/app/o/${o.id}`} className="li">
               <div><strong>{c.name}</strong><div className="mut">{c.domain}</div></div>
-              <div><span className="pill v">{o.activeSignals} signals</span> <span className="sm">{o.combo ?? s?.label ?? 'No signal'}</span>{s?.evidence && <div className="mut">{s.evidence.slice(0, 110)}</div>}</div>
+              <div><span className="pill v">{o.promotedBy === 'single' ? 'Strong signal' : o.promotedBy === 'combo' ? 'Combo' : `${o.activeSignals} signals`}</span> <span className="sm">{o.combo ?? s?.label ?? 'No signal'}</span>{s?.evidence && <div className="mut">{s.evidence.slice(0, 110)}</div>}</div>
               <div className="sm">{ct ? <>{ct.name}<div className="mut">{ct.role}</div></> : <span className="mut">Finding the right person…</span>}</div>
               <div className="row">{ct && <EmailBadge status={ct.emailStatus} />}{o.status === 'saved' && <span className="pill">Saved</span>}<span className="score">{o.score}</span></div>
             </Link>

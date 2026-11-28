@@ -169,7 +169,7 @@ export async function scanCompany(companyId: string) {
   }
 
   const e = await evaluateCompany(co.id);
-  log('scan', 'company scanned', { domain: co.domain, candidates: cands.length, triaged: fresh.length, score: e?.score, promote: e?.promote, suppressed: e?.suppressed });
+  log('scan', 'company scanned', { domain: co.domain, candidates: cands.length, triaged: fresh.length, score: e?.score, promote: e?.promotedBy, suppressed: e?.suppressed });
 }
 
 /**
@@ -184,10 +184,10 @@ export async function evaluateCompany(companyId: string) {
   const rows = await db.select().from(signals).where(and(eq(signals.companyId, co.id), gte(signals.eventDate, since)));
   const ev = evaluate(
     rows.filter((r) => r.subtype).map((r) => ({ id: r.id, subtype: r.subtype as Subtype, eventDate: r.eventDate!, verified: r.verified, evidence: r.evidence, meta: r.meta ?? undefined })),
-    { gate: { minScore: ws?.profile?.gate?.minScore, minCategories: ws?.profile?.gate?.minCategories }, cooldownUntil: co.cooldownUntil },
+    { gate: ws?.profile?.gate, cooldownUntil: co.cooldownUntil },
   );
   const top = ev.active[0]?.id ?? null;
-  const vals = { score: ev.score, signalId: top, activeSignals: ev.active.length, combo: ev.combo?.name ?? null, evaluatedAt: new Date() };
+  const vals = { score: ev.score, signalId: top, activeSignals: ev.active.length, combo: ev.combo?.name ?? null, promotedBy: ev.promotedBy, evaluatedAt: new Date() };
   const [opp] = await db.select().from(opportunities).where(and(eq(opportunities.workspaceId, co.workspaceId), eq(opportunities.companyId, co.id)));
 
   if (!opp) {

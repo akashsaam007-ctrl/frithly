@@ -51,7 +51,7 @@ export interface Profile {
   /** Competitor product names to look for in job posts. */
   competitors?: string[];
   /** Promotion gate overrides; defaults are 60 points across 2 categories. */
-  gate?: { minScore?: number; minCategories?: number };
+  gate?: { minScore?: number; minCategories?: number; strongSingle?: number; allowCombos?: boolean; allowSingle?: boolean };
 }
 export interface Sending {
   signature: string;
@@ -190,6 +190,8 @@ export const opportunities = pgTable('opportunities', {
   releasedOn: date('released_on'),
   activeSignals: integer('active_signals').notNull().default(0),
   combo: text('combo'),
+  /** combo | single | stack: which route got it onto the list */
+  promotedBy: text('promoted_by'),
   persona: text('persona'),
   hypothesis: text('hypothesis'),
   angle: text('angle'),

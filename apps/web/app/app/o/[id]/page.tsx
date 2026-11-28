@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { and, companies, contacts, db, desc, drafts, enrollments, eq, gte, mailboxes, opportunities, signals, users } from '@/lib/db';
-import { SUBTYPES, allPass, checkEmail, decay, footer as makeFooter, type Subtype } from '@frithly/core';
+import { PROMOTED_LABEL, SUBTYPES, allPass, checkEmail, decay, footer as makeFooter, type Subtype } from '@frithly/core';
 import { writeEmail } from '@frithly/engine';
 import { requireWorkspace, type WS } from '@/lib/auth';
 import { enqueue } from '@/lib/queue';
@@ -121,7 +121,7 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
 
       <div className="grid2" style={{ marginBottom: 16 }}>
         <div className="card stack">
-          <div className="row"><span className="mut">Why now</span><span className="sp" /><span className="score">{o.score} pts</span><span className="pill v">{o.activeSignals} signals</span></div>
+          <div className="row"><span className="mut">Why now</span><span className="sp" /><span className="score">{o.score} pts</span><span className="pill v">{o.activeSignals} signals</span>{o.promotedBy && <span className="pill g">{PROMOTED_LABEL[o.promotedBy as keyof typeof PROMOTED_LABEL]}</span>}</div>
           {o.combo && <strong className="sm">{o.combo}</strong>}
           {o.hypothesis && <p className="sm">{o.hypothesis}</p>}
           {o.angle && <p className="mut">Angle: {o.angle}</p>}

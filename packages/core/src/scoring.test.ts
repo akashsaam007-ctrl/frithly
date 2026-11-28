@@ -11,12 +11,25 @@ describe('decay', () => {
 });
 
 describe('evaluate', () => {
-  it('needs score ≥ 60 and two categories', () => {
-    const one = evaluate([{ subtype: 'TECH_REMOVAL', eventDate: daysAgo(1), verified: true }, { subtype: 'TECH_ADOPTION', eventDate: daysAgo(1), verified: true }], { now });
+  it('promotes a strong single signal, a combo, or a stack', () => {
+    const single = evaluate([{ subtype: 'NEW_LEADER', eventDate: daysAgo(2), verified: true }], { now });
+    expect([single.promote, single.promotedBy]).toEqual([true, 'single']);
+    const weakSingle = evaluate([{ subtype: 'NEW_LEADER', eventDate: daysAgo(15), verified: true }], { now }); // 26 pts
+    expect(weakSingle.promote).toBe(false);
+    const combo = evaluate([{ subtype: 'FUNDING', eventDate: daysAgo(30), verified: true }, { subtype: 'ROLE_MATCH', eventDate: daysAgo(30), verified: true, meta: { title: 'SDR' } }], { now });
+    expect([combo.score, combo.promotedBy, combo.combo?.key]).toEqual([13, 'combo', 'funded_hiring']);
+    const stack = evaluate([{ subtype: 'TRUST_SUBDOMAIN', eventDate: daysAgo(1), verified: true }, { subtype: 'LAUNCH', eventDate: daysAgo(1), verified: true }, { subtype: 'PRICING_CHANGE', eventDate: daysAgo(1), verified: true }], { now });
+    expect([stack.score, stack.promotedBy]).toEqual([55, null]);
+    expect(evaluate([...[{ subtype: 'TRUST_SUBDOMAIN' as const, eventDate: daysAgo(1), verified: true }, { subtype: 'LAUNCH' as const, eventDate: daysAgo(1), verified: true }], { subtype: 'FUNDING', eventDate: daysAgo(1), verified: true }], { now }).promotedBy).toBe('stack');
+    expect(evaluate([{ subtype: 'NEW_LEADER', eventDate: daysAgo(2), verified: true }], { now, gate: { allowSingle: false } }).promote).toBe(false);
+  });
+  it('needs score ≥ 60 and two categories when singles and combos are off', () => {
+    const off = { allowSingle: false, allowCombos: false };
+    const one = evaluate([{ subtype: 'TECH_REMOVAL', eventDate: daysAgo(1), verified: true }, { subtype: 'TECH_ADOPTION', eventDate: daysAgo(1), verified: true }], { now, gate: off });
     expect(one.score).toBe(65);
     expect(one.categories).toEqual(['TECH_SHIFT']);
     expect(one.promote).toBe(false);
-    const two = evaluate([{ subtype: 'NEW_LEADER', eventDate: daysAgo(2), verified: true }, { subtype: 'FUNDING', eventDate: daysAgo(12), verified: true }], { now });
+    const two = evaluate([{ subtype: 'NEW_LEADER', eventDate: daysAgo(2), verified: true }, { subtype: 'FUNDING', eventDate: daysAgo(12), verified: true }], { now, gate: off });
     expect(two.score).toBe(40 + 16);
     expect(two.promote).toBe(false);
     const three = evaluate([{ subtype: 'NEW_LEADER', eventDate: daysAgo(2), verified: true }, { subtype: 'FUNDING', eventDate: daysAgo(5), verified: true }], { now });
@@ -25,7 +38,7 @@ describe('evaluate', () => {
   it('ignores unset gate overrides', () => {
     const s = [{ subtype: 'NEW_LEADER' as const, eventDate: daysAgo(1), verified: true }, { subtype: 'FUNDING' as const, eventDate: daysAgo(1), verified: true }];
     expect(evaluate(s, { now, gate: { minScore: undefined, minCategories: undefined } }).promote).toBe(true);
-    expect(evaluate(s, { now, gate: { minScore: 80 } }).promote).toBe(false);
+    expect(evaluate(s, { now, gate: { minScore: 80, allowSingle: false, allowCombos: false } }).promote).toBe(false);
   });
   it('ignores unverified and expired signals, counts each subtype once', () => {
     const e = evaluate([

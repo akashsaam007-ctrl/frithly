@@ -62,14 +62,29 @@ export interface ScoredSignal {
   meta?: Record<string, string>;
 }
 
-export interface Gate { minScore: number; minCategories: number; windowDays: number; cooldownDays: number }
-export const DEFAULT_GATE: Gate = { minScore: 60, minCategories: 2, windowDays: 45, cooldownDays: 45 };
+/**
+ * An account qualifies through ANY of three routes (each can be switched off):
+ *  - combo:  the live signals match a known pattern (e.g. new sales leader + SDR hiring)
+ *  - single: one signal is strong enough on its own (decayed points ≥ strongSingle)
+ *  - stack:  decayed total ≥ minScore across ≥ minCategories kinds of signal
+ */
+export interface Gate {
+  minScore: number; minCategories: number; strongSingle: number;
+  allowCombos: boolean; allowSingle: boolean;
+  windowDays: number; cooldownDays: number;
+}
+export const DEFAULT_GATE: Gate = { minScore: 60, minCategories: 2, strongSingle: 35, allowCombos: true, allowSingle: true, windowDays: 45, cooldownDays: 45 };
+
+export type PromotedBy = 'combo' | 'single' | 'stack';
+export const PROMOTED_LABEL: Record<PromotedBy, string> = { combo: 'Signal combo', single: 'Strong single signal', stack: 'Stacked signals' };
 
 export interface Evaluation {
   score: number;
   categories: Category[];
   active: (ScoredSignal & { points: number; category: Category })[];
   promote: boolean;
+  /** Which route qualified it: combo first, then single, then stack. */
+  promotedBy: PromotedBy | null;
   suppressed: string | null;
   combo: Combo | null;
 }
@@ -80,7 +95,7 @@ export interface Evaluation {
  * Unverified (null) text signals don't count until triage confirms them.
  */
 export function evaluate(signals: ScoredSignal[], opts: { gate?: Partial<Gate>; cooldownUntil?: Date | null; now?: Date } = {}): Evaluation {
-  const overrides = Object.fromEntries(Object.entries(opts.gate ?? {}).filter(([, v]) => typeof v === 'number' && v >= 0));
+  const overrides = Object.fromEntries(Object.entries(opts.gate ?? {}).filter(([, v]) => (typeof v === 'number' && v >= 0) || typeof v === 'boolean'));
   const g: Gate = { ...DEFAULT_GATE, ...overrides };
   const now = opts.now ?? new Date();
   const windowStart = now.getTime() - g.windowDays * 86_400_000;
@@ -102,14 +117,13 @@ export function evaluate(signals: ScoredSignal[], opts: { gate?: Partial<Gate>; 
   const categories = [...new Set(active.map((s) => s.category))];
   const cooling = opts.cooldownUntil && opts.cooldownUntil > now;
   const suppressed = disq ? SUBTYPES[disq.subtype].label : cooling ? 'Contacted recently (cooldown)' : null;
-  return {
-    score,
-    categories,
-    active,
-    promote: !suppressed && score >= g.minScore && categories.length >= g.minCategories,
-    suppressed,
-    combo: matchCombo(active),
-  };
+  const combo = matchCombo(active);
+  const promotedBy: PromotedBy | null = suppressed ? null
+    : g.allowCombos && combo ? 'combo'
+    : g.allowSingle && (active[0]?.points ?? 0) >= g.strongSingle ? 'single'
+    : score >= g.minScore && categories.length >= g.minCategories ? 'stack'
+    : null;
+  return { score, categories, active, promote: !!promotedBy, promotedBy, suppressed, combo };
 }
 
 /* ---------- Persona routing ---------- */
@@ -152,6 +166,30 @@ export const COMBOS: (Combo & { test: (a: Evaluation['active']) => boolean })[] 
     hypothesis: 'Entering a new territory creates compliance, localisation and pipeline-attribution blind spots.',
     angle: 'Share a short checklist or peer lesson on avoiding early operational bottlenecks in a new region.',
     test: (a) => a.some((s) => s.subtype === 'REGIONAL') && a.some((s) => s.category === 'HIRING_PAIN' && REGIONAL_HIRE.test(s.meta?.title ?? s.meta?.location ?? '')),
+  },
+  {
+    key: 'funded_hiring',
+    name: 'Fresh funding + building the team',
+    personaTitles: ['Founder', 'CEO', 'COO'],
+    hypothesis: 'New money has to turn into headcount and pipeline quickly, and the founders are stretched setting up the basics.',
+    angle: 'Open on what usually breaks in the first 90 days after a round; offer one concrete shortcut.',
+    test: (a) => a.some((s) => s.subtype === 'FUNDING') && a.some((s) => ['FIRST_IN_FUNCTION', 'STALE_ROLE', 'ROLE_MATCH', 'ENTERPRISE_AE'].includes(s.subtype)),
+  },
+  {
+    key: 'tool_switch',
+    name: 'Switching tools',
+    personaTitles: ['Head of Operations', 'Head of RevOps', 'CTO', 'Director'],
+    hypothesis: 'They are mid-switch between tools, so data, processes and reporting have gaps while both systems run.',
+    angle: 'Name the usual mess during a migration and offer to take one piece of it off their plate.',
+    test: (a) => a.some((s) => s.subtype === 'TECH_REMOVAL' || s.subtype === 'MIGRATION') && a.some((s) => s.subtype === 'TECH_ADOPTION' || s.subtype === 'COMPETITOR_IN_JOB'),
+  },
+  {
+    key: 'enterprise_ready',
+    name: 'Getting enterprise-ready',
+    personaTitles: ['CTO', 'Head of Security', 'VP Engineering'],
+    hypothesis: 'They are preparing for enterprise buyers’ security reviews and uptime commitments.',
+    angle: 'Focus on getting through security reviews and SLA questions faster.',
+    test: (a) => a.some((s) => s.subtype === 'SSO_SUBDOMAIN' || s.subtype === 'COMPLIANCE') && a.some((s) => s.subtype === 'TRUST_SUBDOMAIN' || s.subtype === 'SECURITY_GATEWAY'),
   },
 ];
 
