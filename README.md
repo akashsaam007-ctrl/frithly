@@ -77,7 +77,7 @@ Tests: `pnpm test` (add `TEST_DATABASE_URL` pointing at a separate database whos
 
 1. **Database.** Create a Supabase (or Neon) project in a region near your users. Copy the *direct* connection string (port 5432) into `DATABASE_URL`.
 2. **Secrets.** `openssl rand -base64 32` → `ENCRYPTION_KEY`. Use the same value on Vercel and the VPS. If it changes, every connected mailbox must reconnect.
-3. **VPS for the worker.** Hetzner or OVH, smallest instance is enough to start. Ask support to unblock outbound port 25 (Hetzner requires a request after the first paid invoice). Set the server's reverse DNS (PTR) to the hostname in `VERIFY_HELO` and add an A record for it. Use a separate domain for `VERIFY_FROM`.
+3. **Server for the worker.** On Google Cloud, follow [infra/GOOGLE-CLOUD.md](infra/GOOGLE-CLOUD.md) (uses Prospeo for emails, since Google blocks port 25). On your own server: Hetzner or OVH, smallest instance is enough to start. Ask support to unblock outbound port 25 (Hetzner requires a request after the first paid invoice). Set the server's reverse DNS (PTR) to the hostname in `VERIFY_HELO` and add an A record for it. Use a separate domain for `VERIFY_FROM`.
    ```bash
    git clone <this repo> && cd frithly && cp .env.example .env && nano .env
    docker compose -f infra/docker-compose.yml up -d --build

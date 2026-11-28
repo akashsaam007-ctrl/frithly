@@ -56,3 +56,28 @@ describe('stripQuoted', () => {
     expect(stripQuoted('No thanks\n\nOn Tue, 1 Dec 2026, Akash wrote:\n> hi')).toBe('No thanks');
   });
 });
+
+describe('prospeo mode (no port 25)', () => {
+  it('uses Prospeo and never opens SMTP', async () => {
+    process.env.EMAIL_FINDER = 'prospeo';
+    process.env.PROSPEO_API_KEY = 'k';
+    const calls: string[] = [];
+    const orig = globalThis.fetch;
+    globalThis.fetch = (async (url: string, init: RequestInit) => {
+      calls.push(String(url));
+      const body = JSON.parse(String(init.body));
+      expect(body).toEqual({ only_verified_email: true, data: { full_name: 'Priya Raman', company_website: 'acme.io' } });
+      return new Response(JSON.stringify({ error: false, person: { email: { status: 'VERIFIED', revealed: true, email: 'priya.raman@acme.io' } } }));
+    }) as typeof fetch;
+    const { findEmail } = await import('./verify');
+    const r = await findEmail('Priya Raman', 'acme.io', { mx: 'mx.acme.io' });
+    expect(r.found).toEqual({ email: 'priya.raman@acme.io', status: 'valid', source: 'prospeo', pattern: '{f}.{l}' });
+    expect(r.learned.pattern).toBe('{f}.{l}');
+    expect(calls).toEqual(['https://api.prospeo.io/enrich-person']);
+    globalThis.fetch = (async () => new Response(JSON.stringify({ error: true, error_code: 'NO_MATCH' }), { status: 400 })) as typeof fetch;
+    const n = await findEmail('Nobody Here', 'acme.io', { mx: 'mx.acme.io' });
+    expect(n.found.status).toBe('none');
+    globalThis.fetch = orig;
+    delete process.env.EMAIL_FINDER;
+  });
+});

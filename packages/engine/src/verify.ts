@@ -86,25 +86,36 @@ export async function probe(domain: string, candidates: string[], opts: { port?:
 
 export interface FoundEmail { email: string | null; status: 'valid' | 'catch_all' | 'invalid' | 'unknown' | 'none'; pattern?: string; source: string }
 
-/** Optional paid fallback for catch-all domains (Prospeo). Only called when PROSPEO_API_KEY is set. */
-async function prospeo(fullName: string, domain: string): Promise<FoundEmail | null> {
+/**
+ * Prospeo Enrich Person (https://prospeo.io/api-docs/enrich-person). 1 credit per email found, nothing when not found.
+ * Used as the main finder when EMAIL_FINDER=prospeo (hosts that block port 25, e.g. Google Cloud),
+ * and as the catch-all fallback in smtp mode when PROSPEO_API_KEY is set.
+ */
+export async function prospeo(fullName: string, domain: string): Promise<FoundEmail | null> {
   const key = process.env.PROSPEO_API_KEY;
   if (!key) return null;
   try {
-    const r = await fetch('https://api.prospeo.io/email-finder', {
+    const r = await fetch('https://api.prospeo.io/enrich-person', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'X-KEY': key },
-      body: JSON.stringify({ full_name: fullName, company: domain }),
-      signal: AbortSignal.timeout(20000),
+      body: JSON.stringify({ only_verified_email: true, data: { full_name: fullName, company_website: domain } }),
+      signal: AbortSignal.timeout(30000),
     });
-    const d = (await r.json()) as { error?: boolean; response?: { email?: string; email_status?: string } };
-    const email = d.response?.email;
-    if (d.error || !email) return null;
-    return { email, status: /valid/i.test(d.response?.email_status ?? '') ? 'valid' : 'catch_all', source: 'prospeo' };
+    const d = (await r.json()) as { error?: boolean; error_code?: string; person?: { email?: { email?: string; status?: string; revealed?: boolean } } };
+    if (d.error) {
+      if (d.error_code && d.error_code !== 'NO_MATCH') console.warn(`prospeo: ${d.error_code}`);
+      return d.error_code === 'NO_MATCH' ? { email: null, status: 'none', source: 'prospeo' } : null;
+    }
+    const e = d.person?.email;
+    if (!e?.email || e.revealed === false || e.email.includes('*')) return null;
+    return { email: e.email.toLowerCase(), status: e.status === 'VERIFIED' ? 'valid' : 'catch_all', source: 'prospeo' };
   } catch {
     return null;
   }
 }
+
+/** 'smtp' (default): in-house checks over port 25. 'prospeo': paid finder only, no port 25 needed. */
+export const finderMode = () => (process.env.EMAIL_FINDER === 'prospeo' ? 'prospeo' : 'smtp');
 
 export interface DomainCache { mx?: string | null; catchAll?: boolean | null; pattern?: string | null }
 
@@ -114,9 +125,21 @@ export async function findEmail(fullName: string, domain: string, cache: DomainC
   const cands = emailCandidates(fullName, domain, cache.pattern ?? undefined).slice(0, 8);
   if (!cands.length) return { found: { email: null, status: 'none', source: 'none' }, learned: {} };
 
+  if (finderMode() === 'prospeo') {
+    const mx = cache.mx !== undefined && cache.mx !== null ? cache.mx : await topMx(domain);
+    if (!mx) return { found: { email: null, status: 'invalid', source: 'dns' }, learned: { mx: null } };
+    const p = await prospeo(fullName, domain);
+    const learned: DomainCache = { mx };
+    if (p?.email && p.status === 'valid') {
+      const pattern = emailCandidates(fullName, domain).find((c) => c.email === p.email)?.pattern;
+      return { found: { ...p, pattern }, learned: { ...learned, ...(pattern ? { pattern } : {}) } };
+    }
+    return { found: p ?? { email: null, status: 'unknown', source: 'prospeo' }, learned };
+  }
+
   if (cache.catchAll === true) {
     const paid = await prospeo(fullName, domain);
-    if (paid) return { found: paid, learned: {} };
+    if (paid?.email) return { found: paid, learned: {} };
     return { found: { email: cands[0].email, status: 'catch_all', pattern: cands[0].pattern, source: 'pattern' }, learned: {} };
   }
 
@@ -127,7 +150,7 @@ export async function findEmail(fullName: string, domain: string, cache: DomainC
   if (hit) return { found: { email: hit.email, status: 'valid', pattern: hit.pattern, source: 'smtp' }, learned: { ...learned, pattern: hit.pattern } };
   if (p.catchAll) {
     const paid = await prospeo(fullName, domain);
-    if (paid) return { found: paid, learned };
+    if (paid?.email) return { found: paid, learned };
     return { found: { email: cands[0].email, status: 'catch_all', pattern: cands[0].pattern, source: 'pattern' }, learned };
   }
   const allInvalid = cands.every((c) => p.results[c.email] === 'invalid');
