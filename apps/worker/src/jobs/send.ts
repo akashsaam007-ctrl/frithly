@@ -176,6 +176,8 @@ async function runStep(e: typeof enrollments.$inferSelect) {
     nextSendAt: new Date(Date.now() + sendGapMs()), lastError: null,
     ...(sent.newSecretEnc ? { secretEnc: sent.newSecretEnc } : {}),
   }).where(eq(mailboxes.id, mb.id));
+  // No new outreach to this company for 45 days after we last emailed it.
+  await db.update(companies).set({ cooldownUntil: new Date(Date.now() + 45 * 86_400_000) }).where(eq(companies.id, co.id));
   await advance({ mailboxId: mb.id, threadMessageId: e.threadMessageId ?? sent.messageId, startedAt: e.startedAt ?? new Date() });
   log('send', 'sent', { to: ct.email, step: e.stepIndex });
 }

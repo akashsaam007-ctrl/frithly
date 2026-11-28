@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { and, companies, contacts, db, drafts, enrollments, eq, mailboxes, opportunities, signals, users } from '@/lib/db';
-import { allPass, checkEmail, footer as makeFooter } from '@frithly/core';
+import { and, companies, contacts, db, desc, drafts, enrollments, eq, gte, mailboxes, opportunities, signals, users } from '@/lib/db';
+import { SUBTYPES, allPass, checkEmail, decay, footer as makeFooter, type Subtype } from '@frithly/core';
 import { writeEmail } from '@frithly/engine';
 import { requireWorkspace, type WS } from '@/lib/auth';
 import { enqueue } from '@/lib/queue';
@@ -37,6 +37,11 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
   if (!r) notFound();
   const [d] = await db.select().from(drafts).where(and(eq(drafts.opportunityId, id), eq(drafts.stepIndex, 0)));
   const [enr] = await db.select().from(enrollments).where(eq(enrollments.opportunityId, id));
+  const stack = (await db.select().from(signals)
+    .where(and(eq(signals.companyId, r.c.id), gte(signals.eventDate, new Date(Date.now() - 45 * 86_400_000))))
+    .orderBy(desc(signals.eventDate)))
+    .filter((x) => x.subtype)
+    .map((x) => ({ ...x, points: x.verified && x.category !== 'DISQUALIFIER' ? Math.round((x.baseWeight ?? 0) * decay(x.eventDate!)) : 0 }));
   const [mb] = await db.select({ id: mailboxes.id }).from(mailboxes).where(eq(mailboxes.workspaceId, ws.id)).limit(1);
   const s = ws.sending;
 
@@ -68,7 +73,8 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
     const w = await writeEmail({
       senderName: owner?.name ?? user.name ?? ws.name, senderCompany: ws.name, offer: ws.profile.offer, proofPoint: ws.profile.proofPoint,
       company: { name: r.c.name, domain: r.c.domain, industry: r.c.industry }, contact: { name: r.ct.name, role: r.ct.role },
-      signal: { type: r.s?.type ?? 'import', label: r.s?.label ?? '', detail: r.s?.detail }, step: { index: 0, brief: 'Signal, what it usually causes, proof, one easy question' },
+      signal: { type: r.s?.type ?? 'import', label: r.s?.label ?? '', detail: r.s?.evidence ?? r.s?.detail },
+      hypothesis: r.o.hypothesis, angle: r.o.angle, step: { index: 0, brief: 'Signal, what it usually causes, proof, one easy question' },
     }, baseFor(ws, r));
     if (w.subject) await upsertDraft(id, w.subject, w.body);
     revalidatePath(`/app/o/${id}`);
@@ -78,8 +84,12 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
     const { ws } = await requireWorkspace();
     const st = String(fd.get('status')) as 'saved' | 'skipped' | 'new';
     if (!['saved', 'skipped', 'new'].includes(st)) return;
-    await db.update(opportunities).set({ status: st }).where(and(eq(opportunities.id, id), eq(opportunities.workspaceId, ws.id)));
-    if (st === 'skipped') redirect('/app');
+    const [o] = await db.update(opportunities).set({ status: st }).where(and(eq(opportunities.id, id), eq(opportunities.workspaceId, ws.id))).returning();
+    if (st === 'skipped') {
+      // Skipped accounts come back only after 45 days, and only with a fresh stack of signals.
+      if (o) await db.update(companies).set({ cooldownUntil: new Date(Date.now() + 45 * 86_400_000) }).where(eq(companies.id, o.companyId));
+      redirect('/app');
+    }
     revalidatePath(`/app/o/${id}`);
   }
   async function findAgain() {
@@ -111,13 +121,24 @@ export default async function Opp({ params }: { params: Promise<{ id: string }> 
 
       <div className="grid2" style={{ marginBottom: 16 }}>
         <div className="card stack">
-          <span className="mut">Why now</span>
-          <h3>{r.s?.label ?? 'No signal'}</h3>
-          {r.s?.detail && <p className="sm">{r.s.detail}</p>}
-          {r.s?.url && <a className="sm" href={r.s.url} target="_blank" rel="noreferrer">Source</a>}
+          <div className="row"><span className="mut">Why now</span><span className="sp" /><span className="score">{o.score} pts</span><span className="pill v">{o.activeSignals} signals</span></div>
+          {o.combo && <strong className="sm">{o.combo}</strong>}
+          {o.hypothesis && <p className="sm">{o.hypothesis}</p>}
+          {o.angle && <p className="mut">Angle: {o.angle}</p>}
+          <table className="sm">
+            <tbody>
+              {stack.map((x) => (
+                <tr key={x.id} style={{ opacity: x.points || x.category === 'DISQUALIFIER' ? 1 : 0.55 }}>
+                  <td><span className={`pill ${x.category === 'DISQUALIFIER' ? 'r' : ''}`}>{SUBTYPES[x.subtype as Subtype]?.label ?? x.label}</span></td>
+                  <td>{x.url ? <a href={x.url} target="_blank" rel="noreferrer">{x.evidence}</a> : x.evidence}<div className="mut">{x.eventDate!.toDateString()}{x.verified === null ? ' · checking' : x.verified === false ? ' · rejected as a false positive' : ''}</div></td>
+                  <td className="num">{x.points ? `+${x.points}` : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="card stack">
-          <span className="mut">Who to email</span>
+          <span className="mut">Who to email{o.persona ? ` · problem owner: ${o.persona}` : ''}</span>
           {ct ? (
             <>
               <h3>{ct.name}</h3>

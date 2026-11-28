@@ -46,7 +46,7 @@ export function coreBody(body: string, signature?: string | null) {
 
 export function checkEmail(i: CheckInput): CheckResult[] {
   const b = coreBody(i.body, i.signature);
-  const cap = isExec(i.contactRole) ? 60 : i.maxWords ?? 90;
+  const cap = isExec(i.contactRole) ? 60 : i.maxWords ?? 75;
   const words = wordCount(b);
   const firstLine = (b.split(/\n+/)[0] ?? '').toLowerCase();
   const sigWords = (i.signalLabel ?? '').toLowerCase().split(/\W+/).filter((w) => w.length > 4);

@@ -20,6 +20,7 @@ async function finish(fd: FormData) {
     industries: list(fd.get('industries')),
     countries: list(fd.get('countries')),
     sizes: list(fd.get('sizes')),
+    competitors: list(fd.get('competitors')),
     keywords: [],
   };
   const sending = {
@@ -76,6 +77,7 @@ export default async function Onboarding({ searchParams }: { searchParams: Promi
           <label>Hiring for which roles signals a need?<input name="hiring" defaultValue={p?.hiringRoles.join(', ')} placeholder="SDR, Sales, Marketing" /></label>
           <label>Industries<input name="industries" defaultValue={p?.industries.join(', ')} placeholder="SaaS, Fintech" /></label>
           <label>Countries<input name="countries" defaultValue={p?.countries.join(', ')} placeholder="India, United States" /></label>
+          <label>Competitors (we look for them in job posts)<input name="competitors" defaultValue={p?.competitors?.join(', ')} placeholder="Apollo, Outreach" /></label>
         </div>
         <label>Companies to watch (one website per line, or paste a CSV: domain,name,industry,size,country)
           <textarea name="domains" placeholder={'acme.io\nnorthwind.com'} />

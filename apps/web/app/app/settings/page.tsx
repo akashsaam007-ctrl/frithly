@@ -29,6 +29,22 @@ async function saveSending(fd: FormData) {
   redirect('/app/settings?saved=sending');
 }
 
+async function saveSignals(fd: FormData) {
+  'use server';
+  const { ws } = await requireWorkspace();
+  if (!ws.profile) return;
+  const n = (k: string, lo: number, hi: number, d: number) => { const v = Number(fd.get(k)); return Number.isFinite(v) && v >= lo && v <= hi ? v : d; };
+  await db.update(workspaces).set({
+    profile: {
+      ...ws.profile,
+      competitors: String(fd.get('competitors') ?? '').split(',').map((x) => x.trim()).filter(Boolean),
+      hiringRoles: String(fd.get('hiring') ?? '').split(',').map((x) => x.trim()).filter(Boolean),
+      gate: { minScore: n('minScore', 20, 200, 60), minCategories: n('minCategories', 1, 4, 2) },
+    },
+  }).where(eq(workspaces.id, ws.id));
+  redirect('/app/settings?saved=signals');
+}
+
 async function addMailbox(fd: FormData) {
   'use server';
   const { ws } = await requireWorkspace();
@@ -149,6 +165,19 @@ export default async function Settings({ searchParams }: { searchParams: Promise
             </>
           )}
         </section>
+
+        <form action={saveSignals} className="card stack">
+          <h2>Signals</h2>
+          <p className="mut">An account reaches your list only when its recent signals add up to the minimum score across enough different kinds of signal. Newer signals count more: full points for 7 days, 65% to day 21, 35% to day 45, then nothing.</p>
+          <div className="grid2">
+            <label>Competitors to look for in job posts<input name="competitors" defaultValue={ws.profile?.competitors?.join(', ')} placeholder="Salesforce, Outreach, Apollo" /></label>
+            <label>Roles that point to a need<input name="hiring" defaultValue={ws.profile?.hiringRoles.join(', ')} placeholder="RevOps, SDR, Data Engineer" /></label>
+            <label>Minimum score<input name="minScore" type="number" min={20} max={200} defaultValue={ws.profile?.gate?.minScore ?? 60} /></label>
+            <label>Different kinds of signal needed<input name="minCategories" type="number" min={1} max={4} defaultValue={ws.profile?.gate?.minCategories ?? 2} /></label>
+          </div>
+          <p className="mut">Accounts are held back after layoffs, a sharp drop in job openings, if they’re a staffing agency, or for 45 days after you last emailed or skipped them.</p>
+          <button className="btn pri" style={{ alignSelf: 'start' }}>Save signal settings</button>
+        </form>
 
         <form action={saveSending} className="card stack">
           <h2>Sending</h2>

@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import { sha256 } from '@frithly/core';
 import { get } from '../http';
+import { githubOrgFromHtml } from './infra';
 
 /** Fingerprints for common tools, matched against raw HTML. */
 const TECH: [string, RegExp][] = [
@@ -38,6 +39,8 @@ export interface SiteScan {
   tech: string[];
   text: string;
   pricingText?: string;
+  pricingHash?: string;
+  githubOrg?: string | null;
   problems: string[];
 }
 
@@ -55,6 +58,6 @@ export async function scanSite(domain: string): Promise<SiteScan> {
   if (ms > 4000) problems.push(`Homepage took ${(ms / 1000).toFixed(1)}s to load`);
   if (!$('meta[name="viewport"]').length) problems.push('No mobile viewport tag');
   if (!$('meta[name="description"]').attr('content')) problems.push('No meta description');
-  if (!home.url.startsWith('https://')) problems.push('Site does not redirect to HTTPS');
-  return { ok: true, name, hash: sha256(text + '|' + (pricingText ?? '')), tech: detectTech(home.text), text: text.slice(0, 6000), pricingText: pricingText?.slice(0, 3000), problems };
+  if (home.url && !home.url.startsWith('https://')) problems.push('Site does not redirect to HTTPS');
+  return { ok: true, name, hash: sha256(text + '|' + (pricingText ?? '')), tech: detectTech(home.text), text: text.slice(0, 6000), pricingText: pricingText?.slice(0, 3000), pricingHash: pricingText ? sha256(pricingText) : undefined, githubOrg: githubOrgFromHtml(home.text), problems };
 }

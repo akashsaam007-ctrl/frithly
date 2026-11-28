@@ -2,7 +2,7 @@
 const UA = process.env.SCANNER_USER_AGENT ?? 'FrithlyBot/1.0 (+https://frithly.com/bot)';
 const lastHit = new Map<string, number>();
 const robotsCache = new Map<string, string[]>();
-const MIN_GAP_MS = 1500;
+const MIN_GAP_MS = Number(process.env.SCANNER_MIN_GAP_MS ?? 1500);
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

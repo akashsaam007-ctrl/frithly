@@ -48,6 +48,10 @@ export interface Profile {
   keywords: string[];
   titles: string[];
   hiringRoles: string[];
+  /** Competitor product names to look for in job posts. */
+  competitors?: string[];
+  /** Promotion gate overrides; defaults are 60 points across 2 categories. */
+  gate?: { minScore?: number; minCategories?: number };
 }
 export interface Sending {
   signature: string;
@@ -92,7 +96,12 @@ export const companies = pgTable('companies', {
   country: text('country'),
   source: text('source').notNull().default('import'),
   /** e.g. { provider: 'greenhouse', slug: 'acme' } */
-  ats: jsonb('ats').$type<{ provider: 'greenhouse' | 'lever' | 'ashby'; slug: string } | null>(),
+  ats: jsonb('ats').$type<{ provider: 'greenhouse' | 'lever' | 'ashby' | 'workable' | 'smartrecruiters'; slug: string } | null>(),
+  githubOrg: text('github_org'),
+  icpTier: text('icp_tier'),
+  /** No new outreach to this company until this date. */
+  cooldownUntil: timestamp('cooldown_until', { withTimezone: true }),
+  isAgency: boolean('is_agency').notNull().default(false),
   siteHash: text('site_hash'),
   tech: jsonb('tech').$type<string[]>().notNull().default([]),
   lastScannedAt: timestamp('last_scanned_at', { withTimezone: true }),
@@ -108,6 +117,16 @@ export const signals = pgTable('signals', {
   detail: text('detail'),
   url: text('url'),
   fingerprint: text('fingerprint').notNull(),
+  category: text('category'),
+  subtype: text('subtype'),
+  /** Exact quote from the job post, DNS record, certificate or headline. */
+  evidence: text('evidence'),
+  /** When it actually happened (publication date), which drives time decay. */
+  eventDate: timestamp('event_date', { withTimezone: true }),
+  baseWeight: integer('base_weight'),
+  /** null = waiting for triage, true = confirmed, false = rejected as a false positive */
+  verified: boolean('verified'),
+  meta: jsonb('meta').$type<Record<string, string>>(),
   seenAt: timestamp('seen_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex('signal_fp').on(t.workspaceId, t.fingerprint), index('signal_company').on(t.companyId)]);
 
@@ -124,6 +143,31 @@ export const contacts = pgTable('contacts', {
   source: text('source'),
   createdAt: created(),
 }, (t) => [index('contact_company').on(t.companyId)]);
+
+/** Delta memory: one row each time a source's content changes for a company. Unchanged = skipped, no AI spent. */
+export const snapshots = pgTable('snapshots', {
+  id: id(),
+  companyId: uuid('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  source: text('source').notNull(), // ats | ats_count | dns | ssl | github | news | site
+  hash: text('hash').notNull(),
+  payload: jsonb('payload').$type<unknown>().notNull(),
+  capturedAt: timestamp('captured_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index('snap_company_source').on(t.companyId, t.source, t.capturedAt)]);
+
+/** Every job post we've seen, so we know how long roles stay open and when they're reposted. */
+export const jobPostings = pgTable('job_postings', {
+  id: id(),
+  companyId: uuid('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  extId: text('ext_id').notNull(),
+  title: text('title').notNull(),
+  location: text('location'),
+  url: text('url'),
+  textHash: text('text_hash'),
+  postedAt: timestamp('posted_at', { withTimezone: true }),
+  firstSeen: timestamp('first_seen', { withTimezone: true }).notNull().defaultNow(),
+  lastSeen: timestamp('last_seen', { withTimezone: true }).notNull().defaultNow(),
+  closedAt: timestamp('closed_at', { withTimezone: true }),
+}, (t) => [uniqueIndex('job_company_ext').on(t.companyId, t.extId)]);
 
 /** Global cache of what we learned about a domain's mail server. */
 export const domainMail = pgTable('domain_mail', {
@@ -144,6 +188,12 @@ export const opportunities = pgTable('opportunities', {
   score: integer('score').notNull().default(0),
   status: oppStatusEnum('status').notNull().default('new'),
   releasedOn: date('released_on'),
+  activeSignals: integer('active_signals').notNull().default(0),
+  combo: text('combo'),
+  persona: text('persona'),
+  hypothesis: text('hypothesis'),
+  angle: text('angle'),
+  evaluatedAt: timestamp('evaluated_at', { withTimezone: true }),
   createdAt: created(),
 }, (t) => [index('opp_ws_status').on(t.workspaceId, t.status), uniqueIndex('opp_ws_company').on(t.workspaceId, t.companyId)]);
 

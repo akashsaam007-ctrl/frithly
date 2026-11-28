@@ -5,3 +5,4 @@ export * from './crypto';
 export * from './schedule';
 export * from './sequences';
 export * from './compliance';
+export * from './scoring';

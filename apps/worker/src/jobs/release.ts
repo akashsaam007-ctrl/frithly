@@ -1,7 +1,8 @@
 import { and, companies, contacts, db, desc, domainMail, drafts, eq, inArray, isNotNull, isNull, monthKey, opportunities, signals, usage, users, workspaces } from '@frithly/db';
-import { PLANS, TRIAL_RELEASE_DAYS, planLimits, signalScore, type PlanKey } from '@frithly/core';
-import { discoverHiring, findEmail, findPeople, pickContact, scanSite, summarizeSite, writeEmail } from '@frithly/engine';
+import { PLANS, TRIAL_RELEASE_DAYS, matchCombo, planLimits, personaFor, type PlanKey } from '@frithly/core';
+import { discoverHiring, findEmail, findPeople, pickContact, scanSite, summarizeSite, writeEmail, writeHypothesis } from '@frithly/engine';
 import { bumpUsage, log, todayIn } from '../lib';
+import { rescorePool } from './scan';
 
 /**
  * Once a day per workspace (in its own time zone), move the best unreleased opportunities
@@ -38,6 +39,7 @@ export async function releaseAll(enqueueEnrich: (oppId: string) => Promise<unkno
     n = Math.min(n, lim.month - (u?.opportunities ?? 0));
     if (n <= 0) continue;
 
+    await rescorePool(ws.id);
     await topUp(ws, n);
     const pick = await db
       .select({ id: opportunities.id })
@@ -65,10 +67,28 @@ export async function enrichOpportunity(oppId: string) {
   if (!row) return;
   const { opp, co, ws, sig } = row;
 
+  // The stack behind this account, strongest first, and who owns the problem.
+  const stack = (await db.select().from(signals).where(and(eq(signals.companyId, co.id), eq(signals.verified, true))))
+    .filter((s) => s.category !== 'DISQUALIFIER' && s.eventDate && Date.now() - s.eventDate.getTime() <= 45 * 86_400_000)
+    .sort((a, b) => (b.baseWeight ?? 0) - (a.baseWeight ?? 0)).slice(0, 6);
+  let persona = opp.persona, hypothesis = opp.hypothesis, angle = opp.angle;
+  if (!hypothesis && ws.profile && process.env.ANTHROPIC_API_KEY) {
+    const active = stack.map((s) => ({ subtype: s.subtype as never, eventDate: s.eventDate!, verified: true, evidence: s.evidence, meta: s.meta ?? undefined, points: s.baseWeight ?? 0, category: s.category as never }));
+    const combo = matchCombo(active);
+    const h = await writeHypothesis({
+      company: { name: co.name, domain: co.domain }, offer: ws.profile.offer, targetTitles: ws.profile.titles,
+      combo, signals: stack.map((s) => ({ label: s.label, evidence: s.evidence ?? s.detail ?? '', eventDate: s.eventDate! })),
+    });
+    ({ persona, hypothesis, angle } = h);
+    if (!persona) persona = personaFor({ combo, active })[0];
+    await db.update(opportunities).set({ persona, hypothesis, angle }).where(eq(opportunities.id, opp.id));
+  }
+
   let contact = opp.contactId ? (await db.select().from(contacts).where(eq(contacts.id, opp.contactId)))[0] : undefined;
   if (!contact) {
     const people = await findPeople(co.domain);
-    const p = pickContact(people, ws.profile?.titles ?? []);
+    // The user's own buyer titles come first; the persona the signals point to breaks ties.
+    const p = pickContact(people, [...(ws.profile?.titles ?? []), ...(persona ? [persona] : [])]);
     if (!p) {
       log('enrich', 'no person found', { domain: co.domain });
       return;
@@ -102,7 +122,9 @@ export async function enrichOpportunity(oppId: string) {
       proofPoint: ws.profile.proofPoint,
       company: { name: co.name, domain: co.domain, industry: co.industry, siteSummary: summary },
       contact: { name: contact.name, role: contact.role },
-      signal: { type: sig.type, label: sig.label, detail: sig.detail },
+      signal: { type: sig.type, label: sig.label, detail: sig.evidence ?? sig.detail },
+      stack: stack.map((s) => ({ label: s.label, evidence: s.evidence ?? s.detail ?? '' })),
+      hypothesis, angle,
       step: { index: 0, brief: 'Signal, what it usually causes, proof, one easy question' },
     },
     { companyName: co.name, domain: co.domain, contactRole: contact.role, signalLabel: sig.label, emailStatus: contact.emailStatus, signature: s?.signature, postalAddress: s?.postalAddress, optOutLine: s?.optOutLine },
@@ -123,12 +145,8 @@ async function topUp(ws: typeof workspaces.$inferSelect, need: number) {
   try {
     const found = await discoverHiring(ws.profile.hiringRoles, ws.profile.countries, Math.min(100, need * 3));
     for (const f of found) {
-      const [co] = await db.insert(companies).values({ workspaceId: ws.id, domain: f.domain, name: f.name, industry: f.industry, size: f.size, country: f.country, source: 'discovery' })
-        .onConflictDoNothing().returning();
-      if (!co) continue; // already watched; the scanner handles it
-      const [sig] = await db.insert(signals).values({ workspaceId: ws.id, companyId: co.id, type: 'hiring', label: `Hiring a ${f.jobTitle}`, url: f.jobUrl, fingerprint: `ts:${f.jobId}` })
-        .onConflictDoNothing().returning();
-      if (sig) await db.insert(opportunities).values({ workspaceId: ws.id, companyId: co.id, signalId: sig.id, score: signalScore('hiring', (Date.now() - f.postedAt.getTime()) / 86_400_000, 0.6) }).onConflictDoNothing();
+      // Added to the watchlist only; the scanner decides whether they qualify.
+      await db.insert(companies).values({ workspaceId: ws.id, domain: f.domain, name: f.name, industry: f.industry, size: f.size, country: f.country, source: 'discovery' }).onConflictDoNothing();
     }
     log('release', 'discovered', { ws: ws.id, n: found.length });
   } catch (e) {

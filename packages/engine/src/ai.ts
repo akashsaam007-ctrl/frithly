@@ -56,6 +56,10 @@ export interface DraftContext {
   company: { name: string; domain: string; industry?: string | null; siteSummary?: string };
   contact: { name: string; role?: string | null };
   signal: { type: string; label: string; detail?: string | null };
+  /** Stacked evidence, operational hypothesis and angle from the scoring engine. */
+  stack?: { label: string; evidence: string }[];
+  hypothesis?: string | null;
+  angle?: string | null;
   step: { index: number; brief: string; sameThread?: boolean };
   previous?: { subject: string; body: string }[];
 }
@@ -65,7 +69,8 @@ const RULES = `Rules for every email:
 - One line on what that moment usually causes (use the word "usually" or "often").
 - One line of proof from the sender's proof point. Never invent numbers or clients.
 - End with exactly one easy yes/no question. Only one question mark in the whole email.
-- Under 90 words (under 60 if the contact is a founder, owner or C-level).
+- Under 75 words (under 60 if the contact is a founder, owner or C-level).
+- Problem first, no surveillance: never mention DNS, certificates, subdomains, code repositories, or that you were watching them. Public news and job posts may be referenced; infrastructure signals only shape the problem you name.
 - Subject: 2 to 5 words, all lowercase, no "re:", no exclamation marks.
 - Plain words. No em dashes, no exclamation marks, no emojis, no links, no [placeholders].
 - Never use: platform, AI, solution, leverage, streamline, unlock, seamless, synergy, "hope this finds you", "I came across", kindly, moreover, furthermore, additionally.
@@ -80,6 +85,9 @@ What the sender offers: ${ctx.offer}
 Sender's proof point: ${ctx.proofPoint || '(none given; skip the proof line)'}
 Recipient: ${ctx.contact.name}${ctx.contact.role ? `, ${ctx.contact.role}` : ''} at ${ctx.company.name} (${ctx.company.domain})${ctx.company.industry ? `, ${ctx.company.industry}` : ''}.
 Signal: ${ctx.signal.label}${ctx.signal.detail ? ` — ${ctx.signal.detail}` : ''}
+${ctx.stack?.length ? `All current signals:\n${ctx.stack.map((x) => `- ${x.label}: "${x.evidence.slice(0, 200)}"`).join('\n')}` : ''}
+${ctx.hypothesis ? `Likely problem: ${ctx.hypothesis}` : ''}
+${ctx.angle ? `Angle: ${ctx.angle}` : ''}
 ${ctx.company.siteSummary ? `From their website: ${ctx.company.siteSummary.slice(0, 1200)}` : ''}
 This step's job: ${ctx.step.brief}${ctx.step.sameThread ? ' (sent as a reply in the same thread, so the subject is ignored; keep it short)' : ''}
 ${prev}
@@ -129,4 +137,75 @@ export async function summarizeSite(domain: string, siteText: string) {
     messages: [{ role: 'user', content: `In one plain sentence, what does ${domain} sell and to whom? Use only this text:\n${siteText.slice(0, 5000)}` }],
   });
   return text(m).trim();
+}
+
+/* ---------- Signal triage and hypotheses ---------- */
+export interface TriageItem { id: string; subtype: string; evidence: string; source: string }
+export interface TriageVerdict { id: string; verified: boolean; reason: string }
+
+/**
+ * Confirm or reject text-based signals in one cheap call per company:
+ * is the quote really about this company, and does it mean what the rule thinks?
+ * Also flags staffing agencies posting for undisclosed clients.
+ */
+export async function triageSignals(company: { name: string; domain: string }, items: TriageItem[]): Promise<{ verdicts: TriageVerdict[]; staffingAgency: boolean }> {
+  if (!items.length) return { verdicts: [], staffingAgency: false };
+  const m = await claude().messages.create({
+    model: FAST,
+    max_tokens: 1200,
+    system: 'You check sales signals for false positives. Be strict. Reply with JSON only.',
+    messages: [{
+      role: 'user',
+      content: `Company: ${company.name} (${company.domain}).
+For each candidate, decide if the evidence really shows the signal FOR THIS COMPANY:
+- COMPETITOR_IN_JOB: the job requires or mentions using that product at this company (not a generic list of tools).
+- MIGRATION: they are moving off, consolidating, or rebuilding a system now.
+- FIRST_IN_FUNCTION: first or founding person in that function, or a new Head of.
+- NEW_LEADER: a named person newly joined or was promoted into that role at this company (not another company with a similar name).
+- COMPLIANCE / FUNDING / REGIONAL / LAYOFF: the headline is about this company doing that.
+Also say whether this company is a staffing or recruiting agency hiring for undisclosed clients.
+
+Candidates:
+${items.map((i) => `[${i.id}] ${i.subtype} (${i.source}): "${i.evidence.slice(0, 400)}"`).join('\n')}
+
+Reply: {"staffing_agency": false, "verdicts": [{"id":"","verified":true,"reason":"few words"}]}`,
+    }],
+  });
+  const out = json<{ staffing_agency?: boolean; verdicts?: TriageVerdict[] }>(text(m));
+  return { verdicts: out?.verdicts ?? [], staffingAgency: !!out?.staffing_agency };
+}
+
+/** For a promoted account: who owns the pain, what the pain probably is, and the angle — grounded in the evidence and the user's offer. */
+export async function writeHypothesis(input: {
+  company: { name: string; domain: string };
+  offer: string;
+  targetTitles: string[];
+  combo: { name: string; personaTitles: string[]; hypothesis: string; angle: string } | null;
+  signals: { label: string; evidence: string; eventDate: Date }[];
+}): Promise<{ persona: string; hypothesis: string; angle: string }> {
+  const m = await claude().messages.create({
+    model: FAST,
+    max_tokens: 400,
+    system: 'You write short, concrete sales hypotheses. Reply with JSON only.',
+    messages: [{
+      role: 'user',
+      content: `Company: ${input.company.name} (${input.company.domain})
+What we sell: ${input.offer}
+Who we usually sell to: ${input.targetTitles.join(', ') || 'not set'}
+${input.combo ? `Matched pattern: ${input.combo.name}. Typical owner: ${input.combo.personaTitles.join(', ')}. Typical pain: ${input.combo.hypothesis}` : ''}
+Signals (newest first):
+${input.signals.map((s) => `- ${s.label} (${s.eventDate.toISOString().slice(0, 10)}): "${s.evidence.slice(0, 300)}"`).join('\n')}
+
+1. persona: the single job title who owns this problem AND would buy what we sell.
+2. hypothesis: one sentence on the operational problem these signals point to. Only claim what the evidence supports.
+3. angle: one sentence on how to open the email. Problem first. Never mention DNS records, certificates, code repositories or how we noticed; public news and job posts may be referenced.
+Reply: {"persona":"","hypothesis":"","angle":""}`,
+    }],
+  });
+  const o = json<{ persona: string; hypothesis: string; angle: string }>(text(m));
+  return {
+    persona: o?.persona || input.combo?.personaTitles[0] || input.targetTitles[0] || 'Founder',
+    hypothesis: o?.hypothesis || input.combo?.hypothesis || '',
+    angle: o?.angle || input.combo?.angle || '',
+  };
 }
