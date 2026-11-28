@@ -8,6 +8,8 @@ import nodemailer from 'nodemailer';
 export async function sendSystemMail(to: string, subject: string, text: string) {
   const host = process.env.SYSTEM_SMTP_HOST;
   if (!host) {
+    // In production a missing mail server would silently swallow sign-in codes; fail loudly instead.
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_LOG_MAIL !== '1') throw new Error('SYSTEM_SMTP_HOST is not set, so sign-in codes cannot be emailed.');
     console.log(`[dev mail] to=${to} subject=${subject}\n${text}`);
     return;
   }

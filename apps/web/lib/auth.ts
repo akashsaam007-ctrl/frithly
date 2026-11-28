@@ -21,7 +21,12 @@ export async function sendCode(rawEmail: string): Promise<{ ok: true } | { ok: f
   if (recent.length >= 5) return { ok: false, error: 'Too many codes requested. Try again in an hour.' };
   const code = otpCode();
   await db.insert(otpCodes).values({ email, codeHash: sha256(`${email}:${code}`), expiresAt: new Date(Date.now() + CODE_MINUTES * 60_000) });
-  await sendSystemMail(email, `${code} is your Frithly code`, `Your Frithly sign-in code is ${code}\n\nIt works for ${CODE_MINUTES} minutes. If you didn't ask for it, ignore this email.`);
+  try {
+    await sendSystemMail(email, `${code} is your Frithly code`, `Your Frithly sign-in code is ${code}\n\nIt works for ${CODE_MINUTES} minutes. If you didn't ask for it, ignore this email.`);
+  } catch (e) {
+    console.error('sign-in email failed', e);
+    return { ok: false, error: 'We couldn’t send the code just now. Try again in a minute.' };
+  }
   return { ok: true };
 }
 
