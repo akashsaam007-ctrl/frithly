@@ -11,7 +11,12 @@ export function unsubscribeHeaders(appUrl: string, unsubToken: string, mailto: s
   };
 }
 
-export type ReplyClass = 'interested' | 'meeting' | 'not_interested' | 'optout' | 'out_of_office' | 'bounce' | 'referral' | 'other';
+export type ReplyClass = 'interested' | 'meeting' | 'later' | 'not_interested' | 'optout' | 'out_of_office' | 'bounce' | 'referral' | 'other';
+
+export const REPLY_LABEL: Record<ReplyClass, string> = {
+  interested: 'Interested', meeting: 'Wants a meeting', later: 'Not now', not_interested: 'Not interested', optout: 'Opted out',
+  out_of_office: 'Out of office', bounce: 'Bounced', referral: 'Referred you', other: 'Reply',
+};
 
 /** Cheap rule-based first pass; the worker asks Claude only when this returns 'other'. */
 export function quickClassify(subject: string, text: string): ReplyClass {
@@ -19,6 +24,7 @@ export function quickClassify(subject: string, text: string): ReplyClass {
   if (/mailer-daemon|delivery status notification|undeliverable|address not found|recipient address rejected/.test(s)) return 'bounce';
   if (/out of (the )?office|on (annual )?leave|automatic reply|auto-reply|away until|vacation/.test(s)) return 'out_of_office';
   if (/unsubscribe|remove me|stop emailing|don'?t (email|contact) me|take me off|opt.?out/.test(s)) return 'optout';
+  if (/\b(not right now|not now|check back|reach out (again )?(in|next)|circle back|revisit (this )?(in|next)|next quarter|in (january|february|march|april|may|june|july|august|september|october|november|december)|after (the )?(holidays|new year))\b/.test(s) && !/\b(yes|sure|let'?s|happy to|book|call)\b/.test(s)) return 'later';
   const first = text.trim().split(/\n/)[0]?.toLowerCase().replace(/[^a-z ]/g, '').trim() ?? '';
   if (/^(no|nope|no thanks|not interested|not relevant|no thank you|pass)$/.test(first)) return 'not_interested';
   return 'other';

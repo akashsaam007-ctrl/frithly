@@ -4,7 +4,7 @@ import * as schema from './schema';
 
 export * from './schema';
 export { schema };
-export { and, asc, count, desc, eq, gt, gte, inArray, isNull, isNotNull, lt, lte, ne, or, sql } from 'drizzle-orm';
+export { and, asc, count, desc, eq, gt, gte, ilike, inArray, isNull, isNotNull, like, lt, lte, ne, or, sql, sum } from 'drizzle-orm';
 
 const g = globalThis as unknown as { __frithlySql?: postgres.Sql };
 
@@ -27,3 +27,4 @@ export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
 export type DB = typeof db;
 
 export const monthKey = (d = new Date()) => d.toISOString().slice(0, 7);
+export type { SQL } from 'drizzle-orm';

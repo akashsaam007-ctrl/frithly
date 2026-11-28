@@ -1,4 +1,4 @@
-import { and, companies, contacts, db, desc, domainMail, drafts, eq, inArray, isNotNull, isNull, monthKey, opportunities, signals, usage, users, workspaces } from '@frithly/db';
+import { and, companies, contacts, db, desc, domainMail, drafts, eq, inArray, isNotNull, isNull, ne, or, monthKey, opportunities, signals, usage, users, workspaces } from '@frithly/db';
 import { PLANS, TRIAL_RELEASE_DAYS, matchCombo, planLimits, personaFor, type PlanKey } from '@frithly/core';
 import { discoverHiring, findEmail, findPeople, pickContact, scanSite, summarizeSite, writeEmail, writeHypothesis } from '@frithly/engine';
 import { bumpUsage, log, todayIn } from '../lib';
@@ -44,7 +44,7 @@ export async function releaseAll(enqueueEnrich: (oppId: string) => Promise<unkno
     const pick = await db
       .select({ id: opportunities.id })
       .from(opportunities)
-      .where(and(eq(opportunities.workspaceId, ws.id), eq(opportunities.status, 'new'), isNull(opportunities.releasedOn)))
+      .where(and(eq(opportunities.workspaceId, ws.id), eq(opportunities.status, 'new'), isNull(opportunities.releasedOn), or(isNull(opportunities.promotedBy), ne(opportunities.promotedBy, 'manual'))))
       .orderBy(desc(opportunities.score))
       .limit(n);
     if (!pick.length) continue;
@@ -104,6 +104,9 @@ export async function enrichOpportunity(oppId: string) {
       workspaceId: ws.id, companyId: co.id, name: p.name, role: p.title, linkedinUrl: p.linkedin || null,
       email: found.email, emailStatus: found.status, source: found.source,
     }).returning();
+    // Keep everyone else we found too, without spending lookups on their emails (People tab, "Use instead").
+    const others = people.filter((x) => x.name !== p.name).slice(0, 8);
+    if (others.length) await db.insert(contacts).values(others.map((x) => ({ workspaceId: ws.id, companyId: co.id, name: x.name, role: x.title, linkedinUrl: x.linkedin || null, source: 'team page' })));
     await db.update(opportunities).set({ contactId: contact.id }).where(eq(opportunities.id, opp.id));
   }
 
@@ -152,4 +155,39 @@ async function topUp(ws: typeof workspaces.$inferSelect, need: number) {
   } catch (e) {
     log('release', 'discovery failed', { error: (e as Error).message });
   }
+}
+
+/** Find (or re-check) one contact's email. With makeMain, they become the person this company is written to. */
+export async function findContactEmail(contactId: string, makeMain = false) {
+  const [ct] = await db.select().from(contacts).where(eq(contacts.id, contactId));
+  if (!ct) return;
+  const [co] = await db.select().from(companies).where(eq(companies.id, ct.companyId));
+  if (!co) return;
+  const [cache] = await db.select().from(domainMail).where(eq(domainMail.domain, co.domain));
+  const { found, learned } = await findEmail(ct.name, co.domain, cache ?? {});
+  if (learned.pattern || learned.mx !== undefined) {
+    await db.insert(domainMail).values({ domain: co.domain, mx: learned.mx ?? cache?.mx ?? null, catchAll: learned.catchAll ?? cache?.catchAll ?? null, pattern: learned.pattern ?? cache?.pattern ?? null })
+      .onConflictDoUpdate({ target: domainMail.domain, set: { mx: learned.mx ?? cache?.mx ?? null, catchAll: learned.catchAll ?? cache?.catchAll ?? null, pattern: learned.pattern ?? cache?.pattern ?? null, checkedAt: new Date() } });
+  }
+  await db.update(contacts).set({ email: found.email, emailStatus: found.status, source: found.source }).where(eq(contacts.id, ct.id));
+  if (makeMain) {
+    const [opp] = await db.select().from(opportunities).where(and(eq(opportunities.workspaceId, ct.workspaceId), eq(opportunities.companyId, ct.companyId)));
+    if (opp && ['new', 'saved'].includes(opp.status)) {
+      await db.update(opportunities).set({ contactId: ct.id }).where(eq(opportunities.id, opp.id));
+      await db.delete(drafts).where(and(eq(drafts.opportunityId, opp.id), eq(drafts.stepIndex, 0)));
+      await enrichOpportunity(opp.id); // writes a new first draft for this person
+    }
+  }
+  log('enrich', 'email lookup', { contact: ct.name, status: found.status });
+}
+
+/** Find & enrich: scan a company the user typed in, then find the person and write a draft — outside the daily list. */
+export async function lookupCompany(companyId: string, scan: (id: string) => Promise<unknown>) {
+  await scan(companyId);
+  const [co] = await db.select().from(companies).where(eq(companies.id, companyId));
+  if (!co) return;
+  let [opp] = await db.select().from(opportunities).where(and(eq(opportunities.workspaceId, co.workspaceId), eq(opportunities.companyId, co.id)));
+  if (!opp) [opp] = await db.insert(opportunities).values({ workspaceId: co.workspaceId, companyId: co.id, promotedBy: 'manual' }).returning();
+  else if (!opp.promotedBy) await db.update(opportunities).set({ promotedBy: 'manual' }).where(eq(opportunities.id, opp.id));
+  await enrichOpportunity(opp.id);
 }

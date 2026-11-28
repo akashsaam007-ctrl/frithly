@@ -1,6 +1,6 @@
 import { PgBoss } from 'pg-boss';
 import { dueCompanies, scanCompany } from './jobs/scan';
-import { enrichOpportunity, releaseAll } from './jobs/release';
+import { enrichOpportunity, findContactEmail, lookupCompany, releaseAll } from './jobs/release';
 import { enrollApproved, runDue } from './jobs/send';
 import { pollAll } from './jobs/poll';
 import { log } from './lib';
@@ -23,6 +23,8 @@ const Q = {
   enrich: 'enrich-opportunity',
   sendTick: 'send-tick',
   pollTick: 'poll-tick',
+  findEmail: 'find-email',
+  lookup: 'lookup-company',
 } as const;
 
 for (const q of Object.values(Q)) await boss.createQueue(q).catch(() => undefined);
@@ -41,6 +43,8 @@ await boss.work(Q.releaseTick, one(() => releaseAll((oppId) => boss.send(Q.enric
 await boss.work<{ oppId: string }>(Q.enrich, { batchSize: 1, localConcurrency: Number(process.env.ENRICH_CONCURRENCY ?? 3) }, one((d: { oppId: string }) => enrichOpportunity(d.oppId)));
 await boss.work(Q.sendTick, one(async () => { await enrollApproved(); await runDue(); }));
 await boss.work(Q.pollTick, one(() => pollAll()));
+await boss.work<{ contactId: string; makeMain?: boolean }>(Q.findEmail, { batchSize: 1, localConcurrency: 2 }, one((d: { contactId: string; makeMain?: boolean }) => findContactEmail(d.contactId, d.makeMain)));
+await boss.work<{ companyId: string }>(Q.lookup, { batchSize: 1, localConcurrency: 2 }, one((d: { companyId: string }) => lookupCompany(d.companyId, scanCompany)));
 
 await boss.schedule(Q.scanTick, '*/20 * * * *');
 await boss.schedule(Q.releaseTick, '5 * * * *');

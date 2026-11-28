@@ -182,18 +182,21 @@ export async function evaluateCompany(companyId: string) {
   const [ws] = await db.select().from(workspaces).where(eq(workspaces.id, co.workspaceId));
   const since = new Date(Date.now() - DEFAULT_GATE.windowDays * 86_400_000);
   const rows = await db.select().from(signals).where(and(eq(signals.companyId, co.id), gte(signals.eventDate, since)));
+  const off = new Set(ws?.prefs?.unwatched ?? []);
   const ev = evaluate(
-    rows.filter((r) => r.subtype).map((r) => ({ id: r.id, subtype: r.subtype as Subtype, eventDate: r.eventDate!, verified: r.verified, evidence: r.evidence, meta: r.meta ?? undefined })),
+    rows.filter((r) => r.subtype && !off.has(r.subtype)).map((r) => ({ id: r.id, subtype: r.subtype as Subtype, eventDate: r.eventDate!, verified: r.verified, evidence: r.evidence, meta: r.meta ?? undefined })),
     { gate: ws?.profile?.gate, cooldownUntil: co.cooldownUntil },
   );
   const top = ev.active[0]?.id ?? null;
-  const vals = { score: ev.score, signalId: top, activeSignals: ev.active.length, combo: ev.combo?.name ?? null, promotedBy: ev.promotedBy, evaluatedAt: new Date() };
+  const manual = opp0Manual(await db.select({ p: opportunities.promotedBy }).from(opportunities).where(and(eq(opportunities.workspaceId, co.workspaceId), eq(opportunities.companyId, co.id))));
+  const vals = { score: ev.score, signalId: top, activeSignals: ev.active.length, combo: ev.combo?.name ?? null, promotedBy: manual ? 'manual' : ev.promotedBy, evaluatedAt: new Date() };
   const [opp] = await db.select().from(opportunities).where(and(eq(opportunities.workspaceId, co.workspaceId), eq(opportunities.companyId, co.id)));
 
   if (!opp) {
     if (ev.promote) await db.insert(opportunities).values({ workspaceId: co.workspaceId, companyId: co.id, ...vals }).onConflictDoNothing();
   } else if (opp.status === 'new' && !opp.releasedOn) {
-    if (ev.promote) await db.update(opportunities).set(vals).where(eq(opportunities.id, opp.id));
+    // Hand-picked lookups stay whatever their score; signal-picked ones must keep passing the gate.
+    if (ev.promote || manual) await db.update(opportunities).set(vals).where(eq(opportunities.id, opp.id));
     else await db.delete(opportunities).where(eq(opportunities.id, opp.id)); // fell below the gate or suppressed
   } else if (['new', 'saved'].includes(opp.status)) {
     await db.update(opportunities).set({ ...vals, signalId: top ?? opp.signalId }).where(eq(opportunities.id, opp.id));
@@ -211,3 +214,5 @@ export async function rescorePool(workspaceId: string) {
   const pool = await db.select({ c: opportunities.companyId }).from(opportunities).where(and(eq(opportunities.workspaceId, workspaceId), eq(opportunities.status, 'new'), isNull(opportunities.releasedOn)));
   for (const p of pool) await evaluateCompany(p.c);
 }
+
+const opp0Manual = (r: { p: string | null }[]) => r[0]?.p === 'manual';

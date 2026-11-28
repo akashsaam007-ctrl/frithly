@@ -121,11 +121,11 @@ export async function classifyReply(body: string): Promise<ReplyClass> {
     max_tokens: 20,
     messages: [{
       role: 'user',
-      content: `Classify this reply to a cold email. Answer with one word from: interested, meeting, not_interested, optout, out_of_office, referral, other.\n\n${body.slice(0, 3000)}`,
+      content: `Classify this reply to a cold email. Answer with one word from: interested, meeting, later (not now, check back later), not_interested, optout, out_of_office, referral, other.\n\n${body.slice(0, 3000)}`,
     }],
   });
   const w = text(m).trim().toLowerCase().replace(/[^a-z_]/g, '') as ReplyClass;
-  return (['interested', 'meeting', 'not_interested', 'optout', 'out_of_office', 'referral', 'other'] as ReplyClass[]).includes(w) ? w : 'other';
+  return (['interested', 'meeting', 'later', 'not_interested', 'optout', 'out_of_office', 'referral', 'other'] as ReplyClass[]).includes(w) ? w : 'other';
 }
 
 /** One-line summary of what the company does, for drafts. */

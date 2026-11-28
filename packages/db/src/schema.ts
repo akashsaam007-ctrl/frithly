@@ -8,7 +8,7 @@ const created = () => timestamp('created_at', { withTimezone: true }).notNull().
 
 export const planEnum = pgEnum('plan', ['trial', 'starter', 'pro', 'agency', 'expired']);
 export const emailStatusEnum = pgEnum('email_status', ['valid', 'catch_all', 'invalid', 'unknown', 'none']);
-export const oppStatusEnum = pgEnum('opp_status', ['new', 'saved', 'skipped', 'approved', 'sequencing', 'replied', 'meeting', 'won', 'lost']);
+export const oppStatusEnum = pgEnum('opp_status', ['new', 'saved', 'skipped', 'nofit', 'approved', 'sequencing', 'replied', 'meeting', 'won', 'lost']);
 export const enrollStatusEnum = pgEnum('enroll_status', ['waiting_mailbox', 'active', 'paused', 'stopped', 'done']);
 export const mailboxProviderEnum = pgEnum('mailbox_provider', ['smtp', 'microsoft']);
 
@@ -76,8 +76,18 @@ export const workspaces = pgTable('workspaces', {
   profile: jsonb('profile').$type<Profile>(),
   sending: jsonb('sending').$type<Sending>(),
   onboardedAt: timestamp('onboarded_at', { withTimezone: true }),
+  prefs: jsonb('prefs').$type<Prefs>().notNull().default({}),
+  website: text('website'),
   createdAt: created(),
 });
+
+export interface Prefs {
+  /** 'every' = approve each follow-up too; 'first' = follow-ups send on their own */
+  approval?: 'every' | 'first';
+  /** Signal subtypes switched off by the user */
+  unwatched?: string[];
+  notesClearedAt?: string;
+}
 
 export const members = pgTable('members', {
   workspaceId: uuid('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
@@ -196,6 +206,8 @@ export const opportunities = pgTable('opportunities', {
   hypothesis: text('hypothesis'),
   angle: text('angle'),
   evaluatedAt: timestamp('evaluated_at', { withTimezone: true }),
+  /** When the user last acted on it (approve, skip), for the activity log. */
+  actedAt: timestamp('acted_at', { withTimezone: true }),
   createdAt: created(),
 }, (t) => [index('opp_ws_status').on(t.workspaceId, t.status), uniqueIndex('opp_ws_company').on(t.workspaceId, t.companyId)]);
 
@@ -299,6 +311,45 @@ export const suppressions = pgTable('suppressions', {
   uniqueIndex('supp_ws_email').on(t.workspaceId, t.email).where(sql`${t.workspaceId} is not null`),
   uniqueIndex('supp_global_email').on(t.email).where(sql`${t.workspaceId} is null`),
 ]);
+
+/** Deals pipeline: Replied → Meeting → Proposal → Won / Lost. */
+export const deals = pgTable('deals', {
+  id: id(),
+  workspaceId: uuid('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+  companyId: uuid('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  opportunityId: uuid('opportunity_id').references(() => opportunities.id, { onDelete: 'set null' }),
+  stage: text('stage').notNull().default('Replied'),
+  valueUsd: integer('value_usd').notNull().default(0),
+  note: text('note'),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: created(),
+}, (t) => [index('deal_ws').on(t.workspaceId), uniqueIndex('deal_ws_company').on(t.workspaceId, t.companyId)]);
+
+/** Lookup credits: negative = spent, positive = refunded. Balance = plan credits + this month's sum. */
+export const credits = pgTable('credits', {
+  id: id(),
+  workspaceId: uuid('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+  delta: integer('delta').notNull(),
+  reason: text('reason').notNull(),
+  at: timestamp('at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index('credit_ws_at').on(t.workspaceId, t.at)]);
+
+export const invites = pgTable('invites', {
+  id: id(),
+  workspaceId: uuid('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+  email: text('email').notNull(),
+  role: text('role').notNull().default('member'),
+  acceptedAt: timestamp('accepted_at', { withTimezone: true }),
+  createdAt: created(),
+}, (t) => [uniqueIndex('invite_ws_email').on(t.workspaceId, t.email)]);
+
+/** Companies the user looked up by hand (Find & enrich). */
+export const lookups = pgTable('lookups', {
+  id: id(),
+  workspaceId: uuid('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+  companyId: uuid('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  at: timestamp('at', { withTimezone: true }).notNull().defaultNow(),
+});
 
 export const usage = pgTable('usage', {
   workspaceId: uuid('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' }),

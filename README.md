@@ -28,6 +28,27 @@ Signal-to-meeting outbound for small B2B teams. Frithly watches companies for bu
 
 Not in milestone 1: Gmail OAuth (needs Google's restricted-scope review and a CASA assessment; Google Workspace users connect with an app password for now), LinkedIn automation via Unipile ($29 add-on), CRM sync, team seats UI, multi-client workspaces.
 
+## The app
+
+The signed-in app follows the workspace reference design: a sidebar with counts and a usage meter, a top bar with search (⌘K), notifications and per-page actions, and a company drawer.
+
+| Section | What it does |
+|---|---|
+| **Today** | The daily list. Road-to-first-meeting steps, filters by kind of signal, timing (Act today / This week / Soon), fit score, Approve / Skip / Not a fit (with Undo), **Approve top 5**, J/K/A/S/N keys. The drawer has **Draft** (live 11-point check, follow-ups waiting for approval, rewrite), **Signals** (points, decay, days left), **People** (use another contact, find email) and **Activity**. |
+| **Inbox** | Replies grouped by type (Interested, Not now, Out of office, Not interested, Bounced). Thread view, suggested reply sent in-thread from your mailbox, Book a meeting, Snooze to a task, Move to deals, why you wrote. |
+| **Companies** | Every account plus watched companies with no signal yet; search, status filters, the same drawer, Look up now. |
+| **People** | Everyone found on team pages; copy email or find it for 1 credit. |
+| **Deals** | Kanban (Replied → Meeting → Proposal → Won / Lost) with drag and drop, values, notes, 14-day stale flags. |
+| **Tasks** | LinkedIn steps, calls, follow-ups to approve and your own tasks. |
+| **Find & enrich** | Look up one company or a list (credits shown before charging), add to the free daily watchlist, recent lookups. |
+| **Outreach** | Sequence editor (channels, days, what each step says), mailboxes with warm-up and SPF/DKIM/DMARC checks, approval mode (every email / first only), what's up next. |
+| **Analytics** | Companies contacted, emails, replies, meetings, won deals; weekly chart; reply rate by signal. All from your own data. |
+| **Integrations** | Microsoft 365 mailbox, CSV/JSON export. HubSpot, Pipedrive, Salesforce, Calendar, Slack, Zapier are marked coming soon. |
+| **Settings** | Profile and sending details, signal settings (gate, competitors, roles, per-signal watch), do-not-contact, team invites, data export. |
+| **Billing** | Plans with first-month offer and yearly, add-ons, credit history, Stripe portal. |
+
+Onboarding is four steps: website (we read your site to fill in what you sell), who you sell to, moments to watch, and sending details plus mailbox.
+
 ## Layout
 
 ```
@@ -50,7 +71,7 @@ pnpm --filter @frithly/web dev   # http://localhost:3000 — sign-in codes print
 pnpm --filter @frithly/worker dev
 ```
 
-Tests: `pnpm test` (add `TEST_DATABASE_URL` to run the end-to-end send/reply test against Postgres; it wipes that database).
+Tests: `pnpm test` (add `TEST_DATABASE_URL` pointing at a separate database whose name contains `test`, e.g. `frithly_test`; the integration tests wipe it and refuse any other name).
 
 ## Go live: step by step
 

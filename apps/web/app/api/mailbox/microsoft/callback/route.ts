@@ -8,7 +8,7 @@ import { requireWorkspace } from '@/lib/auth';
 export async function GET(req: Request) {
   const { ws } = await requireWorkspace();
   const url = new URL(req.url);
-  const back = (q: string) => NextResponse.redirect(new URL(`/app/settings?${q}`, process.env.APP_URL));
+  const back = (q: string) => NextResponse.redirect(new URL(`/app/outreach?${q}`, process.env.APP_URL));
   const state = (await cookies()).get('fr_ms')?.value ?? '';
   const code = url.searchParams.get('code');
   if (!code || !state || !safeEqual(state, url.searchParams.get('state') ?? '')) return back('e=Microsoft+sign-in+was+cancelled+or+expired');

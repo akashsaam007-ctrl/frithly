@@ -8,7 +8,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./checks": "./src/checks.ts",
-    "./plans": "./src/plans.ts"
+    "./plans": "./src/plans.ts",
+    "./compliance": "./src/compliance.ts",
+    "./scoring": "./src/scoring.ts",
+    "./sequences": "./src/sequences.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

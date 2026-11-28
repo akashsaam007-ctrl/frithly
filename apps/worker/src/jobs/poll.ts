@@ -1,4 +1,4 @@
-import { and, contacts, db, enrollments, eq, inArray, mailboxes, messages, opportunities } from '@frithly/db';
+import { and, contacts, credits, db, enrollments, eq, inArray, like, mailboxes, messages, opportunities, tasks } from '@frithly/db';
 import { GLOBAL_SUPPRESS, STOP_AND_DNC, addDays, quickClassify, type ReplyClass } from '@frithly/core';
 import { classifyReply, fetchInbox, stripQuoted, type InMail, type MailboxRow } from '@frithly/engine';
 import { log, suppress } from '../lib';
@@ -71,7 +71,18 @@ export async function handleIncoming(mb: typeof mailboxes.$inferSelect, mails: I
     await db.update(opportunities).set({ status }).where(eq(opportunities.id, e.opportunityId));
     if (STOP_AND_DNC.includes(cls)) {
       await suppress(mb.workspaceId, target, cls, GLOBAL_SUPPRESS.includes(cls));
-      if (cls === 'bounce') await db.update(contacts).set({ emailStatus: 'invalid' }).where(and(eq(contacts.workspaceId, mb.workspaceId), eq(contacts.email, target)));
+      if (cls === 'bounce') {
+        const bounced = await db.update(contacts).set({ emailStatus: 'invalid' }).where(and(eq(contacts.workspaceId, mb.workspaceId), eq(contacts.email, target))).returning({ id: contacts.id });
+        // Refund the lookup credit if this email was paid for, once.
+        for (const b of bounced) {
+          const tag = `[contact:${b.id}]`;
+          const rows = await db.select().from(credits).where(and(eq(credits.workspaceId, mb.workspaceId), like(credits.reason, `%${tag}%`)));
+          if (rows.some((r) => r.delta < 0) && !rows.some((r) => r.delta > 0)) await db.insert(credits).values({ workspaceId: mb.workspaceId, delta: 1, reason: `Email bounced · credit returned ${tag}` });
+        }
+      }
+    }
+    if (cls === 'later') {
+      await db.insert(tasks).values({ workspaceId: mb.workspaceId, opportunityId: e.opportunityId, type: 'custom', title: `Check back with ${m.from}`, note: fresh.slice(0, 300), dueAt: addDays(new Date(), 30) });
     }
     log('poll', 'reply', { mailbox: mb.email, cls });
   }

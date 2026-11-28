@@ -13,8 +13,8 @@ export default function Landing() {
         <Link className="btn pri s" href="/login">Start free trial</Link>
       </nav>
 
-      <section className="hero">
-        <span className="pill v">14-day free trial with 100 companies · no card needed</span>
+      <section className="lp-hero">
+        <span className="pill">14-day free trial with 100 companies · no card needed</span>
         <h1 style={{ marginTop: 18 }}>See which companies need you this week.</h1>
         <p>Frithly watches for hiring, funding and website changes, finds the right person and their verified email, and writes a first email. You approve every email before it goes out.</p>
         <div className="row" style={{ justifyContent: 'center' }}>
@@ -40,7 +40,7 @@ export default function Landing() {
         <div className="price">
           <div className="card stack"><h3>Free trial</h3><h2>$0</h2><p className="mut">14 days · 100 companies · 1 mailbox</p><Link className="btn" href="/login">Start free</Link></div>
           <div className="card stack"><h3>Starter</h3><h2>${s.usd}<span className="mut">/mo</span></h2><p className="mut">${s.offerUsd} for the first month · {s.month} companies a month · {s.mailboxes} mailboxes included</p><Link className="btn" href="/login">Choose Starter</Link></div>
-          <div className="card stack rec"><span className="pill v">Recommended</span><h3>Pro</h3><h2>${p.usd}<span className="mut">/mo</span></h2><p className="mut">${p.offerUsd} for the first month · {p.month} companies a month · {p.mailboxes} mailboxes and {p.seats} seats</p><Link className="btn pri" href="/login">Choose Pro</Link></div>
+          <div className="card stack rec"><span className="pill">Recommended</span><h3>Pro</h3><h2>${p.usd}<span className="mut">/mo</span></h2><p className="mut">${p.offerUsd} for the first month · {p.month} companies a month · {p.mailboxes} mailboxes and {p.seats} seats</p><Link className="btn pri" href="/login">Choose Pro</Link></div>
           <div className="card stack"><h3>Agency</h3><h2>Custom</h2><p className="mut">Volume for several clients. Multi-client workspaces coming soon.</p><a className="btn" href="mailto:hello@frithly.com">Talk to us</a></div>
         </div>
       </section>

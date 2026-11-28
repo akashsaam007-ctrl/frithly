@@ -50,3 +50,6 @@ export function planLimits(plan: PlanKey, addons: Partial<Record<keyof typeof AD
     linkedinAuto: (addons.linkedinAuto ?? 0) > 0,
   };
 }
+
+/** Lookup credits: a company lookup costs 1, finding an email costs 1; bounced emails refund theirs. */
+export const CREDIT_COST = { company: 1, email: 1 } as const;

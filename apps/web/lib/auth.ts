@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { and, db, eq, gt, members, otpCodes, sessions, users, workspaces } from '@frithly/db';
+import { and, db, eq, gt, invites, isNull, members, otpCodes, sessions, users, workspaces } from '@frithly/db';
 import { otpCode, safeEqual, sha256, token } from '@frithly/core';
 import { sendSystemMail } from './mailer';
 
@@ -66,7 +66,16 @@ export async function currentUser() {
 async function load() {
   const user = await currentUser();
   if (!user) redirect('/login');
-  const [m] = await db.select({ ws: workspaces }).from(members).innerJoin(workspaces, eq(workspaces.id, members.workspaceId)).where(eq(members.userId, user.id)).limit(1);
+  let [m] = await db.select({ ws: workspaces }).from(members).innerJoin(workspaces, eq(workspaces.id, members.workspaceId)).where(eq(members.userId, user.id)).limit(1);
+  if (!m) {
+    // Accept a pending team invite for this email.
+    const [inv] = await db.select().from(invites).where(and(eq(invites.email, user.email), isNull(invites.acceptedAt))).limit(1);
+    if (inv) {
+      await db.insert(members).values({ workspaceId: inv.workspaceId, userId: user.id, role: inv.role }).onConflictDoNothing();
+      await db.update(invites).set({ acceptedAt: new Date() }).where(eq(invites.id, inv.id));
+      [m] = await db.select({ ws: workspaces }).from(workspaces).where(eq(workspaces.id, inv.workspaceId));
+    }
+  }
   return { user, ws: m?.ws ?? null };
 }
 

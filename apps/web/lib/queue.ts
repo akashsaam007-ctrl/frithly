@@ -13,7 +13,7 @@ function boss() {
   return g.__boss;
 }
 
-export async function enqueue(queue: 'scan-company' | 'enrich-opportunity', data: object, singletonKey?: string) {
+export async function enqueue(queue: 'scan-company' | 'enrich-opportunity' | 'find-email' | 'lookup-company', data: object, singletonKey?: string) {
   const b = await boss();
   return b.send(queue, data, { singletonKey, retryLimit: 2 });
 }

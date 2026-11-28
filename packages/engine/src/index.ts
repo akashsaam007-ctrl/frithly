@@ -8,3 +8,4 @@ export * from './scanners/news';
 export * from './people';
 export * from './scanners/discover';
 export * from './scanners/infra';
+export { resolveTxt, resolveMx } from './dns';

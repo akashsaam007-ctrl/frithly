@@ -133,6 +133,8 @@ async function runStep(e: typeof enrollments.$inferSelect) {
     subject = d.subject; body = d.body;
   } else if (e.stepIndex === 0) {
     return stop('first email not approved');
+  } else if (d && !d.approvedAt && (ws.prefs?.approval ?? 'every') === 'every') {
+    return; // waiting for the user to approve this follow-up
   } else {
     const [owner] = await db.select().from(users).where(eq(users.id, ws.ownerId));
     const checkBase = { companyName: co.name, domain: co.domain, contactRole: ct.role, signalLabel: sig?.label, emailStatus: ct.emailStatus, signature: s.signature, postalAddress: s.postalAddress, optOutLine: s.optOutLine };
@@ -146,10 +148,11 @@ async function runStep(e: typeof enrollments.$inferSelect) {
     await bumpUsage(ws.id, 'aiDrafts');
     // Follow-ups in the same thread may use a short subject; judge everything else.
     const checks = checkEmail({ ...checkBase, subject: step.sameThread ? 'same thread reply' : w.subject, body: w.body });
-    if (!allPass(checks)) {
+    if (!allPass(checks) || (ws.prefs?.approval ?? 'every') === 'every') {
       await db.insert(drafts).values({ opportunityId: opp.id, stepIndex: e.stepIndex, subject: w.subject, body: w.body }).onConflictDoUpdate({ target: [drafts.opportunityId, drafts.stepIndex], set: { subject: w.subject, body: w.body } });
-      await db.insert(tasks).values({ workspaceId: ws.id, opportunityId: opp.id, enrollmentId: e.id, type: 'review', title: `Review follow-up ${e.stepIndex + 1} to ${ct.name}`, note: checks.filter((c) => !c.pass).map((c) => c.label).join('; ') });
-      return db.update(enrollments).set({ status: 'paused', stoppedReason: 'follow-up needs review' }).where(eq(enrollments.id, e.id));
+      const failed = checks.filter((c) => !c.pass).map((c) => c.label);
+      await db.insert(tasks).values({ workspaceId: ws.id, opportunityId: opp.id, enrollmentId: e.id, type: 'review', title: `Approve follow-up ${e.stepIndex + 1} to ${ct.name} at ${co.name}`, note: failed.length ? `Needs: ${failed.join('; ')}` : 'Every check passes. Approve it to send.' });
+      return db.update(enrollments).set({ status: 'paused', stoppedReason: 'follow-up waiting for approval' }).where(eq(enrollments.id, e.id));
     }
     subject = w.subject; body = w.body;
   }

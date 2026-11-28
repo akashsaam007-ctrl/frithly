@@ -71,5 +71,6 @@ describe('crypto and replies', () => {
     expect(quickClassify('Automatic reply', 'I am out of office')).toBe('out_of_office');
     expect(quickClassify('Re: x', 'please remove me from your list')).toBe('optout');
     expect(quickClassify('Re: x', 'Sounds interesting, tell me more')).toBe('other');
+    expect(quickClassify('Re: x', 'Thanks, not right now. Check back in February.')).toBe('later');
   });
 });

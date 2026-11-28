@@ -7,6 +7,7 @@ import { simpleParser } from 'mailparser';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const DB = process.env.TEST_DATABASE_URL;
+if (DB && !/test/.test(DB)) throw new Error('TEST_DATABASE_URL must point at a database with "test" in its name; these tests wipe it.');
 const d = DB ? describe : describe.skip;
 
 d('outreach flow', () => {
